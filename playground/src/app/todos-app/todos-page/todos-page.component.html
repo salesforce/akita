@@ -1,0 +1,25 @@
+<div class="container" class="padding">
+
+  <div class="input-field">
+    <i class="material-icons prefix">add_alarm</i>
+    <input type="text" class="form-control" placeholder="Add Todo..."
+           #input
+           (keydown.enter)="add(input)">
+  </div>
+
+  <app-todos-filters (update)="changeFilter($event)"
+                     [filters]="filters"
+                     [active]="activeFilter$ | async">
+  </app-todos-filters>
+
+  <label>
+    <input type="checkbox" (change)="checkAll($event)" [checked]="checkAll$ | async"/>
+    <span>Select All</span>
+  </label>
+
+  <app-todos [todos]="todos$ | async"
+             (delete)="delete($event)"
+             (complete)="complete($event)"
+  ></app-todos>
+
+</div>

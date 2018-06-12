@@ -1,0 +1,18 @@
+<div class="card p-width">
+  <div class="card-image">
+    <img src="http://via.placeholder.com/359x269?text=🔥">
+    <span class="card-title"><a [routerLink]="['/product', product.id]">{{product.title}}</a></span>
+  </div>
+  <div class="card-content">
+    <p class="mbb">Price: <b>{{product.price}}$</b></p>
+    <p>{{product.description}}</p>
+  </div>
+  <div class="card-action flex flex-end">
+    <button class="btn waves-effect waves-light cyan lighten-2 mr" (click)="add.emit(product)">
+      <i class="material-icons">exposure_plus_1</i>
+    </button>
+    <button class="btn waves-effect waves-light blue-grey lighten-3" (click)="subtract.emit(product)">
+      <i class="material-icons">exposure_neg_1</i>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,71 @@
+.padding {
+  padding: 2em;
+}
+
+app-product {
+  margin-right: 2em;
+}
+
+.flex {
+  display: flex;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.mt {
+  margin-top: 1em;
+}
+
+.p-width {
+  width: 300px;
+}
+
+.mbb {
+  margin-bottom: 5px;
+}
+
+.flex-end {
+  justify-content: flex-end;
+}
+
+.mr {
+  margin-right: 10px;
+}
+
+.nav-wrapper {
+  padding: 0 25px;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.height {
+  min-height: 100vh;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.block {
+  display: block;
+}
+
+.page-footer {
+  padding-top: 0;
+}
+
+.mr5 {
+  margin-right: 5px;
+}
+
+app-todo {
+  display: block;
+}
+
+.sb {
+  justify-content: space-between;
+}

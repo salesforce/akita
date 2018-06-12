@@ -1,0 +1,37 @@
+<section class="padding">
+  <ng-container *ngIf="items$ | async as items">
+    <table class="striped" *ngIf="items.length">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Quantity</th>
+          <th>Total</th>
+          <th>Remove</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of items">
+          <td>{{item.title}}</td>
+          <td>{{item.description}}</td>
+          <td>{{item.quantity}}</td>
+          <th>{{item.total}}$</th>
+          <th>
+            <button (click)="remove(item)" class="btn waves-effect waves-light red">
+              <i class="material-icons">delete_forever</i>
+            </button>
+          </th>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 *ngIf="!items.length">Your cart is empty</h3>
+
+    <h4 *ngIf="items.length" class="flex align-center">
+      <i class="material-icons medium mr5">credit_card</i>
+      Total: {{total$ | async}}$
+    </h4>
+
+  </ng-container>
+
+</section>

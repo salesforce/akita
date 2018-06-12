@@ -1,0 +1,55 @@
+{
+  "projectName": "akita",
+  "projectOwner": "NetanelBasal",
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "contributors": [
+    {
+      "login": "NetanelBasal",
+      "name": "Netanel Basal",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/6745730?v=4",
+      "profile": "https://www.netbasal.com",
+      "contributions": [
+      "code",
+      "design",
+      "infra",
+      "ideas",
+      "blog",
+        "doc"
+      ]
+    },
+    {
+          "login": "theblushingcrow",
+          "name": "I. Sinai",
+          "avatar_url": "https://avatars3.githubusercontent.com/u/638818?v=4",
+          "profile": "https://github.com/theblushingcrow",
+          "contributions": [
+            "doc"
+          ]
+    },
+        {
+              "login": "bh86",
+              "name": "Amit b.h",
+              "avatar_url": "https://avatars2.githubusercontent.com/u/78281?v=4",
+              "profile": "https://github.com/bh86",
+              "contributions": [
+               "code",
+               "ideas"
+              ]
+        },
+            {
+                      "login": "bh86",
+                      "name": "Ido Glikman",
+                      "avatar_url": "https://avatars2.githubusercontent.com/u/78281?v=4",
+                      "profile": "https://github.com/glikman",
+                      "contributions": [
+                        "ideas"
+                      ]
+             }
+  ]
+}
