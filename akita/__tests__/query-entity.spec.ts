@@ -143,10 +143,12 @@ describe('Entities Query', () => {
   });
 
   describe('selectActive', () => {
-    it('should throw when active is undefined', () => {
-      expect(function() {
-        query.selectActive().subscribe(active => expect(active).toBe(query.getActive()));
-      }).toThrow(new AkitaNoActiveError() as any);
+    it('should return undefined when active not exist', () => {
+      let res;
+      query.selectActive().subscribe(active => {
+        res = active;
+      });
+      expect(res).toBeUndefined();
     });
 
     it('should select the active id', () => {

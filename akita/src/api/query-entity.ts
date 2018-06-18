@@ -4,7 +4,6 @@ import { Observable, combineLatest } from 'rxjs';
 import { auditTime, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { Query } from './query';
 import { entityExists, isFunction, isUndefined, toBoolean } from '../internal/utils';
-import { assertActive } from '../internal/error';
 import { memoizeOne } from './memoize';
 
 export type SelectOptions<E> = {
@@ -90,7 +89,6 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
   selectMany(ids: ID[], options: { asObject?: boolean; filterUndefined?: boolean } = {}): Observable<E[] | HashMap<E>> {
     const asObject = options.asObject || false;
     const filterUndefined = isUndefined(options.filterUndefined) ? true : options.filterUndefined;
-
     const entities = ids.map(id => this.selectEntity(id));
 
     return combineLatest(entities).pipe(
@@ -166,7 +164,6 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
   selectActive<R>(): Observable<E>;
   selectActive<R>(project: (entity: E) => R): Observable<R>;
   selectActive<R>(project?: (entity: E) => R): Observable<R | E> {
-    assertActive(this.getSnapshot());
     return this.selectActiveId().pipe(switchMap(activeId => this.selectEntity(activeId, project)));
   }
 
@@ -174,7 +171,6 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
    * Get the active entity.
    */
   getActive(): E {
-    assertActive(this.getSnapshot());
     const activeId: ID = this.getActiveId();
     return toBoolean(activeId) ? this.getEntity(activeId) : undefined;
   }
