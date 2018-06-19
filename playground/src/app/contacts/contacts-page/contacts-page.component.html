@@ -1,0 +1,82 @@
+<section class="padding">
+  <h1>Contacts</h1>
+
+  <section class="flex align-center">
+    <div class="input-field flex-1">
+      <p>Sort by</p>
+      <select class="browser-default" [formControl]="sortByControl">
+        <option value="">Sort by</option>
+        <option value="name">Name</option>
+        <option value="email">Email</option>
+      </select>
+    </div>
+
+    <div class="input-field flex-1">
+      <p>Per page</p>
+      <select class="browser-default" [formControl]="perPageControl">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+      </select>
+    </div>
+
+  </section>
+
+  <content-loader *ngIf="paginatorRef.isLoading$ | async">
+    <svg:rect x="0" y="0" rx="3" ry="3" width="100%" height="10"/>
+    <svg:rect x="5" y="15" rx="3" ry="3" width="100%" height="10"/>
+    <svg:rect x="10" y="30" rx="3" ry="3" width="100%" height="10"/>
+    <svg:rect x="15" y="45" rx="3" ry="3" width="100%" height="10"/>
+    <svg:rect x="20" y="60" rx="3" ry="3" width="100%" height="10"/>
+    <svg:rect x="5" y="75" rx="3" ry="3" width="100%" height="10"/>
+    <svg:rect x="10" y="90" rx="3" ry="3" width="100%" height="10"/>
+    <svg:rect x="15" y="105" rx="3" ry="3" width="100%" height="10"/>
+    <svg:rect x="0" y="120" rx="3" ry="3" width="100%" height="10"/>
+  </content-loader>
+
+  <section *ngIf="(pagination$ | async) as data">
+    <table class="striped" [class.hide]="paginatorRef.isLoading$ | async">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Address</th>
+          <th>Email</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr *ngFor="let contact of data.data">
+          <td>{{contact.name}}</td>
+          <td>{{contact.address}}</td>
+          <td>{{contact.email}}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>{{data.from}} - {{data.to}} of {{data.total}}</p>
+
+    <ul class="pagination">
+      <li [class.disabled]="paginatorRef.isFirst" (click)="paginatorRef.setFirstPage()"
+          style="transform: translateX(15px);"><a class="no-padding">
+        <i class="material-icons" style="width: 10px;">chevron_left</i>
+        <i class="material-icons">chevron_left</i></a>
+      </li>
+      <li [class.disabled]="paginatorRef.isFirst" (click)="paginatorRef.prevPage()"><a><i
+              class="material-icons">chevron_left</i></a></li>
+      <li *ngFor="let page of data.pageControls"
+          class="waves-effect"
+          (click)="paginatorRef.setPage(page)"
+          [class.active]="paginatorRef.isPageActive(page)"><a>{{page}}</a>
+      </li>
+      <li [class.disabled]="paginatorRef.isLast" (click)="paginatorRef.nextPage()"><a><i
+              class="material-icons">chevron_right</i></a></li>
+      <li [class.disabled]="paginatorRef.isLast" (click)="paginatorRef.setLastPage()"
+          style="transform: translateX(-15px);"><a class="no-padding">
+        <i class="material-icons" style="width: 10px;">chevron_right</i>
+        <i class="material-icons">chevron_right</i></a>
+      </li>
+    </ul>
+  </section>
+
+</section>
