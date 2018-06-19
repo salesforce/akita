@@ -31,6 +31,10 @@ const routes: Routes = [
     path: 'todos',
     canActivate: [AuthGuard],
     loadChildren: 'app/todos-app/todos.module#TodosModule'
+  },
+  {
+    path: 'contacts',
+    loadChildren: 'app/contacts/contacts.module#ContactsModule'
   }
 ];
 

@@ -66,3 +66,7 @@ export function noop<T>(): Observable<T> {
     observer.complete();
   });
 }
+
+export function isObservable(value) {
+  return toBoolean(value) && isFunction(value.subscribe);
+}

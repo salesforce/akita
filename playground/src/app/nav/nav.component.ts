@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
         <ul id="nav-mobile" class="right hide-on-med-and-down">
           <li *ngIf="isLoggedIn$ | async"><a (click)="logout()">Logout</a></li>
           <li><a routerLink="todos">Todos</a></li>
+          <li><a routerLink="contacts">Contacts</a></li>
           <li><a routerLink="cart">Cart <span class="new badge">{{count$ | async}}</span></a></li>
         </ul>
       </div>

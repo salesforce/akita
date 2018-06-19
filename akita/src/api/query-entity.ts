@@ -19,8 +19,12 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
   protected store: EntityStore<S, E>;
   private memoized;
 
+  /** Use only for internal plugins like Pagination - don't use this property **/
+  __store__;
+
   constructor(store: EntityStore<S, E>) {
     super(store);
+    this.__store__ = store;
   }
 
   /**
