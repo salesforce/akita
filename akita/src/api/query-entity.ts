@@ -5,11 +5,16 @@ import { auditTime, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { Query } from './query';
 import { entityExists, isFunction, isUndefined, toBoolean } from '../internal/utils';
 import { memoizeOne } from './memoize';
+import { compareValues, Order } from '../internal/sort';
+
+export type SortBy<E> = ((a, b) => number) | keyof E;
 
 export type SelectOptions<E> = {
   asObject?: boolean;
   filterBy?: ((entity: E) => boolean) | undefined;
   limitTo?: number;
+  sortBy?: SortBy<E>;
+  sortByOrder?: Order;
 };
 
 /**
@@ -22,7 +27,7 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
   /** Use only for internal plugins like Pagination - don't use this property **/
   __store__;
 
-  constructor(store: EntityStore<S, E>) {
+  constructor(store: EntityStore<S, E>, public options: { sortBy?: SortBy<E>; sortByOrder?: Order } = {}) {
     super(store);
     this.__store__ = store;
   }
@@ -32,15 +37,22 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
    *
    * this.store.selectAll();
    */
-  selectAll(options: { asObject: true; filterBy?: SelectOptions<E>['filterBy']; limitTo?: number }): Observable<HashMap<E>>;
-  selectAll(options: { filterBy: SelectOptions<E>['filterBy']; limitTo?: number }): Observable<E[]>;
-  selectAll(options: { asObject: true; limitTo?: number }): Observable<HashMap<E>>;
-  selectAll(options: { limitTo?: number }): Observable<E[]>;
-  selectAll(options: { asObject: false; filterBy?: SelectOptions<E>['filterBy']; limitTo?: number }): Observable<E[]>;
+  selectAll(options: { asObject: true; filterBy?: SelectOptions<E>['filterBy']; limitTo?: number; sortBy?: undefined; sortByOrder?: undefined }): Observable<HashMap<E>>;
+  selectAll(options: { filterBy: SelectOptions<E>['filterBy']; limitTo?: number; sortBy?: SortBy<E>; sortByOrder?: Order }): Observable<E[]>;
+  selectAll(options: { asObject: true; limitTo?: number; sortBy?: undefined; sortByOrder?: undefined }): Observable<HashMap<E>>;
+  selectAll(options: { limitTo?: number; sortBy?: SortBy<E>; sortByOrder?: Order }): Observable<E[]>;
+  selectAll(options: { asObject: false; filterBy?: SelectOptions<E>['filterBy']; limitTo?: number; sortBy?: SortBy<E>; sortByOrder?: Order }): Observable<E[]>;
   selectAll(): Observable<E[]>;
-  selectAll(options: SelectOptions<E> = { asObject: false, filterBy: undefined, limitTo: undefined }): Observable<E[] | HashMap<E>> {
+  selectAll(
+    options: SelectOptions<E> = {
+      asObject: false
+    }
+  ): Observable<E[] | HashMap<E>> {
     const selectIds$ = this.select(state => state.ids);
     const selectEntities$ = this.select(state => state.entities);
+
+    options.sortBy = options.sortBy || this.options.sortBy;
+    options.sortByOrder = options.sortByOrder || this.options.sortByOrder;
 
     return selectEntities$.pipe(
       withLatestFrom(selectIds$, (entities, ids: ID[]) => {
@@ -53,6 +65,7 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
             }
             return this.memoized(ids, entities, options);
           }
+
           return toArray(ids, entities, options);
         }
       })
@@ -239,7 +252,8 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
 
 function toArray<E>(ids: ID[], entities: HashMap<E>, options: SelectOptions<E>): E[] {
   const arr = [];
-  const { filterBy, limitTo } = options;
+  const { filterBy, limitTo, sortBy, sortByOrder } = options;
+
   const length = Math.min(limitTo || ids.length, ids.length);
 
   for (let i = 0; i < length; i++) {
@@ -258,6 +272,12 @@ function toArray<E>(ids: ID[], entities: HashMap<E>, options: SelectOptions<E>):
       arr.push(entities[id]);
     }
   }
+
+  if (sortBy) {
+    let _sortBy = isFunction(sortBy) ? sortBy : compareValues(sortBy, sortByOrder);
+    return arr.slice().sort(_sortBy);
+  }
+
   return arr;
 }
 

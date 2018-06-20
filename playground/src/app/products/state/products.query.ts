@@ -16,9 +16,10 @@ export class ProductsQuery extends QueryEntity<State, Product> {
    * @param {string} value
    * @returns {Observable<Observable<Product[]>}
    */
-  getProducts(value: string) {
+  getProducts(term: string, sortBy: keyof Product) {
     return this.selectAll({
-      filterBy: entity => entity.title.toLowerCase().includes(value)
+      sortBy,
+      filterBy: entity => entity.title.toLowerCase().includes(term)
     });
   }
 }

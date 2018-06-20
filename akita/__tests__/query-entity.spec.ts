@@ -1,9 +1,9 @@
 import { cot, createTodos, ct, Todo, TodosStore } from './setup';
-import { AkitaNoActiveError } from '../src/internal/error';
 import { isObject } from '../src/internal/utils';
 import { Subscription } from 'rxjs';
 import { getInitialEntitiesState } from '../src/api/entity-store';
 import { QueryEntity } from '../src/api/query-entity';
+import { Order } from '../src/internal/sort';
 
 let store = new TodosStore();
 const query = new QueryEntity(store);
@@ -577,5 +577,147 @@ describe('Check subscriptions calls', () => {
     expect(spy).toHaveBeenCalledTimes(3);
     expect(queryTodos.getEntity(1)).toEqual(undefined);
     expect(queryTodos.getSnapshot().ids).toEqual([0, 2]);
+  });
+});
+
+describe('Sort by', () => {
+  const todosStore = new TodosStore();
+  const queryTodos = new QueryEntity(todosStore);
+  let res;
+  let sub;
+
+  beforeEach(() => {
+    todosStore.remove();
+    sub && sub.unsubscribe();
+  });
+
+  it('should sort by provided key', () => {
+    todosStore.set([{ id: 1, title: 'Todo 1', complete: false }, { id: 0, title: 'Todo 0', complete: false }, { id: 2, title: 'Todo 2', complete: true }] as any);
+
+    todosStore.update(2, { complete: true } as any);
+    sub = queryTodos
+      .selectAll({
+        sortBy: 'id'
+      })
+      .subscribe(_res => (res = _res));
+
+    expect(res[0].id).toEqual(0);
+    expect(res[1].id).toEqual(1);
+    expect(res[2].id).toEqual(2);
+  });
+
+  it('should sort by provided key - number', () => {
+    todosStore.set([{ id: 1, title: 'Todo 1', complete: false, price: 10 }, { id: 0, title: 'Todo 0', complete: false, price: 40 }, { id: 2, title: 'Todo 2', complete: true, price: 3 }] as any);
+
+    sub = queryTodos
+      .selectAll({
+        sortBy: 'price'
+      })
+      .subscribe(_res => (res = _res));
+
+    expect(res[0].price).toEqual(3);
+    expect(res[1].price).toEqual(10);
+    expect(res[2].price).toEqual(40);
+  });
+
+  it('should sort by provided key desc - number', () => {
+    todosStore.set([{ id: 1, title: 'Todo 1', complete: false, price: 10 }, { id: 0, title: 'Todo 0', complete: false, price: 40 }, { id: 2, title: 'Todo 2', complete: true, price: 3 }] as any);
+
+    sub = queryTodos
+      .selectAll({
+        sortBy: 'price',
+        sortByOrder: Order.DESC
+      })
+      .subscribe(_res => (res = _res));
+
+    expect(res[0].price).toEqual(40);
+    expect(res[1].price).toEqual(10);
+    expect(res[2].price).toEqual(3);
+  });
+
+  it('should sort by provided key - desc', () => {
+    todosStore.set([{ id: 1, title: 'Todo 1', complete: false, price: 10 }, { id: 0, title: 'Todo 0', complete: false, price: 40 }, { id: 2, title: 'Todo 2', complete: true, price: 3 }] as any);
+
+    todosStore.update(2, { complete: true } as any);
+    sub = queryTodos
+      .selectAll({
+        sortBy: 'complete',
+        sortByOrder: Order.DESC
+      })
+      .subscribe(_res => (res = _res));
+
+    expect(res[0].complete).toEqual(true);
+    expect(res[1].complete).toEqual(false);
+    expect(res[2].complete).toEqual(false);
+  });
+
+  it('should sort by provided custom function', () => {
+    function customSortBy(obj1, obj2) {
+      return obj1.price - obj2.price;
+    }
+
+    todosStore.set([{ id: 1, title: 'Todo 1', complete: false, price: 10 }, { id: 0, title: 'Todo 0', complete: false, price: 40 }, { id: 2, title: 'Todo 2', complete: true, price: 3 }] as any);
+
+    sub = queryTodos
+      .selectAll({
+        sortBy: customSortBy
+      })
+      .subscribe(_res => (res = _res));
+
+    expect(res[0].price).toEqual(3);
+    expect(res[1].price).toEqual(10);
+    expect(res[2].price).toEqual(40);
+  });
+});
+
+describe('Sort by - Query Level', () => {
+  const todosStore = new TodosStore();
+  const queryTodos = new QueryEntity(todosStore, { sortBy: 'price' });
+  let res;
+  let sub;
+
+  beforeEach(() => {
+    todosStore.remove();
+    sub && sub.unsubscribe();
+  });
+
+  it('should sort by provided key - number', () => {
+    todosStore.set([{ id: 1, title: 'Todo 1', complete: false, price: 10 }, { id: 0, title: 'Todo 0', complete: false, price: 40 }, { id: 2, title: 'Todo 2', complete: true, price: 3 }] as any);
+
+    sub = queryTodos.selectAll().subscribe(_res => (res = _res));
+
+    expect(res[0].price).toEqual(3);
+    expect(res[1].price).toEqual(10);
+    expect(res[2].price).toEqual(40);
+  });
+
+  it('should let selectAll win', () => {
+    todosStore.set([{ id: 1, title: 'Todo 1', complete: false, price: 10 }, { id: 0, title: 'Todo 0', complete: false, price: 40 }, { id: 2, title: 'Todo 2', complete: true, price: 3 }] as any);
+
+    sub = queryTodos
+      .selectAll({
+        sortBy: 'price',
+        sortByOrder: Order.DESC
+      })
+      .subscribe(_res => (res = _res));
+
+    expect(res[0].price).toEqual(40);
+    expect(res[1].price).toEqual(10);
+    expect(res[2].price).toEqual(3);
+  });
+
+  it('should let selectAll win', () => {
+    todosStore.set([{ id: 1, title: 'Todo 1', complete: false }, { id: 0, title: 'Todo 0', complete: false }, { id: 2, title: 'Todo 2', complete: true }] as any);
+
+    todosStore.update(2, { complete: true } as any);
+    sub = queryTodos
+      .selectAll({
+        sortBy: 'id'
+      })
+      .subscribe(_res => (res = _res));
+
+    expect(res[0].id).toEqual(0);
+    expect(res[1].id).toEqual(1);
+    expect(res[2].id).toEqual(2);
   });
 });

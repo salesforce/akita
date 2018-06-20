@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Product, ProductsQuery, ProductsService } from './state';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
 import { CartService } from '../cart/state';
 import { FormControl } from '@angular/forms';
 import { startWith, switchMap } from 'rxjs/operators';
@@ -14,15 +14,16 @@ export class ProductsComponent implements OnInit {
   products$: Observable<Product[]>;
   loading$: Observable<boolean>;
   search = new FormControl();
+  sortControl = new FormControl('title');
 
   constructor(private productsService: ProductsService, private to: TodosService, private cartService: CartService, private productsQuery: ProductsQuery) {}
 
   ngOnInit() {
     this.productsService.get().subscribe();
     this.loading$ = this.productsQuery.selectLoading();
-    this.products$ = this.search.valueChanges.pipe(
-      startWith(''),
-      switchMap(value => this.productsQuery.getProducts(value))
+
+    this.products$ = combineLatest(this.search.valueChanges.pipe(startWith('')), this.sortControl.valueChanges.pipe(startWith('title'))).pipe(
+      switchMap(([term, sortBy]) => this.productsQuery.getProducts(term, sortBy as keyof Product))
     );
   }
 
