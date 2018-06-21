@@ -1,6 +1,6 @@
 import { Todo, TodosStore } from './setup';
 import { QueryEntity } from '../src/api/query-entity';
-import { PaginationResponse, Paginator } from '../src/api/pagination';
+import { PaginationResponse, Paginator } from '../src/plugins/pagination';
 import { switchMap } from 'rxjs/operators';
 import { Observable, of, timer } from 'rxjs';
 

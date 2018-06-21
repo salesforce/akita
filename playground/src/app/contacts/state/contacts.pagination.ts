@@ -1,4 +1,4 @@
-import { Paginator } from '@datorama/akita/src/api/pagination';
+import { Paginator } from '@datorama/akita/src/plugins/pagination';
 import { Contact } from '@datorama/playground/src/app/contacts/state/contact.model';
 import { ContactsQuery } from '@datorama/playground/src/app/contacts/state/index';
 import { InjectionToken } from '@angular/core';

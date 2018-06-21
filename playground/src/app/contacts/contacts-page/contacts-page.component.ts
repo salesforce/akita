@@ -5,7 +5,7 @@ import { combineLatest } from 'rxjs';
 import { startWith, switchMap, tap } from 'rxjs/operators';
 import { ActivatedRoute } from '@datorama/playground/node_modules/@angular/router';
 import { FormControl } from '@datorama/playground/node_modules/@angular/forms';
-import { Paginator } from '@datorama/akita/src/api/pagination';
+import { Paginator } from '@datorama/akita/src/plugins/pagination';
 import { Contact } from '@datorama/playground/src/app/contacts/state';
 import { CONTACTS_PAGINATOR, createPaginator } from '@datorama/playground/src/app/contacts/state/contacts.pagination';
 
