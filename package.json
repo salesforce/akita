@@ -67,6 +67,9 @@
       "ts",
       "js"
     ],
+    "setupFiles": [
+      "jest-localstorage-mock"
+    ],
     "transform": {
       "\\.(ts)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
@@ -90,6 +93,7 @@
     "cz-conventional-changelog": "^2.1.0",
     "husky": "^0.14.3",
     "jest": "^23.1.0",
+    "jest-localstorage-mock": "^2.2.0",
     "lint-staged": "^7.1.3",
     "ng-packagr": "^3.0.2",
     "prettier": "^1.13.5",

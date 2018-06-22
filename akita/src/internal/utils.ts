@@ -70,3 +70,21 @@ export function noop<T>(): Observable<T> {
 export function isObservable(value) {
   return toBoolean(value) && isFunction(value.subscribe);
 }
+
+export function normalizeStoreName(storeName: string) {
+  /** ProductsStore => products */
+  return storeName.toLowerCase().replace('store', '');
+}
+
+export function denormalizeStoreName(storeName: string) {
+  /** products => ProductsStore  */
+  return `${capitalizeFirstLetter(storeName)}Store`;
+}
+
+function capitalizeFirstLetter(string) {
+  return string[0].toUpperCase() + string.slice(1);
+}
+
+export function isString(val: string | any): val is string {
+  return typeof val === 'string';
+}

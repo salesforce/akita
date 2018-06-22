@@ -1,5 +1,5 @@
 import { ID } from './types';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { AkitaImmutabilityError } from '../internal/error';
 import { commit, isTransactionInProcess } from '../internal/transaction.internal';
@@ -8,6 +8,10 @@ import { deepFreeze } from '../internal/deep-freeze';
 
 /** Whether we are in dev mode */
 let __DEV__ = true;
+
+export const __rootDispatcher__ = new Subject<string>();
+export const __registerStore__ = new Subject<Store<any>>();
+export const __stores__: { [storeName: string]: Store<any> } = {};
 
 /**
  * Enable production mode to disable objectFreeze
@@ -35,10 +39,11 @@ export class Store<S> {
   /**
    *
    * Initial the store with the state
-   *
    */
   constructor(initialState) {
     this.setState(() => initialState);
+    __registerStore__.next(this);
+    __stores__[this.storeName] = this;
   }
 
   /**
@@ -131,6 +136,7 @@ export class Store<S> {
 
   private dispatch(state: S) {
     this.store.next(state);
+    __rootDispatcher__.next(this.storeName);
   }
 
   private get store$() {
