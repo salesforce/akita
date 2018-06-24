@@ -13,12 +13,21 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    *
    * Initiate the store with the state
    */
-  constructor(initialState = {}, private options = { idKey: 'id' }) {
+  constructor(initialState = {}, private options: { idKey?: string } = {}) {
     super({ ...initialState, ...getInitialEntitiesState() });
   }
 
   get entities() {
     return this._value().entities;
+  }
+
+  get idKey() {
+    /** backward compatibility */
+    const newIdKey = this.config && this.config.idKey;
+    if (!newIdKey) {
+      return this.options.idKey || 'id';
+    }
+    return newIdKey;
   }
 
   /**
@@ -47,7 +56,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    *
    */
   set(entities: E[] | HashMap<E>, entityClass?: Newable<E>) {
-    this.setState(state => _crud._set(state, entities, entityClass, this.options.idKey));
+    this.setState(state => _crud._set(state, entities, entityClass, this.idKey));
     this.setDirty();
     this.setLoading();
   }
@@ -60,8 +69,8 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    */
   createOrReplace(id: ID, entity: E) {
     if (!entityExists(id, this._value().entities)) {
-      if (!entity[this.options.idKey]) {
-        entity[this.options.idKey] = id;
+      if (!entity[this.idKey]) {
+        entity[this.idKey] = id;
       }
       return this.add(entity);
     }
@@ -76,7 +85,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    * this.store.add(Entity);
    */
   add(entities: E[] | E) {
-    this.setState(state => _crud._add<S, E>(state, coerceArray(entities), this.options.idKey));
+    this.setState(state => _crud._add<S, E>(state, coerceArray(entities), this.idKey));
   }
 
   /**

@@ -1,25 +1,38 @@
 import { EntityStore } from '../src/api/entity-store';
 import { persistState } from '../src/plugins/persist-state';
 import { Store } from '../src/api/store';
+import { StoreConfig } from '../src/api/store-config';
 
+@StoreConfig({
+  name: 'todos'
+})
 class TodosStore extends EntityStore<any, any> {
   constructor() {
     super();
   }
 }
 
+@StoreConfig({
+  name: 'products'
+})
 class ProductsStore extends EntityStore<any, any> {
   constructor() {
     super();
   }
 }
 
+@StoreConfig({
+  name: 'cart'
+})
 class CartStore extends EntityStore<any, any> {
   constructor() {
-    super({});
+    super();
   }
 }
 
+@StoreConfig({
+  name: 'auth'
+})
 class AuthStore extends Store<any> {
   constructor() {
     super({});
@@ -59,8 +72,8 @@ describe('persistState - Exclude', () => {
       };
     });
     expect(JSON.parse(localStorage.getItem('AkitaStores'))).toEqual({
-      AuthStore: { id: 1, firstName: 'Netanel', lastName: 'Basal', token: 'token' },
-      TodosStore: {
+      auth: { id: 1, firstName: 'Netanel', lastName: 'Basal', token: 'token' },
+      todos: {
         entities: {
           '1': {
             id: 1

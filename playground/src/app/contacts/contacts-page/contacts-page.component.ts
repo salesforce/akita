@@ -7,7 +7,7 @@ import { ActivatedRoute } from '@datorama/playground/node_modules/@angular/route
 import { FormControl } from '@datorama/playground/node_modules/@angular/forms';
 import { Paginator } from '@datorama/akita/src/plugins/pagination';
 import { Contact } from '@datorama/playground/src/app/contacts/state';
-import { CONTACTS_PAGINATOR, createPaginator } from '@datorama/playground/src/app/contacts/state/contacts.pagination';
+import { CONTACTS_PAGINATOR } from '@datorama/playground/src/app/contacts/state/contacts.pagination';
 
 @Component({
   selector: 'app-contacts-page',
@@ -15,7 +15,6 @@ import { CONTACTS_PAGINATOR, createPaginator } from '@datorama/playground/src/ap
   styleUrls: ['./contacts-page.component.css']
 })
 export class ContactsPageComponent implements OnInit {
-  // paginatorRef: Paginator<Contact>;
   pagination$;
   sortByControl: FormControl;
   perPageControl: FormControl;
@@ -23,19 +22,25 @@ export class ContactsPageComponent implements OnInit {
   constructor(private contactsQuery: ContactsQuery, private route: ActivatedRoute, @Inject(CONTACTS_PAGINATOR) public paginatorRef: Paginator<Contact>, private contactsService: ContactsService) {}
 
   ngOnInit() {
-    // Different ways to create singleton
-    // this.paginatorRef = createPaginator(this.contactsQuery);
-    // this.paginator = this.contactsService.createPaginator(this.contactsQuery);
-
     const sortByInit = this.paginatorRef.metadata.get('sortBy') || 'name';
     const perPageInit = this.paginatorRef.metadata.get('perPage') || '10';
-
     this.sortByControl = new FormControl(sortByInit);
     this.perPageControl = new FormControl(perPageInit);
+
+    /**
+     *
+     * Example with the router
+     *
+     * */
     // this.route.queryParamMap.pipe(map(params => +params.get('page'))).subscribe(page => {
     //   this.paginator.setPage(page);
     // });
-    //
+
+    /**
+     *
+     * Simple example without filters
+     *
+     * */
     // this.pagination$ = this.paginator.pageChanges.pipe(
     //   switchMap(( page ) => {
     //     const req = () => this.contactsService.getPage({
@@ -46,8 +51,12 @@ export class ContactsPageComponent implements OnInit {
     //   })
     // );
 
+    /**
+     *
+     * Advanced example with filters
+     *
+     * */
     const sort = this.sortByControl.valueChanges.pipe(startWith(sortByInit));
-
     const perPage = this.perPageControl.valueChanges.pipe(startWith(+perPageInit));
 
     this.pagination$ = combineLatest(this.paginatorRef.pageChanges, combineLatest(sort, perPage).pipe(tap(_ => this.paginatorRef.clearCache()))).pipe(

@@ -8,3 +8,7 @@ export * from './api/arrays';
 export * from './internal/utils';
 export * from './api/worker';
 export * from './api/memoize';
+export * from './api/snapshot-manager';
+export * from './api/store-config';
+export * from './api/query-config';
+export * from './plugins/index';

@@ -1,32 +1,45 @@
 import { EntityStore } from '../src/api/entity-store';
 import { persistState } from '../src/plugins/persist-state';
 import { Store } from '../src/api/store';
+import { StoreConfig } from '../src/api/store-config';
 
+@StoreConfig({
+  name: 'todos'
+})
 class TodosStore extends EntityStore<any, any> {
   constructor() {
     super();
   }
 }
 
+@StoreConfig({
+  name: 'products'
+})
 class ProductsStore extends EntityStore<any, any> {
   constructor() {
     super();
   }
 }
 
+@StoreConfig({
+  name: 'cart'
+})
 class CartStore extends EntityStore<any, any> {
   constructor() {
-    super({});
+    super();
   }
 }
 
+@StoreConfig({
+  name: 'auth'
+})
 class AuthStore extends Store<any> {
   constructor() {
     super({});
   }
 }
 
-const mock = `{"CartStore":{"entities":{},"ids":[],"loading":true,"error":null},"ProductsStore":{"entities":{},"ids":[],"loading":true,"error":null},"AuthStore":{"id":null,"firstName":"","lastName":"","token":""},"TodosStore":{"ui":{"filter":"SHOW_ALL"},"entities":{"0.5666823893391795":{"id":0.5666823893391795,"title":"ds","completed":true},"0.16954788680591548":{"id":0.16954788680591548,"title":"ds","completed":false}},"ids":[0.5666823893391795,0.16954788680591548],"loading":true,"error":null}}`;
+const mock = `{"cart":{"entities":{},"ids":[],"loading":true,"error":null},"products":{"entities":{},"ids":[],"loading":true,"error":null},"auth":{"id":null,"firstName":"","lastName":"","token":""},"todos":{"ui":{"filter":"SHOW_ALL"},"entities":{"0.5666823893391795":{"id":0.5666823893391795,"title":"ds","completed":true},"0.16954788680591548":{"id":0.16954788680591548,"title":"ds","completed":false}},"ids":[0.5666823893391795,0.16954788680591548],"loading":true,"error":null}}`;
 localStorage.setItem('AkitaStores', mock);
 
 describe('persistState', () => {
@@ -60,10 +73,10 @@ describe('persistState', () => {
     localStorage.setItem.mockClear();
     products.add([{ id: 1 }]);
     const expected = {
-      CartStore: { entities: {}, ids: [], loading: true, error: null },
-      ProductsStore: { entities: { '1': { id: 1 } }, ids: [1], loading: true, error: null },
-      AuthStore: { id: null, firstName: '', lastName: '', token: '' },
-      TodosStore: {
+      cart: { entities: {}, ids: [], loading: true, error: null },
+      products: { entities: { '1': { id: 1 } }, ids: [1], loading: true, error: null },
+      auth: { id: null, firstName: '', lastName: '', token: '' },
+      todos: {
         ui: { filter: 'SHOW_ALL' },
         entities: {
           '0.5666823893391795': { id: 0.5666823893391795, title: 'ds', completed: true },
@@ -89,10 +102,10 @@ describe('persistState', () => {
       };
     });
     const expected = {
-      CartStore: { entities: {}, ids: [], loading: true, error: null },
-      ProductsStore: { entities: { '1': { id: 1 } }, ids: [1], loading: true, error: null },
-      AuthStore: { id: 1, firstName: 'Netanel', lastName: 'Basal', token: 'token' },
-      TodosStore: {
+      cart: { entities: {}, ids: [], loading: true, error: null },
+      products: { entities: { '1': { id: 1 } }, ids: [1], loading: true, error: null },
+      auth: { id: 1, firstName: 'Netanel', lastName: 'Basal', token: 'token' },
+      todos: {
         ui: { filter: 'SHOW_ALL' },
         entities: {
           '0.5666823893391795': { id: 0.5666823893391795, title: 'ds', completed: true },
@@ -110,9 +123,9 @@ describe('persistState', () => {
   it('should clear store', () => {
     storage.clearStore('todos');
     const expected = {
-      CartStore: { entities: {}, ids: [], loading: true, error: null },
-      ProductsStore: { entities: { '1': { id: 1 } }, ids: [1], loading: true, error: null },
-      AuthStore: { id: 1, firstName: 'Netanel', lastName: 'Basal', token: 'token' }
+      cart: { entities: {}, ids: [], loading: true, error: null },
+      products: { entities: { '1': { id: 1 } }, ids: [1], loading: true, error: null },
+      auth: { id: 1, firstName: 'Netanel', lastName: 'Basal', token: 'token' }
     };
     expect(JSON.parse(localStorage.getItem('AkitaStores'))).toEqual(expected);
   });

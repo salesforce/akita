@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { getInitialEntitiesState } from '../src/api/entity-store';
 import { QueryEntity } from '../src/api/query-entity';
 import { Order } from '../src/internal/sort';
+import { QueryConfig } from '../src/api/query-config';
 
 let store = new TodosStore();
 const query = new QueryEntity(store);
@@ -592,7 +593,15 @@ describe('Sort by', () => {
   });
 
   it('should sort by provided key', () => {
-    todosStore.set([{ id: 1, title: 'Todo 1', complete: false }, { id: 0, title: 'Todo 0', complete: false }, { id: 2, title: 'Todo 2', complete: true }] as any);
+    todosStore.set([
+      { id: 1, title: 'Todo 1', complete: false },
+      { id: 0, title: 'Todo 0', complete: false },
+      {
+        id: 2,
+        title: 'Todo 2',
+        complete: true
+      }
+    ] as any);
 
     todosStore.update(2, { complete: true } as any);
     sub = queryTodos
@@ -607,7 +616,16 @@ describe('Sort by', () => {
   });
 
   it('should sort by provided key - number', () => {
-    todosStore.set([{ id: 1, title: 'Todo 1', complete: false, price: 10 }, { id: 0, title: 'Todo 0', complete: false, price: 40 }, { id: 2, title: 'Todo 2', complete: true, price: 3 }] as any);
+    todosStore.set([
+      { id: 1, title: 'Todo 1', complete: false, price: 10 },
+      {
+        id: 0,
+        title: 'Todo 0',
+        complete: false,
+        price: 40
+      },
+      { id: 2, title: 'Todo 2', complete: true, price: 3 }
+    ] as any);
 
     sub = queryTodos
       .selectAll({
@@ -621,7 +639,16 @@ describe('Sort by', () => {
   });
 
   it('should sort by provided key desc - number', () => {
-    todosStore.set([{ id: 1, title: 'Todo 1', complete: false, price: 10 }, { id: 0, title: 'Todo 0', complete: false, price: 40 }, { id: 2, title: 'Todo 2', complete: true, price: 3 }] as any);
+    todosStore.set([
+      { id: 1, title: 'Todo 1', complete: false, price: 10 },
+      {
+        id: 0,
+        title: 'Todo 0',
+        complete: false,
+        price: 40
+      },
+      { id: 2, title: 'Todo 2', complete: true, price: 3 }
+    ] as any);
 
     sub = queryTodos
       .selectAll({
@@ -636,7 +663,16 @@ describe('Sort by', () => {
   });
 
   it('should sort by provided key - desc', () => {
-    todosStore.set([{ id: 1, title: 'Todo 1', complete: false, price: 10 }, { id: 0, title: 'Todo 0', complete: false, price: 40 }, { id: 2, title: 'Todo 2', complete: true, price: 3 }] as any);
+    todosStore.set([
+      { id: 1, title: 'Todo 1', complete: false, price: 10 },
+      {
+        id: 0,
+        title: 'Todo 0',
+        complete: false,
+        price: 40
+      },
+      { id: 2, title: 'Todo 2', complete: true, price: 3 }
+    ] as any);
 
     todosStore.update(2, { complete: true } as any);
     sub = queryTodos
@@ -656,7 +692,16 @@ describe('Sort by', () => {
       return obj1.price - obj2.price;
     }
 
-    todosStore.set([{ id: 1, title: 'Todo 1', complete: false, price: 10 }, { id: 0, title: 'Todo 0', complete: false, price: 40 }, { id: 2, title: 'Todo 2', complete: true, price: 3 }] as any);
+    todosStore.set([
+      { id: 1, title: 'Todo 1', complete: false, price: 10 },
+      {
+        id: 0,
+        title: 'Todo 0',
+        complete: false,
+        price: 40
+      },
+      { id: 2, title: 'Todo 2', complete: true, price: 3 }
+    ] as any);
 
     sub = queryTodos
       .selectAll({
@@ -672,7 +717,8 @@ describe('Sort by', () => {
 
 describe('Sort by - Query Level', () => {
   const todosStore = new TodosStore();
-  const queryTodos = new QueryEntity(todosStore, { sortBy: 'price' });
+  QueryConfig({ sortBy: 'price' })(QueryEntity);
+  const queryTodos = new QueryEntity(todosStore);
   let res;
   let sub;
 
@@ -682,7 +728,16 @@ describe('Sort by - Query Level', () => {
   });
 
   it('should sort by provided key - number', () => {
-    todosStore.set([{ id: 1, title: 'Todo 1', complete: false, price: 10 }, { id: 0, title: 'Todo 0', complete: false, price: 40 }, { id: 2, title: 'Todo 2', complete: true, price: 3 }] as any);
+    todosStore.set([
+      { id: 1, title: 'Todo 1', complete: false, price: 10 },
+      {
+        id: 0,
+        title: 'Todo 0',
+        complete: false,
+        price: 40
+      },
+      { id: 2, title: 'Todo 2', complete: true, price: 3 }
+    ] as any);
 
     sub = queryTodos.selectAll().subscribe(_res => (res = _res));
 
@@ -692,7 +747,16 @@ describe('Sort by - Query Level', () => {
   });
 
   it('should let selectAll win', () => {
-    todosStore.set([{ id: 1, title: 'Todo 1', complete: false, price: 10 }, { id: 0, title: 'Todo 0', complete: false, price: 40 }, { id: 2, title: 'Todo 2', complete: true, price: 3 }] as any);
+    todosStore.set([
+      { id: 1, title: 'Todo 1', complete: false, price: 10 },
+      {
+        id: 0,
+        title: 'Todo 0',
+        complete: false,
+        price: 40
+      },
+      { id: 2, title: 'Todo 2', complete: true, price: 3 }
+    ] as any);
 
     sub = queryTodos
       .selectAll({
@@ -707,7 +771,15 @@ describe('Sort by - Query Level', () => {
   });
 
   it('should let selectAll win', () => {
-    todosStore.set([{ id: 1, title: 'Todo 1', complete: false }, { id: 0, title: 'Todo 0', complete: false }, { id: 2, title: 'Todo 2', complete: true }] as any);
+    todosStore.set([
+      { id: 1, title: 'Todo 1', complete: false },
+      { id: 0, title: 'Todo 0', complete: false },
+      {
+        id: 2,
+        title: 'Todo 2',
+        complete: true
+      }
+    ] as any);
 
     todosStore.update(2, { complete: true } as any);
     sub = queryTodos

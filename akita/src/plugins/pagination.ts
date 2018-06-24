@@ -134,20 +134,23 @@ export class Paginator<E> extends AkitaPlugin<E> {
    * Set the ids and add the page to store
    */
   addPage(data: E[]) {
-    this.pages.set(this.currentPage, { ids: data.map(entity => entity[this.getStore().options.idKey]) });
+    this.pages.set(this.currentPage, { ids: data.map(entity => entity[this.getStore().idKey]) });
     this.getStore().add(data);
   }
 
   /**
    * Clear the cache.
    */
-  clearCache(page?: number) {
-    if (isUndefined(page) && !this.initial) {
+  clearCache() {
+    if (!this.initial) {
+      this.getStore().remove();
       this.pages = new Map();
-    } else {
-      this.pages.delete(page);
     }
     this.initial = false;
+  }
+
+  clearPage(page: number) {
+    this.pages.delete(page);
   }
 
   /**
@@ -270,6 +273,11 @@ export class Paginator<E> extends AkitaPlugin<E> {
         };
 
         const { range, pagesControls } = this.config;
+
+        if (!this.pagination.total) {
+          response.total = response.perPage * response.lastPage;
+          this.pagination.total = response.total;
+        }
 
         if (range) {
           response.from = this.getFrom();

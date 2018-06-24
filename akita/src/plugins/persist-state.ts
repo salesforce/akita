@@ -1,6 +1,5 @@
 import { AkitaError } from '../internal/error';
 import { __registerStore__, __rootDispatcher__, __stores__, Store } from '../api/store';
-import { denormalizeStoreName, normalizeStoreName } from '../internal/utils';
 
 export interface PersistStateParams {
   /** The storage key */
@@ -63,14 +62,13 @@ export function persistState(params?: Partial<PersistStateParams>) {
 
       for (let i = 0, keys = Object.keys(__stores__); i < keys.length; i++) {
         const storeName = keys[i];
-        /** ProductsStore => products */
-        const normalizeName = normalizeStoreName(storeName);
+
         if (hasExclude) {
-          if (storeName === _storeName && !exclude.includes(normalizeName)) {
+          if (storeName === _storeName && !exclude.includes(storeName)) {
             acc[storeName] = __stores__[storeName]._value();
           }
         } else if (hasInclude) {
-          if (storeName === _storeName && include.includes(normalizeName)) {
+          if (storeName === _storeName && include.includes(storeName)) {
             acc[storeName] = __stores__[storeName]._value();
           }
         } else {
@@ -93,10 +91,9 @@ export function persistState(params?: Partial<PersistStateParams>) {
     },
     clearStore(storeName: string) {
       const storageState = deserialize(storage.getItem(key) || '{}');
-      const normalizeName = denormalizeStoreName(storeName);
 
-      if (storageState[normalizeName]) {
-        delete storageState[normalizeName];
+      if (storageState[storeName]) {
+        delete storageState[storeName];
         storage.setItem(key, serialize(storageState));
       }
     }

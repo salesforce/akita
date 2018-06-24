@@ -1,6 +1,7 @@
 import { Store } from './store';
 import { Observable } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { queryConfigKey, QueryConfigOptions } from './query-config';
 
 export class Query<S> {
   constructor(protected store: Store<S>) {}
@@ -43,5 +44,9 @@ export class Query<S> {
    */
   get isDirty() {
     return !this.store.isPristine;
+  }
+
+  get config(): QueryConfigOptions {
+    return this.constructor[queryConfigKey];
   }
 }

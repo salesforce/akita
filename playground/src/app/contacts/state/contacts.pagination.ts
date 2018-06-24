@@ -1,30 +1,26 @@
 import { Paginator } from '@datorama/akita/src/plugins/pagination';
 import { Contact } from '@datorama/playground/src/app/contacts/state/contact.model';
 import { ContactsQuery } from '@datorama/playground/src/app/contacts/state/index';
-import { inject, InjectionToken, Type } from '@angular/core';
-import { QueryEntity } from '@datorama/akita';
+import { InjectionToken } from '@angular/core';
 
-let paginator: Paginator<Contact>;
-
-export function createPaginator(contactsQuery) {
-  if (!paginator) {
-    paginator = new Paginator<Contact>(contactsQuery).withControls().withRange();
-  }
-
-  return paginator;
-}
-
-export const CONTACTS_PAGINATOR = createPaginationProvider<Contact>(ContactsQuery);
+// let paginator: Paginator<Contact>;
 //
-// export const contactsPaginatorProvider = {
-//   provide: CONTACTS_PAGINATOR,
-//   useFactory: ( contactsQuery: ContactsQuery ) => new Paginator<Contact>(contactsQuery).withControls().withRange(),
-//   deps: [ContactsQuery]
-// };
+// export function createPaginator(contactsQuery) {
+//   if (!paginator) {
+//     paginator = new Paginator<Contact>(contactsQuery).withControls().withRange();
+//   }
+//
+//   return paginator;
+// }
 
-export function createPaginationProvider<E>(query: Type<QueryEntity<any, E>>) {
-  return new InjectionToken<Paginator<E>>('Paginator', {
-    providedIn: 'root',
-    factory: () => new Paginator<E>(inject(query)).withRange().withControls()
-  });
+export const CONTACTS_PAGINATOR = new InjectionToken('CONTACTS_PAGINATOR');
+
+export function factory(contactsQuery: ContactsQuery) {
+  return new Paginator<Contact>(contactsQuery).withControls().withRange();
 }
+
+export const contactsPaginatorProvider = {
+  provide: CONTACTS_PAGINATOR,
+  useFactory: factory,
+  deps: [ContactsQuery]
+};

@@ -1,21 +1,18 @@
 import { EntityStore } from './entity-store';
 import { ActiveState, EntityState, HashMap, ID } from './types';
-import { Observable, combineLatest } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { auditTime, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { Query } from './query';
 import { entityExists, isFunction, isUndefined, toBoolean } from '../internal/utils';
 import { memoizeOne } from './memoize';
 import { compareValues, Order } from '../internal/sort';
+import { SortBy, SortByOptions } from './query-config';
 
-export type SortBy<E> = ((a, b) => number) | keyof E;
-
-export type SelectOptions<E> = {
+export interface SelectOptions<E> extends SortByOptions<E> {
   asObject?: boolean;
   filterBy?: ((entity: E) => boolean) | undefined;
   limitTo?: number;
-  sortBy?: SortBy<E>;
-  sortByOrder?: Order;
-};
+}
 
 /**
  *  An abstraction for querying the entities from the store
@@ -27,7 +24,7 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
   /** Use only for internal plugins like Pagination - don't use this property **/
   __store__;
 
-  constructor(store: EntityStore<S, E>, public options: { sortBy?: SortBy<E>; sortByOrder?: Order } = {}) {
+  constructor(store: EntityStore<S, E>) {
     super(store);
     this.__store__ = store;
   }
@@ -51,8 +48,8 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
     const selectIds$ = this.select(state => state.ids);
     const selectEntities$ = this.select(state => state.entities);
 
-    options.sortBy = options.sortBy || this.options.sortBy;
-    options.sortByOrder = options.sortByOrder || this.options.sortByOrder;
+    options.sortBy = options.sortBy || (this.config && (this.config.sortBy as SortBy<E>));
+    options.sortByOrder = options.sortByOrder || (this.config && this.config.sortByOrder);
 
     return selectEntities$.pipe(
       withLatestFrom(selectIds$, (entities, ids: ID[]) => {

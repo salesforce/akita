@@ -31,26 +31,6 @@ export function isUndefined(value) {
 }
 
 /**
- * Support IE
- */
-export function getFunctionName(func) {
-  if (func == null || typeof func !== 'function') {
-    return '';
-  }
-
-  // check if we've the name property (ES6)
-  if (func.hasOwnProperty('name')) {
-    return func.name;
-  }
-
-  // ES5
-  let funcName = func.toString();
-  funcName = funcName.substr('function '.length);
-  funcName = funcName.substr(0, funcName.indexOf('('));
-  return funcName;
-}
-
-/**
  * Check if entity exists
  */
 export function entityExists(id: ID, entities) {
@@ -69,20 +49,6 @@ export function noop<T>(): Observable<T> {
 
 export function isObservable(value) {
   return toBoolean(value) && isFunction(value.subscribe);
-}
-
-export function normalizeStoreName(storeName: string) {
-  /** ProductsStore => products */
-  return storeName.toLowerCase().replace('store', '');
-}
-
-export function denormalizeStoreName(storeName: string) {
-  /** products => ProductsStore  */
-  return `${capitalizeFirstLetter(storeName)}Store`;
-}
-
-function capitalizeFirstLetter(string) {
-  return string[0].toUpperCase() + string.slice(1);
 }
 
 export function isString(val: string | any): val is string {

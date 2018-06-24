@@ -3,8 +3,9 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { AkitaImmutabilityError } from '../internal/error';
 import { commit, isTransactionInProcess } from '../internal/transaction.internal';
-import { getFunctionName, isPlainObject } from '../internal/utils';
+import { isPlainObject } from '../internal/utils';
 import { deepFreeze } from '../internal/deep-freeze';
+import { configKey, StoreConfigOptions } from './store-config';
 
 /** Whether we are in dev mode */
 let __DEV__ = true;
@@ -63,11 +64,15 @@ export class Store<S> {
     return this.storeValue;
   }
 
+  get config(): StoreConfigOptions {
+    return this.constructor[configKey];
+  }
+
   /**
    * Get the store name
    */
   get storeName() {
-    return getFunctionName(this.constructor);
+    return this.config && this.config['storeName'];
   }
 
   get isPristine() {
