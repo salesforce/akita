@@ -4,7 +4,7 @@ import { delay, map, switchMap, take } from 'rxjs/operators';
 import { BehaviorSubject, Observable, Subscription, from } from 'rxjs';
 import { isObservable, isUndefined } from '../internal/utils';
 import { ID } from './types';
-import { AkitaPlugin } from '../internal/plugin';
+import { AkitaPlugin } from '../plugins/plugin';
 
 export interface PaginationResponse<E> {
   currentPage: number;
