@@ -41,13 +41,13 @@ export class ContactsPageComponent implements OnInit {
      * Simple example without filters
      *
      * */
-    // this.pagination$ = this.paginator.pageChanges.pipe(
+    // this.pagination$ = this.paginatorRef.pageChanges.pipe(
     //   switchMap(( page ) => {
     //     const req = () => this.contactsService.getPage({
     //       page,
     //       perPage: 10
     //     });
-    //     return this.paginator.getPage(req);
+    //     return this.paginatorRef.getPage(req);
     //   })
     // );
 

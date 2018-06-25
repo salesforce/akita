@@ -1,9 +1,8 @@
 <div class="card p-width">
-  <div class="card-image">
-    <img src="http://via.placeholder.com/359x269?text=🔥">
-    <span class="card-title"><a [routerLink]="['/product', product.id]">{{product.title}}</a></span>
+  <div class="card-image pointer" [routerLink]="['/product', product.id]">
+    <img src="http://via.placeholder.com/359x269?text={{product.title}}">
   </div>
-  <div class="card-content">
+  <div class="card-content pointer" [routerLink]="['/product', product.id]">
     <p class="mbb">Price: <b>{{product.price}}$</b></p>
     <p>{{product.description}}</p>
   </div>

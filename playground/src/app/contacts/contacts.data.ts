@@ -16,7 +16,7 @@ for (let i = 0; i < count; i++) {
 }
 
 export function getData(params = { sortBy: 'email', perPage: 10, page: 1 }) {
-  console.log('fetching from server', params);
+  console.log('fetching from server');
   const offset = (params.page - 1) * +params.perPage;
   const sorted = sortBy(contacts, params.sortBy);
   const paginatedItems = sorted.slice(offset, offset + +params.perPage);
