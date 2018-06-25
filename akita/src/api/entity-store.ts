@@ -3,6 +3,7 @@ import { ActiveState, EntityState, HashMap, ID, Newable } from './types';
 import { coerceArray, entityExists, isFunction, toBoolean } from '../internal/utils';
 import { Store } from './store';
 import { assertActive, assertEntityExists } from '../internal/error';
+import { applyTransaction } from './transaction';
 
 /**
  * The Root Store that every sub store needs to inherit and
@@ -56,9 +57,11 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    *
    */
   set(entities: E[] | HashMap<E>, entityClass?: Newable<E>) {
-    this.setState(state => _crud._set(state, entities, entityClass, this.idKey));
-    this.setDirty();
-    this.setLoading();
+    applyTransaction(() => {
+      this.setState(state => _crud._set(state, entities, entityClass, this.idKey));
+      this.setDirty();
+      this.setLoading();
+    });
   }
 
   /**
@@ -200,10 +203,6 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    * Set the given entity as active.
    */
   setActive(id) {
-    if (toBoolean(id)) {
-      assertEntityExists(id, this.entities);
-    }
-
     this.setState(state => {
       return {
         ...(state as any),
