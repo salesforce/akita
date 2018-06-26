@@ -1,5 +1,6 @@
 import { AkitaImmutabilityError } from '../src/internal/error';
 import { Store } from '../src/api/store';
+import { StoreConfig } from '../src/api/store-config';
 
 interface State {
   theme: {
@@ -13,6 +14,9 @@ const state = {
   }
 };
 
+@StoreConfig({
+  name: 'themes'
+})
 class ThemeStore extends Store<State> {
   constructor() {
     super(state);
@@ -34,7 +38,7 @@ describe('Store', () => {
   });
 
   it('should return the store name', () => {
-    expect(store.storeName).toEqual('ThemeStore');
+    expect(store.storeName).toEqual('themes');
   });
 
   it('should return the store value', () => {
@@ -66,7 +70,7 @@ describe('Store', () => {
   it('should throw error if the state is the same', () => {
     expect(function() {
       store.setState(state => state);
-    }).toThrow(new AkitaImmutabilityError('ThemeStore') as any);
+    }).toThrow(new AkitaImmutabilityError('themes') as any);
   });
 });
 
@@ -83,6 +87,9 @@ class User {
   }
 }
 
+@StoreConfig({
+  name: 'user'
+})
 class UserStore extends Store<User> {
   constructor() {
     super(new User({ firstName: '', lastName: '' }));

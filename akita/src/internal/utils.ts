@@ -31,26 +31,6 @@ export function isUndefined(value) {
 }
 
 /**
- * Support IE
- */
-export function getFunctionName(func) {
-  if (func == null || typeof func !== 'function') {
-    return '';
-  }
-
-  // check if we've the name property (ES6)
-  if (func.hasOwnProperty('name')) {
-    return func.name;
-  }
-
-  // ES5
-  let funcName = func.toString();
-  funcName = funcName.substr('function '.length);
-  funcName = funcName.substr(0, funcName.indexOf('('));
-  return funcName;
-}
-
-/**
  * Check if entity exists
  */
 export function entityExists(id: ID, entities) {
@@ -65,4 +45,12 @@ export function noop<T>(): Observable<T> {
     observer.next();
     observer.complete();
   });
+}
+
+export function isObservable(value) {
+  return toBoolean(value) && isFunction(value.subscribe);
+}
+
+export function isString(val: string | any): val is string {
+  return typeof val === 'string';
 }

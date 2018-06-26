@@ -1,13 +1,18 @@
 import { ID } from './types';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { AkitaImmutabilityError } from '../internal/error';
 import { commit, isTransactionInProcess } from '../internal/transaction.internal';
-import { getFunctionName, isPlainObject } from '../internal/utils';
+import { isPlainObject } from '../internal/utils';
 import { deepFreeze } from '../internal/deep-freeze';
+import { configKey, StoreConfigOptions } from './store-config';
 
 /** Whether we are in dev mode */
 let __DEV__ = true;
+
+export const __rootDispatcher__ = new Subject<string>();
+export const __registerStore__ = new Subject<Store<any>>();
+export const __stores__: { [storeName: string]: Store<any> } = {};
 
 /**
  * Enable production mode to disable objectFreeze
@@ -35,10 +40,11 @@ export class Store<S> {
   /**
    *
    * Initial the store with the state
-   *
    */
   constructor(initialState) {
     this.setState(() => initialState);
+    __registerStore__.next(this);
+    __stores__[this.storeName] = this;
   }
 
   /**
@@ -58,11 +64,15 @@ export class Store<S> {
     return this.storeValue;
   }
 
+  get config(): StoreConfigOptions {
+    return this.constructor[configKey];
+  }
+
   /**
    * Get the store name
    */
   get storeName() {
-    return getFunctionName(this.constructor);
+    return this.config && this.config['storeName'];
   }
 
   get isPristine() {
@@ -131,6 +141,7 @@ export class Store<S> {
 
   private dispatch(state: S) {
     this.store.next(state);
+    __rootDispatcher__.next(this.storeName);
   }
 
   private get store$() {

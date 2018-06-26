@@ -69,3 +69,11 @@ app-todo {
 .sb {
   justify-content: space-between;
 }
+
+.cyan.lighten-2 {
+  background-color: #673AB7 !important;
+}
+
+.pointer {
+  cursor: pointer;
+}

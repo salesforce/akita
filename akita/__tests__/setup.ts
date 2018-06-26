@@ -1,5 +1,6 @@
 import { EntityStore, getInitialActiveState } from '../src/api/entity-store';
 import { ActiveState, EntityState, ID } from '../src/api/types';
+import { StoreConfig } from '../src/api/store-config';
 
 export class Todo {
   id: ID;
@@ -23,6 +24,9 @@ export const initialState: State = {
   metadata: { name: 'metadata' }
 };
 
+@StoreConfig({
+  name: 'todos'
+})
 export class TodosStore extends EntityStore<State, Todo> {
   constructor() {
     super(initialState);
@@ -37,6 +41,10 @@ export type TodoCustomID = {
 
 export interface StateTwo extends EntityState<TodoCustomID> {}
 
+@StoreConfig({
+  name: 'todos',
+  idKey: 'todoId'
+})
 export class TodosStoreCustomID extends EntityStore<StateTwo, TodoCustomID> {
   constructor() {
     super(initialState, { idKey: 'todoId' });

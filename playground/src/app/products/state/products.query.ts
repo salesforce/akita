@@ -2,9 +2,13 @@ import { Injectable } from '@angular/core';
 import { ProductsStore, State } from './products.store';
 import { Product } from './products.model';
 import { QueryEntity } from '@datorama/akita';
+import { QueryConfig } from '@datorama/akita/src/api/query-config';
 
 @Injectable({
   providedIn: 'root'
+})
+@QueryConfig({
+  sortBy: 'price'
 })
 export class ProductsQuery extends QueryEntity<State, Product> {
   constructor(protected store: ProductsStore) {
@@ -16,9 +20,10 @@ export class ProductsQuery extends QueryEntity<State, Product> {
    * @param {string} value
    * @returns {Observable<Observable<Product[]>}
    */
-  getProducts(value: string) {
+  getProducts(term: string, sortBy: keyof Product) {
     return this.selectAll({
-      filterBy: entity => entity.title.toLowerCase().includes(value)
+      sortBy,
+      filterBy: entity => entity.title.toLowerCase().includes(term)
     });
   }
 }

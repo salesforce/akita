@@ -2,15 +2,18 @@ import { Injectable } from '@angular/core';
 import { CartItem } from './cart.model';
 import { EntityState, EntityStore } from '@datorama/akita';
 import { Product } from '../../products/state';
+import { StoreConfig } from '../../../../../akita/src/api/store-config';
 
 export interface State extends EntityState<CartItem> {}
 
-@Injectable({
-  providedIn: 'root'
+@Injectable({ providedIn: 'root' })
+@StoreConfig({
+  name: 'cart',
+  idKey: 'productId'
 })
 export class CartStore extends EntityStore<State, CartItem> {
   constructor() {
-    super({}, { idKey: 'productId' });
+    super();
   }
 
   /**

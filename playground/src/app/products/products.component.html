@@ -7,6 +7,15 @@
 
   <ng-container *ngIf="!(loading$ | async); else loadingTpl">
 
+    <!--Sorting-->
+    <div class="col s12">
+      <label>Sort by</label>
+      <select class="browser-default" [formControl]="sortControl">
+        <option value="title">Name</option>
+        <option value="price">Price</option>
+      </select>
+    </div>
+
     <!--Search Input-->
     <div class="input-field">
       <i class="material-icons prefix">search</i>

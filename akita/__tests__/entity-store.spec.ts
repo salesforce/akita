@@ -181,12 +181,6 @@ describe('EntitiesStore', () => {
       store.setActive(2);
       expect(store._value().active).toEqual(2);
     });
-
-    it('should throw if active entity does not exists', () => {
-      expect(function() {
-        store.setActive(2);
-      }).toThrow(new AkitaEntityNotExistsError(2) as any);
-    });
   });
 });
 

@@ -1,5 +1,6 @@
 import { Store } from '../src/api/store';
 import { Query } from '../src/api/query';
+import { StoreConfig } from '../src/api/store-config';
 
 class User {
   firstName: string = '';
@@ -14,6 +15,9 @@ class User {
   }
 }
 
+@StoreConfig({
+  name: 'user'
+})
 class UserStore extends Store<User> {
   constructor() {
     super(new User({ firstName: 'Netanel', lastName: 'Basal' }));
