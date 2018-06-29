@@ -2,7 +2,7 @@ import { TodosStore } from './todos.store';
 import { createTodo, Todo } from './todo.model';
 import { Injectable } from '@angular/core';
 import { VISIBILITY_FILTER } from '../filter/filter.model';
-import { ID } from '@datorama/akita';
+import { ID } from '../../../../../akita/src';
 
 @Injectable({
   providedIn: 'root'

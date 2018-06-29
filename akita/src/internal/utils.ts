@@ -54,3 +54,7 @@ export function isObservable(value) {
 export function isString(val: string | any): val is string {
   return typeof val === 'string';
 }
+
+export function isNumber(value) {
+  return typeof value === 'number';
+}

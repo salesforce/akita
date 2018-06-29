@@ -8,9 +8,6 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es5",
-    "paths": {
-      "@datorama/*": [ "../*"]
-    },
     "typeRoots": [
       "node_modules/@types"
     ],

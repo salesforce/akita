@@ -4,7 +4,7 @@ import { Observable, combineLatest } from 'rxjs';
 import { CartService } from '../cart/state';
 import { FormControl } from '@angular/forms';
 import { startWith, switchMap } from 'rxjs/operators';
-import { TodosService } from '@datorama/playground/src/app/todos-app/state';
+import { TodosService } from '../todos-app/state';
 
 @Component({
   selector: 'app-products',

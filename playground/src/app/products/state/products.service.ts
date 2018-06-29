@@ -4,9 +4,8 @@ import { ProductsDataService } from './products-data.service';
 import { Product } from './products.model';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
-import { ID } from '@datorama/akita';
 import { ProductsQuery } from './products.query';
-import { noop } from '@datorama/akita';
+import { ID, noop } from '../../../../../akita/src';
 
 @Injectable({
   providedIn: 'root'

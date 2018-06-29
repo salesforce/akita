@@ -4,7 +4,12 @@ import { take } from 'rxjs/operators';
 import { queryConfigKey, QueryConfigOptions } from './query-config';
 
 export class Query<S> {
-  constructor(protected store: Store<S>) {}
+  /** Use only for internal plugins like Pagination - don't use this property **/
+  __store__: Store<S>;
+
+  constructor(protected store: Store<S>) {
+    this.__store__ = store;
+  }
 
   /**
    * Select a slice from the store.

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { getContacts } from '@datorama/playground/src/app/contacts/contacts.data';
+import { getContacts } from '../contacts.data';
 
 @Injectable({
   providedIn: 'root'

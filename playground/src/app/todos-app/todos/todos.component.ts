@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Todo } from '../state/todo.model';
-import { ID } from '@datorama/akita';
+import { ID } from '../../../../../akita/src';
 
 @Component({
   selector: 'app-todos',

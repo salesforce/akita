@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AuthStore } from './auth.store';
 import { User } from './auth.model';
-import { Query } from '@datorama/akita';
+import { Query } from '../../../../../akita/src';
 
 @Injectable({
   providedIn: 'root'

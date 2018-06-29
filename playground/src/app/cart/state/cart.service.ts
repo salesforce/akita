@@ -3,7 +3,7 @@ import { CartStore } from './cart.store';
 import { Product } from '../../products/state';
 import { CartQuery } from './cart.query';
 import { createCartItem } from './cart.model';
-import { ID, toBoolean } from '@datorama/akita';
+import { ID, toBoolean } from '../../../../../akita/src';
 
 @Injectable({
   providedIn: 'root'

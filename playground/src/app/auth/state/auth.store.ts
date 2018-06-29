@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { createEmptyUser, User } from './auth.model';
-import { Store } from '@datorama/akita';
 import { StoreConfig } from '../../../../../akita/src/api/store-config';
+import { Store } from '../../../../../akita/src';
 export const initialState: User = createEmptyUser();
 
 @Injectable({

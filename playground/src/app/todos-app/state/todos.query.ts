@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { State, TodosStore } from './todos.store';
 import { Todo } from './todo.model';
-import { QueryEntity } from '@datorama/akita';
 import { combineLatest } from 'rxjs';
 import { VISIBILITY_FILTER } from '../filter/filter.model';
+import { QueryEntity } from '../../../../../akita/src';
 
 @Injectable({
   providedIn: 'root'

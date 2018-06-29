@@ -35,6 +35,10 @@ const routes: Routes = [
   {
     path: 'contacts',
     loadChildren: 'app/contacts/contacts.module#ContactsModule'
+  },
+  {
+    path: 'stories',
+    loadChildren: 'app/stories/stories.module#StoriesModule'
   }
 ];
 

@@ -4,9 +4,9 @@ import { Todo } from '../state/todo.model';
 import { TodosQuery } from '../state/todos.query';
 import { TodosService } from '../state/todos.service';
 import { Observable } from 'rxjs';
-import { ID } from '@datorama/akita';
 import { map } from 'rxjs/operators';
 import { snapshotManager } from '../../../../../akita/src/api/snapshot-manager';
+import { ID } from '../../../../../akita/src';
 
 @Component({
   selector: 'app-todos-page',

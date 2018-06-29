@@ -7,9 +7,6 @@ let userPath;
 
 module.exports = function( plop ) {
   userPath = pjson.akitaCli && pjson.akitaCli.basePath || '';
-  console.log(userPath);
-  console.log(process.cwd());
-
   const userConfig = path.resolve(process.cwd(), userPath);
 
   const basePath = userConfig || process.cwd();

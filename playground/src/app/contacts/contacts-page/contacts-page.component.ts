@@ -1,13 +1,12 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { ContactsQuery } from '@datorama/playground/src/app/contacts/state/contacts.query';
 import { ContactsService } from '../state/contacts.service';
 import { combineLatest } from 'rxjs';
 import { startWith, switchMap, tap } from 'rxjs/operators';
-import { ActivatedRoute } from '@datorama/playground/node_modules/@angular/router';
-import { FormControl } from '@datorama/playground/node_modules/@angular/forms';
-import { Paginator } from '@datorama/akita/src/plugins/pagination';
-import { Contact } from '@datorama/playground/src/app/contacts/state';
-import { CONTACTS_PAGINATOR } from '@datorama/playground/src/app/contacts/state/contacts.pagination';
+import { FormControl } from '@angular/forms';
+import { Contact, ContactsQuery } from '../state';
+import { ActivatedRoute } from '@angular/router';
+import { CONTACTS_PAGINATOR } from '../state/contacts.pagination';
+import { Paginator } from '../../../../../akita/src';
 
 @Component({
   selector: 'app-contacts-page',
