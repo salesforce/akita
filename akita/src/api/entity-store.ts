@@ -15,7 +15,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    * Initiate the store with the state
    */
   constructor(initialState = {}, private options: { idKey?: string } = {}) {
-    super({ ...initialState, ...getInitialEntitiesState() });
+    super({ ...getInitialEntitiesState(), ...initialState });
   }
 
   get entities() {
@@ -173,7 +173,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   remove(id?: ID | ID[], resetActive?) {
     if (!toBoolean(id)) this.setPristine();
 
-    const ids = id ? coerceArray(id) : null;
+    const ids = toBoolean(id) ? coerceArray(id) : null;
     this.setState(state => _crud._remove(state, ids, resetActive));
   }
 
