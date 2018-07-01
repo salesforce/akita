@@ -16,3 +16,5 @@ export * from './plugins/plugin';
 export * from './plugins/pagination';
 export * from './plugins/persist-form';
 export * from './plugins/persist-state';
+export * from './plugins/devtools';
+export * from './plugins/state-history';

@@ -22,4 +22,10 @@
              (complete)="complete($event)"
   ></app-todos>
 
+  <button (click)="undo()" [disabled]="!stateHistory.hasPast">Undo</button>
+  <button (click)="redo()" [disabled]="!stateHistory.hasFuture">Redo</button>
+  <!--<button (click)="jumpTo(index.value)">jump to</button>-->
+
+  <!--<input type="text" placeholder="Jump to" #index>-->
+
 </div>

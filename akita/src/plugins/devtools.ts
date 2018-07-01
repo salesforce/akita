@@ -28,6 +28,7 @@ export function akitaDevtools(ngZone, options: Partial<DevtoolsOptions> = {}) {
         const storeName = keys[i];
         acc[storeName] = __stores__[storeName]._value();
       }
+
       const { type, entityId } = globalState.getAction();
       const storeName = capitalize(typeof state === 'string' ? state : (state as Store<any>).storeName);
       let msg;
