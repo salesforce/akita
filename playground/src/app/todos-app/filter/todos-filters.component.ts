@@ -17,14 +17,21 @@ import { TakeUntilDestroy, untilDestroyed } from 'ngx-take-until-destroy';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodosFiltersComponent implements OnInit, OnDestroy {
-  @Input() active: VISIBILITY_FILTER;
+  _active;
+  @Input()
+  set active(filter: VISIBILITY_FILTER) {
+    this._active = filter;
+    if (this.control) {
+      this.control.patchValue(filter, { emitEvent: false });
+    }
+  }
   @Input() filters: TodoFilter[];
   @Output() update = new EventEmitter<VISIBILITY_FILTER>();
 
   control: FormControl;
 
   ngOnInit() {
-    this.control = new FormControl(this.active);
+    this.control = new FormControl(this._active);
 
     this.control.valueChanges.pipe(untilDestroyed(this)).subscribe(c => {
       this.update.emit(c);

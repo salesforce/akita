@@ -23,6 +23,7 @@ export const formStoryInitialState = {
 };
 
 const initialState: State = {
+  loading: false,
   ui: {
     form: formStoryInitialState
   }
@@ -33,6 +34,5 @@ const initialState: State = {
 export class StoriesStore extends EntityStore<State, Story> {
   constructor() {
     super(initialState);
-    this.setLoading(false);
   }
 }

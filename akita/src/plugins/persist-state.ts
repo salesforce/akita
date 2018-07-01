@@ -1,5 +1,7 @@
 import { AkitaError } from '../internal/error';
 import { __registerStore__, __rootDispatcher__, __stores__, Store } from '../api/store';
+import { getGlobalState } from '../internal/global-state';
+const globalState = getGlobalState();
 
 export interface PersistStateParams {
   /** The storage key */
@@ -50,6 +52,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
   const subOne = __registerStore__.subscribe((store: Store<any>) => {
     if (storageState[store.storeName]) {
       initializedStores[store.storeName] = true;
+      globalState.setSkipAction();
       store.setState(() => storageState[store.storeName]);
     }
   });

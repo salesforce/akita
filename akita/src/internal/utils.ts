@@ -58,3 +58,7 @@ export function isString(val: string | any): val is string {
 export function isNumber(value) {
   return typeof value === 'number';
 }
+
+export function isDefined(val) {
+  return val !== null && typeof val !== 'undefined';
+}

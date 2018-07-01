@@ -6,6 +6,7 @@
   "scripts": {
     "build": "ng-packagr -p package.json && npm run copy",
     "test": "jest",
+    "test:debug": "node --inspect-brk ./node_modules/.bin/jest --runInBand --watch",
     "test:watch": "jest --watch",
     "setup": "semantic-release-cli setup",
     "github-pages": "push-dir --dir=playground/dist --branch=gh-pages --overwrite-local",

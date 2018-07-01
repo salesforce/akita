@@ -238,6 +238,10 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
     return projectOrId in this.store.entities;
   }
 
+  isEmpty() {
+    return this.getSnapshot().ids.length === 0;
+  }
+
   private _byId(id: ID): Observable<E> {
     return this.select(state => this.getEntity(id));
   }

@@ -4,7 +4,6 @@ import { Observable, combineLatest } from 'rxjs';
 import { CartService } from '../cart/state';
 import { FormControl } from '@angular/forms';
 import { startWith, switchMap } from 'rxjs/operators';
-import { TodosService } from '../todos-app/state';
 
 @Component({
   selector: 'app-products',
@@ -16,7 +15,7 @@ export class ProductsComponent implements OnInit {
   search = new FormControl();
   sortControl = new FormControl('title');
 
-  constructor(private productsService: ProductsService, private to: TodosService, private cartService: CartService, private productsQuery: ProductsQuery) {}
+  constructor(private productsService: ProductsService, private cartService: CartService, private productsQuery: ProductsQuery) {}
 
   ngOnInit() {
     this.productsService.get().subscribe();

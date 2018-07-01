@@ -45,7 +45,8 @@ const store = new StoriesStore();
 const query = new StoriesQuery(store);
 
 describe('PersistForm', () => {
-  const persistForm = new PersistForm(formGroup, query, 'ui.form');
+  jest.useFakeTimers();
+  const persistForm = new PersistForm(formGroup as any, query, 'ui.form');
 
   it('should set the form initial state from the store', function() {
     expect(formGroup.value).toEqual(formStoryInitialState);
@@ -58,6 +59,7 @@ describe('PersistForm', () => {
       draft: true,
       category: 'rx'
     });
+    jest.runAllTimers();
     expect(query.getSnapshot().ui.form).toEqual({
       title: 'test',
       story: 'test',

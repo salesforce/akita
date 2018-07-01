@@ -51,14 +51,14 @@ describe('persistState - Include', () => {
   const cart = new CartStore();
   const auth = new AuthStore();
 
-  it('should start empty', () => {
-    expect(JSON.parse(localStorage.getItem('AkitaStores'))).toBeNull();
+  it('should start with initial state', () => {
+    expect(JSON.parse(localStorage.getItem('AkitaStores'))).toEqual({ todos: { entities: {}, error: null, ids: [], loading: true } });
   });
 
   it('should NOT save if not in include', () => {
     products.add([{ id: 1 }]);
     cart.add([{ id: 1 }]);
-    expect(JSON.parse(localStorage.getItem('AkitaStores'))).toEqual({});
+    expect(JSON.parse(localStorage.getItem('AkitaStores'))).toEqual({ todos: { entities: {}, error: null, ids: [], loading: true } });
   });
 
   it('should save if in include', () => {

@@ -38,7 +38,12 @@ export class TodosService {
    * @param {string} title
    */
   add(title: string) {
-    const todo = createTodo({ id: Math.random(), title });
+    const todo = createTodo({
+      id: Math.random()
+        .toString()
+        .slice(-2),
+      title
+    });
     this.todosStore.add(todo);
   }
 
