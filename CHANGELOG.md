@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/datorama/akita/compare/v1.1.0...v1.1.1) (2018-07-01)
+
+
+### Bug Fixes
+
+* **entity-store:** allow zero as id ([880f688](https://github.com/datorama/akita/commit/880f688))
+
 # [1.1.0](https://github.com/datorama/akita/compare/v1.0.1...v1.1.0) (2018-06-26)
 
 
