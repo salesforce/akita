@@ -191,8 +191,10 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   remove(id?: ID | ID[], resetActive?) {
     if (this._value().ids.length === 0) return;
     if (!toBoolean(id)) this.setPristine();
-    const ids = id ? coerceArray(id) : null;
+
+    const ids = toBoolean(id) ? coerceArray(id) : null;
     globalState.setAction({ type: 'Remove', entityId: ids });
+
     this.setState(state => _crud._remove(state, ids, resetActive));
   }
 
