@@ -37,10 +37,6 @@ export class TodosPageComponent implements OnInit {
     this.stateHistory.redo();
   }
 
-  jumpTo(index) {
-    this.stateHistory.jump(+index);
-  }
-
   /**
    *
    * @param {HTMLInputElement} input

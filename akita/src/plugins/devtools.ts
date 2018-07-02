@@ -12,6 +12,11 @@ export type DevtoolsOptions = {
 
 export function akitaDevtools(ngZone, options: Partial<DevtoolsOptions> = {}) {
   if (isDev()) {
+    if (!(window as any).__REDUX_DEVTOOLS_EXTENSION__) {
+      console.error(`Can't find Redux dev-tools extension`);
+      return;
+    }
+
     const defaultOptions: Partial<DevtoolsOptions> & { name: string } = { name: 'Akita' };
     if (options.maxAge) defaultOptions.maxAge = options.maxAge;
     if (options.maxAge) defaultOptions.latency = options.latency;
@@ -30,6 +35,7 @@ export function akitaDevtools(ngZone, options: Partial<DevtoolsOptions> = {}) {
       }
 
       const { type, entityId } = globalState.getAction();
+
       const storeName = capitalize(typeof state === 'string' ? state : (state as Store<any>).storeName);
       let msg;
       msg = isDefined(entityId) ? `${storeName} - ${type} (ids: ${entityId})` : `${storeName} - ${type}`;

@@ -41,6 +41,7 @@ export class AkitaGlobals {
   }
 
   setCustomAction(action: Action) {
+    this.currentAction = action;
     this.customAction = action;
   }
 

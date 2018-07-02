@@ -5,6 +5,7 @@ export * from './api/query';
 export * from './api/store';
 export * from './api/transaction';
 export * from './api/arrays';
+export * from './api/operators';
 export * from './internal/utils';
 export * from './internal/object-path';
 export * from './api/worker';
