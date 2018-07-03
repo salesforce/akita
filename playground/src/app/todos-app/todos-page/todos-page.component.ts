@@ -77,4 +77,8 @@ export class TodosPageComponent implements OnInit {
   checkAll({ target }) {
     this.todosService.checkAll(target.checked);
   }
+
+  ngOnDestroy() {
+    this.stateHistory.destroy();
+  }
 }

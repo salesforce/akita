@@ -6,7 +6,7 @@ import { commit, isTransactionInProcess } from '../internal/transaction.internal
 import { isPlainObject } from '../internal/utils';
 import { deepFreeze } from '../internal/deep-freeze';
 import { configKey, StoreConfigOptions } from './store-config';
-import { Action, getGlobalState } from '../internal/global-state';
+import { getGlobalState } from '../internal/global-state';
 
 /** Whether we are in dev mode */
 let __DEV__ = true;

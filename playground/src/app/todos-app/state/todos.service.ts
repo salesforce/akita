@@ -8,6 +8,7 @@ import { ID } from '../../../../../akita/src';
   providedIn: 'root'
 })
 export class TodosService {
+  private id = 0;
   constructor(private todosStore: TodosStore) {}
 
   /**
@@ -39,9 +40,7 @@ export class TodosService {
    */
   add(title: string) {
     const todo = createTodo({
-      id: Math.random()
-        .toString()
-        .slice(-2),
+      id: ++this.id,
       title
     });
     this.todosStore.add(todo);

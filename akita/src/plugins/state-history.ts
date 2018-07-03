@@ -2,10 +2,21 @@ import { pairwise } from 'rxjs/operators';
 import { Query } from '../api/query';
 import { Store } from '../api/store';
 import { getGlobalState } from '../internal/global-state';
+import { toBoolean } from '../internal/utils';
+import { QueryEntity } from '../api/query-entity';
+import { filterNil } from '../api/operators';
+import { ID } from '../api/types';
+import { AkitaPlugin } from './plugin';
+import { Observable } from 'rxjs/internal/Observable';
 
 const globalState = getGlobalState();
 
-export class StateHistory<S = any, E = any> {
+export type StateHistoryParams = {
+  entityId?: ID;
+  limit?: number;
+};
+
+export class StateHistory<E = any, S = any> extends AkitaPlugin<E, S> {
   private history = {
     past: [],
     present: null,
@@ -15,7 +26,9 @@ export class StateHistory<S = any, E = any> {
   private skipUpdate = false;
   private subscription;
 
-  constructor(private query: Query<E>, private LIMIT = 10) {
+  constructor(private query: Query<S> | QueryEntity<S, E>, private params: StateHistoryParams = {}) {
+    super();
+    params.limit = toBoolean(params.limit) ? params.limit : 10;
     this.onInit();
   }
 
@@ -29,12 +42,11 @@ export class StateHistory<S = any, E = any> {
 
   onInit() {
     this.history.present = this.getStore()._value();
-    this.subscription = this.query
-      .select(state => state)
+    this.subscription = this.getSource()
       .pipe(pairwise())
       .subscribe(([past, present]) => {
         if (!this.skipUpdate) {
-          if (this.history.past.length === this.LIMIT) {
+          if (this.history.past.length === this.params.limit) {
             this.history.past = this.history.past.slice(1);
           }
           this.history.past = [...this.history.past, past];
@@ -117,14 +129,34 @@ export class StateHistory<S = any, E = any> {
     this.subscription.unsubscribe();
   }
 
+  private trackEntity() {
+    return toBoolean(this.params.entityId);
+  }
+
   private update(action = 'Undo') {
     this.skipUpdate = true;
-    globalState.setAction({ type: `@StateHistory - ${action}` });
-    this.getStore().setState(() => this.history.present);
+    globalState.setCustomAction({ type: `@StateHistory - ${action}` });
+    if (this.trackEntity()) {
+      this.getStore().update(this.params.entityId, this.history.present);
+    } else {
+      this.getStore().setState(() => this.history.present);
+    }
     this.skipUpdate = false;
   }
 
-  getStore() {
+  private getSource(): Observable<S | E> {
+    if (this.trackEntity()) {
+      return (this.getQuery() as QueryEntity<S, E>).selectEntity(this.params.entityId).pipe(filterNil);
+    }
+
+    return (this.getQuery() as Query<S>).select(state => state);
+  }
+
+  protected getStore() {
     return this.query.__store__;
+  }
+
+  protected getQuery(): Query<S> | QueryEntity<S, E> {
+    return this.query;
   }
 }
