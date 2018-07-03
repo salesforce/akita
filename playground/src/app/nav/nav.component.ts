@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
           <li><a routerLink="todos">Todos</a></li>
           <li><a routerLink="contacts">Contacts</a></li>
           <li><a routerLink="stories">Stories</a></li>
+          <li><a routerLink="movies">Movies</a></li>
           <li><a routerLink="cart">Cart <span class="new badge">{{count$ | async}}</span></a></li>
         </ul>
       </div>

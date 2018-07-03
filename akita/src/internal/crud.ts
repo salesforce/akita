@@ -1,19 +1,26 @@
-import { EntityState, HashMap, ID, Newable } from '../api/types';
+import { Entities, EntityState, HashMap, ID, Newable } from '../api/types';
 import { entityExists, isPlainObject } from './utils';
 import { assertEntityExists, assertEntityState } from './error';
 
 export class CRUD {
-  _set<S, E>(state: S, entities: E[] | HashMap<E>, entityClass: Newable<E>, idKey): S {
-    const isArray = Array.isArray(entities);
-    let normalized = entities;
+  _set<S, E>(state: S, entities: E[] | HashMap<E> | Entities<E>, entityClass: Newable<E>, idKey): S {
+    let ids, normalized;
 
-    if (isArray) {
-      normalized = this.keyBy(entities as E[], entityClass, idKey) as E[];
+    if ((entities as Entities<E>).ids && (entities as Entities<E>).entities) {
+      ids = (entities as Entities<E>).ids;
+      normalized = (entities as Entities<E>).entities;
     } else {
-      assertEntityState(entities);
-    }
+      const isArray = Array.isArray(entities);
+      normalized = entities;
 
-    const ids = isArray ? (entities as E[]).map(entity => entity[idKey]) : Object.keys(normalized as HashMap<E>).map(id => entities[id][idKey]);
+      if (isArray) {
+        normalized = this.keyBy(entities as E[], entityClass, idKey) as E[];
+      } else {
+        assertEntityState(entities);
+      }
+
+      ids = isArray ? (entities as E[]).map(entity => entity[idKey]) : Object.keys(normalized as HashMap<E>).map(id => entities[id][idKey]);
+    }
 
     return {
       ...(state as any),

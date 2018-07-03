@@ -39,6 +39,10 @@ const routes: Routes = [
   {
     path: 'stories',
     loadChildren: 'app/stories/stories.module#StoriesModule'
+  },
+  {
+    path: 'movies',
+    loadChildren: 'app/movies/movies.module#MoviesModule'
   }
 ];
 

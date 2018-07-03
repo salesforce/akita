@@ -1,5 +1,5 @@
 import { _crud } from '../internal/crud';
-import { ActiveState, EntityState, HashMap, ID, Newable } from './types';
+import { ActiveState, Entities, EntityState, HashMap, ID, Newable } from './types';
 import { coerceArray, entityExists, isFunction, toBoolean } from '../internal/utils';
 import { Store } from './store';
 import { AkitaImmutabilityError, assertActive } from '../internal/error';
@@ -63,7 +63,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    * this.store.set([{id: 1}, {id: 2}], Product);
    *
    */
-  set(entities: E[] | HashMap<E>, entityClass?: Newable<E>) {
+  set(entities: E[] | HashMap<E> | Entities<E>, entityClass?: Newable<E>) {
     applyTransaction(() => {
       this.setState(state => _crud._set(state, entities, entityClass, this.idKey));
       this.setDirty();
