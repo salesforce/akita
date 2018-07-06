@@ -152,10 +152,6 @@ export class StateHistory<E = any, S = any> extends AkitaPlugin<E, S> {
     return (this.getQuery() as Query<S>).select(state => state);
   }
 
-  protected getStore() {
-    return this.query.__store__;
-  }
-
   protected getQuery(): Query<S> | QueryEntity<S, E> {
     return this.query;
   }

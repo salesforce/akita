@@ -167,6 +167,7 @@ export class Store<S> {
   private watchTransaction() {
     commit().subscribe(() => {
       this.inTransaction = false;
+      globalState.setAction({ type: '@Transaction' });
       this.dispatch(this._value());
     });
   }

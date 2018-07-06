@@ -2,14 +2,43 @@ import { TodosStore } from './todos.store';
 import { createTodo, Todo } from './todo.model';
 import { Injectable } from '@angular/core';
 import { VISIBILITY_FILTER } from '../filter/filter.model';
-import { ID } from '../../../../../akita/src';
+import { ID, transaction } from '../../../../../akita/src';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TodosService {
   private id = 0;
+
   constructor(private todosStore: TodosStore) {}
+
+  @transaction()
+  addBatch() {
+    this.todosStore.add({
+      id: ++this.id,
+      title: 'A',
+      completed: false
+    });
+
+    this.todosStore.add({
+      id: ++this.id,
+      title: 'A',
+      completed: false
+    });
+
+    this.todosStore.add({
+      id: ++this.id,
+      title: 'A',
+      completed: false
+    });
+  }
+
+  @transaction()
+  updateBatch() {
+    this.todosStore.update(1, { completed: true });
+    this.todosStore.update(2, { completed: true });
+    this.todosStore.update(3, { completed: true });
+  }
 
   /**
    *

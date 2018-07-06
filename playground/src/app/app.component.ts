@@ -10,7 +10,7 @@ import { environment } from '../environments/environment';
 export class AppComponent implements OnInit {
   constructor(private ngZone: NgZone) {
     if (!environment.production) {
-      akitaDevtools(ngZone);
+      akitaDevtools(ngZone, { actionsBlacklist: ['@@INIT'] });
     }
   }
 
