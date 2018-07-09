@@ -54,8 +54,8 @@ export class Paginator<E> extends AkitaPlugin<E> {
    */
   private initial = false;
 
-  constructor(private query: QueryEntity<any, E>, public config: PaginatorConfig = {}) {
-    super();
+  constructor(protected query: QueryEntity<any, E>, public config: PaginatorConfig = {}) {
+    super(query);
     this.config = Object.assign(paginatorDefaults, config);
     const { startWith, cacheTimeout } = this.config;
     this.page = new BehaviorSubject(startWith);

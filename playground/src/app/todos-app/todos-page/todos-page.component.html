@@ -24,8 +24,36 @@
 
   <button (click)="undo()" [disabled]="!stateHistory.hasPast">Undo</button>
   <button (click)="redo()" [disabled]="!stateHistory.hasFuture">Redo</button>
-  <!--<button (click)="jumpTo(index.value)">jump to</button>-->
-
-  <!--<input type="text" placeholder="Jump to" #index>-->
-
 </div>
+
+<section class="padding">
+  <h4>Todos - Entity History</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Title</th>
+        <th>Completed</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let todo of todos$ | async">
+        <td>{{todo.id}}</td>
+        <td>{{todo.title}}</td>
+        <td>
+          <label>
+            <input type="checkbox" [checked]="todo.completed" (change)="complete2($event, todo)"/>
+            <span></span>
+          </label>
+        </td>
+        <td>
+          <button (click)="undo(todo.id)" [disabled]="!stateHistoryEntity.hasPast(todo.id)">Undo</button>
+          <button (click)="redo(todo.id)" [disabled]="!stateHistoryEntity.hasFuture(todo.id)">Redo</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</section>

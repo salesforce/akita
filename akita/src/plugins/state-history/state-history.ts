@@ -1,20 +1,14 @@
 import { pairwise } from 'rxjs/operators';
-import { Query } from '../api/query';
-import { Store } from '../api/store';
-import { getGlobalState } from '../internal/global-state';
-import { toBoolean } from '../internal/utils';
-import { QueryEntity } from '../api/query-entity';
-import { filterNil } from '../api/operators';
-import { ID } from '../api/types';
-import { AkitaPlugin } from './plugin';
-import { Observable } from 'rxjs/internal/Observable';
+import { getGlobalState } from '../../internal/global-state';
+import { toBoolean } from '../../internal/utils';
+import { AkitaPlugin, Queries } from '../plugin';
+import { EntityParam } from '../entity-collection-plugin';
 
 const globalState = getGlobalState();
 
-export type StateHistoryParams = {
-  entityId?: ID;
+export interface StateHistoryParams {
   limit?: number;
-};
+}
 
 export class StateHistory<E = any, S = any> extends AkitaPlugin<E, S> {
   private history = {
@@ -26,23 +20,23 @@ export class StateHistory<E = any, S = any> extends AkitaPlugin<E, S> {
   private skipUpdate = false;
   private subscription;
 
-  constructor(private query: Query<S> | QueryEntity<S, E>, private params: StateHistoryParams = {}) {
-    super();
+  constructor(protected query: Queries<E, S>, private params: StateHistoryParams = {}, private _entityId?: EntityParam) {
+    super(query);
     params.limit = toBoolean(params.limit) ? params.limit : 10;
-    this.onInit();
+    this.activate();
   }
 
   get hasPast() {
-    return this.history.past.length;
+    return this.history.past.length > 0;
   }
 
   get hasFuture() {
-    return this.history.future.length;
+    return this.history.future.length > 0;
   }
 
-  onInit() {
+  activate() {
     this.history.present = this.getStore()._value();
-    this.subscription = this.getSource()
+    this.subscription = this.selectSource(this._entityId)
       .pipe(pairwise())
       .subscribe(([past, present]) => {
         if (!this.skipUpdate) {
@@ -80,7 +74,7 @@ export class StateHistory<E = any, S = any> extends AkitaPlugin<E, S> {
     }
   }
 
-  jumpToPast(index) {
+  jumpToPast(index: number) {
     if (index < 0 || index >= this.history.past.length) return;
 
     const { past, future } = this.history;
@@ -102,7 +96,7 @@ export class StateHistory<E = any, S = any> extends AkitaPlugin<E, S> {
     this.update();
   }
 
-  jumpToFuture(index) {
+  jumpToFuture(index: number) {
     if (index < 0 || index >= this.history.future.length) return;
 
     const { past, future } = this.history;
@@ -129,30 +123,10 @@ export class StateHistory<E = any, S = any> extends AkitaPlugin<E, S> {
     this.subscription.unsubscribe();
   }
 
-  private trackEntity() {
-    return toBoolean(this.params.entityId);
-  }
-
   private update(action = 'Undo') {
     this.skipUpdate = true;
     globalState.setCustomAction({ type: `@StateHistory - ${action}` });
-    if (this.trackEntity()) {
-      this.getStore().update(this.params.entityId, this.history.present);
-    } else {
-      this.getStore().setState(() => this.history.present);
-    }
+    this.updateStore(this.history.present, this._entityId);
     this.skipUpdate = false;
-  }
-
-  private getSource(): Observable<S | E> {
-    if (this.trackEntity()) {
-      return (this.getQuery() as QueryEntity<S, E>).selectEntity(this.params.entityId).pipe(filterNil);
-    }
-
-    return (this.getQuery() as Query<S>).select(state => state);
-  }
-
-  protected getQuery(): Query<S> | QueryEntity<S, E> {
-    return this.query;
   }
 }

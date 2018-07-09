@@ -13,8 +13,8 @@ export type FormGroupLike = {
 export class PersistForm<E = any, S extends object = any> extends AkitaPlugin<E, S> {
   formChanges: Subscription;
 
-  constructor(private formGroup: FormGroupLike, private query: Query<S>, private path: string, private debounceTime = 300) {
-    super();
+  constructor(protected query: Query<S>, private formGroup: FormGroupLike, private path: string, private debounceTime = 300) {
+    super(query);
     this.onInit();
   }
 

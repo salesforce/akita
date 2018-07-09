@@ -46,7 +46,7 @@ const query = new StoriesQuery(store);
 
 describe('PersistForm', () => {
   jest.useFakeTimers();
-  const persistForm = new PersistForm(formGroup as any, query, 'ui.form');
+  const persistForm = new PersistForm(query, formGroup as any, 'ui.form');
 
   it('should set the form initial state from the store', function() {
     expect(formGroup.value).toEqual(formStoryInitialState);

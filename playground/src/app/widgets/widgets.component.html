@@ -1,0 +1,29 @@
+<div class="padding">
+
+  <table class="striped">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Dirty</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let widget of widgets$ | async">
+        <td>{{widget.id}}</td>
+        <td>
+          <div class="flex align-center">
+            <input [value]="widget.name" #name>
+            <button (click)="updateWidget(widget.id, name.value)">Update</button>
+            <button (click)="revert(widget.id)" [disabled]="!(collection.isDirty(widget.id) | async)">Revert</button>
+          </div>
+        </td>
+        <td>{{collection.isDirty(widget.id) | async}}</td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <button (click)="revert()">Revert Store</button>
+</div>

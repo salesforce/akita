@@ -34,7 +34,7 @@ export function isUndefined(value) {
  * Check if entity exists
  */
 export function entityExists(id: ID, entities) {
-  return id in entities;
+  return !isUndefined(entities[id]);
 }
 
 /**

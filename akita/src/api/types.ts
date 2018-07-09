@@ -38,4 +38,6 @@ export interface ActiveState<T = ID> {
 /** Entity id interface */
 export type ID = number | string;
 
+export type IDS = ID | ID[];
+
 export type Newable<T> = { new (...args: any[]): T };

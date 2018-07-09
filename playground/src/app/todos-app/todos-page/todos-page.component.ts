@@ -5,7 +5,8 @@ import { TodosQuery } from '../state/todos.query';
 import { TodosService } from '../state/todos.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ID, StateHistory } from '../../../../../akita/src';
+import { ID, isUndefined, StateHistory } from '../../../../../akita/src';
+import { StateHistoryEntity } from '../../../../../akita/src/plugins/state-history/state-history-entity';
 
 @Component({
   selector: 'app-todos-page',
@@ -19,6 +20,7 @@ export class TodosPageComponent implements OnInit {
   filters = initialFilters;
   checkAll$: Observable<boolean>;
   stateHistory: StateHistory;
+  stateHistoryEntity: StateHistoryEntity<Todo>;
 
   constructor(private todosQuery: TodosQuery, private todosService: TodosService) {}
 
@@ -28,14 +30,23 @@ export class TodosPageComponent implements OnInit {
     this.checkAll$ = this.todosQuery.checkAll$.pipe(map(numCompleted => numCompleted && numCompleted === this.todosQuery.getCount()));
     this.stateHistory = new StateHistory(this.todosQuery);
     this.todosService.addBatch();
+    this.stateHistoryEntity = new StateHistoryEntity<Todo>(this.todosQuery);
   }
 
-  undo() {
-    this.stateHistory.undo();
+  undo(id?) {
+    if (isUndefined(id)) {
+      this.stateHistory.undo();
+    } else {
+      this.stateHistoryEntity.undo(id);
+    }
   }
 
-  redo() {
-    this.stateHistory.redo();
+  redo(id?) {
+    if (isUndefined(id)) {
+      this.stateHistory.redo();
+    } else {
+      this.stateHistoryEntity.redo(id);
+    }
   }
 
   /**
@@ -53,6 +64,11 @@ export class TodosPageComponent implements OnInit {
    */
   complete(todo: Todo) {
     this.todosService.complete(todo);
+  }
+
+  complete2(event, todo: Todo) {
+    const _todo = { ...todo, completed: event.target.checked };
+    this.todosService.complete(_todo);
   }
 
   /**

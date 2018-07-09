@@ -1,6 +1,6 @@
 import { Store } from '../src/api/store';
 import { Query } from '../src/api/query';
-import { StateHistory } from '../src/plugins/state-history';
+import { StateHistory } from '../src/plugins/state-history/state-history';
 
 interface State {
   counter: number;

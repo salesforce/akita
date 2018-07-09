@@ -29,7 +29,7 @@ export class StoriesComponent implements OnInit {
       category: new FormControl('js')
     });
 
-    this.persistForm = new PersistForm(this.form, this.storiesQuery, 'ui.form');
+    this.persistForm = new PersistForm(this.storiesQuery, this.form, 'ui.form');
   }
 
   submit() {

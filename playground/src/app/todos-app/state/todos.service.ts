@@ -16,19 +16,19 @@ export class TodosService {
   addBatch() {
     this.todosStore.add({
       id: ++this.id,
-      title: 'A',
+      title: `Todo ${this.id}`,
       completed: false
     });
 
     this.todosStore.add({
       id: ++this.id,
-      title: 'A',
+      title: `Todo ${this.id}`,
       completed: false
     });
 
     this.todosStore.add({
       id: ++this.id,
-      title: 'A',
+      title: `Todo ${this.id}`,
       completed: false
     });
   }
