@@ -119,7 +119,10 @@ export class StateHistory<E = any, S = any> extends AkitaPlugin<E, S> {
     };
   }
 
-  destroy() {
+  destroy(clearHistory = false) {
+    if (clearHistory) {
+      this.clear();
+    }
     this.subscription.unsubscribe();
   }
 

@@ -3,6 +3,7 @@ import { createTodo, Todo } from './todo.model';
 import { Injectable } from '@angular/core';
 import { VISIBILITY_FILTER } from '../filter/filter.model';
 import { ID, transaction } from '../../../../../akita/src';
+import { action } from '../../../../../akita/src/internal/action';
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +45,7 @@ export class TodosService {
    *
    * @param {VISIBILITY_FILTER} filter
    */
+  @action({ type: 'Update filter' })
   updateFilter(filter: VISIBILITY_FILTER) {
     this.todosStore.updateRoot({
       ui: {
