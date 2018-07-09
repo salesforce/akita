@@ -179,16 +179,6 @@ describe('CRUD', () => {
       expect(store.entities[201].title).toEqual('201');
     });
 
-    it('should throw if entities are invalid', () => {
-      const state = {
-        entities: null,
-        ids: [200, 201]
-      };
-      expect(function() {
-        crud._set(store, state.entities, null, ID_KEY);
-      }).toThrow(new AkitaInvalidEntityState() as any);
-    });
-
     it('should set ids when passing entities', () => {
       let store = {
         entities: {},
