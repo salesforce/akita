@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/datorama/akita/compare/v1.1.2...v1.1.3) (2018-07-09)
+
+
+### Bug Fixes
+
+* **entity-store:** allow passing empty array to add ([ef96296](https://github.com/datorama/akita/commit/ef96296))
+
 ## [1.1.2](https://github.com/datorama/akita/compare/v1.1.1...v1.1.2) (2018-07-09)
 
 
