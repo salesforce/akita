@@ -16,7 +16,9 @@ export interface HashMap<T> {
  *  `ids`: An array of all the primary ids in the collection
  *  `entities`: A dictionary of entities in the collection indexed by the primary id
  */
-export interface EntityState<E = any> extends Entities<E> {
+export interface EntityState<E = any> {
+  entities?: HashMap<E>;
+  ids?: ID[];
   loading?: boolean;
   error?: any;
   /** This is for stores that doesn't implements the EntityState interface */

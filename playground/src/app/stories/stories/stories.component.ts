@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { createStory, StoriesQuery, StoriesService, Story } from '../state';
 import { PersistForm } from '../../../../../akita/src';
@@ -15,16 +15,16 @@ export class StoriesComponent implements OnInit {
   persistForm: PersistForm<Story>;
   loading$: Observable<boolean>;
 
-  constructor(private storiesQuery: StoriesQuery, private storiesService: StoriesService) {}
+  constructor(private storiesQuery: StoriesQuery, private storiesService: StoriesService, private builder: FormBuilder) {}
 
   ngOnInit() {
     this.loading$ = this.storiesQuery.selectLoading();
 
-    this.form = new FormGroup({
-      title: new FormControl(''),
-      story: new FormControl(''),
-      draft: new FormControl(false),
-      category: new FormControl('js')
+    this.form = this.builder.group({
+      title: this.builder.control(''),
+      story: this.builder.control(''),
+      draft: this.builder.control(false),
+      category: this.builder.control('js')
     });
 
     this.persistForm = new PersistForm(this.storiesQuery, createStory).setForm(this.form);
