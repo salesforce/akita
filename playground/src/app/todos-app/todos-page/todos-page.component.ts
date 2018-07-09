@@ -29,7 +29,7 @@ export class TodosPageComponent implements OnInit {
     this.activeFilter$ = this.todosQuery.selectVisibilityFilter$;
     this.checkAll$ = this.todosQuery.checkAll$.pipe(map(numCompleted => numCompleted && numCompleted === this.todosQuery.getCount()));
     this.stateHistory = new StateHistory(this.todosQuery);
-    this.todosService.addBatch();
+    // this.todosService.addBatch();
     this.stateHistoryEntity = new StateHistoryEntity<Todo>(this.todosQuery);
   }
 

@@ -22,8 +22,17 @@
              (complete)="complete($event)"
   ></app-todos>
 
-  <button (click)="undo()" [disabled]="!stateHistory.hasPast">Undo</button>
-  <button (click)="redo()" [disabled]="!stateHistory.hasFuture">Redo</button>
+  <div class="flex align-center">
+    <button class="btn waves-effect waves-light" [class.disabled]="!stateHistory.hasPast" (click)="undo()">Undo
+      <i class="material-icons right">undo</i>
+    </button>
+
+    <button class="btn waves-effect waves-light" [class.disabled]="!stateHistory.hasFuture" (click)="redo()">Redo
+      <i class="material-icons right">redo</i>
+    </button>
+
+  </div>
+
 </div>
 
 <section class="padding">
@@ -34,7 +43,8 @@
         <th>Id</th>
         <th>Title</th>
         <th>Completed</th>
-        <th>Actions</th>
+        <th>Undo</th>
+        <th>Redo</th>
       </tr>
     </thead>
 
@@ -49,8 +59,12 @@
           </label>
         </td>
         <td>
-          <button (click)="undo(todo.id)" [disabled]="!stateHistoryEntity.hasPast(todo.id)">Undo</button>
-          <button (click)="redo(todo.id)" [disabled]="!stateHistoryEntity.hasFuture(todo.id)">Redo</button>
+          <a class="btn-floating" [class.disabled]="!stateHistoryEntity.hasPast(todo.id)"><i class="material-icons"
+                                                                                             (click)="undo(todo.id)">undo</i></a>
+        </td>
+        <td>
+          <a class="btn-floating" [class.disabled]="!stateHistoryEntity.hasFuture(todo.id)"><i class="material-icons"
+                                                                                               (click)="redo(todo.id)">redo</i></a>
         </td>
       </tr>
     </tbody>

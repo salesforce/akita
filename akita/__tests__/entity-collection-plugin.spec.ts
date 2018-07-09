@@ -1,9 +1,8 @@
 import { EntityCollectionParams, EntityCollectionPlugin } from '../src/plugins/entity-collection-plugin';
 import { AkitaPlugin } from '../src/plugins/plugin';
 import { ID, IDS } from '../src/api/types';
-import { EntityStore } from '../src/api/entity-store';
-import { QueryEntity } from '../src/api/query-entity';
 import { skip } from 'rxjs/operators';
+import { createWidget, WidgetsQuery, WidgetsStore } from './setup';
 
 class TestPlugin extends AkitaPlugin {
   constructor(protected query, params = {}, _entityId: ID) {
@@ -39,30 +38,6 @@ class TestPluginEntity<E, P extends TestPlugin = TestPlugin> extends EntityColle
   protected instantiatePlugin(id: ID): P {
     return new TestPlugin(this.query, {}, id) as P;
   }
-}
-
-type Widget = {
-  id: ID;
-  title: string;
-};
-
-class WidgetsStore extends EntityStore<any, Widget> {
-  constructor() {
-    super();
-  }
-}
-
-class WidgetsQuery extends QueryEntity<any, Widget> {
-  constructor(protected store) {
-    super(store);
-  }
-}
-
-function createWidget(id) {
-  return {
-    id,
-    title: `Widget ${id}`
-  } as Widget;
 }
 
 const widgetsStore = new WidgetsStore();
@@ -175,7 +150,7 @@ describe('EntityCollectionPlugin', () => {
         expect(collection.entities.size).toEqual(1);
       });
 
-      it('should should readd', () => {
+      it('should should re-add', () => {
         widgetsStore.remove(2);
         expect(collection.entities.size).toEqual(1);
         widgetsStore.add(createWidget(2));

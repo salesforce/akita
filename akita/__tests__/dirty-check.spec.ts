@@ -1,24 +1,5 @@
-import { EntityStore } from '../src/api/entity-store';
-import { QueryEntity } from '../src/api/query-entity';
-import { ID } from '../src/api/types';
 import { DirtyCheck, DirtyCheckEntity } from '../src/index';
-
-type Widget = {
-  id: ID;
-  title: string;
-};
-
-class WidgetsStore extends EntityStore<any, Widget> {
-  constructor() {
-    super();
-  }
-}
-
-class WidgetsQuery extends QueryEntity<any, Widget> {
-  constructor(protected store) {
-    super(store);
-  }
-}
+import { Widget, WidgetsQuery, WidgetsStore } from './setup';
 
 describe('DirtyCheck', () => {
   function createWidget() {
