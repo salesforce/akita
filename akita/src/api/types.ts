@@ -26,6 +26,11 @@ export interface EntityState<T = any> {
   [key: string]: any;
 }
 
+export interface Entities<E> {
+  entities?: HashMap<E>;
+  ids?: ID[];
+}
+
 /**
  * Interface for stores that needs an active indication
  */
