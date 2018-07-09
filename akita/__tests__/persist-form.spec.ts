@@ -1,11 +1,15 @@
 import { Subject } from 'rxjs';
 import { PersistForm } from '../src/plugins/persist-form';
-import { Story } from '../../playground/src/app/stories/state/story.model';
+import { createStory, Story } from '../../playground/src/app/stories/state/story.model';
 import { EntityStore, QueryEntity, StoreConfig } from '../src/index';
 
 const formGroup = {
   _changes: new Subject(),
   value: undefined,
+  setValue(v) {
+    this._changes.next(v);
+    this.value = v;
+  },
   patchValue(v) {
     this._changes.next(v);
     this.value = v;
@@ -15,23 +19,10 @@ const formGroup = {
   }
 };
 
-const formStoryInitialState = {
-  title: '',
-  story: '',
-  draft: false,
-  category: 'js'
-};
-
-const initialState = {
-  ui: {
-    form: formStoryInitialState
-  }
-};
-
 @StoreConfig({ name: 'stories' })
 class StoriesStore extends EntityStore<any, any> {
   constructor() {
-    super(initialState);
+    super();
   }
 }
 
@@ -46,13 +37,13 @@ const query = new StoriesQuery(store);
 
 describe('PersistForm', () => {
   jest.useFakeTimers();
-  const persistForm = new PersistForm(query, formGroup as any, 'ui.form');
+  const persistForm = new PersistForm(query, createStory).setForm(formGroup);
 
-  it('should set the form initial state from the store', function() {
-    expect(formGroup.value).toEqual(formStoryInitialState);
+  it('should set the form initial state from the store', () => {
+    expect(formGroup.value).toEqual(createStory());
   });
 
-  it('should persist the store with the form', function() {
+  it('should persist the store with the form', () => {
     formGroup.patchValue({
       title: 'test',
       story: 'test',
@@ -60,7 +51,7 @@ describe('PersistForm', () => {
       category: 'rx'
     });
     jest.runAllTimers();
-    expect(query.getSnapshot().ui.form).toEqual({
+    expect(query.getSnapshot().akitaForm).toEqual({
       title: 'test',
       story: 'test',
       draft: true,
@@ -68,9 +59,9 @@ describe('PersistForm', () => {
     });
   });
 
-  it('should reset the form', function() {
-    persistForm.reset(formStoryInitialState);
-    expect(query.getSnapshot().ui.form).toEqual(formStoryInitialState);
-    expect(formGroup.value).toEqual(formStoryInitialState);
+  it('should reset the form', () => {
+    persistForm.reset();
+    expect(query.getSnapshot().akitaForm).toEqual(createStory());
+    expect(formGroup.value).toEqual(createStory());
   });
 });

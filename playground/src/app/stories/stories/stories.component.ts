@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { formStoryInitialState, StoriesQuery, StoriesService } from '../state';
+import { createStory, StoriesQuery, StoriesService, Story } from '../state';
 import { PersistForm } from '../../../../../akita/src';
 
 @Component({
@@ -12,15 +12,13 @@ import { PersistForm } from '../../../../../akita/src';
 export class StoriesComponent implements OnInit {
   form: FormGroup;
   storeValue;
-  persistForm: PersistForm;
+  persistForm: PersistForm<Story>;
   loading$: Observable<boolean>;
 
   constructor(private storiesQuery: StoriesQuery, private storiesService: StoriesService) {}
 
   ngOnInit() {
     this.loading$ = this.storiesQuery.selectLoading();
-
-    this.storeValue = this.storiesQuery.select(state => state.ui.form);
 
     this.form = new FormGroup({
       title: new FormControl(''),
@@ -29,13 +27,12 @@ export class StoriesComponent implements OnInit {
       category: new FormControl('js')
     });
 
-    this.persistForm = new PersistForm(this.storiesQuery, this.form, 'ui.form');
+    this.persistForm = new PersistForm(this.storiesQuery, createStory).setForm(this.form);
+    this.storeValue = this.storiesQuery.select(state => state.akitaForm);
   }
 
   submit() {
-    this.storiesService.add(this.form.value).subscribe(() => {
-      this.persistForm.reset(formStoryInitialState);
-    });
+    this.storiesService.add(this.form.value).subscribe(() => this.persistForm.reset());
   }
 
   ngOnDestroy() {
