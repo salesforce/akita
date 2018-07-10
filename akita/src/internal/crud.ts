@@ -40,8 +40,6 @@ export class CRUD {
   }
 
   _add<S extends EntityState, E>(state: S, entities: E[], idKey): S {
-    if (!entities.length) return;
-
     let addedEntities = {};
     let addedIds = [];
 

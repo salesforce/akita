@@ -5,6 +5,7 @@ import { distinctUntilChanged, skip } from 'rxjs/operators';
 import { isFunction, isUndefined } from '../../internal/utils';
 import { EntityParam } from '../entity-collection-plugin';
 import { getGlobalState } from '../../internal/global-state';
+import { Query } from '../../api/query';
 
 const globalState = getGlobalState();
 
@@ -55,7 +56,11 @@ export class DirtyCheck<E = any, S = any> extends AkitaPlugin<E, S> {
   reset(params: DirtyCheckResetParams = {}) {
     let currentValue = this.head;
     if (isFunction(params.updateFn)) {
-      currentValue = params.updateFn(this.head, (this.getQuery() as QueryEntity<S, E>).getEntity(this._entityId));
+      if (this.isEntityBased(this._entityId)) {
+        currentValue = params.updateFn(this.head, (this.getQuery() as QueryEntity<S, E>).getEntity(this._entityId));
+      } else {
+        currentValue = params.updateFn(this.head, (this.getQuery() as Query<S>).getSnapshot());
+      }
     }
 
     if (this.getSource(this._entityId) !== currentValue) {

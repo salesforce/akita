@@ -51,8 +51,8 @@ export class StateHistoryEntity<E, P extends StateHistory<E, any> = StateHistory
     this.forEachId(ids, e => e.clear());
   }
 
-  destroy(ids?: IDS) {
-    this.forEachId(ids, e => e.destroy());
+  destroy(ids?: IDS, clearHistory = false) {
+    this.forEachId(ids, e => e.destroy(clearHistory));
   }
 
   protected instantiatePlugin(id: ID) {
