@@ -7,7 +7,7 @@ import { EntityParam } from '../entity-collection-plugin';
 const globalState = getGlobalState();
 
 export interface StateHistoryParams {
-  limit?: number;
+  maxAge?: number;
 }
 
 export class StateHistory<E = any, S = any> extends AkitaPlugin<E, S> {
@@ -22,7 +22,7 @@ export class StateHistory<E = any, S = any> extends AkitaPlugin<E, S> {
 
   constructor(protected query: Queries<E, S>, private params: StateHistoryParams = {}, private _entityId?: EntityParam) {
     super(query);
-    params.limit = toBoolean(params.limit) ? params.limit : 10;
+    params.maxAge = toBoolean(params.maxAge) ? params.maxAge : 10;
     this.activate();
   }
 
@@ -40,7 +40,7 @@ export class StateHistory<E = any, S = any> extends AkitaPlugin<E, S> {
       .pipe(pairwise())
       .subscribe(([past, present]) => {
         if (!this.skipUpdate) {
-          if (this.history.past.length === this.params.limit) {
+          if (this.history.past.length === this.params.maxAge) {
             this.history.past = this.history.past.slice(1);
           }
           this.history.past = [...this.history.past, past];

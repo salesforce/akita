@@ -12,11 +12,12 @@ export type FormGroupLike = {
 };
 
 export type AkitaFormProp<T> = {
-  akitaForm: T;
+  [key: string]: T;
 };
 
 export type PersistFormParams = {
   debounceTime?: number;
+  formKey?: string;
 };
 
 export class PersistForm<T = any> extends AkitaPlugin {
@@ -25,7 +26,7 @@ export class PersistForm<T = any> extends AkitaPlugin {
 
   constructor(protected query: Query<any>, private factoryFunction: Function, private params: PersistFormParams = {}) {
     super(query);
-    this.params = { ...{ debounceTime: 100 }, ...params };
+    this.params = { ...{ debounceTime: 100, formKey: 'akitaForm' }, ...params };
   }
 
   setForm(form: FormGroupLike) {
@@ -41,7 +42,7 @@ export class PersistForm<T = any> extends AkitaPlugin {
     this.getStore().setState(state => {
       return {
         ...state,
-        akitaForm: value
+        [this.params.formKey]: value
       };
     });
   }
@@ -51,18 +52,18 @@ export class PersistForm<T = any> extends AkitaPlugin {
       this.getStore().setState(state => {
         return {
           ...state,
-          akitaForm: this.factoryFunction()
+          [this.params.formKey]: this.factoryFunction()
         };
       });
     }
 
-    this.query.selectOnce(state => (state as AkitaFormProp<T>).akitaForm).subscribe(formValue => this.form.patchValue(formValue));
+    this.query.selectOnce(state => (state as AkitaFormProp<T>)[this.params.formKey]).subscribe(formValue => this.form.patchValue(formValue));
     this.formChanges = this.form.valueChanges.pipe(debounceTime(this.params.debounceTime)).subscribe(value => {
       getGlobalState().setAction({ type: '@PersistForm - Update' });
       this.getStore().setState(state => {
         return {
           ...state,
-          akitaForm: value
+          [this.params.formKey]: value
         };
       });
     });

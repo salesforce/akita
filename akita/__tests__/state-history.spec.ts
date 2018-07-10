@@ -153,7 +153,7 @@ describe('StateHistory', () => {
 
 const store2 = new CounterStore();
 const query2 = new CounterQuery(store2);
-const stateHistory2 = new StateHistory(query2, { limit: 1 });
+const stateHistory2 = new StateHistory(query2, { maxAge: 1 });
 
 describe('StateHistory - Limit', () => {
   store2.setState(state => {

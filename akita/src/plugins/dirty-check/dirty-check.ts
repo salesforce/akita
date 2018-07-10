@@ -1,6 +1,6 @@
 import { AkitaPlugin, Queries } from '../plugin';
 import { QueryEntity } from '../../api/query-entity';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription, Observable } from 'rxjs';
 import { distinctUntilChanged, skip } from 'rxjs/operators';
 import { isFunction, isUndefined } from '../../internal/utils';
 import { EntityParam } from '../entity-collection-plugin';

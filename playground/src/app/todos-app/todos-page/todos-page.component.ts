@@ -6,7 +6,7 @@ import { TodosService } from '../state/todos.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ID, isUndefined, StateHistory } from '../../../../../akita/src';
-import { StateHistoryEntity } from '../../../../../akita/src/plugins/state-history/state-history-entity';
+import { EntityStateHistory } from '../../../../../akita/src/plugins/state-history/entity-state-history';
 
 @Component({
   selector: 'app-todos-page',
@@ -20,7 +20,7 @@ export class TodosPageComponent implements OnInit {
   filters = initialFilters;
   checkAll$: Observable<boolean>;
   stateHistory: StateHistory;
-  stateHistoryEntity: StateHistoryEntity<Todo>;
+  stateHistoryEntity: EntityStateHistory<Todo>;
 
   constructor(private todosQuery: TodosQuery, private todosService: TodosService) {}
 
@@ -30,7 +30,7 @@ export class TodosPageComponent implements OnInit {
     this.checkAll$ = this.todosQuery.checkAll$.pipe(map(numCompleted => numCompleted && numCompleted === this.todosQuery.getCount()));
     this.stateHistory = new StateHistory(this.todosQuery);
     // this.todosService.addBatch();
-    this.stateHistoryEntity = new StateHistoryEntity<Todo>(this.todosQuery);
+    this.stateHistoryEntity = new EntityStateHistory<Todo>(this.todosQuery);
   }
 
   undo(id?) {

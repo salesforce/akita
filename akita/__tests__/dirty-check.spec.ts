@@ -1,4 +1,4 @@
-import { DirtyCheck, DirtyCheckEntity } from '../src/index';
+import { DirtyCheck, EntityDirtyCheck } from '../src/index';
 import { Widget, WidgetsQuery, WidgetsStore } from './setup';
 
 describe('DirtyCheck', () => {
@@ -123,7 +123,7 @@ describe('DirtyCheckEntity', () => {
   let _id = 0;
   const widgetsStore = new WidgetsStore();
   const widgetsQuery = new WidgetsQuery(widgetsStore);
-  const collection = new DirtyCheckEntity(widgetsQuery);
+  const collection = new EntityDirtyCheck(widgetsQuery);
   widgetsStore.add([createWidget(), createWidget(), createWidget()]);
   collection.setHead();
 

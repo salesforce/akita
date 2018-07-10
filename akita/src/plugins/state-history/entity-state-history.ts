@@ -9,10 +9,10 @@ export interface StateHistoryEntityParams extends StateHistoryParams {
   entityIds?: EntityCollectionParams;
 }
 
-export class StateHistoryEntity<E, P extends StateHistory<E, any> = StateHistory<E, any>> extends EntityCollectionPlugin<E, P> {
+export class EntityStateHistory<E, P extends StateHistory<E, any> = StateHistory<E, any>> extends EntityCollectionPlugin<E, P> {
   constructor(protected query: QueryEntity<any, E>, protected readonly params: StateHistoryEntityParams = {}) {
     super(query, params.entityIds);
-    params.limit = toBoolean(params.limit) ? params.limit : 10;
+    params.maxAge = toBoolean(params.maxAge) ? params.maxAge : 10;
     this.activate();
     this.selectIds()
       .pipe(skip(1))
