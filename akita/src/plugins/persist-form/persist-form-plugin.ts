@@ -1,9 +1,9 @@
-import { AkitaPlugin } from './plugin';
-import { Query } from '../api/query';
+import { AkitaPlugin } from '../plugin';
+import { Query } from '../../api/query';
 import { Observable, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { getGlobalState } from '../internal/global-state';
-import { isUndefined } from '../internal/utils';
+import { globalState } from '../../internal/global-state';
+import { isUndefined } from '../../internal/utils';
 
 export type FormGroupLike = {
   patchValue: Function;
@@ -20,7 +20,7 @@ export type PersistFormParams = {
   formKey?: string;
 };
 
-export class PersistForm<T = any> extends AkitaPlugin {
+export class PersistFormPlugin<T = any> extends AkitaPlugin {
   formChanges: Subscription;
   private form: FormGroupLike;
 
@@ -59,7 +59,7 @@ export class PersistForm<T = any> extends AkitaPlugin {
 
     this.query.selectOnce(state => (state as AkitaFormProp<T>)[this.params.formKey]).subscribe(formValue => this.form.patchValue(formValue));
     this.formChanges = this.form.valueChanges.pipe(debounceTime(this.params.debounceTime)).subscribe(value => {
-      getGlobalState().setAction({ type: '@PersistForm - Update' });
+      globalState.setAction({ type: '@PersistForm - Update' });
       this.getStore().setState(state => {
         return {
           ...state,

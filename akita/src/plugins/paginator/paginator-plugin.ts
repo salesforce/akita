@@ -1,11 +1,11 @@
-import { QueryEntity } from '../api/query-entity';
+import { QueryEntity } from '../../api/query-entity';
 import { delay, map, switchMap, take } from 'rxjs/operators';
 import { BehaviorSubject, from, Observable, Subscription } from 'rxjs';
-import { isObservable, isUndefined } from '../internal/utils';
-import { ID } from '../api/types';
-import { AkitaPlugin } from './plugin';
-import { applyTransaction } from '../api/transaction';
-import { action, applyAction } from '../internal/action';
+import { isObservable, isUndefined } from '../../internal/utils';
+import { ID } from '../../api/types';
+import { AkitaPlugin } from '../plugin';
+import { applyTransaction } from '../../api/transaction';
+import { action, applyAction } from '../../internal/action';
 
 export interface PaginationResponse<E> {
   currentPage: number;
@@ -32,7 +32,7 @@ const paginatorDefaults: PaginatorConfig = {
   cacheTimeout: undefined
 };
 
-export class Paginator<E> extends AkitaPlugin<E> {
+export class PaginatorPlugin<E> extends AkitaPlugin<E> {
   /** Save current filters, sorting, etc. in cache */
   metadata = new Map();
 
@@ -125,7 +125,7 @@ export class Paginator<E> extends AkitaPlugin<E> {
   /**
    * Update the pagination object and add the page
    */
-  @action({ type: '@Pagination - New Page' })
+  @action({ type: '@Pagination - New Page' }, true)
   update(response: PaginationResponse<E>) {
     this.pagination = response;
     this.addPage(response.data);
@@ -312,3 +312,6 @@ function generatePages(total: number, perPage: number) {
   }
   return arr;
 }
+
+/** backward compatibility */
+export const Paginator = PaginatorPlugin;

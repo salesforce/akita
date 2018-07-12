@@ -1,6 +1,6 @@
 import { ID, IDS } from '../../api/types';
 import { QueryEntity } from '../../api/query-entity';
-import { StateHistory, StateHistoryParams } from './state-history';
+import { StateHistoryPlugin, StateHistoryParams } from './state-history-plugin';
 import { toBoolean } from '../../internal/utils';
 import { skip } from 'rxjs/operators';
 import { EntityCollectionPlugin, EntityCollectionParams } from '../entity-collection-plugin';
@@ -9,7 +9,7 @@ export interface StateHistoryEntityParams extends StateHistoryParams {
   entityIds?: EntityCollectionParams;
 }
 
-export class EntityStateHistory<E, P extends StateHistory<E, any> = StateHistory<E, any>> extends EntityCollectionPlugin<E, P> {
+export class EntityStateHistoryPlugin<E, P extends StateHistoryPlugin<E, any> = StateHistoryPlugin<E, any>> extends EntityCollectionPlugin<E, P> {
   constructor(protected query: QueryEntity<any, E>, protected readonly params: StateHistoryEntityParams = {}) {
     super(query, params.entityIds);
     params.maxAge = toBoolean(params.maxAge) ? params.maxAge : 10;
@@ -56,6 +56,6 @@ export class EntityStateHistory<E, P extends StateHistory<E, any> = StateHistory
   }
 
   protected instantiatePlugin(id: ID) {
-    return new StateHistory<E, any>(this.query, this.params, id) as P;
+    return new StateHistoryPlugin<E, any>(this.query, this.params, id) as P;
   }
 }

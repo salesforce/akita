@@ -1,6 +1,6 @@
 import { Store } from '../src/api/store';
 import { Query } from '../src/api/query';
-import { StateHistory } from '../src/plugins/state-history/state-history';
+import { StateHistoryPlugin } from '../src/plugins/state-history/state-history-plugin';
 
 interface State {
   counter: number;
@@ -20,7 +20,7 @@ class CounterQuery extends Query<State> {
 
 const store = new CounterStore();
 const query = new CounterQuery(store);
-const stateHistory = new StateHistory(query);
+const stateHistory = new StateHistoryPlugin(query);
 
 describe('StateHistory', () => {
   it('should set the current state', () => {
@@ -153,7 +153,7 @@ describe('StateHistory', () => {
 
 const store2 = new CounterStore();
 const query2 = new CounterQuery(store2);
-const stateHistory2 = new StateHistory(query2, { maxAge: 1 });
+const stateHistory2 = new StateHistoryPlugin(query2, { maxAge: 1 });
 
 describe('StateHistory - Limit', () => {
   store2.setState(state => {

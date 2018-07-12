@@ -1,5 +1,5 @@
 import { ID, IDS } from '../../api/types';
-import { DirtyCheck, DirtyCheckComparator, dirtyCheckDefaultParams, DirtyCheckResetParams } from './dirty-check';
+import { DirtyCheckPlugin, DirtyCheckComparator, dirtyCheckDefaultParams, DirtyCheckResetParams } from './dirty-check-plugin';
 import { QueryEntity } from '../../api/query-entity';
 import { EntityCollectionPlugin } from '../entity-collection-plugin';
 import { skip } from 'rxjs/operators';
@@ -10,7 +10,7 @@ export type DirtyCheckCollectionParams = {
   entityIds?: ID | ID[];
 };
 
-export class EntityDirtyCheck<E, P extends DirtyCheck<E, any> = DirtyCheck<E, any>> extends EntityCollectionPlugin<E, P> {
+export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = DirtyCheckPlugin<E, any>> extends EntityCollectionPlugin<E, P> {
   constructor(protected query: QueryEntity<any, E>, private readonly params: DirtyCheckCollectionParams = {}) {
     super(query, params.entityIds);
     this.params = { ...dirtyCheckDefaultParams, ...params };
@@ -39,6 +39,6 @@ export class EntityDirtyCheck<E, P extends DirtyCheck<E, any> = DirtyCheck<E, an
   }
 
   protected instantiatePlugin(id: ID): P {
-    return new DirtyCheck(this.query, this.params, id) as P;
+    return new DirtyCheckPlugin(this.query, this.params, id) as P;
   }
 }

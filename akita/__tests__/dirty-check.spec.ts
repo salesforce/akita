@@ -1,4 +1,4 @@
-import { DirtyCheck, EntityDirtyCheck } from '../src/index';
+import { DirtyCheckPlugin, EntityDirtyCheckPlugin } from '../src/index';
 import { Widget, WidgetsQuery, WidgetsStore } from './setup';
 
 describe('DirtyCheck', () => {
@@ -14,18 +14,18 @@ describe('DirtyCheck', () => {
   const widgetsQuery = new WidgetsQuery(widgetsStore);
 
   it('should call activate only on first setHead()', () => {
-    spyOn(DirtyCheck.prototype, 'activate');
-    const dirtyCheck = new DirtyCheck(widgetsQuery);
+    spyOn(DirtyCheckPlugin.prototype, 'activate');
+    const dirtyCheck = new DirtyCheckPlugin(widgetsQuery);
 
-    expect(DirtyCheck.prototype.activate).not.toHaveBeenCalled();
+    expect(DirtyCheckPlugin.prototype.activate).not.toHaveBeenCalled();
     dirtyCheck.setHead();
-    expect(DirtyCheck.prototype.activate).toHaveBeenCalledTimes(1);
+    expect(DirtyCheckPlugin.prototype.activate).toHaveBeenCalledTimes(1);
     dirtyCheck.setHead();
-    expect(DirtyCheck.prototype.activate).toHaveBeenCalledTimes(1);
+    expect(DirtyCheckPlugin.prototype.activate).toHaveBeenCalledTimes(1);
   });
 
   describe('Plugin flow', () => {
-    const dirtyCheck = new DirtyCheck(widgetsQuery);
+    const dirtyCheck = new DirtyCheckPlugin(widgetsQuery);
     const spy = jest.fn();
 
     dirtyCheck.isDirty$.subscribe(spy);
@@ -123,7 +123,7 @@ describe('DirtyCheckEntity', () => {
   let _id = 0;
   const widgetsStore = new WidgetsStore();
   const widgetsQuery = new WidgetsQuery(widgetsStore);
-  const collection = new EntityDirtyCheck(widgetsQuery);
+  const collection = new EntityDirtyCheckPlugin(widgetsQuery);
   widgetsStore.add([createWidget(), createWidget(), createWidget()]);
   collection.setHead();
 

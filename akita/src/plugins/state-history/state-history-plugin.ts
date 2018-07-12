@@ -1,16 +1,14 @@
 import { pairwise } from 'rxjs/operators';
-import { getGlobalState } from '../../internal/global-state';
+import { globalState } from '../../internal/global-state';
 import { toBoolean } from '../../internal/utils';
 import { AkitaPlugin, Queries } from '../plugin';
 import { EntityParam } from '../entity-collection-plugin';
-
-const globalState = getGlobalState();
 
 export interface StateHistoryParams {
   maxAge?: number;
 }
 
-export class StateHistory<E = any, S = any> extends AkitaPlugin<E, S> {
+export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
   private history = {
     past: [],
     present: null,

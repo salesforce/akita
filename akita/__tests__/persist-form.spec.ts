@@ -1,5 +1,5 @@
 import { Subject } from 'rxjs';
-import { PersistForm } from '../src/plugins/persist-form';
+import { PersistFormPlugin } from '../src/plugins/persist-form/persist-form-plugin';
 import { createStory, Story } from '../../playground/src/app/stories/state/story.model';
 import { EntityStore, QueryEntity, StoreConfig } from '../src/index';
 
@@ -37,7 +37,7 @@ const query = new StoriesQuery(store);
 
 describe('PersistForm', () => {
   jest.useFakeTimers();
-  const persistForm = new PersistForm(query, createStory).setForm(formGroup);
+  const persistForm = new PersistFormPlugin(query, createStory).setForm(formGroup);
 
   it('should set the form initial state from the store', () => {
     expect(formGroup.value).toEqual(createStory());

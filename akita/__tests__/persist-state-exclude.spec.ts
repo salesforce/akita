@@ -1,5 +1,5 @@
 import { EntityStore } from '../src/api/entity-store';
-import { persistState } from '../src/plugins/persist-state';
+import { persistState } from '../src/enhancers/persist-state';
 import { Store } from '../src/api/store';
 import { StoreConfig } from '../src/api/store-config';
 

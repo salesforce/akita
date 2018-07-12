@@ -1,5 +1,5 @@
 import { Component, NgZone, OnInit } from '@angular/core';
-import { akitaDevtools } from '../../../akita/src/plugins/devtools';
+import { akitaDevtools } from '../../../akita/src/enhancers/devtools';
 import { environment } from '../environments/environment';
 
 @Component({

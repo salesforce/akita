@@ -13,6 +13,7 @@ export class AkitaGlobals {
   private currentAction: Action = initialAction;
   private customAction;
   private _skipAction = false;
+  skipTransactionMsg = false;
   /**
    * How many transactions block
    */
@@ -40,9 +41,10 @@ export class AkitaGlobals {
     return this.currentAction;
   }
 
-  setCustomAction(action: Action) {
+  setCustomAction(action: Action, skipTransactionMsg = false) {
     this.currentAction = action;
     this.customAction = action;
+    this.skipTransactionMsg = skipTransactionMsg;
   }
 
   setSkipAction(skip = true) {
@@ -54,11 +56,4 @@ export class AkitaGlobals {
   }
 }
 
-const globalState = new AkitaGlobals();
-
-/**
- *
- */
-export function getGlobalState() {
-  return globalState;
-}
+export const globalState = new AkitaGlobals();

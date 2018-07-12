@@ -6,7 +6,7 @@ import { FormControl } from '@angular/forms';
 import { Contact, ContactsQuery } from '../state';
 import { ActivatedRoute } from '@angular/router';
 import { CONTACTS_PAGINATOR } from '../state/contacts.pagination';
-import { Paginator } from '../../../../../akita/src';
+import { PaginatorPlugin } from '../../../../../akita/src';
 
 @Component({
   selector: 'app-contacts-page',
@@ -18,7 +18,12 @@ export class ContactsPageComponent implements OnInit {
   sortByControl: FormControl;
   perPageControl: FormControl;
 
-  constructor(private contactsQuery: ContactsQuery, private route: ActivatedRoute, @Inject(CONTACTS_PAGINATOR) public paginatorRef: Paginator<Contact>, private contactsService: ContactsService) {}
+  constructor(
+    private contactsQuery: ContactsQuery,
+    private route: ActivatedRoute,
+    @Inject(CONTACTS_PAGINATOR) public paginatorRef: PaginatorPlugin<Contact>,
+    private contactsService: ContactsService
+  ) {}
 
   ngOnInit() {
     const sortByInit = this.paginatorRef.metadata.get('sortBy') || 'name';

@@ -1,8 +1,6 @@
 import { __rootDispatcher__, __stores__, Store } from '../api/store';
-import { getGlobalState } from '../internal/global-state';
+import { globalState } from '../internal/global-state';
 import { isDefined, isString } from '../internal/utils';
-
-const globalState = getGlobalState();
 
 export type DevtoolsOptions = {
   /**  maximum allowed actions to be stored in the history tree */

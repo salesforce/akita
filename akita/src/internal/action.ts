@@ -1,16 +1,15 @@
-import { Action, getGlobalState } from './global-state';
-const globalState = getGlobalState();
+import { Action, globalState } from './global-state';
 
 export function applyAction<T>(func: () => T, action: Action, thisArg = undefined): T {
   globalState.setCustomAction(action);
   return func.apply(thisArg);
 }
 
-export function action(action: Action) {
+export function action(action: Action, skipTransactionMsg = false) {
   return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
     descriptor.value = function(...args) {
-      globalState.setCustomAction(action);
+      globalState.setCustomAction(action, skipTransactionMsg);
       return originalMethod.apply(this, args);
     };
 

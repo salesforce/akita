@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DirtyCheck, EntityDirtyCheck, ID } from '../../../../akita/src';
+import { DirtyCheckPlugin, EntityDirtyCheckPlugin, ID } from '../../../../akita/src';
 import { Widget, WidgetsQuery, WidgetsService } from './state';
 
 @Component({
@@ -8,8 +8,8 @@ import { Widget, WidgetsQuery, WidgetsService } from './state';
   templateUrl: './widgets.component.html'
 })
 export class WidgetsComponent implements OnInit {
-  dirtyCheck: DirtyCheck;
-  collection: EntityDirtyCheck<Widget>;
+  dirtyCheck: DirtyCheckPlugin;
+  collection: EntityDirtyCheckPlugin<Widget>;
   widgets$: Observable<Widget[]>;
 
   constructor(private widgetsQuery: WidgetsQuery, private widgetService: WidgetsService) {}
@@ -17,9 +17,9 @@ export class WidgetsComponent implements OnInit {
   ngOnInit() {
     this.widgetService.add();
     this.widgets$ = this.widgetsQuery.selectAll();
-    this.collection = new EntityDirtyCheck(this.widgetsQuery);
+    this.collection = new EntityDirtyCheckPlugin(this.widgetsQuery);
     this.collection.setHead();
-    this.dirtyCheck = new DirtyCheck(this.widgetsQuery);
+    this.dirtyCheck = new DirtyCheckPlugin(this.widgetsQuery);
     this.dirtyCheck.setHead();
   }
 

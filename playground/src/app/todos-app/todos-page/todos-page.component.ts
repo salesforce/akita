@@ -5,8 +5,8 @@ import { TodosQuery } from '../state/todos.query';
 import { TodosService } from '../state/todos.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ID, isUndefined, StateHistory } from '../../../../../akita/src';
-import { EntityStateHistory } from '../../../../../akita/src/plugins/state-history/entity-state-history';
+import { ID, isUndefined, StateHistoryPlugin } from '../../../../../akita/src';
+import { EntityStateHistoryPlugin } from '../../../../../akita/src/plugins/state-history/entity-state-history-plugin';
 
 @Component({
   selector: 'app-todos-page',
@@ -19,8 +19,8 @@ export class TodosPageComponent implements OnInit {
 
   filters = initialFilters;
   checkAll$: Observable<boolean>;
-  stateHistory: StateHistory;
-  stateHistoryEntity: EntityStateHistory<Todo>;
+  stateHistory: StateHistoryPlugin;
+  stateHistoryEntity: EntityStateHistoryPlugin<Todo>;
 
   constructor(private todosQuery: TodosQuery, private todosService: TodosService) {}
 
@@ -28,9 +28,9 @@ export class TodosPageComponent implements OnInit {
     this.todos$ = this.todosQuery.selectVisibleTodos$;
     this.activeFilter$ = this.todosQuery.selectVisibilityFilter$;
     this.checkAll$ = this.todosQuery.checkAll$.pipe(map(numCompleted => numCompleted && numCompleted === this.todosQuery.getCount()));
-    this.stateHistory = new StateHistory(this.todosQuery);
+    this.stateHistory = new StateHistoryPlugin(this.todosQuery);
     // this.todosService.addBatch();
-    this.stateHistoryEntity = new EntityStateHistory<Todo>(this.todosQuery);
+    this.stateHistoryEntity = new EntityStateHistoryPlugin<Todo>(this.todosQuery);
   }
 
   undo(id?) {

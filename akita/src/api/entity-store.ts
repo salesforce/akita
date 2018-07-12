@@ -4,9 +4,7 @@ import { coerceArray, entityExists, isFunction, toBoolean } from '../internal/ut
 import { Store } from './store';
 import { AkitaImmutabilityError, assertActive } from '../internal/error';
 import { applyTransaction } from './transaction';
-import { Action, getGlobalState } from '../internal/global-state';
-
-const globalState = getGlobalState();
+import { Action, globalState } from '../internal/global-state';
 
 /**
  * The Root Store that every sub store needs to inherit and

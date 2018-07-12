@@ -1,7 +1,6 @@
 import { AkitaError } from '../internal/error';
 import { __registerStore__, __rootDispatcher__, __stores__, Store } from '../api/store';
-import { getGlobalState } from '../internal/global-state';
-const globalState = getGlobalState();
+import { globalState } from '../internal/global-state';
 
 export interface PersistStateParams {
   /** The storage key */

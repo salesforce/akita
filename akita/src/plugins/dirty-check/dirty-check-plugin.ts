@@ -4,10 +4,8 @@ import { BehaviorSubject, Subscription, Observable } from 'rxjs';
 import { distinctUntilChanged, skip } from 'rxjs/operators';
 import { isFunction, isUndefined } from '../../internal/utils';
 import { EntityParam } from '../entity-collection-plugin';
-import { getGlobalState } from '../../internal/global-state';
+import { globalState } from '../../internal/global-state';
 import { Query } from '../../api/query';
-
-const globalState = getGlobalState();
 
 export type DirtyCheckComparator = (head, current) => boolean;
 
@@ -23,7 +21,7 @@ export type DirtyCheckResetParams<S = any> = {
   updateFn?: S | ((head, current) => any);
 };
 
-export class DirtyCheck<E = any, S = any> extends AkitaPlugin<E, S> {
+export class DirtyCheckPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
   private head: S | E;
   private dirty = new BehaviorSubject(false);
   private subscription: Subscription;

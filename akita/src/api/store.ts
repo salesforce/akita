@@ -6,7 +6,7 @@ import { commit, isTransactionInProcess } from '../internal/transaction.internal
 import { isPlainObject } from '../internal/utils';
 import { deepFreeze } from '../internal/deep-freeze';
 import { configKey, StoreConfigOptions } from './store-config';
-import { getGlobalState } from '../internal/global-state';
+import { globalState } from '../internal/global-state';
 
 /** Whether we are in dev mode */
 let __DEV__ = true;
@@ -14,8 +14,6 @@ let __DEV__ = true;
 export const __rootDispatcher__ = new Subject<string>();
 export const __registerStore__ = new Subject<Store<any>>();
 export const __stores__: { [storeName: string]: Store<any> } = {};
-
-const globalState = getGlobalState();
 
 /**
  * Enable production mode to disable objectFreeze
@@ -167,8 +165,11 @@ export class Store<S> {
   private watchTransaction() {
     commit().subscribe(() => {
       this.inTransaction = false;
-      globalState.setAction({ type: '@Transaction' });
+      if (!globalState.skipTransactionMsg) {
+        globalState.setAction({ type: '@Transaction' });
+      }
       this.dispatch(this._value());
+      globalState.skipTransactionMsg = false;
     });
   }
 
