@@ -9,6 +9,7 @@ export class Query<S> {
   /**
    * Select a slice from the store.
    *
+   * @example
    * this.query.select(state => state.entities)
    */
   select<R>(project: (store: S) => R): Observable<R> {
