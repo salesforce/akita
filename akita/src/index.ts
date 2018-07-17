@@ -7,6 +7,7 @@ export * from './api/transaction';
 export * from './api/arrays';
 export * from './api/operators';
 export * from './internal/utils';
+export * from './internal/action';
 export * from './api/worker';
 export * from './api/memoize';
 export * from './api/snapshot-manager';
