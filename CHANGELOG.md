@@ -1,3 +1,17 @@
+# [1.2.0](https://github.com/datorama/akita/compare/v1.1.3...v1.2.0) (2018-07-17)
+
+
+### Features
+
+* **devtools:** allow more options ([a1e4697](https://github.com/datorama/akita/commit/a1e4697))
+* **devtools:** redux dev-tools integration ([72ae1e6](https://github.com/datorama/akita/commit/72ae1e6))
+* **operators:** add skipNil operator ([1c127fe](https://github.com/datorama/akita/commit/1c127fe))
+* **plugins:** add state history api ([df3778b](https://github.com/datorama/akita/commit/df3778b))
+* **plugins:** persist form state ([355dc33](https://github.com/datorama/akita/commit/355dc33))
+* **state-history:** add support for entity ([9a1cdec](https://github.com/datorama/akita/commit/9a1cdec))
+* **state-history:** add support for entity based history ([c9e7cc9](https://github.com/datorama/akita/commit/c9e7cc9))
+* **store:** set() supports for passing the complete object ([3675d20](https://github.com/datorama/akita/commit/3675d20))
+
 ## [1.1.3](https://github.com/datorama/akita/compare/v1.1.2...v1.1.3) (2018-07-09)
 
 
