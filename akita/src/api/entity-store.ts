@@ -56,6 +56,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    *
    * Replace current collection with provided collection
    *
+   * @example
    * this.store.set([Entity, Entity]);
    * this.store.set({1: Entity, 2: Entity});
    * this.store.set([{id: 1}, {id: 2}], Product);
@@ -73,6 +74,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   /**
    * Create or replace an entity in the store.
    *
+   * @example
    * this.store.createOrReplace(3, Entity);
    *
    */
@@ -90,6 +92,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   /**
    * Add an entity or entities to the store.
    *
+   * @example
    * this.store.add([Entity, Entity]);
    * this.store.add(Entity);
    */
@@ -104,6 +107,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    *
    * Update an entity or entities in the store.
    *
+   * @example
    * this.store.update(3, {
    *   name: 'New Name'
    * });
@@ -150,6 +154,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   /**
    * Update the root state (data which is external to the entities).
    *
+   * @example
    * this.store.updateRoot({
    *   metadata: 'new metadata
    * });
@@ -184,6 +189,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    *
    * Remove one or more entities from the store:
    *
+   * @example
    * this.store.remove(5);
    * this.store.remove([1,2,3]);
    * this.store.remove();
@@ -202,6 +208,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    *
    * Update the active entity.
    *
+   * @example
    * this.store.updateActive(active => {
    *   return {
    *     config: {

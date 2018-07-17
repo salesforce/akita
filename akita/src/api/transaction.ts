@@ -5,6 +5,7 @@ import { endBatch, startBatch } from '../internal/transaction.internal';
  *  Use this transaction to optimize the dispatch of all the stores.
  *  The following code will update the store, BUT  emits only once
  *
+ *  @example
  *  applyTransaction(() => {
  *    this.todosStore.add(new Todo(1, title));
  *    this.todosStore.add(new Todo(2, title));
@@ -26,6 +27,7 @@ export function applyTransaction<T>(action: () => T, thisArg = undefined): T {
  *
  *  The following code will update the store, BUT  emits only once.
  *
+ *  @example
  *  @transaction
  *  addTodos() {
  *    this.todosStore.add(new Todo(1, title));

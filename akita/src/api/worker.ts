@@ -47,6 +47,7 @@ function createWorker() {
 }
 
 /**
+ *  @example
  *   const mockTodos = Array.from({length: 10000}, (_, x) => ({id: x}));
  *
  *   of(mockTodos).pipe(mapInWorker<Todo>(createTodo))

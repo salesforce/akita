@@ -56,6 +56,7 @@ export class Store<S> {
   /**
    * Select a slice from the store
    *
+   * @example
    * this.store.select(state => state.entities)
    *
    */
@@ -116,6 +117,7 @@ export class Store<S> {
    * This method is a shortcut for `setState()`.
    * It can be useful when you want to pass the whole state object instead of merging a partial state.
    *
+   * @example
    * this.store.update(newState)
    */
   update(newState: Partial<S>);
