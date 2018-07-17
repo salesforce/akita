@@ -19,11 +19,11 @@ export class EntityStateHistoryPlugin<E, P extends StateHistoryPlugin<E, any> = 
       .subscribe(ids => this.activate(ids));
   }
 
-  redo(ids?: ID) {
+  redo(ids?: IDS) {
     this.forEachId(ids, e => e.redo());
   }
 
-  undo(ids?: ID) {
+  undo(ids?: IDS) {
     this.forEachId(ids, e => e.undo());
   }
 
