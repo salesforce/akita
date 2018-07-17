@@ -53,7 +53,7 @@ describe('persistState', () => {
   const auth = new AuthStore();
 
   it('should get data from storage', () => {
-    expect(localStorage.getItem).toHaveBeenCalledTimes(5);
+    expect(localStorage.getItem).toHaveBeenCalledTimes(1);
   });
 
   it('should initial the value if in storage', () => {

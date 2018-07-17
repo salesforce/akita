@@ -38,6 +38,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
   const hasInclude = include.length > 0;
   const hasExclude = exclude.length > 0;
   let initializedStores: { [storeName: string]: boolean } = {};
+  let skipInitial = {};
 
   if (hasInclude && hasExclude) {
     throw new AkitaError("You can't use both include and exclude");
@@ -57,6 +58,10 @@ export function persistState(params?: Partial<PersistStateParams>) {
   });
 
   const subTwo = __rootDispatcher__.subscribe(_storeName => {
+    if (!skipInitial[_storeName]) {
+      skipInitial[_storeName] = true;
+      return;
+    }
     if (initializedStores[_storeName]) {
       initializedStores[_storeName] = false;
     } else {
