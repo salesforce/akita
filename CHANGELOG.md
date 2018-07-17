@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/datorama/akita/compare/v1.2.1...v1.2.2) (2018-07-17)
+
+
+### Bug Fixes
+
+* **persist-state:** don't override the state on refresh ([c17db0f](https://github.com/datorama/akita/commit/c17db0f)), closes [#15](https://github.com/datorama/akita/issues/15)
+
 ## [1.2.1](https://github.com/datorama/akita/compare/v1.2.0...v1.2.1) (2018-07-17)
 
 
