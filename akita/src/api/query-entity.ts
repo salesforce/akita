@@ -32,6 +32,7 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
   /**
    * Select the entire store's entity collection.
    *
+   * @example
    * this.store.selectAll();
    */
   selectAll(options: { asObject: true; filterBy?: SelectOptions<E>['filterBy']; limitTo?: number; sortBy?: undefined; sortByOrder?: undefined }): Observable<HashMap<E>>;
@@ -72,6 +73,7 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
   /**
    * Get the entire store's entity collection.
    *
+   * @example
    * this.store.getAll();
    */
   getAll(options: { asObject: true; filterBy?: SelectOptions<E>['filterBy']; limitTo?: number }): HashMap<E>;
@@ -94,6 +96,7 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
   /**
    * Select multiple entities from the store.
    *
+   * @example
    * this.store.selectMany([1,2]);
    */
   selectMany(ids: ID[], options: { asObject: true }): Observable<HashMap<E>>;
@@ -129,6 +132,7 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
   /**
    * Select an entity or a slice of an entity.
    *
+   * @example
    * this.pagesStore.selectEntity(1)
    * this.pagesStore.selectEntity(1, entity => entity.config.date)
    *
@@ -152,6 +156,7 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
   /**
    * Get an entity by id
    *
+   * @example
    * this.store.getEntity(1);
    */
   getEntity(id: ID): E {

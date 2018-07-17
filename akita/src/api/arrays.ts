@@ -6,6 +6,7 @@ import { isObject } from '../internal/utils';
  * Adds one or more elements to the end of an array by returning
  * a new array instead of mutating the original one.
  *
+ * @example
  * const originalArray = ['a', 'b', 'c', 'd', 'e'];
  * const resultArray = push(originalArray, 'f', 'g');
  * // -> originalArray ['a', 'b', 'c', 'd', 'e']
@@ -18,6 +19,7 @@ export function push<T>(array: T[], ...elementN): T[] {
 /**
  * Deletes an element from an array by its index in the array.
  *
+ * @example
  * const originalArray = ['a', 'b', 'c', 'd', 'e'];
  * const resultArray = remove(originalArray, 2);
  * // -> originalArray ['a', 'b', 'c', 'd', 'e']
@@ -31,6 +33,7 @@ export function remove<T>(array: T[], index: number): T[] {
  * Removes the last element from an array by returning
  * a new array instead of mutating the original one.
  *
+ * @example
  * const originalArray = ['a', 'b', 'c', 'd', 'e'];
  * const resultArray = pop(originalArray);
  * // -> originalArray ['a', 'b', 'c', 'd', 'e']
@@ -43,6 +46,7 @@ export function pop<T>(array: T[]): T[] {
 /**
  * Adds one or more elements to the beginning of an array.
  *
+ * @example
  * const originalArray = ['a', 'b', 'c', 'd', 'e'];
  * const resultArray = unshift(originalArray, 'f', 'g');
  * // -> originalArray ['a', 'b', 'c', 'd', 'e']
@@ -55,6 +59,7 @@ export function unshift<T>(array: T[], ...elementN): T[] {
 /**
  * Sorts the elements of an array (not in place) and returns a sorted array.
  *
+ * @example
  * const numberArray = [20, 3, 4, 10, -3, 1, 0, 5];
  * const stringArray = ['Blue', 'Humpback', 'Beluga'];
  *
@@ -82,6 +87,7 @@ export function sort<T>(array: T[], compareFunction?: (a: T, b: T) => number): T
  * Reverses an array (not in place).
  * The first array element becomes the last, and the last array element becomes the first.
  *
+ * @example
  * const originalArray = ['a', 'b', 'c', 'd', 'e'];
  * const resultArray = reverse(originalArray);
  * // -> originalArray ['a', 'b', 'c', 'd', 'e']
@@ -94,6 +100,7 @@ export function reverse<T>(array: T[]): T[] {
 /**
  * Swap items in the array
  *
+ * @example
  * const originalArray = ['a', 'b', 'c', 'd', 'e'];
  * const resultArray = swap(originalArray, 1, 4);
  * // -> originalArray ['a', 'b', 'c', 'd', 'e']
@@ -111,6 +118,7 @@ export function swap<T>(array: T[], firstIndex: number, secondIndex: number): T[
 /**
  * Update item in the array
  *
+ * @example
  * const originalArray = ['a', 'b', 'c', 'd', 'e'];
  * const resultArray = update(originalArray, 1, 'newItem');
  * // -> resultArray ['a', 'newItem', 'c', 'd', 'b']
@@ -139,6 +147,7 @@ export function update<T>(array: T[], indexOrItem: number | object, updated: any
 /**
  * Removes existing elements and/or adds new elements to an array.
  *
+ * @example
  * const originalArray = ['a', 'b', 'c', 'd', 'e'];
  * const resultArray = splice(originalArray, 0);
  * // -> originalArray ['a', 'b', 'c', 'd', 'e']

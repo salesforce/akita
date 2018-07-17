@@ -1,6 +1,7 @@
 /**
  * An interface to represent objects
  *
+ * @example
  * const dashboards: HashMap<Dashboard> = {
  *   1: Dashboard
  * }
