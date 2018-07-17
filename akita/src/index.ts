@@ -14,7 +14,7 @@ export * from './api/store-config';
 export * from './api/query-config';
 export * from './plugins/plugin';
 export * from './plugins/paginator/paginator-plugin';
-export * from './plugins/persist-form/persist-form-plugin';
+export * from './plugins/persist-form/persist-ng-form-plugin';
 export * from './enhancers/persist-state';
 export * from './enhancers/devtools';
 export * from './plugins/entity-collection-plugin';

@@ -22,6 +22,7 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
 
   setHead(ids?: IDS) {
     this.forEachId(ids, e => e.setHead());
+    return this;
   }
 
   reset(ids?: IDS, params: DirtyCheckResetParams = {}) {

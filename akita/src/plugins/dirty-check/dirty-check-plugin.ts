@@ -74,6 +74,7 @@ export class DirtyCheckPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
     }
     this.head = this.getHead();
     this.updateDirtiness(false);
+    return this;
   }
 
   destroy() {

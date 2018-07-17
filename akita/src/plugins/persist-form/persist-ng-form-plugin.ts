@@ -20,7 +20,7 @@ export type PersistFormParams = {
   formKey?: string;
 };
 
-export class PersistFormPlugin<T = any> extends AkitaPlugin {
+export class PersistNgFormPlugin<T = any> extends AkitaPlugin {
   formChanges: Subscription;
   private form: FormGroupLike;
 

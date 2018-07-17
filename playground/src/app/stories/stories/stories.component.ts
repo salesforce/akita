@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { createStory, StoriesQuery, StoriesService, Story } from '../state';
-import { PersistFormPlugin } from '../../../../../akita/src';
+import { PersistNgFormPlugin } from '../../../../../akita/src';
 
 @Component({
   selector: 'app-stories',
@@ -12,7 +12,7 @@ import { PersistFormPlugin } from '../../../../../akita/src';
 export class StoriesComponent implements OnInit {
   form: FormGroup;
   storeValue;
-  persistForm: PersistFormPlugin<Story>;
+  persistForm: PersistNgFormPlugin<Story>;
   loading$: Observable<boolean>;
 
   constructor(private storiesQuery: StoriesQuery, private storiesService: StoriesService, private builder: FormBuilder) {}
@@ -27,7 +27,7 @@ export class StoriesComponent implements OnInit {
       category: this.builder.control('js')
     });
 
-    this.persistForm = new PersistFormPlugin(this.storiesQuery, createStory).setForm(this.form);
+    this.persistForm = new PersistNgFormPlugin(this.storiesQuery, createStory).setForm(this.form);
     this.storeValue = this.storiesQuery.select(state => state.akitaForm);
   }
 

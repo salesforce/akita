@@ -17,10 +17,8 @@ export class WidgetsComponent implements OnInit {
   ngOnInit() {
     this.widgetService.add();
     this.widgets$ = this.widgetsQuery.selectAll();
-    this.collection = new EntityDirtyCheckPlugin(this.widgetsQuery);
-    this.collection.setHead();
-    this.dirtyCheck = new DirtyCheckPlugin(this.widgetsQuery);
-    this.dirtyCheck.setHead();
+    this.collection = new EntityDirtyCheckPlugin(this.widgetsQuery).setHead();
+    this.dirtyCheck = new DirtyCheckPlugin(this.widgetsQuery).setHead();
   }
 
   updateWidget(id: ID, name: string) {
