@@ -34,7 +34,7 @@ export function isUndefined(value) {
  * Check if entity exists
  */
 export function entityExists(id: ID, entities) {
-  return id in entities;
+  return !isUndefined(entities[id]);
 }
 
 /**
@@ -53,4 +53,12 @@ export function isObservable(value) {
 
 export function isString(val: string | any): val is string {
   return typeof val === 'string';
+}
+
+export function isNumber(value) {
+  return typeof value === 'number';
+}
+
+export function isDefined(val) {
+  return val !== null && typeof val !== 'undefined';
 }

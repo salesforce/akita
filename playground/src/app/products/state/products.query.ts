@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ProductsStore, State } from './products.store';
 import { Product } from './products.model';
-import { QueryEntity } from '@datorama/akita';
-import { QueryConfig } from '@datorama/akita/src/api/query-config';
+import { QueryConfig, QueryEntity } from '../../../../../akita/src';
 
 @Injectable({
   providedIn: 'root'

@@ -3,10 +3,7 @@
   "compilerOptions": {
     "outDir": "../out-tsc/app",
     "baseUrl": "./",
-    "module": "es2015",
-    "paths": {
-      "@datorama/*": [ "../../*"]
-    }
+    "module": "es2015"
   },
   "exclude": [
     "test.ts",

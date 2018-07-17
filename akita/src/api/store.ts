@@ -6,6 +6,7 @@ import { commit, isTransactionInProcess } from '../internal/transaction.internal
 import { isPlainObject } from '../internal/utils';
 import { deepFreeze } from '../internal/deep-freeze';
 import { configKey, StoreConfigOptions } from './store-config';
+import { globalState } from '../internal/global-state';
 
 /** Whether we are in dev mode */
 let __DEV__ = true;
@@ -19,6 +20,10 @@ export const __stores__: { [storeName: string]: Store<any> } = {};
  */
 export function enableAkitaProdMode() {
   __DEV__ = false;
+}
+
+export function isDev() {
+  return __DEV__;
 }
 
 /**
@@ -42,9 +47,10 @@ export class Store<S> {
    * Initial the store with the state
    */
   constructor(initialState) {
+    globalState.setInitialAction();
+    __stores__[this.storeName] = this;
     this.setState(() => initialState);
     __registerStore__.next(this);
-    __stores__[this.storeName] = this;
   }
 
   /**
@@ -84,7 +90,7 @@ export class Store<S> {
    * which gets the current state, and returns a new immutable state,
    * which will be the new value of the store.
    */
-  setState(newStateFn: (state: Readonly<S>) => S) {
+  setState(newStateFn: (state: Readonly<S>) => S, _rootDispatcher = true) {
     const prevState = this._value();
     this.storeValue = __DEV__ ? deepFreeze(newStateFn(this._value())) : newStateFn(this._value());
 
@@ -94,6 +100,7 @@ export class Store<S> {
 
     if (!this.store) {
       this.store = new BehaviorSubject(this.storeValue);
+      __rootDispatcher__.next(this.storeName);
       return;
     }
 
@@ -102,7 +109,7 @@ export class Store<S> {
       return;
     }
 
-    this.dispatch(this.storeValue);
+    this.dispatch(this.storeValue, _rootDispatcher);
   }
 
   /**
@@ -114,6 +121,7 @@ export class Store<S> {
   update(newState: Partial<S>);
   update(id: ID | ID[] | null, newState: Partial<S>);
   update(newStateOrId: Partial<S> | ID | ID[] | null, newState?: Partial<S>) {
+    globalState.setAction({ type: 'Update' });
     this.setState(state => {
       const merged = Object.assign({}, state, newStateOrId);
       if (isPlainObject(this._value())) {
@@ -139,9 +147,12 @@ export class Store<S> {
     this._isPristine = false;
   }
 
-  private dispatch(state: S) {
+  private dispatch(state: S, _rootDispatcher = true) {
     this.store.next(state);
-    __rootDispatcher__.next(this.storeName);
+    if (_rootDispatcher) {
+      __rootDispatcher__.next(this.storeName);
+      globalState.setAction({ type: 'Set State' });
+    }
   }
 
   private get store$() {
@@ -154,7 +165,11 @@ export class Store<S> {
   private watchTransaction() {
     commit().subscribe(() => {
       this.inTransaction = false;
+      if (!globalState.skipTransactionMsg) {
+        globalState.setAction({ type: '@Transaction' });
+      }
       this.dispatch(this._value());
+      globalState.skipTransactionMsg = false;
     });
   }
 

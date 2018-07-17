@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { CartStore, State } from './cart.store';
 import { CartItem } from './cart.model';
-import { QueryEntity } from '@datorama/akita';
 import { ProductsQuery } from '../../products/state';
 import { combineLatest } from 'rxjs';
 import { map, publishReplay, refCount } from 'rxjs/operators';
+import { QueryEntity } from '../../../../../akita/src';
 
 @Injectable({
   providedIn: 'root'

@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { ContactsStore } from './contacts.store';
 import { ContactsDataService } from './contacts-data.service';
 import { Observable } from 'rxjs';
-import { PaginationResponse } from '@datorama/akita/src/plugins/pagination';
-import { Contact } from '@datorama/playground/src/app/contacts/state/contact.model';
+import { Contact } from './contact.model';
+import { PaginationResponse } from '../../../../../akita/src';
 
 @Injectable({
   providedIn: 'root'

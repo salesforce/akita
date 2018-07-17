@@ -1,4 +1,4 @@
-import { ID } from '@datorama/akita';
+import { ID } from '../../../../../akita/src';
 
 export type Todo = {
   id: ID;

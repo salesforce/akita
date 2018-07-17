@@ -4,9 +4,9 @@ import { Todo } from '../state/todo.model';
 import { TodosQuery } from '../state/todos.query';
 import { TodosService } from '../state/todos.service';
 import { Observable } from 'rxjs';
-import { ID } from '@datorama/akita';
 import { map } from 'rxjs/operators';
-import { snapshotManager } from '../../../../../akita/src/api/snapshot-manager';
+import { ID, isUndefined, StateHistoryPlugin } from '../../../../../akita/src';
+import { EntityStateHistoryPlugin } from '../../../../../akita/src/plugins/state-history/entity-state-history-plugin';
 
 @Component({
   selector: 'app-todos-page',
@@ -19,6 +19,8 @@ export class TodosPageComponent implements OnInit {
 
   filters = initialFilters;
   checkAll$: Observable<boolean>;
+  stateHistory: StateHistoryPlugin;
+  stateHistoryEntity: EntityStateHistoryPlugin<Todo>;
 
   constructor(private todosQuery: TodosQuery, private todosService: TodosService) {}
 
@@ -26,31 +28,25 @@ export class TodosPageComponent implements OnInit {
     this.todos$ = this.todosQuery.selectVisibleTodos$;
     this.activeFilter$ = this.todosQuery.selectVisibilityFilter$;
     this.checkAll$ = this.todosQuery.checkAll$.pipe(map(numCompleted => numCompleted && numCompleted === this.todosQuery.getCount()));
-    // snapshotManager.setStoresSnapshot({
-    //   "todos": {
-    //     "ui": {
-    //       "filter": "SHOW_ALL"
-    //     },
-    //     "entities": {
-    //       "0.5666823893391795": {
-    //         "id": 0.5666823893391795,
-    //         "title": "ds",
-    //         "completed": true
-    //       },
-    //       "0.16954788680591548": {
-    //         "id": 0.16954788680591548,
-    //         "title": "ds",
-    //         "completed": false
-    //       }
-    //     },
-    //     "ids": [
-    //       0.5666823893391795,
-    //       0.16954788680591548
-    //     ],
-    //     "loading": true,
-    //     "error": null
-    //   }
-    // });
+    this.stateHistory = new StateHistoryPlugin(this.todosQuery);
+    // this.todosService.addBatch();
+    this.stateHistoryEntity = new EntityStateHistoryPlugin<Todo>(this.todosQuery);
+  }
+
+  undo(id?) {
+    if (isUndefined(id)) {
+      this.stateHistory.undo();
+    } else {
+      this.stateHistoryEntity.undo(id);
+    }
+  }
+
+  redo(id?) {
+    if (isUndefined(id)) {
+      this.stateHistory.redo();
+    } else {
+      this.stateHistoryEntity.redo(id);
+    }
   }
 
   /**
@@ -68,6 +64,11 @@ export class TodosPageComponent implements OnInit {
    */
   complete(todo: Todo) {
     this.todosService.complete(todo);
+  }
+
+  complete2(event, todo: Todo) {
+    const _todo = { ...todo, completed: event.target.checked };
+    this.todosService.complete(_todo);
   }
 
   /**
@@ -92,5 +93,9 @@ export class TodosPageComponent implements OnInit {
    */
   checkAll({ target }) {
     this.todosService.checkAll(target.checked);
+  }
+
+  ngOnDestroy() {
+    this.stateHistory.destroy();
   }
 }

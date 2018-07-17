@@ -1,5 +1,5 @@
 import { EntityStore } from '../src/api/entity-store';
-import { persistState } from '../src/plugins/persist-state';
+import { persistState } from '../src/enhancers/persist-state';
 import { Store } from '../src/api/store';
 import { StoreConfig } from '../src/api/store-config';
 
@@ -52,13 +52,13 @@ describe('persistState - Exclude', () => {
   const auth = new AuthStore();
 
   it('should start empty', () => {
-    expect(JSON.parse(localStorage.getItem('AkitaStores'))).toBeNull();
+    expect(JSON.parse(localStorage.getItem('AkitaStores'))).toEqual({ auth: {}, todos: { entities: {}, error: null, ids: [], loading: true } });
   });
 
   it('should NOT save if in exclude', () => {
     products.add([{ id: 1 }]);
     cart.add([{ id: 1 }]);
-    expect(JSON.parse(localStorage.getItem('AkitaStores'))).toEqual({});
+    expect(JSON.parse(localStorage.getItem('AkitaStores'))).toEqual({ auth: {}, todos: { entities: {}, error: null, ids: [], loading: true } });
   });
 
   it('should save if NOT in exclude', () => {

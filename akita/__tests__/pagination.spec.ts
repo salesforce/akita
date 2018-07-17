@@ -1,6 +1,6 @@
 import { Todo, TodosStore } from './setup';
 import { QueryEntity } from '../src/api/query-entity';
-import { PaginationResponse, Paginator } from '../src/plugins/pagination';
+import { PaginationResponse, PaginatorPlugin } from '../src/plugins/paginator/paginator-plugin';
 import { switchMap } from 'rxjs/operators';
 import { Observable, of, timer } from 'rxjs';
 
@@ -13,7 +13,7 @@ class TodosQuery extends QueryEntity<any, Todo> {
 }
 
 const query = new TodosQuery();
-const paginator = new Paginator(query);
+const paginator = new PaginatorPlugin(query);
 
 const count = 100;
 const data = [];
@@ -273,7 +273,7 @@ class Todos2Query extends QueryEntity<any, Todo> {
 describe('cacheTimeout', () => {
   jest.useFakeTimers();
   const query2 = new Todos2Query();
-  const paginator2 = new Paginator(query2, { cacheTimeout: timer(15000) });
+  const paginator2 = new PaginatorPlugin(query2, { cacheTimeout: timer(15000) });
   const requestFunc = jest.fn();
 
   paginator2.pageChanges

@@ -2,18 +2,50 @@ import { TodosStore } from './todos.store';
 import { createTodo, Todo } from './todo.model';
 import { Injectable } from '@angular/core';
 import { VISIBILITY_FILTER } from '../filter/filter.model';
-import { ID } from '@datorama/akita';
+import { ID, transaction } from '../../../../../akita/src';
+import { action } from '../../../../../akita/src/internal/action';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TodosService {
+  private id = 0;
+
   constructor(private todosStore: TodosStore) {}
+
+  @transaction()
+  addBatch() {
+    this.todosStore.add({
+      id: ++this.id,
+      title: `Todo ${this.id}`,
+      completed: false
+    });
+
+    this.todosStore.add({
+      id: ++this.id,
+      title: `Todo ${this.id}`,
+      completed: false
+    });
+
+    this.todosStore.add({
+      id: ++this.id,
+      title: `Todo ${this.id}`,
+      completed: false
+    });
+  }
+
+  @transaction()
+  updateBatch() {
+    this.todosStore.update(1, { completed: true });
+    this.todosStore.update(2, { completed: true });
+    this.todosStore.update(3, { completed: true });
+  }
 
   /**
    *
    * @param {VISIBILITY_FILTER} filter
    */
+  @action({ type: 'Update filter' })
   updateFilter(filter: VISIBILITY_FILTER) {
     this.todosStore.updateRoot({
       ui: {
@@ -38,7 +70,10 @@ export class TodosService {
    * @param {string} title
    */
   add(title: string) {
-    const todo = createTodo({ id: Math.random(), title });
+    const todo = createTodo({
+      id: ++this.id,
+      title
+    });
     this.todosStore.add(todo);
   }
 

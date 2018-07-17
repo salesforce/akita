@@ -1,0 +1,34 @@
+<div class="padding">
+
+  <table class="striped centered" style="width: 40%;">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Update</th>
+        <th>Revert</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let widget of widgets$ | async">
+        <td>{{widget.id}}</td>
+        <td style="width: 200px;">
+          <input [value]="widget.name" #name style="margin-right: 20px;">
+        </td>
+        <td>
+          <a class="btn-floating"><i class="material-icons" (click)="updateWidget(widget.id, name.value)">save</i></a>
+        </td>
+        <td>
+          <a class="btn-floating" [class.disabled]="!(collection.isDirty(widget.id) | async)"><i class="material-icons" (click)="revert(widget.id)">undo</i></a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+
+  <button class="btn waves-effect waves-light" [class.disabled]="!(dirtyCheck.isDirty$| async)" style="margin-top: 20px;" (click)="revert()">Revert Store
+    <i class="material-icons right">undo</i>
+  </button>
+
+</div>

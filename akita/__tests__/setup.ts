@@ -1,6 +1,7 @@
 import { EntityStore, getInitialActiveState } from '../src/api/entity-store';
 import { ActiveState, EntityState, ID } from '../src/api/types';
 import { StoreConfig } from '../src/api/store-config';
+import { QueryEntity } from '../src/api/query-entity';
 
 export class Todo {
   id: ID;
@@ -78,4 +79,30 @@ export function cot() {
     title: `Todo ${1}`,
     complete: false
   } as Todo;
+}
+
+export type Widget = {
+  id: ID;
+  title: string;
+  complete?: boolean;
+};
+
+export class WidgetsStore extends EntityStore<any, Widget> {
+  constructor() {
+    super();
+  }
+}
+
+export class WidgetsQuery extends QueryEntity<any, Widget> {
+  constructor(protected store) {
+    super(store);
+  }
+}
+
+export function createWidget(id) {
+  return {
+    id,
+    title: `Widget ${id}`,
+    complete: false
+  } as Widget;
 }

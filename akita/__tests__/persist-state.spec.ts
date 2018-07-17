@@ -1,5 +1,5 @@
 import { EntityStore } from '../src/api/entity-store';
-import { persistState } from '../src/plugins/persist-state';
+import { persistState } from '../src/enhancers/persist-state';
 import { Store } from '../src/api/store';
 import { StoreConfig } from '../src/api/store-config';
 
@@ -53,7 +53,7 @@ describe('persistState', () => {
   const auth = new AuthStore();
 
   it('should get data from storage', () => {
-    expect(localStorage.getItem).toHaveBeenCalledTimes(1);
+    expect(localStorage.getItem).toHaveBeenCalledTimes(5);
   });
 
   it('should initial the value if in storage', () => {

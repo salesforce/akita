@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { {{#if isEntityStore}}EntityState, {{/if}}{{storeClassPostfix storeType}}, StoreMetadata } from '@datorama/akita';
+import { {{#if isEntityStore}}EntityState, {{/if}}{{storeClassPostfix storeType}}, StoreConfig } from '@datorama/akita';
 import { {{singular (pascalCase name)}} } from './{{singular (dashCase name)}}.model';
 
 {{#switch storeType}}

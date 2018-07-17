@@ -77,3 +77,13 @@ app-todo {
 .pointer {
   cursor: pointer;
 }
+
+input:not([type]).actor-input {
+  height: auto;
+  margin-bottom: 0;
+  border: none !important
+}
+
+.actor-input.view {
+  pointer-events: none;
+}

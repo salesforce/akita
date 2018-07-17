@@ -22,4 +22,52 @@
              (complete)="complete($event)"
   ></app-todos>
 
+  <div class="flex align-center">
+    <button class="btn waves-effect waves-light" [class.disabled]="!stateHistory.hasPast" (click)="undo()">Undo
+      <i class="material-icons right">undo</i>
+    </button>
+
+    <button class="btn waves-effect waves-light" [class.disabled]="!stateHistory.hasFuture" (click)="redo()">Redo
+      <i class="material-icons right">redo</i>
+    </button>
+
+  </div>
+
 </div>
+
+<section class="padding">
+  <h4>Todos - Entity History</h4>
+  <table>
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Title</th>
+        <th>Completed</th>
+        <th>Undo</th>
+        <th>Redo</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let todo of todos$ | async">
+        <td>{{todo.id}}</td>
+        <td>{{todo.title}}</td>
+        <td>
+          <label>
+            <input type="checkbox" [checked]="todo.completed" (change)="complete2($event, todo)"/>
+            <span></span>
+          </label>
+        </td>
+        <td>
+          <a class="btn-floating" [class.disabled]="!stateHistoryEntity.hasPast(todo.id)"><i class="material-icons"
+                                                                                             (click)="undo(todo.id)">undo</i></a>
+        </td>
+        <td>
+          <a class="btn-floating" [class.disabled]="!stateHistoryEntity.hasFuture(todo.id)"><i class="material-icons"
+                                                                                               (click)="redo(todo.id)">redo</i></a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</section>

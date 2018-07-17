@@ -1,7 +1,5 @@
-import { getGlobalState } from './global-state';
+import { globalState } from './global-state';
 import { Observable, Subject, of } from 'rxjs';
-
-const globalState = getGlobalState();
 
 /**
  * Start a new transaction batch

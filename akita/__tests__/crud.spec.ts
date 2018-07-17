@@ -179,6 +179,17 @@ describe('CRUD', () => {
       expect(store.entities[201].title).toEqual('201');
     });
 
+    it('should support passing ids and entities', () => {
+      const state = {
+        entities: { '200': {}, '201': {} },
+        ids: [200, 201]
+      };
+
+      const newState = crud._set(store, state, null, ID_KEY);
+      expect(newState.entities).toEqual({ '200': {}, '201': {} });
+      expect(newState.ids).toEqual([200, 201]);
+    });
+
     it('should set ids when passing entities', () => {
       let store = {
         entities: {},
