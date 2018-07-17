@@ -3,10 +3,11 @@ const path = require('path');
 const pluralize = require('pluralize');
 const finder = require('find-package-json');
 const pjson = finder(process.cwd()).next().value;
-let userPath;
+let userPath, customFolderName;
 
 module.exports = function( plop ) {
   userPath = pjson.akitaCli && pjson.akitaCli.basePath || '';
+  customFolderName = (pjson.akitaCli && pjson.akitaCli.customFolderName) || false;
   const userConfig = path.resolve(process.cwd(), userPath);
 
   const basePath = userConfig || process.cwd();
@@ -19,6 +20,12 @@ module.exports = function( plop ) {
     message : 'Choose a directory..',
     basePath: basePath
   };
+
+  const customFolderNameAction = {
+    type   : 'input',
+    name   : 'folderName',
+    message: 'Give me a folder name, please'
+  }
 
   plop.setGenerator('Akita', {
     description: 'Create new stack',
@@ -40,51 +47,51 @@ module.exports = function( plop ) {
         name   : 'UIStore',
         message: 'Is it UIStore?'
       }
-    ].concat(chooseDirAction),
+    ].concat(customFolderName ? customFolderNameAction : [], chooseDirAction),
     actions    : function( data ) {
-      const { storeType, directory } = data;
+      const { storeType, directory, folderName } = data;
 
       data.isStore = storeType === 'Store';
       data.isEntityStore = storeType === 'Entity Store';
       const dataService = {
         type        : 'add',
         skipIfExists: true,
-        path        : buildPath('{{\'dashCase\' name}}-data.service.ts', directory),
+        path        : buildPath('{{\'dashCase\' name}}-data.service.ts', directory, folderName),
         templateFile: './templates/data-service.tpl'
       };
 
       const index = {
         type        : 'add',
         skipIfExists: true,
-        path        : buildPath('index.ts', directory),
+        path        : buildPath('index.ts', directory, folderName),
         templateFile: './templates/index.tpl'
       };
 
       const model = {
         type        : 'add',
         skipIfExists: true,
-        path        : buildPath('{{ \'singular\' (\'dashCase\' name) name}}.model.ts', directory),
+        path        : buildPath('{{ \'singular\' (\'dashCase\' name) name}}.model.ts', directory, folderName),
         templateFile: './templates/model.tpl'
       };
 
       const query = {
         type        : 'add',
         skipIfExists: true,
-        path        : buildPath('{{\'dashCase\' name}}.query.ts', directory),
+        path        : buildPath('{{\'dashCase\' name}}.query.ts', directory, folderName),
         templateFile: './templates/query.tpl'
       };
 
       const service = {
         type        : 'add',
         skipIfExists: true,
-        path        : buildPath('{{\'dashCase\' name}}.service.ts', directory),
+        path        : buildPath('{{\'dashCase\' name}}.service.ts', directory, folderName),
         templateFile: './templates/service.tpl'
       };
 
       const store = {
         type        : 'add',
         skipIfExists: true,
-        path        : buildPath('{{\'dashCase\' name}}.store.ts', directory),
+        path        : buildPath('{{\'dashCase\' name}}.store.ts', directory, folderName),
         templateFile: './templates/store.tpl'
       };
 
@@ -133,11 +140,11 @@ module.exports = function( plop ) {
     return pluralize.singular(value);
   });
 
-  function buildPath( name, chosenDir ) {
+  function buildPath( name, chosenDir, folderName = 'state') {
     if(userPath) {
-      return `${userConfig}/${chosenDir}/state/${name}`;
+      return `${userConfig}/${chosenDir}/${folderName}/${name}`;
     }
-     return `${process.cwd()}/${chosenDir}/state/${name}`;
+     return `${process.cwd()}/${chosenDir}/${folderName}/${name}`;
   }
 
 };

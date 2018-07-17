@@ -20,9 +20,6 @@
     "semantic-release": "semantic-release",
     "travis-deploy-once": "travis-deploy-once"
   },
-  "akitaCli": {
-    "basePath": "./playground/src/app/"
-  },
   "publishConfig": {
     "access": "public"
   },
