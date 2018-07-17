@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/datorama/akita/compare/v1.2.0...v1.2.1) (2018-07-17)
+
+
+### Bug Fixes
+
+* **entity-state-history:** fix type ([adcf43a](https://github.com/datorama/akita/commit/adcf43a)), closes [#12](https://github.com/datorama/akita/issues/12)
+
 # [1.2.0](https://github.com/datorama/akita/compare/v1.1.3...v1.2.0) (2018-07-17)
 
 
