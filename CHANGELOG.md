@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/datorama/akita/compare/v1.2.2...v1.2.3) (2018-07-18)
+
+
+### Bug Fixes
+
+* **persist-form:** doesn't set state properly for multiple forms ([52afde9](https://github.com/datorama/akita/commit/52afde9))
+
 ## [1.2.2](https://github.com/datorama/akita/compare/v1.2.1...v1.2.2) (2018-07-17)
 
 
