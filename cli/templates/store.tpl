@@ -1,24 +1,19 @@
 import { Injectable } from '@angular/core';
-import { {{#if isEntityStore}}EntityState, {{/if}}{{storeClassPostfix storeType}}, StoreConfig } from '@datorama/akita';
-import { {{singular (pascalCase name)}} } from './{{singular (dashCase name)}}.model';
+import { Store, StoreConfig } from '@datorama/akita';
 
-{{#switch storeType}}
-{{#case "Store"}}
-export interface State {
-
+export type {{singular (pascalCase name)}}State = {
 }
-{{/case}}
-{{#case "Entity Store"}}
-export interface State extends EntityState<{{singular (pascalCase name)}}> {}
-{{/case}}
-{{/switch}}
+
+export function createInitial{{singular (pascalCase name)}}State() : {{singular (pascalCase name)}}State {
+  return {};
+}
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: '{{name}}' })
-export class {{pascalCase name}}{{#if UIStore}}UI{{/if}}Store extends {{storeClassPostfix storeType}}<State{{#if isEntityStore}}, {{singular (pascalCase name)}}{{/if}}> {
+export class {{pascalCase name}}{{#if UIStore}}UI{{/if}}Store extends Store<{{singular (pascalCase name)}}State> {
 
   constructor() {
-    super();
+    super(createInitial{{singular (pascalCase name)}}State());
   }
 
 }

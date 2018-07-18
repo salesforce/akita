@@ -67,6 +67,7 @@ module.exports = function( plop ) {
         templateFile: './templates/index.tpl'
       };
 
+
       const model = {
         type        : 'add',
         skipIfExists: true,
@@ -78,7 +79,7 @@ module.exports = function( plop ) {
         type        : 'add',
         skipIfExists: true,
         path        : buildPath('{{\'dashCase\' name}}.query.ts', directory, folderName),
-        templateFile: './templates/query.tpl'
+        templateFile: `./templates/${data.isEntityStore ? 'entity-query' : 'query'}.tpl`
       };
 
       const service = {
@@ -92,36 +93,15 @@ module.exports = function( plop ) {
         type        : 'add',
         skipIfExists: true,
         path        : buildPath('{{\'dashCase\' name}}.store.ts', directory, folderName),
-        templateFile: './templates/store.tpl'
+        templateFile:  `./templates/${data.isEntityStore ? 'entity-store' : 'store'}.tpl`
       };
 
-      const WholeShebang = [dataService, model, query, service, store, index];
+      const WholeShebang = [dataService, query, service, store, index].concat(data.isEntityStore ? [model] : []);
 
       return WholeShebang;
     }
   });
 
-  plop.setHelper('storeClassPostfix', function( type, options ) {
-    switch( type ) {
-      case 'Store':
-        return `Store`;
-      case 'Entity Store':
-        return `EntityStore`;
-      default:
-        return `Store`;
-    }
-  });
-
-  plop.setHelper('queryClassPostfix', function( type, options ) {
-    switch( type ) {
-      case 'Store':
-        return `Query`;
-      case 'Entity Store':
-        return `QueryEntity`;
-      default:
-        return `Query`;
-    }
-  });
 
   plop.setHelper('switch', function( value, options ) {
     this._switch_value_ = value;
