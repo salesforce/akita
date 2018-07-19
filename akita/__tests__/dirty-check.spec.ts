@@ -131,9 +131,9 @@ describe('DirtyCheckEntity', () => {
   }
 
   let _id = 0;
-  let widgetsStore = new WidgetsStore();
-  let widgetsQuery = new WidgetsQuery(widgetsStore);
-  let collection = new EntityDirtyCheckPlugin(widgetsQuery);
+  const widgetsStore = new WidgetsStore();
+  const widgetsQuery = new WidgetsQuery(widgetsStore);
+  const collection = new EntityDirtyCheckPlugin(widgetsQuery);
   widgetsStore.add([createWidget(), createWidget(), createWidget()]);
 
   beforeEach(() => {
