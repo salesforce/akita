@@ -1,6 +1,16 @@
 import { DirtyCheckPlugin, EntityDirtyCheckPlugin } from '../src/index';
 import { Widget, WidgetsQuery, WidgetsStore } from './setup';
 
+function resetWidgets(widgetsStore, _id) {
+  for (let id = 1; id <= _id; id++) {
+    widgetsStore.update(id, {
+      id,
+      title: `Widget ${id}`,
+      complete: false
+    });
+  }
+}
+
 describe('DirtyCheck', () => {
   function createWidget() {
     return {
@@ -121,15 +131,13 @@ describe('DirtyCheckEntity', () => {
   }
 
   let _id = 0;
-  let widgetsStore;
-  let widgetsQuery;
-  let collection;
+  let widgetsStore = new WidgetsStore();
+  let widgetsQuery = new WidgetsQuery(widgetsStore);
+  let collection = new EntityDirtyCheckPlugin(widgetsQuery);
+  widgetsStore.add([createWidget(), createWidget(), createWidget()]);
 
   beforeEach(() => {
-    widgetsStore = new WidgetsStore();
-    widgetsQuery = new WidgetsQuery(widgetsStore);
-    collection = new EntityDirtyCheckPlugin(widgetsQuery);
-    widgetsStore.add([createWidget(), createWidget(), createWidget()]);
+    resetWidgets(widgetsStore, _id);
     collection.setHead();
   });
 
