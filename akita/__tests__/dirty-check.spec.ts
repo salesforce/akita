@@ -121,11 +121,17 @@ describe('DirtyCheckEntity', () => {
   }
 
   let _id = 0;
-  const widgetsStore = new WidgetsStore();
-  const widgetsQuery = new WidgetsQuery(widgetsStore);
-  const collection = new EntityDirtyCheckPlugin(widgetsQuery);
-  widgetsStore.add([createWidget(), createWidget(), createWidget()]);
-  collection.setHead();
+  let widgetsStore;
+  let widgetsQuery;
+  let collection;
+
+  beforeEach(() => {
+    widgetsStore = new WidgetsStore();
+    widgetsQuery = new WidgetsQuery(widgetsStore);
+    collection = new EntityDirtyCheckPlugin(widgetsQuery);
+    widgetsStore.add([createWidget(), createWidget(), createWidget()]);
+    collection.setHead();
+  });
 
   it('should select all when not passing entityIds', () => {
     expect(collection.entities.size).toEqual(3);
@@ -157,5 +163,19 @@ describe('DirtyCheckEntity', () => {
     collection.reset(1, { updateFn });
     expect(widgetsQuery.getEntity(1)).toEqual({ id: 1, title: 'Changed', complete: false });
     expect(spy).toHaveBeenLastCalledWith(true);
+  });
+
+  it('should return true if some of the entties are dirty', () => {
+    const spy = jest.fn();
+    collection.isSomeDirty().subscribe(spy);
+    expect(spy).toHaveBeenLastCalledWith(false);
+    widgetsStore.update(2, { title: 'Changed' });
+    expect(spy).toHaveBeenLastCalledWith(true);
+    widgetsStore.update(1, { title: 'Changed' });
+    expect(spy).toHaveBeenLastCalledWith(true);
+    widgetsStore.update(1, { title: 'Widget 1' });
+    expect(spy).toHaveBeenLastCalledWith(true);
+    widgetsStore.update(2, { title: 'Widget 2' });
+    expect(spy).toHaveBeenLastCalledWith(false);
   });
 });

@@ -34,12 +34,8 @@ export class DirtyCheckPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
     this.params = { ...dirtyCheckDefaultParams, ...params };
   }
 
-  private getHead() {
-    return this.getSource(this._entityId);
-  }
-
   private activate() {
-    this.head = this.getHead();
+    this.head = this.getSource(this._entityId);
     this.subscription = this.selectSource(this._entityId)
       .pipe(skip(1))
       .subscribe(currentState => {
@@ -72,7 +68,7 @@ export class DirtyCheckPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
       this.activate();
       this.active = true;
     }
-    this.head = this.getHead();
+    this.head = this.getSource(this._entityId);
     this.updateDirtiness(false);
     return this;
   }
@@ -83,5 +79,9 @@ export class DirtyCheckPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
 
   private updateDirtiness(isDirty: boolean) {
     this.dirty.next(isDirty);
+  }
+
+  protected getHead() {
+    return this.head;
   }
 }
