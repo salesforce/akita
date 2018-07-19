@@ -2,7 +2,7 @@ import { ID, IDS } from '../../api/types';
 import { DirtyCheckPlugin, DirtyCheckComparator, dirtyCheckDefaultParams, DirtyCheckResetParams } from './dirty-check-plugin';
 import { QueryEntity } from '../../api/query-entity';
 import { EntityCollectionPlugin } from '../entity-collection-plugin';
-import { skip } from 'rxjs/operators';
+import { skip, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 export type DirtyCheckCollectionParams<E> = {
@@ -33,6 +33,21 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
     if (this.entities.has(id)) {
       return this.getEntity(id).isDirty$;
     }
+  }
+
+  isSomeDirty() {
+    return this.query.select(state => state.entities).pipe(
+      map(entities => {
+        const entitiesIds = this.resolvedIds();
+        for (const id of entitiesIds) {
+          const dirty = this.params.comparator((this.getEntity(id) as any).getHead(), entities[id]);
+          if (dirty) {
+            return true;
+          }
+        }
+        return false;
+      })
+    );
   }
 
   destroy(ids?: IDS) {
