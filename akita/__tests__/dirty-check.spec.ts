@@ -173,7 +173,7 @@ describe('DirtyCheckEntity', () => {
     expect(spy).toHaveBeenLastCalledWith(true);
   });
 
-  it('should return true if some of the entties are dirty', () => {
+  it('should return true if some of the entities are dirty', () => {
     const spy = jest.fn();
     collection.isSomeDirty().subscribe(spy);
     expect(spy).toHaveBeenLastCalledWith(false);
