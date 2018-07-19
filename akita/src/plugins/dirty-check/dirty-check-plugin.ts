@@ -7,10 +7,10 @@ import { EntityParam } from '../entity-collection-plugin';
 import { globalState } from '../../internal/global-state';
 import { Query } from '../../api/query';
 
-export type DirtyCheckComparator = (head, current) => boolean;
+export type DirtyCheckComparator<E> = (head: E, current: E) => boolean;
 
-export type DirtyCheckParams = {
-  comparator?: DirtyCheckComparator;
+export type DirtyCheckParams<E = any> = {
+  comparator?: DirtyCheckComparator<E>;
 };
 
 export const dirtyCheckDefaultParams: DirtyCheckParams = {
@@ -18,7 +18,7 @@ export const dirtyCheckDefaultParams: DirtyCheckParams = {
 };
 
 export type DirtyCheckResetParams<S = any> = {
-  updateFn?: S | ((head, current) => any);
+  updateFn?: S | ((head: S, current: S) => any);
 };
 
 export class DirtyCheckPlugin<E = any, S = any> extends AkitaPlugin<E, S> {

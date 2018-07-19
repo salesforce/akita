@@ -10,7 +10,7 @@ export type DevtoolsOptions = {
   actionsWhitelist: string[];
   shouldCatchErrors: boolean;
   logTrace: boolean;
-  predicate: (state, action) => boolean;
+  predicate: (state: any, action: any) => boolean;
 };
 
 export function akitaDevtools(ngZone, options: Partial<DevtoolsOptions> = {}) {

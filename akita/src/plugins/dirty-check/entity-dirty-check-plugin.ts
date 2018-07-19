@@ -5,13 +5,13 @@ import { EntityCollectionPlugin } from '../entity-collection-plugin';
 import { skip } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
-export type DirtyCheckCollectionParams = {
-  comparator?: DirtyCheckComparator;
+export type DirtyCheckCollectionParams<E> = {
+  comparator?: DirtyCheckComparator<E>;
   entityIds?: ID | ID[];
 };
 
 export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = DirtyCheckPlugin<E, any>> extends EntityCollectionPlugin<E, P> {
-  constructor(protected query: QueryEntity<any, E>, private readonly params: DirtyCheckCollectionParams = {}) {
+  constructor(protected query: QueryEntity<any, E>, private readonly params: DirtyCheckCollectionParams<E> = {}) {
     super(query, params.entityIds);
     this.params = { ...dirtyCheckDefaultParams, ...params };
     this.activate();
