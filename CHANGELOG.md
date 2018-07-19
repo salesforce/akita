@@ -1,3 +1,10 @@
+## [1.2.4](https://github.com/datorama/akita/compare/v1.2.3...v1.2.4) (2018-07-19)
+
+
+### Bug Fixes
+
+* **build:** types should work with ts strict option ([a5a2d45](https://github.com/datorama/akita/commit/a5a2d45)), closes [#18](https://github.com/datorama/akita/issues/18)
+
 ## [1.2.3](https://github.com/datorama/akita/compare/v1.2.2...v1.2.3) (2018-07-18)
 
 
