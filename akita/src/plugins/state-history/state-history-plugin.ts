@@ -1,4 +1,4 @@
-import { pairwise } from 'rxjs/operators';
+import { filter, pairwise } from 'rxjs/operators';
 import { globalState } from '../../internal/global-state';
 import { toBoolean } from '../../internal/utils';
 import { AkitaPlugin, Queries } from '../plugin';
@@ -9,12 +9,16 @@ export interface StateHistoryParams {
 }
 
 export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
+  /** Allow skipping an update from outside */
+  private skip = false;
+
   private history = {
     past: [],
     present: null,
     future: []
   };
 
+  /** Skip the update when redo/undo */
   private skipUpdate = false;
   private subscription;
 
@@ -37,6 +41,10 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
     this.subscription = this.selectSource(this._entityId)
       .pipe(pairwise())
       .subscribe(([past, present]) => {
+        if (this.skip) {
+          this.skip = false;
+          return;
+        }
         if (!this.skipUpdate) {
           if (this.history.past.length === this.params.maxAge) {
             this.history.past = this.history.past.slice(1);
@@ -122,6 +130,10 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
       this.clear();
     }
     this.subscription.unsubscribe();
+  }
+
+  ignoreNext() {
+    this.skip = true;
   }
 
   private update(action = 'Undo') {
