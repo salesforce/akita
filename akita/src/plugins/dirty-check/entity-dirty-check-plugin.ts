@@ -11,6 +11,7 @@ export type DirtyCheckCollectionParams<E> = {
 };
 
 export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = DirtyCheckPlugin<E, any>> extends EntityCollectionPlugin<E, P> {
+  private isSomeDirtySub;
   constructor(protected query: QueryEntity<any, E>, private readonly params: DirtyCheckCollectionParams<E> = {}) {
     super(query, params.entityIds);
     this.params = { ...dirtyCheckDefaultParams, ...params };
@@ -36,21 +37,27 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
   }
 
   isSomeDirty() {
-    return this.query.select(state => state.entities).pipe(
-      map(entities => {
-        const entitiesIds = this.resolvedIds();
-        for (const id of entitiesIds) {
-          const dirty = this.params.comparator((this.getEntity(id) as any).getHead(), entities[id]);
-          if (dirty) {
-            return true;
+    if (!this.isSomeDirtySub) {
+      this.isSomeDirtySub = this.query.select(state => state.entities).pipe(
+        map(entities => {
+          const entitiesIds = this.resolvedIds();
+          for (const id of entitiesIds) {
+            const dirty = this.params.comparator((this.getEntity(id) as any).getHead(), entities[id]);
+            if (dirty) {
+              return true;
+            }
           }
-        }
-        return false;
-      })
-    );
+          return false;
+        })
+      );
+    }
+    return this.isSomeDirtySub;
   }
 
   destroy(ids?: IDS) {
+    if (this.isSomeDirtySub) {
+      this.isSomeDirtySub.destroy();
+    }
     this.forEachId(ids, e => e.destroy());
   }
 
