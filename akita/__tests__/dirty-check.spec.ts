@@ -158,4 +158,21 @@ describe('DirtyCheckEntity', () => {
     expect(widgetsQuery.getEntity(1)).toEqual({ id: 1, title: 'Changed', complete: false });
     expect(spy).toHaveBeenLastCalledWith(true);
   });
+
+  it('should return true if some of the entities are dirty', () => {
+    widgetsStore.remove();
+    widgetsStore.add([createWidget(), createWidget(), createWidget()]);
+    collection.setHead();
+    const spy = jest.fn();
+    collection.isSomeDirty().subscribe(spy);
+    expect(spy).toHaveBeenLastCalledWith(false);
+    widgetsStore.update(5, { title: 'Changed' });
+    expect(spy).toHaveBeenLastCalledWith(true);
+    widgetsStore.update(4, { title: 'Changed' });
+    expect(spy).toHaveBeenLastCalledWith(true);
+    widgetsStore.update(4, { title: 'Widget 4' });
+    expect(spy).toHaveBeenLastCalledWith(true);
+    widgetsStore.update(5, { title: 'Widget 5' });
+    expect(spy).toHaveBeenLastCalledWith(false);
+  });
 });

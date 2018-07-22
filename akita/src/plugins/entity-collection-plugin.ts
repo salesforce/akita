@@ -52,7 +52,7 @@ export abstract class EntityCollectionPlugin<E, P> {
   /**
    * When you call one of the plugin methods, you can pass id/ids or undefined which means all.
    */
-  protected resolvedIds(ids) {
+  protected resolvedIds(ids?) {
     return isUndefined(ids) ? this.getIds() : coerceArray(ids);
   }
 
