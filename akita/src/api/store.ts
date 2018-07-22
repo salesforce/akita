@@ -153,7 +153,7 @@ export class Store<S> {
     this.store.next(state);
     if (_rootDispatcher) {
       __rootDispatcher__.next(this.storeName);
-      globalState.setAction({ type: 'Set State' });
+      isDev() && globalState.setAction({ type: 'Set State' });
     }
   }
 
@@ -167,7 +167,7 @@ export class Store<S> {
   private watchTransaction() {
     commit().subscribe(() => {
       this.inTransaction = false;
-      if (!globalState.skipTransactionMsg) {
+      if (isDev() && !globalState.skipTransactionMsg) {
         globalState.setAction({ type: '@Transaction' });
       }
       this.dispatch(this._value());
