@@ -1,3 +1,16 @@
+# [1.3.0](https://github.com/datorama/akita/compare/v1.2.4...v1.3.0) (2018-07-22)
+
+
+### Bug Fixes
+
+* **devtools:** set action only on dev mode ([0461d44](https://github.com/datorama/akita/commit/0461d44))
+
+
+### Features
+
+* **dirty-check-plugin:** add isSomeDirty to EntityDirtyCheckPlugin ([2afa7d6](https://github.com/datorama/akita/commit/2afa7d6))
+* **state-history:** add ignore update functionality ([42d574d](https://github.com/datorama/akita/commit/42d574d))
+
 ## [1.2.4](https://github.com/datorama/akita/compare/v1.2.3...v1.2.4) (2018-07-19)
 
 
