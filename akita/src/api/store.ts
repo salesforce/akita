@@ -1,4 +1,4 @@
-import { ID } from './types';
+import { HashMap, ID } from './types';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { AkitaImmutabilityError } from '../internal/error';
@@ -11,9 +11,29 @@ import { globalState } from '../internal/global-state';
 /** Whether we are in dev mode */
 let __DEV__ = true;
 
-export const __rootDispatcher__ = new Subject<string>();
-export const __registerStore__ = new Subject<Store<any>>();
 export const __stores__: { [storeName: string]: Store<any> } = {};
+
+export const enum Actions {
+  NEW_STORE,
+  NEW_STATE
+}
+
+export type Action = {
+  type: Actions;
+  payload: HashMap<any>;
+};
+
+export const rootDispatcher = new Subject<Action>();
+
+function nextState(storeName, initialState = false) {
+  return {
+    type: Actions.NEW_STATE,
+    payload: {
+      name: storeName,
+      initialState
+    }
+  };
+}
 
 /**
  * Enable production mode to disable objectFreeze
@@ -50,7 +70,10 @@ export class Store<S> {
     globalState.setInitialAction();
     __stores__[this.storeName] = this;
     this.setState(() => initialState);
-    __registerStore__.next(this);
+    rootDispatcher.next({
+      type: Actions.NEW_STORE,
+      payload: { store: this }
+    });
   }
 
   /**
@@ -101,7 +124,7 @@ export class Store<S> {
 
     if (!this.store) {
       this.store = new BehaviorSubject(this.storeValue);
-      __rootDispatcher__.next(this.storeName);
+      rootDispatcher.next(nextState(this.storeName, true));
       return;
     }
 
@@ -152,7 +175,7 @@ export class Store<S> {
   private dispatch(state: S, _rootDispatcher = true) {
     this.store.next(state);
     if (_rootDispatcher) {
-      __rootDispatcher__.next(this.storeName);
+      rootDispatcher.next(nextState(this.storeName));
       isDev() && globalState.setAction({ type: 'Set State' });
     }
   }

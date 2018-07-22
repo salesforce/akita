@@ -58,7 +58,7 @@ describe('persistState - Exclude', () => {
   it('should NOT save if in exclude', () => {
     products.add([{ id: 1 }]);
     cart.add([{ id: 1 }]);
-    expect(JSON.parse(localStorage.getItem('AkitaStores'))).toEqual({});
+    expect(JSON.parse(localStorage.getItem('AkitaStores'))).toEqual(null);
   });
 
   it('should save if NOT in exclude', () => {

@@ -1,5 +1,5 @@
 import { AkitaError } from '../internal/error';
-import { __registerStore__, __rootDispatcher__, __stores__, Store } from '../api/store';
+import { __stores__, Actions, rootDispatcher } from '../api/store';
 import { globalState } from '../internal/global-state';
 
 export interface PersistStateParams {
@@ -37,8 +37,6 @@ export function persistState(params?: Partial<PersistStateParams>) {
 
   const hasInclude = include.length > 0;
   const hasExclude = exclude.length > 0;
-  let initializedStores: { [storeName: string]: boolean } = {};
-  let skipInitial = {};
 
   if (hasInclude && hasExclude) {
     throw new AkitaError("You can't use both include and exclude");
@@ -49,33 +47,40 @@ export function persistState(params?: Partial<PersistStateParams>) {
   /**
    * When we have a new Store, check if we have value in storage and set it.
    */
-  const subOne = __registerStore__.subscribe((store: Store<any>) => {
-    if (storageState[store.storeName]) {
-      initializedStores[store.storeName] = true;
-      globalState.setSkipAction();
-      store.setState(() => storageState[store.storeName]);
+  const subscription = rootDispatcher.subscribe(action => {
+    if (action.type === Actions.NEW_STORE) {
+      const store = action.payload.store;
+      if (storageState[store.storeName]) {
+        globalState.setAction({ type: '@PersistState' });
+        store.setState(() => storageState[store.storeName]);
+      }
     }
-  });
 
-  const subTwo = __rootDispatcher__.subscribe(_storeName => {
-    if (!skipInitial[_storeName]) {
-      skipInitial[_storeName] = true;
-      return;
-    }
-    if (initializedStores[_storeName]) {
-      initializedStores[_storeName] = false;
-    } else {
+    if (action.type === Actions.NEW_STATE) {
+      const storeName = action.payload.name;
+      if (action.payload.initialState) {
+        return;
+      }
+
+      if (hasExclude && exclude.includes(storeName) === true) {
+        return;
+      }
+
+      if (hasInclude && include.includes(storeName) === false) {
+        return;
+      }
+
       let acc = {};
 
       for (let i = 0, keys = Object.keys(__stores__); i < keys.length; i++) {
         const storeName = keys[i];
 
         if (hasExclude) {
-          if (storeName === _storeName && !exclude.includes(storeName)) {
+          if (storeName === storeName && !exclude.includes(storeName)) {
             acc[storeName] = __stores__[storeName]._value();
           }
         } else if (hasInclude) {
-          if (storeName === _storeName && include.includes(storeName)) {
+          if (storeName === storeName && include.includes(storeName)) {
             acc[storeName] = __stores__[storeName]._value();
           }
         } else {
@@ -90,8 +95,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
 
   return {
     destroy() {
-      subOne.unsubscribe();
-      subTwo.unsubscribe();
+      subscription.unsubscribe();
     },
     clear() {
       storage.clear();
