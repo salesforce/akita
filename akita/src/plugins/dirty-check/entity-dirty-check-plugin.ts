@@ -56,7 +56,7 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
 
   destroy(ids?: IDS) {
     if (this.isSomeDirtySub) {
-      this.isSomeDirtySub.destroy();
+      this.isSomeDirtySub.unsubscribe();
     }
     this.forEachId(ids, e => e.destroy());
   }
