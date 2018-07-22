@@ -63,6 +63,7 @@ export class TodosPageComponent implements OnInit {
    * @param {Todo} todo
    */
   complete(todo: Todo) {
+    this.stateHistory.ignoreNext();
     this.todosService.complete(todo);
   }
 

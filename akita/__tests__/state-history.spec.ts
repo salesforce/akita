@@ -148,6 +148,40 @@ describe('StateHistory', () => {
       present: { counter: 3 },
       future: [{ counter: 4 }]
     });
+
+    stateHistory.ignoreNext();
+
+    store.setState(state => {
+      return {
+        counter: state.counter + 1
+      };
+    });
+
+    expect(stateHistory.history).toEqual({
+      past: [{ counter: 0 }, { counter: 2 }],
+      present: { counter: 3 },
+      future: [{ counter: 4 }]
+    });
+
+    store.setState(state => {
+      return {
+        counter: state.counter + 1
+      };
+    });
+
+    expect(stateHistory.history).toEqual({
+      past: [{ counter: 0 }, { counter: 2 }, { counter: 4 }],
+      present: { counter: 5 },
+      future: [{ counter: 4 }]
+    });
+
+    stateHistory.ignoreNext();
+
+    expect(stateHistory.history).toEqual({
+      past: [{ counter: 0 }, { counter: 2 }, { counter: 4 }],
+      present: { counter: 5 },
+      future: [{ counter: 4 }]
+    });
   });
 });
 
