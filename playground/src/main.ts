@@ -10,9 +10,9 @@ if (environment.production) {
   enableAkitaProdMode();
 }
 
-// const storage = persistState({
-//   include: ['todos']
-// });
+const storage = persistState({
+  include: ['todos']
+});
 
 platformBrowserDynamic()
   .bootstrapModule(AppModule)

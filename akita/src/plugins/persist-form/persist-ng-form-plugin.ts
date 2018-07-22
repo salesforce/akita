@@ -49,6 +49,7 @@ export class PersistNgFormPlugin<T = any> extends AkitaPlugin {
 
   private activate() {
     if (!(this.getQuery().getSnapshot() as AkitaFormProp<T>)[this.params.formKey]) {
+      globalState.setAction({ type: '@PersistNgFormPlugin activate' });
       this.getStore().setState(state => {
         return {
           ...state,

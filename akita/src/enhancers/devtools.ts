@@ -1,6 +1,6 @@
-import { __rootDispatcher__, __stores__, Store } from '../api/store';
+import { __stores__, Actions, rootDispatcher } from '../api/store';
 import { globalState } from '../internal/global-state';
-import { isDefined, isString } from '../internal/utils';
+import { isDefined } from '../internal/utils';
 
 export type DevtoolsOptions = {
   /**  maximum allowed actions to be stored in the history tree */
@@ -29,30 +29,33 @@ export function akitaDevtools(ngZone, options: Partial<DevtoolsOptions> = {}) {
 
   const devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__.connect(defaultOptions);
 
-  __rootDispatcher__.subscribe(state => {
-    if (globalState.skipAction()) {
-      globalState.setSkipAction(false);
-      return;
+  rootDispatcher.subscribe(action => {
+    if (action.type === Actions.NEW_STATE) {
+      if (globalState.skipAction()) {
+        globalState.setSkipAction(false);
+        return;
+      }
+      let acc = {};
+      for (let i = 0, keys = Object.keys(__stores__); i < keys.length; i++) {
+        const storeName = keys[i];
+        acc[storeName] = __stores__[storeName]._value();
+      }
+
+      const { type, entityId } = globalState.getAction();
+
+      const storeName = capitalize(action.payload.name);
+      let msg;
+      msg = isDefined(entityId) ? `${storeName} - ${type} (ids: ${entityId})` : `${storeName} - ${type}`;
+
+      if (options.logTrace) {
+        console.group(msg);
+        console.trace();
+        console.groupEnd();
+      }
+
+      devTools.send({ type: msg }, acc);
+      acc = null;
     }
-    let acc = {};
-    for (let i = 0, keys = Object.keys(__stores__); i < keys.length; i++) {
-      const storeName = keys[i];
-      acc[storeName] = __stores__[storeName]._value();
-    }
-
-    const { type, entityId } = globalState.getAction();
-
-    const storeName = capitalize(isString(state) ? state : (state as Store<any>).storeName);
-    let msg;
-    msg = isDefined(entityId) ? `${storeName} - ${type} (ids: ${entityId})` : `${storeName} - ${type}`;
-
-    if (options.logTrace) {
-      console.group(msg);
-      console.trace();
-      console.groupEnd();
-    }
-
-    devTools.send({ type: msg }, acc);
   });
 
   devTools.subscribe(message => {
