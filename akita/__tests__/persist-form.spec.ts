@@ -3,7 +3,7 @@ import { PersistNgFormPlugin } from '../src/plugins/persist-form/persist-ng-form
 import { createStory, Story } from '../../playground/src/app/stories/state/story.model';
 import { EntityStore, QueryEntity, StoreConfig } from '../src/index';
 
-const formGroup = {
+const formFactory = () => ({
   _changes: new Subject(),
   value: undefined,
   setValue(v) {
@@ -17,7 +17,10 @@ const formGroup = {
   get valueChanges() {
     return this._changes.asObservable();
   }
-};
+});
+
+const formGroupA = formFactory();
+const formGroupB = formFactory();
 
 @StoreConfig({ name: 'stories' })
 class StoriesStore extends EntityStore<any, any> {
@@ -31,37 +34,45 @@ export class StoriesQuery extends QueryEntity<any, Story> {
     super(store);
   }
 }
-
 const store = new StoriesStore();
 const query = new StoriesQuery(store);
 
 describe('PersistForm', () => {
   jest.useFakeTimers();
-  const persistForm = new PersistNgFormPlugin(query, createStory).setForm(formGroup);
+
+  const customFormKey = 'customFormKey';
+  const persistForm = new PersistNgFormPlugin(query, createStory).setForm(formGroupA); //default formKey
+  const persistFormWithCustomKey = new PersistNgFormPlugin(query, createStory, { formKey: customFormKey }).setForm(formGroupB);
 
   it('should set the form initial state from the store', () => {
-    expect(formGroup.value).toEqual(createStory());
+    expect(formGroupA.value).toEqual(createStory());
+    expect(formGroupB.value).toEqual(createStory());
   });
 
   it('should persist the store with the form', () => {
-    formGroup.patchValue({
+    const patch = {
       title: 'test',
       story: 'test',
       draft: true,
       category: 'rx'
-    });
+    };
+
+    formGroupA.patchValue(patch);
+    formGroupB.patchValue(patch);
+
     jest.runAllTimers();
-    expect(query.getSnapshot().akitaForm).toEqual({
-      title: 'test',
-      story: 'test',
-      draft: true,
-      category: 'rx'
-    });
+
+    expect(query.getSnapshot().akitaForm).toEqual(patch);
+    expect(query.getSnapshot()[customFormKey]).toEqual(patch);
   });
 
   it('should reset the form', () => {
     persistForm.reset();
     expect(query.getSnapshot().akitaForm).toEqual(createStory());
-    expect(formGroup.value).toEqual(createStory());
+    expect(formGroupA.value).toEqual(createStory());
+
+    persistFormWithCustomKey.reset();
+    expect(query.getSnapshot()[customFormKey]).toEqual(createStory());
+    expect(formGroupB.value).toEqual(createStory());
   });
 });

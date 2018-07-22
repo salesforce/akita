@@ -59,6 +59,33 @@
       "contributions": [
         "design"
       ]
+    },
+    {
+      "login": "hoisel",
+      "name": "Hoisel",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/400244?v=4",
+      "profile": "https://github.com/hoisel",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "MonsieurMan",
+      "name": "Ange Picard",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/13108166?v=4",
+      "profile": "https://www.linkedin.com/in/ange-picard-54648b136/",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "shaharkazaz",
+      "name": "Shahar Kazaz",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/17194830?v=4",
+      "profile": "https://github.com/shaharkazaz",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }

@@ -7,10 +7,10 @@ import { EntityParam } from '../entity-collection-plugin';
 import { globalState } from '../../internal/global-state';
 import { Query } from '../../api/query';
 
-export type DirtyCheckComparator = (head, current) => boolean;
+export type DirtyCheckComparator<E> = (head: E, current: E) => boolean;
 
-export type DirtyCheckParams = {
-  comparator?: DirtyCheckComparator;
+export type DirtyCheckParams<E = any> = {
+  comparator?: DirtyCheckComparator<E>;
 };
 
 export const dirtyCheckDefaultParams: DirtyCheckParams = {
@@ -18,7 +18,7 @@ export const dirtyCheckDefaultParams: DirtyCheckParams = {
 };
 
 export type DirtyCheckResetParams<S = any> = {
-  updateFn?: S | ((head, current) => any);
+  updateFn?: S | ((head: S, current: S) => any);
 };
 
 export class DirtyCheckPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
@@ -34,12 +34,12 @@ export class DirtyCheckPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
     this.params = { ...dirtyCheckDefaultParams, ...params };
   }
 
-  private getHead() {
-    return this.getSource(this._entityId);
+  protected getHead() {
+    return this.head;
   }
 
   private activate() {
-    this.head = this.getHead();
+    this.head = this.getSource(this._entityId);
     this.subscription = this.selectSource(this._entityId)
       .pipe(skip(1))
       .subscribe(currentState => {
@@ -72,7 +72,7 @@ export class DirtyCheckPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
       this.activate();
       this.active = true;
     }
-    this.head = this.getHead();
+    this.head = this.getSource(this._entityId);
     this.updateDirtiness(false);
     return this;
   }
