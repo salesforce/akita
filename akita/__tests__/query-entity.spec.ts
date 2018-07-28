@@ -1,7 +1,7 @@
 import { cot, createTodos, ct, Todo, TodosStore } from './setup';
 import { isObject } from '../src/internal/utils';
 import { Subscription } from 'rxjs';
-import { getInitialEntitiesState } from '../src/api/entity-store';
+import { getInitialEntitiesState, EntityStore } from '../src/api/entity-store';
 import { QueryEntity } from '../src/api/query-entity';
 import { Order } from '../src/internal/sort';
 import { QueryConfig } from '../src/api/query-config';
@@ -791,5 +791,56 @@ describe('Sort by - Query Level', () => {
     expect(res[0].id).toEqual(0);
     expect(res[1].id).toEqual(1);
     expect(res[2].id).toEqual(2);
+  });
+});
+
+describe('selectAll - limit to and filterBy', () => {
+  const store = new EntityStore<any, any>();
+  const query = new QueryEntity<any, any>(store);
+
+  const elements = [
+    { id: 1, value: 3 },
+    { id: 2, value: 3 },
+    { id: 3, value: 5 },
+    { id: 4, value: 5 },
+    { id: 5, value: 3 },
+    { id: 6, value: 3 },
+    { id: 7, value: 5 },
+    { id: 8, value: 5 },
+    { id: 9, value: 5 },
+    { id: 10, value: 5 },
+    { id: 11, value: 5 }
+  ];
+
+  let subscription: Subscription;
+  let spy;
+  store.add(elements);
+  afterEach(() => subscription && subscription.unsubscribe());
+
+  it('should support array', () => {
+    let res;
+    subscription = query
+      .selectAll({
+        filterBy: el => el.value === 5,
+        limitTo: 5
+      })
+      .subscribe(_res => {
+        res = _res;
+      });
+    expect(res.length).toBe(5);
+  });
+
+  it('should support asObject', () => {
+    let res;
+    subscription = query
+      .selectAll({
+        asObject: true,
+        filterBy: el => el.value === 5,
+        limitTo: 5
+      })
+      .subscribe(_res => {
+        res = _res;
+      });
+    expect(Object.keys(res).length).toBe(5);
   });
 });

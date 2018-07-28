@@ -259,23 +259,37 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
 function toArray<E>(ids: ID[], entities: HashMap<E>, options: SelectOptions<E>): E[] {
   const arr = [];
   const { filterBy, limitTo, sortBy, sortByOrder } = options;
-
   const length = Math.min(limitTo || ids.length, ids.length);
 
-  for (let i = 0; i < length; i++) {
-    const id = ids[i];
-
-    if (!entityExists(id, entities)) {
-      continue;
+  if (filterBy && isUndefined(limitTo) === false) {
+    let count = 0;
+    for (let i = 0, length = ids.length; i < length; i++) {
+      if (count === limitTo) break;
+      const id = ids[i];
+      if (!entityExists(id, entities)) {
+        continue;
+      }
+      if (filterBy(entities[id])) {
+        arr.push(entities[id]);
+        count++;
+      }
     }
+  } else {
+    for (let i = 0; i < length; i++) {
+      const id = ids[i];
 
-    if (!filterBy) {
-      arr.push(entities[id]);
-      continue;
-    }
+      if (!entityExists(id, entities)) {
+        continue;
+      }
 
-    if (filterBy(entities[id])) {
-      arr.push(entities[id]);
+      if (!filterBy) {
+        arr.push(entities[id]);
+        continue;
+      }
+
+      if (filterBy(entities[id])) {
+        arr.push(entities[id]);
+      }
     }
   }
 
@@ -297,20 +311,35 @@ function toMap<E>(ids: ID[], entities: HashMap<E>, options: SelectOptions<E>, ge
 
   const length = Math.min(limitTo || ids.length, ids.length);
 
-  for (let i = 0; i < length; i++) {
-    const id = ids[i];
-
-    if (!entityExists(id, entities)) {
-      continue;
+  if (filterBy && isUndefined(limitTo) === false) {
+    let count = 0;
+    for (let i = 0, length = ids.length; i < length; i++) {
+      if (count === limitTo) break;
+      const id = ids[i];
+      if (!entityExists(id, entities)) {
+        continue;
+      }
+      if (filterBy(entities[id])) {
+        map[id] = entities[id];
+        count++;
+      }
     }
+  } else {
+    for (let i = 0; i < length; i++) {
+      const id = ids[i];
 
-    if (!filterBy) {
-      map[id] = entities[id];
-      continue;
-    }
+      if (!entityExists(id, entities)) {
+        continue;
+      }
 
-    if (toBoolean(filterBy(entities[id]))) {
-      map[id] = entities[id];
+      if (!filterBy) {
+        map[id] = entities[id];
+        continue;
+      }
+
+      if (toBoolean(filterBy(entities[id]))) {
+        map[id] = entities[id];
+      }
     }
   }
 
