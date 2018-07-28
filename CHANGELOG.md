@@ -1,3 +1,13 @@
+## [1.3.2](https://github.com/datorama/akita/compare/v1.3.1...v1.3.2) (2018-07-28)
+
+
+### Bug Fixes
+
+* **devtools:** custom action should override transaction action ([0ac3493](https://github.com/datorama/akita/commit/0ac3493)), closes [#22](https://github.com/datorama/akita/issues/22)
+* **query:** selectAll should respect limitTo with filterBy ([4343464](https://github.com/datorama/akita/commit/4343464)), closes [#25](https://github.com/datorama/akita/issues/25)
+* **sort:** export sorting enum ([36fe775](https://github.com/datorama/akita/commit/36fe775)), closes [#24](https://github.com/datorama/akita/issues/24)
+* **typescript:** support ts v2.9 ([51e9b0d](https://github.com/datorama/akita/commit/51e9b0d)), closes [#26](https://github.com/datorama/akita/issues/26)
+
 ## [1.3.1](https://github.com/datorama/akita/compare/v1.3.0...v1.3.1) (2018-07-22)
 
 
