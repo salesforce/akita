@@ -1,8 +1,8 @@
 import { AkitaPlugin, Queries } from '../plugin';
 import { QueryEntity } from '../../api/query-entity';
-import { BehaviorSubject, Subscription, Observable } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { distinctUntilChanged, skip } from 'rxjs/operators';
-import { isFunction, isUndefined } from '../../internal/utils';
+import { isFunction, isUndefined, toBoolean } from '../../internal/utils';
 import { EntityParam } from '../entity-collection-plugin';
 import { globalState } from '../../internal/global-state';
 import { Query } from '../../api/query';
@@ -77,7 +77,16 @@ export class DirtyCheckPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
     return this;
   }
 
+  isDirty() {
+    return toBoolean(this.dirty.value);
+  }
+
+  hasHead() {
+    return toBoolean(this.getHead());
+  }
+
   destroy() {
+    this.head = null;
     this.subscription && this.subscription.unsubscribe();
   }
 
