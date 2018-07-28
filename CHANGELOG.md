@@ -1,3 +1,11 @@
+## [1.3.1](https://github.com/datorama/akita/compare/v1.3.0...v1.3.1) (2018-07-22)
+
+
+### Bug Fixes
+
+* **dirty-check-plugin:** add type remove unnecessary code ([5a8ec9b](https://github.com/datorama/akita/commit/5a8ec9b))
+* **persist-state:** dont call lc on include and exclude ([5e38360](https://github.com/datorama/akita/commit/5e38360))
+
 # [1.3.0](https://github.com/datorama/akita/compare/v1.2.4...v1.3.0) (2018-07-22)
 
 
