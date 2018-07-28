@@ -6,6 +6,7 @@ import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { ProductsQuery } from './products.query';
 import { ID, noop } from '../../../../../akita/src';
+import { applyAction } from '../../../../../akita/index';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,17 @@ export class ProductsService {
    * @returns {Observable<Product[]>}
    */
   get(): Observable<Product[]> {
-    const request = this.productsDataService.get().pipe(tap(response => this.productsStore.set(response)));
+    const request = this.productsDataService.get().pipe(
+      tap(response => {
+        // this.productsStore.set(response);
+        applyAction(
+          () => {
+            this.productsStore.set(response);
+          },
+          { type: '[Products Service] Fetch All' }
+        );
+      })
+    );
 
     return this.productsQuery.isPristine ? request : noop();
   }
