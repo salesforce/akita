@@ -7,7 +7,7 @@ export class Todo {
   id: ID;
   title?: string;
   completed? = false;
-
+  price?: number;
   constructor(params: Todo) {
     Object.assign(this, params);
     if (!params.title) {

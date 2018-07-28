@@ -131,9 +131,11 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    * });
    *
    */
+  update(id: ID | ID[] | null, newStateFn: ((entity: Readonly<E>) => Partial<E>));
+  update(id: ID | ID[] | null, newStateFn: Partial<E>);
+  update(id: ID | ID[] | null, newState: Partial<S>);
   update(newState: Partial<S>);
-  update(id: ID | ID[] | null, newStateFn: ((entity: Readonly<E>) => Partial<E>) | Partial<E>);
-  update(stateOrId: Partial<S> | ID | ID[] | null, newStateFn?: ((entity: Readonly<E>) => Partial<E>) | Partial<E>) {
+  update(stateOrId: ID | ID[] | null | Partial<S>, newStateFn?: ((entity: Readonly<E>) => Partial<E>) | Partial<E> | Partial<S>) {
     const ids = toBoolean(stateOrId) ? coerceArray(stateOrId) : this._value().ids;
     isDev() && globalState.setAction({ type: 'Update', entityId: ids });
 

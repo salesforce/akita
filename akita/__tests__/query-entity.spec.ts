@@ -664,27 +664,28 @@ describe('Sort by', () => {
 
   it('should sort by provided key - desc', () => {
     todosStore.set([
-      { id: 1, title: 'Todo 1', complete: false, price: 10 },
+      { id: 1, title: 'Todo 1', completed: false, price: 10 },
       {
         id: 0,
         title: 'Todo 0',
-        complete: false,
+        completed: false,
         price: 40
       },
-      { id: 2, title: 'Todo 2', complete: true, price: 3 }
+      { id: 2, title: 'Todo 2', completed: true, price: 3 }
     ] as any);
 
-    todosStore.update(2, { complete: true } as any);
+    todosStore.update(2, { completed: true } as any);
     sub = queryTodos
       .selectAll({
-        sortBy: 'complete',
+        asObject: false,
+        sortBy: 'completed',
         sortByOrder: Order.DESC
       })
       .subscribe(_res => (res = _res));
 
-    expect(res[0].complete).toEqual(true);
-    expect(res[1].complete).toEqual(false);
-    expect(res[2].complete).toEqual(false);
+    expect(res[0].completed).toEqual(true);
+    expect(res[1].completed).toEqual(false);
+    expect(res[2].completed).toEqual(false);
   });
 
   it('should sort by provided custom function', () => {

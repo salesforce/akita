@@ -133,7 +133,7 @@ export function update<T>(array: T[], indexOrItem: number | object, updated: any
       return updated;
     }
 
-    if (isObject(indexOrItem) && indexOrItem === current) {
+    if (isObject(indexOrItem) && (indexOrItem as any) === current) {
       return {
         ...(indexOrItem as object),
         ...updated
