@@ -48,7 +48,7 @@ describe('DirtyCheck', () => {
       expect(spy).toHaveBeenLastCalledWith(false);
     });
 
-    it("should mark as dirty when the store value doesn't equal to head", () => {
+    it('should mark as dirty when the store value doesn\'t equal to head', () => {
       widgetsStore.add(createWidget());
       expect(spy).toHaveBeenLastCalledWith(true);
     });
@@ -107,6 +107,30 @@ describe('DirtyCheck', () => {
     it('should unsubscribe on destroy', () => {
       dirtyCheck.destroy();
       expect(dirtyCheck.subscription.closed).toBeTruthy();
+    });
+
+    it('should return true if state is dirty', () => {
+      dirtyCheck.updateDirtiness(true);
+      const isDirty = dirtyCheck.isDirty();
+      expect(isDirty).toBeTruthy();
+    });
+
+    it('should return false if state is not dirty', () => {
+      dirtyCheck.updateDirtiness(false);
+      const isDirty = dirtyCheck.isDirty();
+      expect(isDirty).toBeFalsy();
+    });
+
+    it('should return true if state has head', () => {
+      dirtyCheck.setHead();
+      const isDirty = dirtyCheck.hasHead();
+      expect(isDirty).toBeTruthy();
+    });
+
+    it('should return false if state does not has head', () => {
+      dirtyCheck.head = null;
+      const hasHead = dirtyCheck.hasHead();
+      expect(hasHead).toBeFalsy();
     });
   });
 });
