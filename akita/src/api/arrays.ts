@@ -196,3 +196,7 @@ export function update<T>(array: T[], indexOrItem: number | object, updated: any
 export function splice<T>(array: T[], start = array.length, deleteCount = array.length - start, ...elementN): T[] {
   return [...array.slice(0, start), ...elementN, ...array.slice(start + (deleteCount < 0 ? 0 : deleteCount))];
 }
+
+export function toggle<T>(arr: T[], item: any) {
+  return arr.indexOf(item) > -1 ? arr.filter(current => item !== current) : push(arr, item);
+}
