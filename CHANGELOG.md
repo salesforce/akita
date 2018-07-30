@@ -1,3 +1,11 @@
+## [1.3.4](https://github.com/datorama/akita/compare/v1.3.3...v1.3.4) (2018-07-30)
+
+
+### Bug Fixes
+
+* **build:** add rxjs import ([0d77cd2](https://github.com/datorama/akita/commit/0d77cd2))
+* **entity-dirty-check-plugin:** change signature of isDirty ([43e3050](https://github.com/datorama/akita/commit/43e3050))
+
 ## [1.3.3](https://github.com/datorama/akita/compare/v1.3.2...v1.3.3) (2018-07-29)
 
 
