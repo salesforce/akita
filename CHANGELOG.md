@@ -1,3 +1,11 @@
+## [1.3.5](https://github.com/datorama/akita/compare/v1.3.4...v1.3.5) (2018-07-30)
+
+
+### Bug Fixes
+
+* **query:** avoid memoization when we have sort by option ([8e41ccc](https://github.com/datorama/akita/commit/8e41ccc))
+* **query:** select all should not memoize when passing sort by ([0e83ed0](https://github.com/datorama/akita/commit/0e83ed0))
+
 ## [1.3.4](https://github.com/datorama/akita/compare/v1.3.3...v1.3.4) (2018-07-30)
 
 
