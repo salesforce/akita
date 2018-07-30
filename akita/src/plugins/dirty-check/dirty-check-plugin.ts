@@ -6,6 +6,7 @@ import { isFunction, isUndefined, toBoolean } from '../../internal/utils';
 import { EntityParam } from '../entity-collection-plugin';
 import { globalState } from '../../internal/global-state';
 import { Query } from '../../api/query';
+import { Observable } from 'rxjs';
 
 export type DirtyCheckComparator<E> = (head: E, current: E) => boolean;
 
@@ -27,7 +28,7 @@ export class DirtyCheckPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
   private subscription: Subscription;
   private active = false;
 
-  isDirty$ = this.dirty.asObservable().pipe(distinctUntilChanged());
+  isDirty$: Observable<boolean> = this.dirty.asObservable().pipe(distinctUntilChanged());
 
   constructor(protected query: Queries<E, S>, private params?: DirtyCheckParams, private _entityId?: EntityParam) {
     super(query);
