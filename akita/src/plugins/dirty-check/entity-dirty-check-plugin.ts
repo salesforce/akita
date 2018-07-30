@@ -25,14 +25,29 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
     return this;
   }
 
+  hasHead(id: ID) {
+    if (this.entities.has(id)) {
+      const entity = this.getEntity(id);
+      return entity.hasHead();
+    }
+
+    return false;
+  }
+
   reset(ids?: IDS, params: DirtyCheckResetParams = {}) {
     this.forEachId(ids, e => e.reset(params));
   }
 
-  isDirty(id: ID) {
+  isDirty(id: ID): Observable<boolean>;
+  isDirty(id: ID, asObservable: true): Observable<boolean>;
+  isDirty(id: ID, asObservable: false): boolean;
+  isDirty(id: ID, asObservable = true): Observable<boolean> | boolean {
     if (this.entities.has(id)) {
-      return this.getEntity(id).isDirty$;
+      const entity = this.getEntity(id);
+      return asObservable ? entity.isDirty$ : entity.isDirty();
     }
+
+    return false;
   }
 
   isSomeDirty(): Observable<boolean> {

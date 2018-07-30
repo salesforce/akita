@@ -1,5 +1,6 @@
 import { DirtyCheckPlugin, EntityDirtyCheckPlugin } from '../src/index';
 import { Widget, WidgetsQuery, WidgetsStore } from './setup';
+import { Observable } from 'rxjs';
 
 describe('DirtyCheck', () => {
   function createWidget() {
@@ -198,5 +199,39 @@ describe('DirtyCheckEntity', () => {
     expect(spy).toHaveBeenLastCalledWith(true);
     widgetsStore.update(5, { title: 'Widget 5' });
     expect(spy).toHaveBeenLastCalledWith(false);
+  });
+
+  it('should return isDirty as observable by default', () => {
+    const widget = createWidget();
+    widgetsStore.add(widget);
+    const isDirty = collection.isDirty(widget.id);
+    expect(isDirty).toBeInstanceOf(Observable);
+  });
+
+  it('should return isDirty as observable', () => {
+    const widget = createWidget();
+    widgetsStore.add(widget);
+    const isDirty = collection.isDirty(widget.id, true);
+    expect(isDirty).toBeInstanceOf(Observable);
+  });
+
+  it('should return isDirty as boolean', () => {
+    const widget = createWidget();
+    widgetsStore.add(widget);
+    const isDirty = collection.isDirty(widget.id, false);
+    expect(typeof isDirty).toEqual('boolean');
+  });
+
+  it('should return false for hasHead()', () => {
+    const widget = createWidget();
+    widgetsStore.add(widget);
+    expect(collection.hasHead(widget.id)).toBeFalsy();
+  });
+
+  it('should return true for hasHead()', () => {
+    const widget = createWidget();
+    widgetsStore.add(widget);
+    collection.setHead(widget.id);
+    expect(collection.hasHead(widget.id)).toBeTruthy();
   });
 });
