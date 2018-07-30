@@ -57,7 +57,7 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
         if (options.asObject) {
           return toMap(ids, entities, options);
         } else {
-          if (!options.filterBy) {
+          if (!options.filterBy || !options.sortBy) {
             if (!this.memoized) {
               this.memoized = memoizeOne(toArray);
             }
