@@ -100,7 +100,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
     const toArray = coerceArray(entities);
     if (toArray.length === 0) return;
     isDev() && globalState.setAction({ type: 'Add' });
-    this.setState(state => _crud._add<S, E>(state, coerceArray(entities), this.idKey));
+    this.setState(state => _crud._add<S, E>(state, toArray, this.idKey));
   }
 
   /**
