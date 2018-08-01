@@ -12,7 +12,7 @@ import { isObject } from '../internal/utils';
  * // -> originalArray ['a', 'b', 'c', 'd', 'e']
  * // -> resultArray ['a', 'b', 'c', 'd', 'e', 'f', 'g']
  */
-export function push<T>(array: T[], ...elementN): T[] {
+export function push<T>(array: T[], ...elementN: T[]): T[] {
   return [...array, ...elementN];
 }
 
@@ -52,7 +52,7 @@ export function pop<T>(array: T[]): T[] {
  * // -> originalArray ['a', 'b', 'c', 'd', 'e']
  * // -> resultArray ['f', 'g', 'a', 'b', 'c', 'd', 'e']
  */
-export function unshift<T>(array: T[], ...elementN): T[] {
+export function unshift<T>(array: T[], ...elementN: T[]): T[] {
   return [...elementN, ...array];
 }
 
@@ -127,7 +127,7 @@ export function swap<T>(array: T[], firstIndex: number, secondIndex: number): T[
  * const resultArray = update(originalArray, originalArray[0], {title: 3});
  * // -> resultArray  [{title: 3}, {title: 2}];
  */
-export function update<T>(array: T[], indexOrItem: number | object, updated: any): T[] {
+export function update<T>(array: T[], indexOrItem: number | object, updated: T): T[] {
   return array.map((current, idx) => {
     if (typeof indexOrItem === 'number' && idx === indexOrItem) {
       return updated;
@@ -193,10 +193,10 @@ export function update<T>(array: T[], indexOrItem: number | object, updated: any
  * // -> originalArray ['a', 'b', 'c', 'd', 'e']
  * // -> resultArray ['a', 'b', 'c', 'lorem', 'ipsum']
  */
-export function splice<T>(array: T[], start = array.length, deleteCount = array.length - start, ...elementN): T[] {
+export function splice<T>(array: T[], start = array.length, deleteCount = array.length - start, ...elementN: T[]): T[] {
   return [...array.slice(0, start), ...elementN, ...array.slice(start + (deleteCount < 0 ? 0 : deleteCount))];
 }
 
-export function toggle<T>(arr: T[], item: any) {
+export function toggle<T>(arr: T[], item: T) {
   return arr.indexOf(item) > -1 ? arr.filter(current => item !== current) : push(arr, item);
 }
