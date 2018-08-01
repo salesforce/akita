@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { ID } from '../api/types';
+import { ActiveState, EntityState, HashMap, ID } from '../api/types';
 
 /** Wraps the provided value in an array, unless the provided _value is an array. */
 export function coerceArray<T>(value: T | T[]): T[] {
@@ -19,9 +19,6 @@ export function isFunction(value): value is Function {
   return typeof value === 'function';
 }
 
-/**
- *
- */
 export function toBoolean(value: any): boolean {
   return value != null && `${value}` !== 'false';
 }
@@ -33,8 +30,8 @@ export function isUndefined(value) {
 /**
  * Check if entity exists
  */
-export function entityExists(id: ID, entities) {
-  return !isUndefined(entities[id]);
+export function entityExists<E>(id: ID, entities: HashMap<E>) {
+  return entities.hasOwnProperty(id);
 }
 
 /**
@@ -61,4 +58,18 @@ export function isNumber(value) {
 
 export function isDefined(val) {
   return val !== null && typeof val !== 'undefined';
+}
+
+/**
+ * Check if the active entity exist
+ */
+export function resetActive<E>(state: EntityState<E>) {
+  return isActiveState(state) && entityExists((state as ActiveState).active, state.entities) === false;
+}
+
+/**
+ * Check if the store supports active entity
+ */
+export function isActiveState<E>(state: EntityState<E>) {
+  return (state as ActiveState).hasOwnProperty('active');
 }

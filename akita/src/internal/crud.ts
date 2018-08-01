@@ -1,5 +1,5 @@
 import { Entities, EntityState, HashMap, ID, Newable } from '../api/types';
-import { entityExists, isPlainObject } from './utils';
+import { entityExists, isPlainObject, resetActive } from './utils';
 import { assertEntityExists, assertEntityState } from './error';
 
 export class CRUD {
@@ -22,11 +22,17 @@ export class CRUD {
       ids = isArray ? (entities as E[]).map(entity => entity[idKey]) : Object.keys(normalized as HashMap<E>).map(id => entities[id][idKey]);
     }
 
-    return {
+    const newState = {
       ...(state as any),
       entities: normalized,
       ids
     };
+
+    if (resetActive(newState)) {
+      newState.active = null;
+    }
+
+    return newState;
   }
 
   _replaceEntity<T extends EntityState>(state: T, id: ID, entity): T {
@@ -96,8 +102,8 @@ export class CRUD {
     };
   }
 
-  _remove<T extends EntityState>(state: T, ids: ID[] | null, resetActive?): T {
-    if (!ids) return this._removeAll(state, resetActive);
+  _remove<T extends EntityState>(state: T, ids: ID[] | null): T {
+    if (!ids) return this._removeAll(state);
 
     const removed = ids.reduce((acc, id) => {
       const { [id]: entity, ...rest } = acc;
@@ -110,22 +116,20 @@ export class CRUD {
       ids: state.ids.filter(current => ids.indexOf(current) === -1)
     };
 
-    if ('active' in state) {
-      newState.active = resetActive ? null : state.active;
+    if (resetActive(newState)) {
+      newState.active = null;
     }
 
     return newState;
   }
 
-  private _removeAll<T extends EntityState>(state: T, active?: ID): T {
+  private _removeAll<T extends EntityState>(state: T): T {
     const newState = {
       ...(state as any),
       entities: {},
-      ids: []
+      ids: [],
+      active: null
     };
-    if (active) {
-      newState.active = active;
-    }
 
     return newState;
   }

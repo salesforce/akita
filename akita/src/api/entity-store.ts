@@ -196,14 +196,15 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    * this.store.remove([1,2,3]);
    * this.store.remove();
    */
-  remove(id?: ID | ID[], resetActive?) {
+  remove(id?: ID | ID[]) {
     if (this._value().ids.length === 0) return;
-    if (!toBoolean(id)) this.setPristine();
+    const idExists = toBoolean(id);
+    if (!idExists) this.setPristine();
 
-    const ids = toBoolean(id) ? coerceArray(id) : null;
+    const ids = idExists ? coerceArray(id) : null;
     isDev() && globalState.setAction({ type: 'Remove', entityId: ids });
 
-    this.setState(state => _crud._remove(state, ids, resetActive));
+    this.setState(state => _crud._remove(state, ids));
   }
 
   /**
@@ -236,7 +237,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   /**
    * Set the given entity as active.
    */
-  setActive(id) {
+  setActive(id: ID) {
     if (id === this._value().active) return;
     isDev() && globalState.setAction({ type: 'Set Active', entityId: id });
     this.setState(state => {

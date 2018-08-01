@@ -3,7 +3,7 @@ import { ID } from '../api/types';
 
 export type Action = {
   type: string;
-  entityId?: ID[];
+  entityId?: ID[] | ID;
   payload?: any;
 };
 

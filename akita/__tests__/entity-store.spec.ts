@@ -19,6 +19,17 @@ describe('EntitiesStore', () => {
       expect(store._value().entities[1]).toBeDefined();
       expect(store._value().entities[1] instanceof Todo).toBeTruthy();
     });
+
+    it('should reset the active if entity does not exist anymore', () => {
+      store.set([new Todo({ id: 1, title: '1' })]);
+      store.setActive(1);
+      expect(store._value().active).toEqual(1);
+      expect(store._value().entities[1]).toEqual(new Todo({ id: 1, title: '1' }));
+      store.set([new Todo({ id: 2, title: '2' })]);
+      expect(store._value().active).toBeNull();
+      expect(store._value().entities[1]).toBeUndefined();
+      expect(store._value().entities[2]).toEqual(new Todo({ id: 2, title: '2' }));
+    });
   });
 
   describe('createOrReplace', () => {
@@ -27,7 +38,7 @@ describe('EntitiesStore', () => {
       expect(store.entities[1]).toBeDefined();
     });
 
-    it('should replace if  exists', () => {
+    it('should replace if exists', () => {
       store.createOrReplace(1, new Todo({ id: 1 }));
       expect(store.entities[1]).toBeDefined();
       store.createOrReplace(1, new Todo({ id: 1, title: 'replaced' }));
@@ -151,6 +162,25 @@ describe('EntitiesStore', () => {
       expect(store.entities[1]).toBeUndefined();
     });
 
+    it('should remove and set active to null', () => {
+      const todo = new Todo({ id: 2 });
+      store.add(todo);
+      store.setActive(2);
+      expect(store._value().active).toEqual(2);
+      store.remove(2);
+      expect(store.entities[2]).toBeUndefined();
+      expect(store._value().active).toBeNull();
+    });
+
+    it('should remove and NOT set active to null', () => {
+      store.add(new Todo({ id: 1 }));
+      store.add(new Todo({ id: 2 }));
+      store.setActive(2);
+      expect(store._value().active).toEqual(2);
+      store.remove(1);
+      expect(store._value().active).toEqual(2);
+    });
+
     it('should remove many', () => {
       const todo = new Todo({ id: 1 });
       const todo2 = new Todo({ id: 2 });
@@ -171,6 +201,19 @@ describe('EntitiesStore', () => {
       expect(store.entities[1]).toBeUndefined();
       expect(store.entities[2]).toBeUndefined();
       expect(store._value().ids.length).toEqual(0);
+    });
+
+    it('should remove all and set active to null', () => {
+      const todo = new Todo({ id: 1 });
+      const todo2 = new Todo({ id: 2 });
+      store.add(todo);
+      store.add(todo2);
+      store.setActive(1);
+      store.remove();
+      expect(store.entities[1]).toBeUndefined();
+      expect(store.entities[2]).toBeUndefined();
+      expect(store._value().ids.length).toEqual(0);
+      expect(store._value().active).toBeNull();
     });
   });
 
