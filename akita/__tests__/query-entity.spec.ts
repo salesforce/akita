@@ -475,51 +475,6 @@ describe('Many', () => {
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith([undefined, undefined]);
     });
-
-    it('should select many - asObject', () => {
-      queryTodos.selectMany([0, 1], { asObject: true }).subscribe(spy);
-      todosStore.add(createTodos(3));
-      jest.runAllTimers();
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith({
-        0: {
-          id: 0,
-          title: `Todo ${0}`,
-          complete: false
-        },
-        1: {
-          id: 1,
-          title: `Todo ${1}`,
-          complete: false
-        }
-      });
-    });
-
-    it('should select many - asObject and return undefined', () => {
-      queryTodos.selectMany([0, 1], { asObject: true, filterUndefined: false }).subscribe(spy);
-      jest.runAllTimers();
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith({ 0: undefined, 1: undefined });
-    });
-
-    it('should not return entity that does not exists - asObject', () => {
-      todosStore.add(createTodos(3));
-      queryTodos.selectMany([0, 1, 743], { asObject: true }).subscribe(spy);
-      jest.runAllTimers();
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith({
-        0: {
-          id: 0,
-          title: `Todo ${0}`,
-          complete: false
-        },
-        1: {
-          id: 1,
-          title: `Todo ${1}`,
-          complete: false
-        }
-      });
-    });
   });
 });
 
