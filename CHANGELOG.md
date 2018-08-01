@@ -1,3 +1,11 @@
+## [1.3.6](https://github.com/datorama/akita/compare/v1.3.5...v1.3.6) (2018-08-01)
+
+
+### Bug Fixes
+
+* **active:** reset the active when the entity does not exist ([2e1b043](https://github.com/datorama/akita/commit/2e1b043))
+* **arrays:** fix array type in update function ([611dcab](https://github.com/datorama/akita/commit/611dcab))
+
 ## [1.3.5](https://github.com/datorama/akita/compare/v1.3.4...v1.3.5) (2018-07-30)
 
 
