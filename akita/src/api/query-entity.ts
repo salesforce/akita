@@ -99,32 +99,14 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
    * @example
    * this.store.selectMany([1,2]);
    */
-  selectMany(ids: ID[], options: { asObject: true }): Observable<HashMap<E>>;
-  selectMany(ids: ID[], options: { asObject: true; filterUndefined: boolean }): Observable<HashMap<E>>;
   selectMany(ids: ID[], options: { filterUndefined: boolean }): Observable<E[]>;
   selectMany(ids: ID[]): Observable<E[]>;
-  selectMany(ids: ID[], options: { asObject?: boolean; filterUndefined?: boolean } = {}): Observable<E[] | HashMap<E>> {
-    const asObject = options.asObject || false;
+  selectMany(ids: ID[], options: { filterUndefined?: boolean } = {}): Observable<E[]> {
     const filterUndefined = isUndefined(options.filterUndefined) ? true : options.filterUndefined;
     const entities = ids.map(id => this.selectEntity(id));
 
     return combineLatest(entities).pipe(
-      map(entities => {
-        if (asObject) {
-          let toMap = {};
-          const all = this.getSnapshot().entities;
-          for (let i = 0, len = ids.length; i < len; i++) {
-            const id = ids[i];
-            if (!entityExists(id, all) && filterUndefined) {
-              continue;
-            }
-            toMap[id] = entities[id];
-          }
-          return toMap;
-        }
-
-        return filterUndefined ? entities.filter(val => !isUndefined(val)) : entities;
-      }),
+      map(entities => (filterUndefined ? entities.filter(val => !isUndefined(val)) : entities)),
       auditTime(0)
     );
   }
