@@ -21,13 +21,13 @@ export class ProductsService {
   get(): Observable<Product[]> {
     const request = this.productsDataService.get().pipe(
       tap(response => {
-        // this.productsStore.set(response);
-        applyAction(
-          () => {
-            this.productsStore.set(response);
-          },
-          { type: '[Products Service] Fetch All' }
-        );
+        this.productsStore.set(response);
+        // applyAction(
+        //   () => {
+        //     this.productsStore.set(response);
+        //   },
+        //   { type: '[Products Service] Fetch All' }
+        // );
       })
     );
 

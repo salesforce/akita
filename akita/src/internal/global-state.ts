@@ -7,52 +7,37 @@ export type Action = {
   payload?: any;
 };
 
-const initialAction = { type: '@@INIT' };
-
 export class AkitaGlobals {
-  private currentAction: Action = initialAction;
   private customAction;
-  private _skipAction = false;
+  currentAction: Action;
+  skipAction = false;
   skipTransactionMsg = false;
-  /**
-   * How many transactions block
-   */
+  currentT = [];
   activeTransactions = 0;
-
-  /**
-   * Emit when the last transaction committed
-   */
   batchTransaction: Subject<boolean>;
 
   setAction(_action: Action) {
     if (this.customAction) {
       this.currentAction = this.customAction;
       this.customAction = null;
-    } else if (this.activeTransactions === 0) {
-      this.currentAction = _action;
+    } else {
+      if (this.activeTransactions === 0) {
+        this.currentAction = _action;
+      }
+    }
+
+    if (this.activeTransactions > 0) {
+      this.currentT.push(_action);
     }
   }
 
-  setInitialAction() {
-    this.currentAction = initialAction;
-  }
-
-  getAction() {
-    return this.currentAction;
-  }
-
   setCustomAction(action: Action, skipTransactionMsg = false) {
-    this.currentAction = action;
-    this.customAction = action;
+    this.currentAction = this.customAction = action;
     this.skipTransactionMsg = skipTransactionMsg;
   }
 
   setSkipAction(skip = true) {
-    this._skipAction = skip;
-  }
-
-  skipAction() {
-    return this._skipAction;
+    this.skipAction = skip;
   }
 }
 

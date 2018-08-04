@@ -8,7 +8,6 @@ export function startBatch() {
   if (!isTransactionInProcess()) {
     globalState.batchTransaction = new Subject();
   }
-
   globalState.activeTransactions++;
 }
 

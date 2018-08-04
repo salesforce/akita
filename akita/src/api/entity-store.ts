@@ -67,7 +67,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
       this.setState(state => _crud._set(state, entities, entityClass, this.idKey));
       this.setDirty();
       this.setLoading();
-      isDev() && globalState.setAction({ type: 'Set' });
+      isDev() && globalState.setAction({ type: 'Set Entities' });
     });
   }
 
@@ -85,7 +85,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
       }
       return this.add(entity);
     }
-    isDev() && globalState.setAction({ type: 'Create or Replace', entityId: [id] });
+    isDev() && globalState.setAction({ type: 'Upsert Entity', entityId: [id] });
     this.setState(state => _crud._replaceEntity(state, id, entity));
   }
 
@@ -99,7 +99,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   add(entities: E[] | E) {
     const toArray = coerceArray(entities);
     if (toArray.length === 0) return;
-    isDev() && globalState.setAction({ type: 'Add' });
+    isDev() && globalState.setAction({ type: 'Add Entity' });
     this.setState(state => _crud._add<S, E>(state, toArray, this.idKey));
   }
 
@@ -137,10 +137,10 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   update(newState: Partial<S>);
   update(stateOrId: ID | ID[] | null | Partial<S>, newStateFn?: ((entity: Readonly<E>) => Partial<E>) | Partial<E> | Partial<S>) {
     const ids = toBoolean(stateOrId) ? coerceArray(stateOrId) : this._value().ids;
-    isDev() && globalState.setAction({ type: 'Update', entityId: ids });
+    isDev() && globalState.setAction({ type: 'Update Entity', entityId: ids });
 
     this.setState(state => {
-      const newState = typeof newStateFn === 'function' ? newStateFn(state.entities[stateOrId as ID]) : newStateFn;
+      const newState = isFunction(newStateFn) ? newStateFn(state.entities[stateOrId as ID]) : newStateFn;
       return _crud._update(state, ids, newState);
     });
   }
@@ -202,7 +202,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
     if (!idExists) this.setPristine();
 
     const ids = idExists ? coerceArray(id) : null;
-    isDev() && globalState.setAction({ type: 'Remove', entityId: ids });
+    isDev() && globalState.setAction({ type: 'Remove Entity', entityId: ids });
 
     this.setState(state => _crud._remove(state, ids));
   }
@@ -223,7 +223,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    */
   updateActive(newStateFn: ((entity: Readonly<E>) => Partial<E>) | Partial<E>) {
     assertActive(this._value());
-    isDev() && globalState.setAction({ type: 'Update Active', entityId: this._value().active });
+    isDev() && globalState.setAction({ type: 'Update Active Entity', entityId: this._value().active });
     this.setState(state => {
       const activeId = state.active;
       const newState = isFunction(newStateFn) ? newStateFn(state.entities[activeId]) : newStateFn;
@@ -239,7 +239,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    */
   setActive(id: ID) {
     if (id === this._value().active) return;
-    isDev() && globalState.setAction({ type: 'Set Active', entityId: id });
+    isDev() && globalState.setAction({ type: 'Set Active Entity', entityId: id });
     this.setState(state => {
       return {
         ...(state as any),

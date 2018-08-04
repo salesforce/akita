@@ -28,24 +28,23 @@ export function akitaDevtools(ngZone, options: Partial<DevtoolsOptions> = {}) {
   if (options.predicate) defaultOptions.predicate = options.predicate;
 
   const devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__.connect(defaultOptions);
+  let appState = {};
 
   rootDispatcher.subscribe(action => {
     if (action.type === Actions.NEW_STATE) {
-      if (globalState.skipAction()) {
+      if (globalState.skipAction) {
         globalState.setSkipAction(false);
         return;
       }
-      let acc = {};
-      for (let i = 0, keys = Object.keys(__stores__); i < keys.length; i++) {
-        const storeName = keys[i];
-        acc[storeName] = __stores__[storeName]._value();
-      }
 
-      const { type, entityId } = globalState.getAction();
+      appState = {
+        ...appState,
+        [action.payload.name]: __stores__[action.payload.name]._value()
+      };
 
+      const { type, entityId } = globalState.currentAction;
       const storeName = capitalize(action.payload.name);
-      let msg;
-      msg = isDefined(entityId) ? `${storeName} - ${type} (ids: ${entityId})` : `${storeName} - ${type}`;
+      let msg = isDefined(entityId) ? `[${storeName}] - ${type} (ids: ${entityId})` : `[${storeName}] - ${type}`;
 
       if (options.logTrace) {
         console.group(msg);
@@ -53,8 +52,7 @@ export function akitaDevtools(ngZone, options: Partial<DevtoolsOptions> = {}) {
         console.groupEnd();
       }
 
-      devTools.send({ type: msg }, acc);
-      acc = null;
+      devTools.send({ type: msg, transaction: globalState.currentT.map(t => t.type) }, appState);
     }
   });
 
@@ -63,12 +61,7 @@ export function akitaDevtools(ngZone, options: Partial<DevtoolsOptions> = {}) {
       const payloadType = message.payload.type;
 
       if (payloadType === 'COMMIT') {
-        let acc = {};
-        for (let i = 0, keys = Object.keys(__stores__); i < keys.length; i++) {
-          const storeName = keys[i];
-          acc[storeName] = __stores__[storeName]._value();
-        }
-        devTools.init(acc);
+        devTools.init(appState);
         return;
       }
 

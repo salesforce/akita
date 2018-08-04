@@ -67,7 +67,7 @@ export class Store<S> {
    * Initial the store with the state
    */
   constructor(initialState) {
-    globalState.setInitialAction();
+    globalState.setAction({ type: '@@INIT' });
     __stores__[this.storeName] = this;
     this.setState(() => initialState);
     rootDispatcher.next({
@@ -146,7 +146,7 @@ export class Store<S> {
   update(newState: Partial<S>);
   update(id: ID | ID[] | null, newState: Partial<S>);
   update(newStateOrId: Partial<S> | ID | ID[] | null, newState?: Partial<S>) {
-    globalState.setAction({ type: 'Update' });
+    globalState.setAction({ type: 'Update Store' });
     this.setState(state => {
       const merged = Object.assign({}, state, newStateOrId);
       if (isPlainObject(this._value())) {
@@ -194,6 +194,7 @@ export class Store<S> {
         globalState.setAction({ type: '@Transaction' });
       }
       this.dispatch(this._value());
+      globalState.currentT = [];
       globalState.skipTransactionMsg = false;
     });
   }
