@@ -1,3 +1,10 @@
+## [1.3.7](https://github.com/datorama/akita/compare/v1.3.6...v1.3.7) (2018-08-04)
+
+
+### Bug Fixes
+
+* **devtools:** improve devtools experience ([8293e72](https://github.com/datorama/akita/commit/8293e72))
+
 ## [1.3.6](https://github.com/datorama/akita/compare/v1.3.5...v1.3.6) (2018-08-01)
 
 
