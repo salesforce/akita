@@ -239,48 +239,33 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
 }
 
 function toArray<E>(ids: ID[], entities: HashMap<E>, options: SelectOptions<E>): E[] {
-  const arr = [];
+  let arr = [];
   const { filterBy, limitTo, sortBy, sortByOrder } = options;
-  const length = Math.min(limitTo || ids.length, ids.length);
 
-  if (filterBy && isUndefined(limitTo) === false) {
-    let count = 0;
-    for (let i = 0, length = ids.length; i < length; i++) {
-      if (count === limitTo) break;
-      const id = ids[i];
-      if (!entityExists(id, entities)) {
-        continue;
-      }
-      if (filterBy(entities[id])) {
-        arr.push(entities[id]);
-        count++;
-      }
+  for (let i = 0; i < ids.length; i++) {
+    const id = ids[i];
+
+    if (!entityExists(id, entities)) {
+      continue;
     }
-  } else {
-    for (let i = 0; i < length; i++) {
-      const id = ids[i];
 
-      if (!entityExists(id, entities)) {
-        continue;
-      }
+    if (!filterBy) {
+      arr.push(entities[id]);
+      continue;
+    }
 
-      if (!filterBy) {
-        arr.push(entities[id]);
-        continue;
-      }
-
-      if (filterBy(entities[id])) {
-        arr.push(entities[id]);
-      }
+    if (filterBy(entities[id])) {
+      arr.push(entities[id]);
     }
   }
 
   if (sortBy) {
     let _sortBy = isFunction(sortBy) ? sortBy : compareValues(sortBy, sortByOrder);
-    return arr.slice().sort(_sortBy);
+    arr = arr.sort(_sortBy);
   }
+  const length = Math.min(limitTo || arr.length, arr.length);
 
-  return arr;
+  return length === arr.length ? arr : arr.slice(0, length);
 }
 
 function toMap<E>(ids: ID[], entities: HashMap<E>, options: SelectOptions<E>, get = false): HashMap<E> {

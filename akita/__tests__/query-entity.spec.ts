@@ -800,3 +800,55 @@ describe('selectAll - limit to and filterBy', () => {
     expect(Object.keys(res).length).toBe(5);
   });
 });
+
+describe('selectAll - limit to and filterBy and sorting', () => {
+  const store = new EntityStore<any, any>();
+  const query = new QueryEntity<any, any>(store);
+
+  const elements = [
+    { id: 4, value: 5 },
+    { id: 6, value: 3 },
+    { id: 2, value: 3 },
+    { id: 1, value: 3 },
+    { id: 10, value: 5 },
+    { id: 7, value: 5 },
+    { id: 9, value: 5 },
+    { id: 8, value: 5 },
+    { id: 5, value: 3 },
+    { id: 3, value: 5 },
+    { id: 11, value: 5 }
+  ];
+
+  let subscription: Subscription;
+  let spy;
+  store.add(elements);
+  afterEach(() => subscription && subscription.unsubscribe());
+
+  it('should support array', () => {
+    let res;
+    subscription = query
+      .selectAll({
+        filterBy: el => el.value === 5,
+        limitTo: 5,
+        sortBy: 'id'
+      })
+      .subscribe(_res => {
+        res = _res;
+      });
+    expect(res.length).toBe(5);
+  });
+
+  it('should support array', () => {
+    let res;
+    subscription = query
+      .selectAll({
+        filterBy: el => el.value === 5,
+        limitTo: 8,
+        sortBy: 'id'
+      })
+      .subscribe(_res => {
+        res = _res;
+      });
+    expect(res.length).toBe(7);
+  });
+});
