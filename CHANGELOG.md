@@ -1,3 +1,10 @@
+## [1.3.8](https://github.com/datorama/akita/compare/v1.3.7...v1.3.8) (2018-08-06)
+
+
+### Bug Fixes
+
+* **query:** selectAll support combined options ([04f268f](https://github.com/datorama/akita/commit/04f268f)), closes [#25](https://github.com/datorama/akita/issues/25)
+
 ## [1.3.7](https://github.com/datorama/akita/compare/v1.3.6...v1.3.7) (2018-08-04)
 
 
