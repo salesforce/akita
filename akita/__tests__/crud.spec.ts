@@ -1,7 +1,7 @@
-import { CRUD } from '../src/internal/crud';
-import { coerceArray } from '../src/internal/utils';
-import { AkitaEntityNotExistsError, AkitaInvalidEntityState } from '../src/internal/error';
 import { ID } from '../src/api/types';
+import { CRUD } from '../src/internal/crud';
+import { AkitaEntityNotExistsError, AkitaInvalidEntityState } from '../src/internal/error';
+import { coerceArray } from '../src/internal/utils';
 
 class Todo {
   id: ID;
@@ -73,6 +73,29 @@ describe('CRUD', () => {
       expect(oldOne).not.toBe(store.entities[1]);
       expect(oldTwo).not.toBe(store.entities[2]);
       expect(oldThree).not.toBe(store.entities[3]);
+
+      expect(store.entities[1] instanceof Todo).toBe(true);
+      expect(store.entities[2] instanceof Todo).toBe(true);
+      expect(store.entities[3] instanceof Todo).toBe(true);
+
+      expect(getEntitiesCount(store)).toBe(3);
+      expect(store.ids.length).toBe(3);
+    });
+
+    it('should update many with callback', () => {
+      const oldOne = store.entities[1];
+      const oldTwo = store.entities[2];
+      const oldThree = store.entities[3];
+
+      store = crud._update(store, [1, 2], e => ({ title: 'changed many with callback ' + e.id }));
+
+      expect(store.entities[1].title).toBe('changed many with callback 1');
+      expect(store.entities[2].title).toBe('changed many with callback 2');
+      expect(store.entities[3].title).toBe('changed many');
+
+      expect(oldOne).not.toBe(store.entities[1]);
+      expect(oldTwo).not.toBe(store.entities[2]);
+      expect(oldThree).toBe(store.entities[3]);
 
       expect(store.entities[1] instanceof Todo).toBe(true);
       expect(store.entities[2] instanceof Todo).toBe(true);

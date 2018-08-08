@@ -1,10 +1,10 @@
 import { _crud } from '../internal/crud';
-import { ActiveState, Entities, EntityState, HashMap, ID, Newable } from './types';
+import { AkitaImmutabilityError, assertActive } from '../internal/error';
+import { Action, globalState } from '../internal/global-state';
 import { coerceArray, entityExists, isFunction, toBoolean } from '../internal/utils';
 import { isDev, Store } from './store';
-import { AkitaImmutabilityError, assertActive } from '../internal/error';
 import { applyTransaction } from './transaction';
-import { Action, globalState } from '../internal/global-state';
+import { ActiveState, Entities, EntityState, HashMap, ID, Newable } from './types';
 
 /**
  * The Root Store that every sub store needs to inherit and
@@ -125,6 +125,9 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    *   name: 'New Name'
    * });
    *
+   * this.store.update(e => e.name === 'value', {
+   *   name: 'New Name'
+   * });
    *
    * this.store.update(null, {
    *   name: 'New Name'
@@ -132,16 +135,27 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    *
    */
   update(id: ID | ID[] | null, newStateFn: ((entity: Readonly<E>) => Partial<E>));
-  update(id: ID | ID[] | null, newStateFn: Partial<E>);
+  update(id: ID | ID[] | null, newState: Partial<E>);
   update(id: ID | ID[] | null, newState: Partial<S>);
+  update(predicate: ((entity: Readonly<E>) => boolean), newStateFn: ((entity: Readonly<E>) => Partial<E>));
+  update(predicate: ((entity: Readonly<E>) => boolean), newState: Partial<E>);
+  update(predicate: ((entity: Readonly<E>) => boolean), newState: Partial<S>);
   update(newState: Partial<S>);
-  update(stateOrId: ID | ID[] | null | Partial<S>, newStateFn?: ((entity: Readonly<E>) => Partial<E>) | Partial<E> | Partial<S>) {
-    const ids = toBoolean(stateOrId) ? coerceArray(stateOrId) : this._value().ids;
-    isDev() && globalState.setAction({ type: 'Update Entity', entityId: ids });
-
+  update(idsOrFn: ID | ID[] | null | Partial<S> | ((entity: Readonly<E>) => boolean), newStateOrFn?: ((entity: Readonly<E>) => Partial<E>) | Partial<E> | Partial<S>) {
     this.setState(state => {
-      const newState = isFunction(newStateFn) ? newStateFn(state.entities[stateOrId as ID]) : newStateFn;
-      return _crud._update(state, ids, newState);
+      let ids: ID[] = [];
+      if (isFunction(idsOrFn)) {
+        for (const id in state.entities) {
+          if (idsOrFn(state.entities[id])) {
+            ids.push(id);
+          }
+        }
+      } else {
+        ids = toBoolean(idsOrFn) ? coerceArray(idsOrFn) : this._value().ids;
+      }
+      isDev() && globalState.setAction({ type: 'Update Entity', entityId: ids });
+
+      return _crud._update(state, ids, newStateOrFn);
     });
   }
 
@@ -194,17 +208,31 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    * @example
    * this.store.remove(5);
    * this.store.remove([1,2,3]);
+   * this.store.remove(entity => entity.id === 1);
    * this.store.remove();
    */
-  remove(id?: ID | ID[]) {
+  remove(id?: ID | ID[]);
+  remove(predicate: (entity: Readonly<E>) => boolean);
+  remove(idsOrFn?: ID | ID[] | ((entity: Readonly<E>) => boolean)) {
     if (this._value().ids.length === 0) return;
-    const idExists = toBoolean(id);
-    if (!idExists) this.setPristine();
+    const idPassed = toBoolean(idsOrFn);
+    if (!idPassed) this.setPristine();
 
-    const ids = idExists ? coerceArray(id) : null;
-    isDev() && globalState.setAction({ type: 'Remove Entity', entityId: ids });
+    this.setState(state => {
+      let ids: ID[] = [];
+      if (isFunction(idsOrFn)) {
+        for (const id in state.entities) {
+          if (idsOrFn(state.entities[id])) {
+            ids.push(state.entities[id][this.config.idKey]);
+          }
+        }
+      } else {
+        ids = idPassed ? coerceArray(idsOrFn) : null;
+      }
+      isDev() && globalState.setAction({ type: 'Remove Entity', entityId: ids });
 
-    this.setState(state => _crud._remove(state, ids));
+      return _crud._remove(state, ids);
+    });
   }
 
   /**

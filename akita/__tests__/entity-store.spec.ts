@@ -1,5 +1,5 @@
-import { Todo, TodosStore, TodosStoreCustomID } from './setup';
 import { AkitaEntityNotExistsError, AkitaNoActiveError } from '../src/internal/error';
+import { Todo, TodosStore, TodosStoreCustomID } from './setup';
 
 let store = new TodosStore();
 
@@ -80,11 +80,29 @@ describe('EntitiesStore', () => {
       expect(store.entities[3].title).toEqual('3');
     });
 
+    it('should update many with callback using entity object', () => {
+      store.add(new Todo({ id: 1 }));
+      store.add(new Todo({ id: 2 }));
+      store.add(new Todo({ id: 3 }));
+      store.update([1, 2], entity => ({ title: 'update' + entity.id }));
+      expect(store.entities[1].title).toEqual('update1');
+      expect(store.entities[2].title).toEqual('update2');
+      expect(store.entities[3].title).toEqual('3');
+    });
+
     it('should update all', () => {
       store.add(new Todo({ id: 1 }));
       store.add(new Todo({ id: 2 }));
       store.update(null, { title: 'update' });
       expect(store.entities[1].title).toEqual('update');
+      expect(store.entities[2].title).toEqual('update');
+    });
+
+    it('should update by predicate', () => {
+      store.add(new Todo({ id: 1 }));
+      store.add(new Todo({ id: 2 }));
+      store.update(e => e.title === '2', { title: 'update' });
+      expect(store.entities[1].title).toEqual('1');
       expect(store.entities[2].title).toEqual('update');
     });
 
@@ -190,6 +208,17 @@ describe('EntitiesStore', () => {
       expect(store.entities[1]).toBeUndefined();
       expect(store.entities[2]).toBeUndefined();
       expect(store._value().ids.length).toEqual(0);
+    });
+
+    it('should remove many with callback', () => {
+      const todo = new Todo({ id: 1 });
+      const todo2 = new Todo({ id: 2 });
+      store.add(todo);
+      store.add(todo2);
+      store.remove(e => e.id === 1);
+      expect(store.entities[1]).toBeUndefined();
+      expect(store.entities[2]).toBe(todo2);
+      expect(store._value().ids.length).toEqual(1);
     });
 
     it('should remove all', () => {
