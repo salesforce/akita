@@ -76,13 +76,13 @@ export class CRUD {
       const id = ids[i];
       assertEntityExists(id, state.entities);
 
-      const newState = isFunction(newStateOrFn) ? newStateOrFn(state.entities[id]) : newStateOrFn;
-
       const oldEntity = state.entities[id];
+      const newState = isFunction(newStateOrFn) ? newStateOrFn(oldEntity) : newStateOrFn;
+
       let newEntity;
 
       const merged = {
-        ...state.entities[id],
+        ...oldEntity,
         ...newState
       };
 
