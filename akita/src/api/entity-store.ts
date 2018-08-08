@@ -142,19 +142,23 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   update(predicate: ((entity: Readonly<E>) => boolean), newState: Partial<S>);
   update(newState: Partial<S>);
   update(idsOrFn: ID | ID[] | null | Partial<S> | ((entity: Readonly<E>) => boolean), newStateOrFn?: ((entity: Readonly<E>) => Partial<E>) | Partial<E> | Partial<S>) {
-    this.setState(state => {
-      let ids: ID[] = [];
-      if (isFunction(idsOrFn)) {
-        for (const id in state.entities) {
-          if (idsOrFn(state.entities[id])) {
-            ids.push(id);
-          }
+    let ids: ID[] = [];
+    if (isFunction(idsOrFn)) {
+      for (let i = 0; i < this._value().ids.length; i++) {
+        const id = this._value().ids[i];
+        const entity = this._value().entities[id];
+        if (entity && idsOrFn(entity)) {
+          ids.push(id);
         }
-      } else {
-        ids = toBoolean(idsOrFn) ? coerceArray(idsOrFn) : this._value().ids;
       }
-      isDev() && globalState.setAction({ type: 'Update Entity', entityId: ids });
+    } else {
+      ids = toBoolean(idsOrFn) ? coerceArray(idsOrFn) : this._value().ids;
+    }
 
+    if (ids.length === 0) return;
+    isDev() && globalState.setAction({ type: 'Update Entity', entityId: ids });
+
+    this.setState(state => {
       return _crud._update(state, ids, newStateOrFn);
     });
   }
@@ -218,19 +222,23 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
     const idPassed = toBoolean(idsOrFn);
     if (!idPassed) this.setPristine();
 
-    this.setState(state => {
-      let ids: ID[] = [];
-      if (isFunction(idsOrFn)) {
-        for (const id in state.entities) {
-          if (idsOrFn(state.entities[id])) {
-            ids.push(state.entities[id][this.config.idKey]);
-          }
+    let ids: ID[] = [];
+    if (isFunction(idsOrFn)) {
+      for (let i = 0; i < this._value().ids.length; i++) {
+        const id = this._value().ids[i];
+        const entity = this._value().entities[id];
+        if (entity && idsOrFn(entity)) {
+          ids.push(id);
         }
-      } else {
-        ids = idPassed ? coerceArray(idsOrFn) : null;
       }
-      isDev() && globalState.setAction({ type: 'Remove Entity', entityId: ids });
+    } else {
+      ids = idPassed ? coerceArray(idsOrFn) : null;
+    }
 
+    if (ids && ids.length === 0) return;
+    isDev() && globalState.setAction({ type: 'Remove Entity', entityId: ids });
+
+    this.setState(state => {
       return _crud._remove(state, ids);
     });
   }

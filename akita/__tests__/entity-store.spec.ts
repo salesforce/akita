@@ -106,6 +106,14 @@ describe('EntitiesStore', () => {
       expect(store.entities[2].title).toEqual('update');
     });
 
+    it('should not update by predicate which does not match any entity', () => {
+      store.add(new Todo({ id: 1 }));
+      store.add(new Todo({ id: 2 }));
+      store.update(e => e.title === '3', { title: 'update' });
+      expect(store.entities[1].title).toEqual('1');
+      expect(store.entities[2].title).toEqual('2');
+    });
+
     it('should throw if the entity does not exists', () => {
       store.add(new Todo({ id: 1 }));
       expect(function() {
@@ -210,7 +218,7 @@ describe('EntitiesStore', () => {
       expect(store._value().ids.length).toEqual(0);
     });
 
-    it('should remove many with callback', () => {
+    it('should remove many by predicate', () => {
       const todo = new Todo({ id: 1 });
       const todo2 = new Todo({ id: 2 });
       store.add(todo);
@@ -219,6 +227,17 @@ describe('EntitiesStore', () => {
       expect(store.entities[1]).toBeUndefined();
       expect(store.entities[2]).toBe(todo2);
       expect(store._value().ids.length).toEqual(1);
+    });
+
+    it('should not remove any by predicate which does not match any entity', () => {
+      const todo = new Todo({ id: 1 });
+      const todo2 = new Todo({ id: 2 });
+      store.add(todo);
+      store.add(todo2);
+      store.remove(e => e.id === 3);
+      expect(store.entities[1]).toBe(todo);
+      expect(store.entities[2]).toBe(todo2);
+      expect(store._value().ids.length).toEqual(2);
     });
 
     it('should remove all', () => {
