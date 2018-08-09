@@ -1,6 +1,6 @@
 import { Entities, EntityState, HashMap, ID, Newable } from '../api/types';
-import { entityExists, isPlainObject, resetActive } from './utils';
 import { assertEntityExists, assertEntityState } from './error';
+import { entityExists, isFunction, isPlainObject, resetActive } from './utils';
 
 export class CRUD {
   _set<S, E>(state: S, entities: E[] | HashMap<E> | Entities<E>, entityClass: Newable<E>, idKey): S {
@@ -69,7 +69,7 @@ export class CRUD {
     };
   }
 
-  _update<T extends EntityState>(state: T, ids: ID[], newState): T {
+  _update<T extends EntityState>(state: T, ids: ID[], newStateOrFn: object | ((e: Readonly<any>) => object)): T {
     const updatedEntities = {};
 
     for (let i = 0; i < ids.length; i++) {
@@ -77,10 +77,12 @@ export class CRUD {
       assertEntityExists(id, state.entities);
 
       const oldEntity = state.entities[id];
+      const newState = isFunction(newStateOrFn) ? newStateOrFn(oldEntity) : newStateOrFn;
+
       let newEntity;
 
       const merged = {
-        ...state.entities[id],
+        ...oldEntity,
         ...newState
       };
 
@@ -109,7 +111,6 @@ export class CRUD {
       const { [id]: entity, ...rest } = acc;
       return rest;
     }, state.entities);
-
     const newState = {
       ...(state as any),
       entities: removed,
