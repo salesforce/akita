@@ -143,16 +143,18 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   update(newState: Partial<S>);
   update(idsOrFn: ID | ID[] | null | Partial<S> | ((entity: Readonly<E>) => boolean), newStateOrFn?: ((entity: Readonly<E>) => Partial<E>) | Partial<E> | Partial<S>) {
     let ids: ID[] = [];
+    const storeIds = this._value().ids;
+
     if (isFunction(idsOrFn)) {
-      for (let i = 0; i < this._value().ids.length; i++) {
-        const id = this._value().ids[i];
+      for (let i = 0, len = storeIds.length; i < len; i++) {
+        const id = storeIds[i];
         const entity = this._value().entities[id];
         if (entity && idsOrFn(entity)) {
           ids.push(id);
         }
       }
     } else {
-      ids = toBoolean(idsOrFn) ? coerceArray(idsOrFn) : this._value().ids;
+      ids = toBoolean(idsOrFn) ? coerceArray(idsOrFn) : storeIds;
     }
 
     if (ids.length === 0) return;
@@ -218,14 +220,16 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   remove(id?: ID | ID[]);
   remove(predicate: (entity: Readonly<E>) => boolean);
   remove(idsOrFn?: ID | ID[] | ((entity: Readonly<E>) => boolean)) {
-    if (this._value().ids.length === 0) return;
+    const storeIds = this._value().ids;
+
+    if (storeIds.length === 0) return;
     const idPassed = toBoolean(idsOrFn);
     if (!idPassed) this.setPristine();
 
     let ids: ID[] = [];
     if (isFunction(idsOrFn)) {
-      for (let i = 0; i < this._value().ids.length; i++) {
-        const id = this._value().ids[i];
+      for (let i = 0, len = storeIds.length; i < len; i++) {
+        const id = storeIds[i];
         const entity = this._value().entities[id];
         if (entity && idsOrFn(entity)) {
           ids.push(id);
