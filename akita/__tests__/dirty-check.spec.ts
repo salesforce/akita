@@ -189,15 +189,25 @@ describe('DirtyCheckEntity', () => {
     widgetsStore.add([createWidget(), createWidget(), createWidget()]);
     collection.setHead();
     const spy = jest.fn();
-    collection.isSomeDirty().subscribe(spy);
+    collection.isSomeDirty$.subscribe(spy);
+    let isDirty = collection.isSomeDirty();
+    expect(isDirty).toBe(false);
     expect(spy).toHaveBeenLastCalledWith(false);
     widgetsStore.update(5, { title: 'Changed' });
+    isDirty = collection.isSomeDirty();
+    expect(isDirty).toBe(true);
     expect(spy).toHaveBeenLastCalledWith(true);
     widgetsStore.update(4, { title: 'Changed' });
+    isDirty = collection.isSomeDirty();
+    expect(isDirty).toBe(true);
     expect(spy).toHaveBeenLastCalledWith(true);
     widgetsStore.update(4, { title: 'Widget 4' });
+    isDirty = collection.isSomeDirty();
+    expect(isDirty).toBe(true);
     expect(spy).toHaveBeenLastCalledWith(true);
     widgetsStore.update(5, { title: 'Widget 5' });
+    isDirty = collection.isSomeDirty();
+    expect(isDirty).toBe(false);
     expect(spy).toHaveBeenLastCalledWith(false);
   });
 
