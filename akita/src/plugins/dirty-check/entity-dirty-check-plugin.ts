@@ -1,4 +1,4 @@
-import { ID, IDS } from '../../api/types';
+import {HashMap, ID, IDS} from '../../api/types';
 import { DirtyCheckPlugin, DirtyCheckComparator, dirtyCheckDefaultParams, DirtyCheckResetParams } from './dirty-check-plugin';
 import { QueryEntity } from '../../api/query-entity';
 import { EntityCollectionPlugin } from '../entity-collection-plugin';
@@ -11,6 +11,10 @@ export type DirtyCheckCollectionParams<E> = {
 };
 
 export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = DirtyCheckPlugin<E, any>> extends EntityCollectionPlugin<E, P> {
+
+  isSomeDirty$: Observable<boolean> =  this.query.select(state => state.entities)
+    .pipe( map(entities => this.checkSomeDirty(entities)));
+
   constructor(protected query: QueryEntity<any, E>, private readonly params: DirtyCheckCollectionParams<E> = {}) {
     super(query, params.entityIds);
     this.params = { ...dirtyCheckDefaultParams, ...params };
@@ -25,7 +29,7 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
     return this;
   }
 
-  hasHead(id: ID) {
+  hasHead(id: ID): boolean {
     if (this.entities.has(id)) {
       const entity = this.getEntity(id);
       return entity.hasHead();
@@ -50,19 +54,9 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
     return false;
   }
 
-  isSomeDirty(): Observable<boolean> {
-    return this.query.select(state => state.entities).pipe(
-      map(entities => {
-        const entitiesIds = this.resolvedIds();
-        for (const id of entitiesIds) {
-          const dirty = this.params.comparator((this.getEntity(id) as any).getHead(), entities[id]);
-          if (dirty) {
-            return true;
-          }
-        }
-        return false;
-      })
-    );
+  isSomeDirty(): boolean {
+    const entities = this.query.getAll({asObject: true});
+    return this.checkSomeDirty(entities);
   }
 
   destroy(ids?: IDS) {
@@ -71,5 +65,16 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
 
   protected instantiatePlugin(id: ID): P {
     return new DirtyCheckPlugin(this.query, this.params, id) as P;
+  }
+
+  private checkSomeDirty(entities: HashMap<E>): boolean {
+    const entitiesIds = this.resolvedIds();
+    for (const id of entitiesIds) {
+      const dirty = this.params.comparator((this.getEntity(id) as any).getHead(), entities[id]);
+      if (dirty) {
+        return true;
+      }
+    }
+    return false;
   }
 }
