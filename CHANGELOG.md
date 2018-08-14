@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/datorama/akita/compare/v1.4.0...v1.4.1) (2018-08-14)
+
+
+### Bug Fixes
+
+* **entity-dirty-check:** Add boolean isSomeDirty ([f3c334e](https://github.com/datorama/akita/commit/f3c334e))
+
 # [1.4.0](https://github.com/datorama/akita/compare/v1.3.8...v1.4.0) (2018-08-09)
 
 
