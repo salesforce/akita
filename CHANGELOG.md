@@ -1,3 +1,11 @@
+# [1.5.0](https://github.com/datorama/akita/compare/v1.4.1...v1.5.0) (2018-08-16)
+
+
+### Features
+
+* **store-utils:** add guid method ([706e141](https://github.com/datorama/akita/commit/706e141))
+* **store-utils:** add increment and decrement helpers ([7741493](https://github.com/datorama/akita/commit/7741493))
+
 ## [1.4.1](https://github.com/datorama/akita/compare/v1.4.0...v1.4.1) (2018-08-14)
 
 
