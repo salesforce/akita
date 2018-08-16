@@ -1,5 +1,6 @@
 import { AkitaEntityNotExistsError, AkitaNoActiveError } from '../src/internal/error';
 import { Todo, TodosStore, TodosStoreCustomID } from './setup';
+import { EntityStore } from '../src/api/entity-store';
 
 let store = new TodosStore();
 
@@ -15,7 +16,7 @@ describe('EntitiesStore', () => {
     });
 
     it('should set a new instance when passing a class', () => {
-      store.set([{ id: 1, title: '1' }], Todo);
+      store.set([{ id: 1, title: '1' }], { entityClass: Todo });
       expect(store._value().entities[1]).toBeDefined();
       expect(store._value().entities[1] instanceof Todo).toBeTruthy();
     });
@@ -48,6 +49,11 @@ describe('EntitiesStore', () => {
 
   describe('add', () => {
     it('should add entity', () => {
+      store.add(new Todo({ id: 1 }));
+      expect(store.entities[1]).toBeDefined();
+    });
+
+    it('should add with uid', () => {
       store.add(new Todo({ id: 1 }));
       expect(store.entities[1]).toBeDefined();
     });

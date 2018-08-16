@@ -59,12 +59,12 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    * @example
    * this.store.set([Entity, Entity]);
    * this.store.set({1: Entity, 2: Entity});
-   * this.store.set([{id: 1}, {id: 2}], Product);
+   * this.store.set([{id: 1}, {id: 2}], { entityClass: Product });
    *
    */
-  set(entities: E[] | HashMap<E> | Entities<E>, entityClass?: Newable<E>) {
+  set(entities: E[] | HashMap<E> | Entities<E>, options: { entityClass?: Newable<E> } = {}) {
     applyTransaction(() => {
-      this.setState(state => _crud._set(state, entities, entityClass, this.idKey));
+      this.setState(state => _crud._set(state, entities, options.entityClass, this.idKey));
       this.setDirty();
       this.setLoading();
       isDev() && globalState.setAction({ type: 'Set Entities' });
