@@ -1,5 +1,5 @@
 import { Entities, EntityState, HashMap, ID, Newable } from '../api/types';
-import { assertEntityExists, assertEntityState } from './error';
+import { assertEntityExists, assertEntityState, AkitaUpdateIdKeyError } from './error';
 import { entityExists, isFunction, isPlainObject, resetActive } from './utils';
 
 export class CRUD {
@@ -69,15 +69,27 @@ export class CRUD {
     };
   }
 
-  _update<T extends EntityState>(state: T, ids: ID[], newStateOrFn: object | ((e: Readonly<any>) => object)): T {
+  _update<T extends EntityState>(state: T, ids: ID[], newStateOrFn: object | ((e: Readonly<any>) => object), idKey: string): T {
     const updatedEntities = {};
+
+    let isUpdatingIdKey = false;
+    let idToUpdate: ID;
 
     for (let i = 0; i < ids.length; i++) {
       const id = ids[i];
+      idToUpdate = id;
       assertEntityExists(id, state.entities);
 
       const oldEntity = state.entities[id];
       const newState = isFunction(newStateOrFn) ? newStateOrFn(oldEntity) : newStateOrFn;
+
+      if (newState.hasOwnProperty(idKey)) {
+        if (ids.length > 1) {
+          throw new AkitaUpdateIdKeyError();
+        }
+        isUpdatingIdKey = true;
+        idToUpdate = newState[idKey];
+      }
 
       let newEntity;
 
@@ -92,15 +104,25 @@ export class CRUD {
         newEntity = new oldEntity.constructor(merged);
       }
 
-      updatedEntities[id] = newEntity;
+      updatedEntities[idToUpdate] = newEntity;
+    }
+
+    let updatedIds = state.ids;
+    let stateEntities = state.entities;
+    if (isUpdatingIdKey) {
+      const id = ids[0];
+      const { [id]: any, ...rest } = state.entities;
+      stateEntities = rest;
+      updatedIds = [...state.ids.filter(current => current !== id), idToUpdate];
     }
 
     return {
       ...(state as any),
       entities: {
-        ...state.entities,
+        ...stateEntities,
         ...updatedEntities
-      }
+      },
+      ids: updatedIds
     };
   }
 

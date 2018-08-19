@@ -1,4 +1,4 @@
-import { AkitaEntityNotExistsError, AkitaNoActiveError } from '../src/internal/error';
+import { AkitaEntityNotExistsError, AkitaNoActiveError, AkitaUpdateIdKeyError } from '../src/internal/error';
 import { Todo, TodosStore, TodosStoreCustomID } from './setup';
 import { EntityStore } from '../src/api/entity-store';
 
@@ -64,6 +64,21 @@ describe('EntitiesStore', () => {
       store.add(new Todo({ id: 1 }));
       store.update(1, { title: 'update' });
       expect(store.entities[1].title).toEqual('update');
+    });
+
+    it('should update entity id', () => {
+      store.add(new Todo({ id: 1 }));
+      store.update(1, { id: 2 });
+      expect(store.entities[2].id).toEqual(2);
+      expect(store._value().ids).toEqual([2]);
+    });
+
+    it('should throw when updateing entity id for multiple entities', () => {
+      store.add(new Todo({ id: 1 }));
+      store.add(new Todo({ id: 2 }));
+      expect(function() {
+        store.update([1, 2], { id: 2 });
+      }).toThrow(new AkitaUpdateIdKeyError() as any);
     });
 
     it('should update entity with callback', () => {
