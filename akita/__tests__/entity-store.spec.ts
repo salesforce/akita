@@ -1,5 +1,6 @@
 import { AkitaEntityNotExistsError, AkitaNoActiveError } from '../src/internal/error';
 import { Todo, TodosStore, TodosStoreCustomID } from './setup';
+import { EntityStore } from '../src/api/entity-store';
 
 let store = new TodosStore();
 
@@ -15,7 +16,7 @@ describe('EntitiesStore', () => {
     });
 
     it('should set a new instance when passing a class', () => {
-      store.set([{ id: 1, title: '1' }], Todo);
+      store.set([{ id: 1, title: '1' }], { entityClass: Todo });
       expect(store._value().entities[1]).toBeDefined();
       expect(store._value().entities[1] instanceof Todo).toBeTruthy();
     });
@@ -48,6 +49,11 @@ describe('EntitiesStore', () => {
 
   describe('add', () => {
     it('should add entity', () => {
+      store.add(new Todo({ id: 1 }));
+      expect(store.entities[1]).toBeDefined();
+    });
+
+    it('should add with uid', () => {
       store.add(new Todo({ id: 1 }));
       expect(store.entities[1]).toBeDefined();
     });
@@ -109,9 +115,11 @@ describe('EntitiesStore', () => {
     it('should not update by predicate which does not match any entity', () => {
       store.add(new Todo({ id: 1 }));
       store.add(new Todo({ id: 2 }));
+      spyOn(store, 'setState').and.callThrough();
       store.update(e => e.title === '3', { title: 'update' });
       expect(store.entities[1].title).toEqual('1');
       expect(store.entities[2].title).toEqual('2');
+      expect(store.setState).not.toHaveBeenCalled();
     });
 
     it('should throw if the entity does not exists', () => {
@@ -234,10 +242,12 @@ describe('EntitiesStore', () => {
       const todo2 = new Todo({ id: 2 });
       store.add(todo);
       store.add(todo2);
+      spyOn(store, 'setState').and.callThrough();
       store.remove(e => e.id === 3);
       expect(store.entities[1]).toBe(todo);
       expect(store.entities[2]).toBe(todo2);
       expect(store._value().ids.length).toEqual(2);
+      expect(store.setState).not.toHaveBeenCalled();
     });
 
     it('should remove all', () => {

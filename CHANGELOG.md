@@ -1,3 +1,27 @@
+# [1.5.0](https://github.com/datorama/akita/compare/v1.4.1...v1.5.0) (2018-08-16)
+
+
+### Features
+
+* **store-utils:** add guid method ([706e141](https://github.com/datorama/akita/commit/706e141))
+* **store-utils:** add increment and decrement helpers ([7741493](https://github.com/datorama/akita/commit/7741493))
+
+## [1.4.1](https://github.com/datorama/akita/compare/v1.4.0...v1.4.1) (2018-08-14)
+
+
+### Bug Fixes
+
+* **entity-dirty-check:** Add boolean isSomeDirty ([f3c334e](https://github.com/datorama/akita/commit/f3c334e))
+
+# [1.4.0](https://github.com/datorama/akita/compare/v1.3.8...v1.4.0) (2018-08-09)
+
+
+### Features
+
+* cache the entity lookup ([8b7e8c8](https://github.com/datorama/akita/commit/8b7e8c8))
+* do not update store if no ids found ([c41ca5e](https://github.com/datorama/akita/commit/c41ca5e))
+* EntityStore.update/remove should accept predicate for ids ([3beb560](https://github.com/datorama/akita/commit/3beb560))
+
 ## [1.3.8](https://github.com/datorama/akita/compare/v1.3.7...v1.3.8) (2018-08-06)
 
 
