@@ -68,9 +68,10 @@ describe('EntitiesStore', () => {
 
     it('should update entity id', () => {
       store.add(new Todo({ id: 1 }));
-      store.update(1, { id: 2 });
-      expect(store.entities[2].id).toEqual(2);
-      expect(store._value().ids).toEqual([2]);
+      store.add(new Todo({ id: 2 }));
+      store.update(1, { id: 3 });
+      expect(store.entities[3].id).toEqual(3);
+      expect(store._value().ids).toEqual([3, 2]);
     });
 
     it('should throw when updateing entity id for multiple entities', () => {

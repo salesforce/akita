@@ -113,7 +113,7 @@ export class CRUD {
       const id = ids[0];
       const { [id]: any, ...rest } = state.entities;
       stateEntities = rest;
-      updatedIds = [...state.ids.filter(current => current !== id), idToUpdate];
+      updatedIds = state.ids.map(current => (current === id ? idToUpdate : current));
     }
 
     return {
