@@ -83,7 +83,7 @@ export class CRUD {
       const oldEntity = state.entities[id];
       const newState = isFunction(newStateOrFn) ? newStateOrFn(oldEntity) : newStateOrFn;
 
-      if (newState.hasOwnProperty(idKey)) {
+      if (newState.hasOwnProperty(idKey) && newState[idKey] !== oldEntity[idKey]) {
         if (ids.length > 1) {
           throw new AkitaUpdateIdKeyError();
         }
@@ -110,7 +110,7 @@ export class CRUD {
     let updatedIds = state.ids;
     let stateEntities = state.entities;
     if (isUpdatingIdKey) {
-      const id = ids[0];
+      const [id] = ids;
       const { [id]: any, ...rest } = state.entities;
       stateEntities = rest;
       updatedIds = state.ids.map(current => (current === id ? idToUpdate : current));
