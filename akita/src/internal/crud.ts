@@ -1,5 +1,5 @@
 import { Entities, EntityState, HashMap, ID, Newable } from '../api/types';
-import { assertEntityExists, assertEntityState, AkitaUpdateIdKeyError } from './error';
+import { AkitaUpdateIdKeyError, assertEntityExists, assertEntityState } from './error';
 import { entityExists, isFunction, isPlainObject, resetActive } from './utils';
 
 export class CRUD {
@@ -111,7 +111,7 @@ export class CRUD {
     let stateEntities = state.entities;
     if (isUpdatingIdKey) {
       const [id] = ids;
-      const { [id]: any, ...rest } = state.entities;
+      const { [id]: deletedEntity, ...rest } = state.entities;
       stateEntities = rest;
       updatedIds = state.ids.map(current => (current === id ? idToUpdate : current));
     }
