@@ -50,7 +50,7 @@ export abstract class AkitaPlugin<E = any, S = any> {
     if (this.isEntityBased(entityId)) {
       this.getStore().update(entityId, newState);
     } else {
-      this.getStore().setState(() => newState);
+      this.getStore().setState((state) => ({...state, ...newState}));
     }
   }
 }

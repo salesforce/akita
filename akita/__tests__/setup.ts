@@ -88,8 +88,8 @@ export type Widget = {
 };
 
 export class WidgetsStore extends EntityStore<any, Widget> {
-  constructor() {
-    super();
+  constructor(initState?) {
+    super(initState);
   }
 }
 

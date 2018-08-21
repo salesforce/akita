@@ -17,3 +17,7 @@ export function createWidget(params?: Partial<Widget>) {
     name: `Widget ${_id}`
   } as Widget;
 }
+
+export function resetId(count?: number) {
+  _id = count || 0;
+}
