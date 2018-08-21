@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/datorama/akita/compare/v1.5.0...v1.6.0) (2018-08-21)
+
+
+### Features
+
+* **dirty-check:** add support for key based check ([ee52619](https://github.com/datorama/akita/commit/ee52619))
+
 # [1.5.0](https://github.com/datorama/akita/compare/v1.4.1...v1.5.0) (2018-08-16)
 
 
