@@ -1,6 +1,8 @@
-import { coerceArray, isFunction, isUndefined, toBoolean } from '../internal/utils';
-import { QueryEntity } from '../api/query-entity';
-import { ID, IDS } from '../api/types';
+import {coerceArray, isFunction, isUndefined, toBoolean} from '../internal/utils';
+import {QueryEntity} from '../api/query-entity';
+import {ID, IDS} from '../api/types';
+import {Observable} from 'rxjs';
+
 /**
  * Each plugin that wants to add support for entities should extend this interface.
  */
@@ -20,14 +22,14 @@ export abstract class EntityCollectionPlugin<E, P> {
   /**
    * Get the entity plugin instance.
    */
-  protected getEntity(id: ID) {
+  protected getEntity(id: ID): P {
     return this.entities.get(id);
   }
 
   /**
    * Whether the entity plugin exist.
    */
-  protected hasEntity(id: ID) {
+  protected hasEntity(id: ID): boolean {
     return this.entities.has(id);
   }
 
@@ -48,14 +50,14 @@ export abstract class EntityCollectionPlugin<E, P> {
   /**
    * If the user passes `entityIds` we take them; otherwise, we take all.
    */
-  protected getIds() {
+  protected getIds(): ID[] {
     return isUndefined(this.entityIds) ? this.query.getSnapshot().ids : coerceArray(this.entityIds);
   }
 
   /**
    * When you call one of the plugin methods, you can pass id/ids or undefined which means all.
    */
-  protected resolvedIds(ids?) {
+  protected resolvedIds(ids?): ID[] {
     return isUndefined(ids) ? this.getIds() : coerceArray(ids);
   }
 
@@ -131,7 +133,7 @@ export abstract class EntityCollectionPlugin<E, P> {
   /**
    * Listen for add/remove entities.
    */
-  protected selectIds() {
+  protected selectIds(): Observable<ID[]> {
     return this.query.select(state => state.ids);
   }
 
