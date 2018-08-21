@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/datorama/akita/compare/v1.6.0...v1.6.1) (2018-08-21)
+
+
+### Bug Fixes
+
+* **dirty-check:** types ([8174fe0](https://github.com/datorama/akita/commit/8174fe0))
+
 # [1.6.0](https://github.com/datorama/akita/compare/v1.5.0...v1.6.0) (2018-08-21)
 
 
