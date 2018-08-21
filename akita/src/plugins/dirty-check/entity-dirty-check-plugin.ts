@@ -1,9 +1,9 @@
 import {HashMap, ID, IDS} from '../../api/types';
-import { DirtyCheckPlugin, DirtyCheckComparator, dirtyCheckDefaultParams, DirtyCheckResetParams } from './dirty-check-plugin';
-import { QueryEntity } from '../../api/query-entity';
-import { EntityCollectionPlugin } from '../entity-collection-plugin';
-import { skip, map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import {DirtyCheckComparator, dirtyCheckDefaultParams, DirtyCheckPlugin, DirtyCheckResetParams} from './dirty-check-plugin';
+import {QueryEntity} from '../../api/query-entity';
+import {EntityCollectionPlugin} from '../entity-collection-plugin';
+import {map, skip} from 'rxjs/operators';
+import {Observable} from 'rxjs';
 
 export type DirtyCheckCollectionParams<E> = {
   comparator?: DirtyCheckComparator<E>;
@@ -12,16 +12,16 @@ export type DirtyCheckCollectionParams<E> = {
 
 export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = DirtyCheckPlugin<E, any>> extends EntityCollectionPlugin<E, P> {
 
-  isSomeDirty$: Observable<boolean> =  this.query.select(state => state.entities)
-    .pipe( map(entities => this.checkSomeDirty(entities)));
+  isSomeDirty$: Observable<boolean> = this.query.select(state => state.entities)
+    .pipe(map(entities => this.checkSomeDirty(entities)));
 
   constructor(protected query: QueryEntity<any, E>, private readonly params: DirtyCheckCollectionParams<E> = {}) {
     super(query, params.entityIds);
-    this.params = { ...dirtyCheckDefaultParams, ...params };
+    this.params = {...dirtyCheckDefaultParams, ...params};
     this.activate();
-    this.selectIds()
-      .pipe(skip(1))
-      .subscribe(ids => this.activate(ids));
+    this.selectIds().pipe(skip(1)).subscribe(ids => {
+      this.rebase(ids, {afterAdd: plugin => plugin.setHead()});
+    });
   }
 
   setHead(ids?: IDS) {
