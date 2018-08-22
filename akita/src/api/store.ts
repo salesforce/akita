@@ -124,7 +124,9 @@ export class Store<S> {
 
     if (!this.store) {
       this.store = new BehaviorSubject(this.storeValue);
-      rootDispatcher.next(nextState(this.storeName, true));
+        if (!this.storeName) console.error('did you forget to create @StoreConfig({name: something})?') 
+        rootDispatcher.next(nextState(this.storeName, true));
+        
       return;
     }
 
