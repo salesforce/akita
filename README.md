@@ -21,7 +21,7 @@ Akita encourages simplicity. It saves you the hassle of creating boilerplate cod
 - 👉 Checkout the [sample application](http://akita.surge.sh/)
 - 📖 Read the blog [posts](https://netbasal.gitbook.io/akita/entity-store/blog-posts)
 
-## Contributors
+## Contributors 
 
 Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
 
