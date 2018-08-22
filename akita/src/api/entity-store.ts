@@ -161,7 +161,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
     isDev() && globalState.setAction({ type: 'Update Entity', entityId: ids });
 
     this.setState(state => {
-      return _crud._update(state, ids, newStateOrFn);
+      return _crud._update(state, ids, newStateOrFn, this.idKey);
     });
   }
 
@@ -270,7 +270,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
       if (newState === state) {
         throw new AkitaImmutabilityError(this.storeName);
       }
-      return _crud._update(state, [activeId], newState);
+      return _crud._update(state, [activeId], newState, this.idKey);
     });
   }
 

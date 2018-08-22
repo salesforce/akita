@@ -31,6 +31,12 @@ export class AkitaInvalidEntityState extends AkitaError {
   }
 }
 
+export class AkitaUpdateIdKeyError extends AkitaError {
+  constructor() {
+    super(`Updating entity id is not permitted when updating many entities`);
+  }
+}
+
 export function assertEntityExists(id: ID, entities) {
   if (!entityExists(id, entities)) {
     throw new AkitaEntityNotExistsError(id);
