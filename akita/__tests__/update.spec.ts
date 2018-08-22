@@ -3,6 +3,7 @@ import { EntityStore, getInitialEntitiesState } from '../src/api/entity-store';
 import { QueryEntity } from '../src/api/query-entity';
 import { EntityState } from '../src/api/types';
 import { push } from '../src/api/arrays';
+import { StoreConfig } from '../src/api/store-config';
 
 export type Widget = {
   id: number;
@@ -32,6 +33,7 @@ const initialState: State = {
   active: 1
 };
 
+@StoreConfig({ name: 'widgets' })
 export class WidgetsStore extends EntityStore<State, Widget> {
   constructor() {
     super(initialState);

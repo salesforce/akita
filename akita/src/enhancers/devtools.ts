@@ -81,5 +81,5 @@ export function akitaDevtools(ngZone, options: Partial<DevtoolsOptions> = {}) {
 }
 
 function capitalize(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
+  return string && string.charAt(0).toUpperCase() + string.slice(1);
 }

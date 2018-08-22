@@ -56,3 +56,9 @@ export function assertEntityState(state: EntityState<any>) {
     throw new AkitaInvalidEntityState();
   }
 }
+
+export function assertDecorator(name: string, className: string) {
+  if (!name) {
+    console.error(`@StoreConfig({ name }) is missing in ${className}`);
+  }
+}

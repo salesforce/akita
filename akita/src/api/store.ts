@@ -1,7 +1,7 @@
 import { HashMap, ID } from './types';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
-import { AkitaImmutabilityError } from '../internal/error';
+import { AkitaImmutabilityError, assertDecorator } from '../internal/error';
 import { commit, isTransactionInProcess } from '../internal/transaction.internal';
 import { isPlainObject } from '../internal/utils';
 import { deepFreeze } from '../internal/deep-freeze';
@@ -74,6 +74,7 @@ export class Store<S> {
       type: Actions.NEW_STORE,
       payload: { store: this }
     });
+    isDev() && assertDecorator(this.storeName, this.constructor.name);
   }
 
   /**

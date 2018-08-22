@@ -1,7 +1,8 @@
-import {Component, ElementRef, OnDestroy, OnInit} from '@angular/core';
-import {Observable} from 'rxjs';
-import {DirtyCheckPlugin, EntityDirtyCheckPlugin, ID} from '../../../../akita/src';
-import {resetId, Widget, WidgetsQuery, WidgetsService} from './state';
+import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { DirtyCheckPlugin, EntityDirtyCheckPlugin, ID } from '../../../../akita/src';
+import { Widget, WidgetsQuery, WidgetsService } from './state';
+import { resetId } from './state/widget.model';
 
 @Component({
   selector: 'app-widgets',
@@ -22,7 +23,7 @@ export class WidgetsComponent implements OnInit, OnDestroy {
     }
     this.dashoboardName$ = this.widgetsQuery.select(state => state.name);
     this.widgets$ = this.widgetsQuery.selectAll();
-    this.collection = new DirtyCheckPlugin(this.widgetsQuery, {watchProperty: 'entities'}).setHead();
+    this.collection = new DirtyCheckPlugin(this.widgetsQuery, { watchProperty: 'entities' }).setHead();
     this.widgetsSpecific = new EntityDirtyCheckPlugin(this.widgetsQuery).setHead();
   }
 
@@ -37,7 +38,6 @@ export class WidgetsComponent implements OnInit, OnDestroy {
   add() {
     this.widgetService.add();
   }
-
 
   remove(id?: ID) {
     this.widgetService.remove(id);
@@ -57,5 +57,4 @@ export class WidgetsComponent implements OnInit, OnDestroy {
     this.collection.destroy();
     this.widgetsSpecific.destroy();
   }
-
 }

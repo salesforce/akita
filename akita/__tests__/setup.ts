@@ -87,6 +87,7 @@ export type Widget = {
   complete?: boolean;
 };
 
+@StoreConfig({ name: 'widgets' })
 export class WidgetsStore extends EntityStore<any, Widget> {
   constructor(initState?) {
     super(initState);
