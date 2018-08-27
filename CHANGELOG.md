@@ -1,3 +1,17 @@
+# [1.7.0](https://github.com/datorama/akita/compare/v1.6.2...v1.7.0) (2018-08-27)
+
+
+### Bug Fixes
+
+* **state-history:** present should take the entity state on init ([1aa30d2](https://github.com/datorama/akita/commit/1aa30d2))
+
+
+### Features
+
+* **persist-form:** add the ability to sync a specific store key ([01dbfb8](https://github.com/datorama/akita/commit/01dbfb8))
+* **persist-state:** check localstorage support for ssr ([5e02410](https://github.com/datorama/akita/commit/5e02410)), closes [#58](https://github.com/datorama/akita/issues/58)
+* **persist-state:** include now can accept nested key ([d2dabb4](https://github.com/datorama/akita/commit/d2dabb4)), closes [#59](https://github.com/datorama/akita/issues/59)
+
 ## [1.6.2](https://github.com/datorama/akita/compare/v1.6.1...v1.6.2) (2018-08-22)
 
 
