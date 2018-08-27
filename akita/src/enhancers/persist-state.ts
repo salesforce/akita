@@ -4,6 +4,11 @@ import { skip } from 'rxjs/operators';
 import { getValue, setValue } from '../internal/utils';
 import { globalState } from '../internal/global-state';
 
+const notBs = typeof localStorage === 'undefined';
+if (notBs) {
+  (localStorage as any) = {};
+}
+
 export interface PersistStateParams {
   /** The storage key */
   key: string;
@@ -35,6 +40,7 @@ const defaults: PersistStateParams = {
 };
 
 export function persistState(params?: Partial<PersistStateParams>) {
+  if (notBs) return;
   const { storage, deserialize, serialize, include, exclude, key } = Object.assign({}, defaults, params);
 
   const hasInclude = include.length > 0;
