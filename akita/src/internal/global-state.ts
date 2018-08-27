@@ -41,4 +41,4 @@ export class AkitaGlobals {
   }
 }
 
-export const globalState = new AkitaGlobals();
+export const __globalState = new AkitaGlobals();

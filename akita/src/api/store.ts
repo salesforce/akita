@@ -6,7 +6,7 @@ import { commit, isTransactionInProcess } from '../internal/transaction.internal
 import { isPlainObject } from '../internal/utils';
 import { deepFreeze } from '../internal/deep-freeze';
 import { configKey, StoreConfigOptions } from './store-config';
-import { globalState } from '../internal/global-state';
+import { __globalState } from '../internal/global-state';
 
 /** Whether we are in dev mode */
 let __DEV__ = true;
@@ -67,7 +67,7 @@ export class Store<S> {
    * Initial the store with the state
    */
   constructor(initialState) {
-    globalState.setAction({ type: '@@INIT' });
+    __globalState.setAction({ type: '@@INIT' });
     __stores__[this.storeName] = this;
     this.setState(() => initialState);
     rootDispatcher.next({
@@ -147,7 +147,7 @@ export class Store<S> {
   update(newState: Partial<S>);
   update(id: ID | ID[] | null, newState: Partial<S>);
   update(newStateOrId: Partial<S> | ID | ID[] | null, newState?: Partial<S>) {
-    globalState.setAction({ type: 'Update Store' });
+    __globalState.setAction({ type: 'Update Store' });
     this.setState(state => {
       const merged = Object.assign({}, state, newStateOrId);
       if (isPlainObject(this._value())) {
@@ -177,7 +177,7 @@ export class Store<S> {
     this.store.next(state);
     if (_rootDispatcher) {
       rootDispatcher.next(nextState(this.storeName));
-      isDev() && globalState.setAction({ type: 'Set State' });
+      isDev() && __globalState.setAction({ type: 'Set State' });
     }
   }
 
@@ -191,12 +191,12 @@ export class Store<S> {
   private watchTransaction() {
     commit().subscribe(() => {
       this.inTransaction = false;
-      if (isDev() && !globalState.skipTransactionMsg) {
-        globalState.setAction({ type: '@Transaction' });
+      if (isDev() && !__globalState.skipTransactionMsg) {
+        __globalState.setAction({ type: '@Transaction' });
       }
       this.dispatch(this._value());
-      globalState.currentT = [];
-      globalState.skipTransactionMsg = false;
+      __globalState.currentT = [];
+      __globalState.skipTransactionMsg = false;
     });
   }
 

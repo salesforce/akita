@@ -1,5 +1,5 @@
 import { filter, pairwise } from 'rxjs/operators';
-import { globalState } from '../../internal/global-state';
+import { __globalState } from '../../internal/global-state';
 import { toBoolean } from '../../internal/utils';
 import { AkitaPlugin, Queries } from '../plugin';
 import { EntityParam } from '../entity-collection-plugin';
@@ -138,7 +138,7 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
 
   private update(action = 'Undo') {
     this.skipUpdate = true;
-    globalState.setCustomAction({ type: `@StateHistory - ${action}` });
+    __globalState.setCustomAction({ type: `@StateHistory - ${action}` });
     this.updateStore(this.history.present, this._entityId);
     this.skipUpdate = false;
   }

@@ -2,7 +2,7 @@ import { AkitaError } from '../internal/error';
 import { __stores__, Actions, rootDispatcher } from '../api/store';
 import { skip } from 'rxjs/operators';
 import { getValue, setValue } from '../internal/utils';
-import { globalState } from '../internal/global-state';
+import { __globalState } from '../internal/global-state';
 
 const notBs = typeof localStorage === 'undefined';
 if (notBs) {
@@ -71,7 +71,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
 
   function setInitial(storeName, store, path) {
     if (storageState[storeName]) {
-      globalState.setAction({ type: '@PersistState' });
+      __globalState.setAction({ type: '@PersistState' });
       store.setState(state => {
         return setValue(state, path, storageState[storeName]);
       });

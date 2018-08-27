@@ -1,5 +1,25 @@
 <section class="padding">
-  <h1>New Story</h1>
+
+  <h5>Key Based</h5>
+  <form class="col s12" [formGroup]="formKeyBased" (ngSubmit)="submit()">
+    <div class="row">
+      <div class="input-field col s12">
+        <input autocomplete="off" formControlName="time" placeholder="Time">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col s12">
+        <p>
+          <label>
+            <input type="checkbox" formControlName="isAdmin"/>
+            <span>Is Admin</span>
+          </label>
+        </p>
+      </div>
+    </div>
+  </form>
+
+  <h5>New Story</h5>
 
   <div class="row">
     <form class="col s12" [formGroup]="form" (ngSubmit)="submit()">

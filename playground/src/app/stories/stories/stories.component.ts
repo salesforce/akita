@@ -11,8 +11,10 @@ import { PersistNgFormPlugin } from '../../../../../akita/src';
 })
 export class StoriesComponent implements OnInit {
   form: FormGroup;
+  formKeyBased: FormGroup;
   storeValue;
   persistForm: PersistNgFormPlugin<Story>;
+  persistFormKey: PersistNgFormPlugin<Story>;
   loading$: Observable<boolean>;
 
   constructor(private storiesQuery: StoriesQuery, private storiesService: StoriesService, private builder: FormBuilder) {}
@@ -27,12 +29,19 @@ export class StoriesComponent implements OnInit {
       category: this.builder.control('js')
     });
 
+    this.formKeyBased = this.builder.group({
+      time: this.builder.control(''),
+      isAdmin: this.builder.control(null)
+    });
+
     this.persistForm = new PersistNgFormPlugin(this.storiesQuery, createStory).setForm(this.form);
+    this.persistFormKey = new PersistNgFormPlugin(this.storiesQuery, 'config').setForm(this.formKeyBased);
     this.storeValue = this.storiesQuery.select(state => state.akitaForm);
   }
 
   submit() {
     this.storiesService.add(this.form.value).subscribe(() => this.persistForm.reset());
+    this.persistFormKey.reset();
   }
 
   ngOnDestroy() {
