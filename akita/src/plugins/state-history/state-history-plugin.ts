@@ -37,7 +37,7 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
   }
 
   activate() {
-    this.history.present = this.getStore()._value();
+    this.history.present = this.getSource(this._entityId);
     this.subscription = this.selectSource(this._entityId)
       .pipe(pairwise())
       .subscribe(([past, present]) => {
