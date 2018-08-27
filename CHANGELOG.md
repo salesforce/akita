@@ -1,3 +1,13 @@
+## [1.6.2](https://github.com/datorama/akita/compare/v1.6.1...v1.6.2) (2018-08-22)
+
+
+### Bug Fixes
+
+* **store:** warn when storeconfig is missing ([68c00e9](https://github.com/datorama/akita/commit/68c00e9)), closes [#56](https://github.com/datorama/akita/issues/56)
+* **update:** allow EntityStore updating entity id ([fbdb100](https://github.com/datorama/akita/commit/fbdb100)), closes [#52](https://github.com/datorama/akita/issues/52)
+* **update:** assure order of ids is the same ([1a32b8b](https://github.com/datorama/akita/commit/1a32b8b))
+* **update:** tighten up check for id field change ([f65e50a](https://github.com/datorama/akita/commit/f65e50a))
+
 ## [1.6.1](https://github.com/datorama/akita/compare/v1.6.0...v1.6.1) (2018-08-21)
 
 
