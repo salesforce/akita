@@ -3,7 +3,7 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { AkitaImmutabilityError, assertDecorator } from '../internal/error';
 import { commit, isTransactionInProcess } from '../internal/transaction.internal';
-import { isPlainObject } from '../internal/utils';
+import { isFunction, isPlainObject } from '../internal/utils';
 import { deepFreeze } from '../internal/deep-freeze';
 import { configKey, StoreConfigOptions } from './store-config';
 import { __globalState } from '../internal/global-state';
@@ -126,6 +126,7 @@ export class Store<S> {
     if (!this.store) {
       this.store = new BehaviorSubject(this.storeValue);
       rootDispatcher.next(nextState(this.storeName, true));
+      isDev() && __globalState.setAction({ type: 'Set State' });
       return;
     }
 
@@ -145,16 +146,14 @@ export class Store<S> {
    * this.store.update(newState)
    */
   update(newState: Partial<S>);
+  update(newState: (state: Readonly<S>) => Partial<S>);
   update(id: ID | ID[] | null, newState: Partial<S>);
-  update(newStateOrId: Partial<S> | ID | ID[] | null, newState?: Partial<S>) {
+  update(newStateOrId: Partial<S> | ID | ID[] | null | ((state: Readonly<S>) => Partial<S>), newState?: Partial<S>) {
     __globalState.setAction({ type: 'Update Store' });
     this.setState(state => {
-      const merged = Object.assign({}, state, newStateOrId);
-      if (isPlainObject(this._value())) {
-        return merged;
-      } else {
-        return new (state as any).constructor(merged);
-      }
+      let value = isFunction(newStateOrId) ? newStateOrId(state) : newStateOrId;
+      let merged = Object.assign({}, state, value);
+      return isPlainObject(state) ? merged : new (state as any).constructor(merged);
     });
     this.setDirty();
   }

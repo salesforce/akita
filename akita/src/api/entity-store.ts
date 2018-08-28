@@ -137,11 +137,15 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   update(id: ID | ID[] | null, newStateFn: ((entity: Readonly<E>) => Partial<E>));
   update(id: ID | ID[] | null, newState: Partial<E>);
   update(id: ID | ID[] | null, newState: Partial<S>);
+  update(newState: (state: Readonly<S>) => Partial<S>);
   update(predicate: ((entity: Readonly<E>) => boolean), newStateFn: ((entity: Readonly<E>) => Partial<E>));
   update(predicate: ((entity: Readonly<E>) => boolean), newState: Partial<E>);
   update(predicate: ((entity: Readonly<E>) => boolean), newState: Partial<S>);
   update(newState: Partial<S>);
-  update(idsOrFn: ID | ID[] | null | Partial<S> | ((entity: Readonly<E>) => boolean), newStateOrFn?: ((entity: Readonly<E>) => Partial<E>) | Partial<E> | Partial<S>) {
+  update(
+    idsOrFn: ID | ID[] | null | Partial<S> | ((state: Readonly<S>) => Partial<S>) | ((entity: Readonly<E>) => boolean),
+    newStateOrFn?: ((entity: Readonly<E>) => Partial<E>) | Partial<E> | Partial<S>
+  ) {
     let ids: ID[] = [];
     const storeIds = this._value().ids;
 
@@ -149,7 +153,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
       for (let i = 0, len = storeIds.length; i < len; i++) {
         const id = storeIds[i];
         const entity = this._value().entities[id];
-        if (entity && idsOrFn(entity)) {
+        if (entity && (idsOrFn as Function)(entity)) {
           ids.push(id);
         }
       }
