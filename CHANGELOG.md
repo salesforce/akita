@@ -1,3 +1,10 @@
+## [1.7.2](https://github.com/datorama/akita/compare/v1.7.1...v1.7.2) (2018-08-28)
+
+
+### Bug Fixes
+
+* **update:** the update() of basic store can take a function and return partial state ([50d2040](https://github.com/datorama/akita/commit/50d2040))
+
 ## [1.7.1](https://github.com/datorama/akita/compare/v1.7.0...v1.7.1) (2018-08-28)
 
 
