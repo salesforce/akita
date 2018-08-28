@@ -5,9 +5,6 @@ import { getValue, setValue } from '../internal/utils';
 import { __globalState } from '../internal/global-state';
 
 const notBs = typeof localStorage === 'undefined';
-if (notBs) {
-  (localStorage as any) = {};
-}
 
 export interface PersistStateParams {
   /** The storage key */
@@ -30,17 +27,17 @@ export interface PersistStateParams {
   exclude: string[];
 }
 
-const defaults: PersistStateParams = {
-  key: 'AkitaStores',
-  storage: localStorage,
-  deserialize: JSON.parse,
-  serialize: JSON.stringify,
-  include: [],
-  exclude: []
-};
-
 export function persistState(params?: Partial<PersistStateParams>) {
   if (notBs) return;
+
+  const defaults: PersistStateParams = {
+    key: 'AkitaStores',
+    storage: localStorage,
+    deserialize: JSON.parse,
+    serialize: JSON.stringify,
+    include: [],
+    exclude: []
+  };
   const { storage, deserialize, serialize, include, exclude, key } = Object.assign({}, defaults, params);
 
   const hasInclude = include.length > 0;
