@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/datorama/akita/compare/v1.7.0...v1.7.1) (2018-08-28)
+
+
+### Bug Fixes
+
+* **persist-state:** support ssr ([4d2e5a7](https://github.com/datorama/akita/commit/4d2e5a7))
+
 # [1.7.0](https://github.com/datorama/akita/compare/v1.6.2...v1.7.0) (2018-08-27)
 
 
