@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/datorama/akita/compare/v1.7.2...v1.8.0) (2018-09-02)
+
+
+### Features
+
+* **store:** support loading and error state in base store ([bd811e0](https://github.com/datorama/akita/commit/bd811e0)), closes [#61](https://github.com/datorama/akita/issues/61)
+
 ## [1.7.2](https://github.com/datorama/akita/compare/v1.7.1...v1.7.2) (2018-08-28)
 
 
