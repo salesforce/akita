@@ -77,6 +77,23 @@ export class Store<S> {
     isDev() && assertDecorator(this.storeName, this.constructor.name);
   }
 
+  setLoading(loading = false) {
+    if (loading !== (this._value() as S & { loading: boolean }).loading) {
+      isDev() && __globalState.setAction({ type: 'Set Loading' });
+      this.setState(s => ({ ...(s as object), loading } as any));
+    }
+  }
+
+  /**
+   * Update the store's error state.
+   */
+  setError<T>(error: T) {
+    if (error !== (this._value() as S & { error: any }).error) {
+      isDev() && __globalState.setAction({ type: 'Set Error' });
+      this.setState(s => ({ ...(s as object), error } as any));
+    }
+  }
+
   /**
    * Select a slice from the store
    *

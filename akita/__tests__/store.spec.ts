@@ -1,6 +1,7 @@
 import { AkitaImmutabilityError } from '../src/internal/error';
 import { Store } from '../src/api/store';
 import { StoreConfig } from '../src/api/store-config';
+import { Query } from '../src/api/query';
 
 interface State {
   theme: {
@@ -108,5 +109,29 @@ describe('With Class', () => {
     expect(userStore._value() instanceof User).toBeTruthy();
     expect(userStore._value()).toEqual(jasmine.any(User));
     expect(userStore._value().name).toEqual('Netanel Basal');
+  });
+});
+
+@StoreConfig({
+  name: 'user'
+})
+class TestStore extends Store<User> {
+  constructor() {
+    super({ config: {}, loading: true });
+  }
+}
+
+const testStore = new TestStore();
+const testQuery = new Query(testStore);
+
+describe('Loading Basic Store', () => {
+  it('should support loading', () => {
+    let value;
+    testQuery.selectLoading().subscribe(v => {
+      value = v;
+    });
+    expect(value).toBeTruthy();
+    testStore.setLoading(false);
+    expect(value).toBeFalsy();
   });
 });

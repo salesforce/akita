@@ -20,6 +20,7 @@ export class AkitaGlobals {
     if (this.customAction) {
       this.currentAction = this.customAction;
       this.customAction = null;
+      this.skipTransactionMsg = false;
     } else {
       if (this.activeTransactions === 0) {
         this.currentAction = _action;

@@ -29,6 +29,20 @@ export class Query<S> {
   }
 
   /**
+   * Select the store's loading state.
+   */
+  selectLoading() {
+    return this.select(state => (state as S & { loading: boolean }).loading);
+  }
+
+  /**
+   * Select the store's error state.
+   */
+  selectError() {
+    return this.select(state => (state as S & { error: any }).error);
+  }
+
+  /**
    * Get the raw value of the store.
    */
   getSnapshot(): S {

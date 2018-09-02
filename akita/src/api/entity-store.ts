@@ -3,7 +3,6 @@ import { AkitaImmutabilityError, assertActive } from '../internal/error';
 import { Action, __globalState } from '../internal/global-state';
 import { coerceArray, entityExists, isFunction, toBoolean } from '../internal/utils';
 import { isDev, Store } from './store';
-import { applyTransaction } from './transaction';
 import { ActiveState, Entities, EntityState, HashMap, ID, Newable } from './types';
 
 /**
@@ -33,26 +32,6 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   }
 
   /**
-   * Update the store's loading state.
-   * The initial value is set to true and is switched to false when you call `store.set()`.
-   * This can come in handy for indicating loading.
-   */
-  setLoading(loading = false) {
-    if (loading !== this._value().loading) {
-      this.updateRoot({ loading } as Partial<S>, { type: 'Set Loading' });
-    }
-  }
-
-  /**
-   * Update the store's error state.
-   */
-  setError<T>(error: T) {
-    if (error !== this._value().error) {
-      this.updateRoot({ error } as Partial<S>, { type: 'Set Error' });
-    }
-  }
-
-  /**
    *
    * Replace current collection with provided collection
    *
@@ -63,12 +42,9 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    *
    */
   set(entities: E[] | HashMap<E> | Entities<E>, options: { entityClass?: Newable<E> } = {}) {
-    applyTransaction(() => {
-      this.setState(state => _crud._set(state, entities, options.entityClass, this.idKey));
-      this.setDirty();
-      this.setLoading();
-      isDev() && __globalState.setAction({ type: 'Set Entities' });
-    });
+    isDev() && __globalState.setAction({ type: 'Set Entities' });
+    this.setState(state => _crud._set(state, entities, options.entityClass, this.idKey));
+    this.setDirty();
   }
 
   /**
