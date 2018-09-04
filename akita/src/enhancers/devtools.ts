@@ -15,7 +15,7 @@ export type DevtoolsOptions = {
 
 export function akitaDevtools(ngZone, options: Partial<DevtoolsOptions> = {}) {
   if (!(window as any).__REDUX_DEVTOOLS_EXTENSION__) {
-    console.error(`Can't find the Redux dev-tools extension`);
+    console.warn(`Can't find the Redux dev-tools extension 😔`);
     return;
   }
 
