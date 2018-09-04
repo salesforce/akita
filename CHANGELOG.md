@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/datorama/akita/compare/v1.8.0...v1.8.1) (2018-09-04)
+
+
+### Bug Fixes
+
+* **devtools:** change console error to console warn ([55b4525](https://github.com/datorama/akita/commit/55b4525)), closes [#64](https://github.com/datorama/akita/issues/64)
+
 # [1.8.0](https://github.com/datorama/akita/compare/v1.7.2...v1.8.0) (2018-09-02)
 
 
