@@ -1,3 +1,10 @@
+## [1.8.2](https://github.com/datorama/akita/compare/v1.8.1...v1.8.2) (2018-09-05)
+
+
+### Bug Fixes
+
+* **entity-state:** allow error generic in entity state ([8293f16](https://github.com/datorama/akita/commit/8293f16)), closes [#66](https://github.com/datorama/akita/issues/66)
+
 ## [1.8.1](https://github.com/datorama/akita/compare/v1.8.0...v1.8.1) (2018-09-04)
 
 
