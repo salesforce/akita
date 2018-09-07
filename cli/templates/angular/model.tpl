@@ -1,11 +1,9 @@
-export type {{ singular (pascalCase name) }} = {
+import { ID } from '@datorama/akita';
 
+export interface {{ singular (pascalCase name) }} {
+  id: ID;
 }
 
-/**
- * A factory function that creates {{ pascalCase name }}
- * @param params
- */
 export function create{{ singular (pascalCase name) }}(params: Partial<{{ singular (pascalCase name) }}>) {
   return {
 

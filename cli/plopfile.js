@@ -3,13 +3,15 @@ const path = require('path');
 const pluralize = require('pluralize');
 const finder = require('find-package-json');
 const pjson = finder(process.cwd()).next().value;
-let userPath, customFolderName;
+let userPath, customFolderName, isAngular = true;
 
 module.exports = function( plop ) {
   userPath = pjson.akitaCli && pjson.akitaCli.basePath || '';
   customFolderName = (pjson.akitaCli && pjson.akitaCli.customFolderName) || false;
+  if( pjson.akitaCli && 'isAngular' in pjson.akitaCli ) {
+    isAngular = pjson.akitaCli.isAngular;
+  }
   const userConfig = path.resolve(process.cwd(), userPath);
-
   const basePath = userConfig || process.cwd();
 
   plop.setPrompt('directory', promptDirectory);
@@ -25,7 +27,7 @@ module.exports = function( plop ) {
     type   : 'input',
     name   : 'folderName',
     message: 'Give me a folder name, please'
-  }
+  };
 
   plop.setGenerator('Akita', {
     description: 'Create new stack',
@@ -40,12 +42,6 @@ module.exports = function( plop ) {
         name   : 'storeType',
         choices: ['Entity Store', 'Store'],
         message: 'Which store do you need? 😊'
-      },
-      {
-        type   : 'confirm',
-        default: false,
-        name   : 'UIStore',
-        message: 'Is it UIStore?'
       }
     ].concat(customFolderName ? customFolderNameAction : [], chooseDirAction),
     actions    : function( data ) {
@@ -53,55 +49,46 @@ module.exports = function( plop ) {
 
       data.isStore = storeType === 'Store';
       data.isEntityStore = storeType === 'Entity Store';
-      const dataService = {
-        type        : 'add',
-        skipIfExists: true,
-        path        : buildPath('{{\'dashCase\' name}}-data.service.ts', directory, folderName),
-        templateFile: './templates/data-service.tpl'
-      };
+      const templateBase = isAngular ? 'angular' : 'other';
 
       const index = {
         type        : 'add',
         skipIfExists: true,
         path        : buildPath('index.ts', directory, folderName),
-        templateFile: './templates/index.tpl'
+        templateFile: `./templates/${templateBase}/index.tpl`
       };
-
 
       const model = {
         type        : 'add',
         skipIfExists: true,
         path        : buildPath('{{ \'singular\' (\'dashCase\' name) name}}.model.ts', directory, folderName),
-        templateFile: './templates/model.tpl'
+        templateFile: `./templates/${templateBase}/model.tpl`
       };
 
       const query = {
         type        : 'add',
         skipIfExists: true,
         path        : buildPath('{{\'dashCase\' name}}.query.ts', directory, folderName),
-        templateFile: `./templates/${data.isEntityStore ? 'entity-query' : 'query'}.tpl`
+        templateFile: `./templates/${templateBase}/${data.isEntityStore ? 'entity-query' : 'query'}.tpl`
       };
 
       const service = {
         type        : 'add',
         skipIfExists: true,
         path        : buildPath('{{\'dashCase\' name}}.service.ts', directory, folderName),
-        templateFile: './templates/service.tpl'
+        templateFile: `./templates/${templateBase}/service.tpl`
       };
 
       const store = {
         type        : 'add',
         skipIfExists: true,
         path        : buildPath('{{\'dashCase\' name}}.store.ts', directory, folderName),
-        templateFile:  `./templates/${data.isEntityStore ? 'entity-store' : 'store'}.tpl`
+        templateFile: `./templates/${templateBase}/${data.isEntityStore ? 'entity-store' : 'store'}.tpl`
       };
 
-      const WholeShebang = [dataService, query, service, store, index].concat(data.isEntityStore ? [model] : []);
-
-      return WholeShebang;
+      return [query, service, store, index].concat(data.isEntityStore ? [model] : []);
     }
   });
-
 
   plop.setHelper('switch', function( value, options ) {
     this._switch_value_ = value;
@@ -120,11 +107,11 @@ module.exports = function( plop ) {
     return pluralize.singular(value);
   });
 
-  function buildPath( name, chosenDir, folderName = 'state') {
-    if(userPath) {
+  function buildPath( name, chosenDir, folderName = 'state' ) {
+    if( userPath ) {
       return `${userConfig}/${chosenDir}/${folderName}/${name}`;
     }
-     return `${process.cwd()}/${chosenDir}/${folderName}/${name}`;
+    return `${process.cwd()}/${chosenDir}/${folderName}/${name}`;
   }
 
 };
