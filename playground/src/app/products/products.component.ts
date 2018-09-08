@@ -18,7 +18,7 @@ export class ProductsComponent implements OnInit {
   sortControl = new FormControl('title');
 
   constructor(private productsService: ProductsService,
-              private f: ContainerBasedService,
+              private containerBasedService: ContainerBasedService,
               private cartService: CartService, private productsQuery: ProductsQuery) {}
 
   ngOnInit() {

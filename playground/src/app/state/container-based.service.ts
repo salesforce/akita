@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { ID } from '@datorama/akita';
 import { ContainerBasedStore } from './container-based.store';
 
 @Injectable({
