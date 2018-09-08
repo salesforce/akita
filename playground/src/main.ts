@@ -10,7 +10,7 @@ if (environment.production) {
   enableAkitaProdMode();
 }
 
-const storage = persistState({ include: ['auth.token', 'cart', 'products'] });
+const storage = persistState({ include: ['auth.token'] });
 
 platformBrowserDynamic()
   .bootstrapModule(AppModule)

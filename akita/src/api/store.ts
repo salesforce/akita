@@ -225,4 +225,10 @@ export class Store<S> {
       this.inTransaction = true;
     }
   }
+
+  private ngOnDestroy() {
+    if(this === __stores__[this.storeName]) {
+      delete __stores__[this.storeName];
+    }
+  }
 }

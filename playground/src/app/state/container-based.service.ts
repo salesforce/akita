@@ -1,0 +1,13 @@
+import { Injectable } from '@angular/core';
+import { ID } from '@datorama/akita';
+import { ContainerBasedStore } from './container-based.store';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ContainerBasedService {
+
+  constructor(private containerBasedStore: ContainerBasedStore) {
+  }
+
+}
