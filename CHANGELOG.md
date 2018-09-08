@@ -1,3 +1,10 @@
+## [1.8.3](https://github.com/datorama/akita/compare/v1.8.2...v1.8.3) (2018-09-08)
+
+
+### Bug Fixes
+
+* **store:** return support for non singletons providers ([d1b6810](https://github.com/datorama/akita/commit/d1b6810))
+
 ## [1.8.2](https://github.com/datorama/akita/compare/v1.8.1...v1.8.2) (2018-09-05)
 
 
