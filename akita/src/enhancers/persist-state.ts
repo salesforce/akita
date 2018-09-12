@@ -72,6 +72,9 @@ export function persistState(params?: Partial<PersistStateParams>) {
       store.setState(state => {
         return setValue(state, path, storageState[storeName]);
       });
+      if (store.setDirty) {
+        store.setDirty();
+      }
     }
   }
 
