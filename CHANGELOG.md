@@ -1,3 +1,10 @@
+## [1.8.4](https://github.com/datorama/akita/compare/v1.8.3...v1.8.4) (2018-09-12)
+
+
+### Bug Fixes
+
+* **persist-state:** persist state should mark the store as dirty ([0fb427b](https://github.com/datorama/akita/commit/0fb427b)), closes [#79](https://github.com/datorama/akita/issues/79)
+
 ## [1.8.3](https://github.com/datorama/akita/compare/v1.8.2...v1.8.3) (2018-09-08)
 
 
