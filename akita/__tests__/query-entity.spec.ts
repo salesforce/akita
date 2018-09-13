@@ -1,10 +1,11 @@
-import { cot, createTodos, ct, Todo, TodosStore } from './setup';
-import { isObject } from '../src/internal/utils';
 import { Subscription } from 'rxjs';
-import { getInitialEntitiesState, EntityStore } from '../src/api/entity-store';
+
+import { getInitialEntitiesState } from '../src/api/entity-store';
+import { QueryConfig, SortBy } from '../src/api/query-config';
 import { QueryEntity } from '../src/api/query-entity';
 import { Order } from '../src/internal/sort';
-import { QueryConfig } from '../src/api/query-config';
+import { isObject } from '../src/internal/utils';
+import { cot, createTodos, ct, Todo, TodosStore } from './setup';
 
 let store = new TodosStore();
 const query = new QueryEntity(store);
@@ -664,6 +665,37 @@ describe('Sort by', () => {
         sortBy: customSortBy
       })
       .subscribe(_res => (res = _res));
+
+    expect(res[0].price).toEqual(3);
+    expect(res[1].price).toEqual(10);
+    expect(res[2].price).toEqual(40);
+  });
+
+  it('should sort using conditional state value', () => {
+    function sortByPrice(obj1, obj2) {
+      return obj1.price - obj2.price;
+    }
+
+    function sortById(obj1, obj2) {
+      return obj1.id - obj2.id;
+    }
+
+    todosStore.set([
+      { id: 1, title: 'Todo 1', complete: false, price: 10 },
+      {
+        id: 0,
+        title: 'Todo 0',
+        complete: false,
+        price: 40
+      },
+      { id: 2, title: 'Todo 2', complete: true, price: 3 }
+    ] as any);
+
+    todosStore.updateRoot({ sortyByPrice: true });
+
+    const sortBy: SortBy<any, any> = (a, b, state) => (state.sortyByPrice ? sortByPrice(a, b) : sortById(a, b));
+
+    sub = queryTodos.selectAll({ sortBy }).subscribe(_res => (res = _res));
 
     expect(res[0].price).toEqual(3);
     expect(res[1].price).toEqual(10);

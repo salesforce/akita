@@ -1,6 +1,6 @@
 import { Order } from '../internal/sort';
 
-export type SortBy<E> = ((a: E, b: E) => number) | keyof E;
+export type SortBy<E, S = any> = ((a: E, b: E, state?: S) => number) | keyof E;
 
 export interface SortByOptions<E> {
   sortBy?: SortBy<E>;

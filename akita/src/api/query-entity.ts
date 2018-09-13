@@ -1,12 +1,13 @@
-import { EntityStore } from './entity-store';
-import { ActiveState, EntityState, HashMap, ID } from './types';
 import { combineLatest, Observable } from 'rxjs';
 import { auditTime, map, switchMap, withLatestFrom } from 'rxjs/operators';
-import { Query } from './query';
-import { entityExists, isFunction, isUndefined, toBoolean } from '../internal/utils';
-import { memoizeOne } from './memoize';
+
 import { compareValues, Order } from '../internal/sort';
+import { entityExists, isFunction, isUndefined, toBoolean } from '../internal/utils';
+import { EntityStore } from './entity-store';
+import { memoizeOne } from './memoize';
+import { Query } from './query';
 import { SortBy, SortByOptions } from './query-config';
+import { ActiveState, EntityState, HashMap, ID } from './types';
 
 export interface SelectOptions<E> extends SortByOptions<E> {
   asObject?: boolean;
@@ -46,14 +47,15 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
       asObject: false
     }
   ): Observable<E[] | HashMap<E>> {
-    const selectIds$ = this.select(state => state.ids);
+    const selectState$ = this.select(state => state);
     const selectEntities$ = this.select(state => state.entities);
 
     options.sortBy = options.sortBy || (this.config && (this.config.sortBy as SortBy<E>));
     options.sortByOrder = options.sortByOrder || (this.config && this.config.sortByOrder);
 
     return selectEntities$.pipe(
-      withLatestFrom(selectIds$, (entities, ids: ID[]) => {
+      withLatestFrom(selectState$, (entities, state: S) => {
+        const { ids } = state;
         if (options.asObject) {
           return toMap(ids, entities, options);
         } else {
@@ -61,10 +63,10 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
             if (!this.memoized) {
               this.memoized = memoizeOne(toArray);
             }
-            return this.memoized(ids, entities, options);
+            return this.memoized(state, options);
           }
 
-          return toArray(ids, entities, options);
+          return toArray(state, options);
         }
       })
     );
@@ -83,14 +85,13 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
   getAll(options: { asObject: false; filterBy?: SelectOptions<E>['filterBy']; limitTo?: number }): E[];
   getAll(): E[];
   getAll(options: SelectOptions<E> = { asObject: false, filterBy: undefined, limitTo: undefined }): E[] | HashMap<E> {
-    const ids = this.getSnapshot().ids;
-    const entities = this.getSnapshot().entities;
+    const state = this.getSnapshot();
 
     if (options.asObject) {
-      return toMap(ids, entities, options, true);
+      return toMap(state.ids, state.entities, options, true);
     }
 
-    return toArray(ids, entities, options);
+    return toArray(state, options);
   }
 
   /**
@@ -224,8 +225,9 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
   }
 }
 
-function toArray<E>(ids: ID[], entities: HashMap<E>, options: SelectOptions<E>): E[] {
+function toArray<E, S extends EntityState>(state: S, options: SelectOptions<E>): E[] {
   let arr = [];
+  const { ids, entities } = state;
   const { filterBy, limitTo, sortBy, sortByOrder } = options;
 
   for (let i = 0; i < ids.length; i++) {
@@ -247,7 +249,7 @@ function toArray<E>(ids: ID[], entities: HashMap<E>, options: SelectOptions<E>):
 
   if (sortBy) {
     let _sortBy = isFunction(sortBy) ? sortBy : compareValues(sortBy, sortByOrder);
-    arr = arr.sort(_sortBy);
+    arr = arr.sort((a, b) => _sortBy(a, b, state));
   }
   const length = Math.min(limitTo || arr.length, arr.length);
 
