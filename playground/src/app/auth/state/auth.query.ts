@@ -15,5 +15,6 @@ export class AuthQuery extends Query<User> {
 }
 
 export function inStorage() {
-  return !!localStorage.getItem('token');
+  const storage = JSON.parse(localStorage.getItem('AkitaStores'));
+  return storage && storage.auth;
 }

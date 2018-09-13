@@ -4,9 +4,11 @@ import { Observable, combineLatest } from 'rxjs';
 import { CartService } from '../cart/state';
 import { FormControl } from '@angular/forms';
 import { startWith, switchMap } from 'rxjs/operators';
+import { ContainerBasedQuery, ContainerBasedService, ContainerBasedStore } from '../state';
 
 @Component({
   selector: 'app-products',
+  providers: [ContainerBasedService, ContainerBasedStore, ContainerBasedQuery],
   templateUrl: `./products.component.html`
 })
 export class ProductsComponent implements OnInit {
@@ -15,7 +17,9 @@ export class ProductsComponent implements OnInit {
   search = new FormControl();
   sortControl = new FormControl('title');
 
-  constructor(private productsService: ProductsService, private cartService: CartService, private productsQuery: ProductsQuery) {}
+  constructor(private productsService: ProductsService,
+              private containerBasedService: ContainerBasedService,
+              private cartService: CartService, private productsQuery: ProductsQuery) {}
 
   ngOnInit() {
     this.productsService.get().subscribe();

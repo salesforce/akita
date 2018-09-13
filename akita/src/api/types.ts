@@ -17,11 +17,11 @@ export interface HashMap<T> {
  *  `ids`: An array of all the primary ids in the collection
  *  `entities`: A dictionary of entities in the collection indexed by the primary id
  */
-export interface EntityState<E = any> {
+export interface EntityState<E = any, ErrorT = any> {
   entities?: HashMap<E>;
   ids?: ID[];
   loading?: boolean;
-  error?: any;
+  error?: ErrorT;
   /** This is for stores that doesn't implements the EntityState interface */
   [key: string]: any;
 }

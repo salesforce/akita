@@ -2,10 +2,19 @@ import { Injectable } from '@angular/core';
 import { Story } from './story.model';
 import { EntityState, EntityStore, StoreConfig } from '../../../../../akita/src';
 
-export interface State extends EntityState<Story> {}
+export interface State extends EntityState<Story> {
+  config: {
+    time: string;
+    isAdmin: boolean;
+  };
+}
 
 const initialState: State = {
-  loading: false
+  loading: false,
+  config: {
+    time: '',
+    isAdmin: false
+  }
 };
 
 @Injectable({ providedIn: 'root' })

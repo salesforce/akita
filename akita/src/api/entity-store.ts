@@ -1,9 +1,8 @@
 import { _crud } from '../internal/crud';
 import { AkitaImmutabilityError, assertActive } from '../internal/error';
-import { Action, globalState } from '../internal/global-state';
+import { Action, __globalState } from '../internal/global-state';
 import { coerceArray, entityExists, isFunction, toBoolean } from '../internal/utils';
 import { isDev, Store } from './store';
-import { applyTransaction } from './transaction';
 import { ActiveState, Entities, EntityState, HashMap, ID, Newable } from './types';
 
 /**
@@ -33,26 +32,6 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   }
 
   /**
-   * Update the store's loading state.
-   * The initial value is set to true and is switched to false when you call `store.set()`.
-   * This can come in handy for indicating loading.
-   */
-  setLoading(loading = false) {
-    if (loading !== this._value().loading) {
-      this.updateRoot({ loading } as Partial<S>, { type: 'Set Loading' });
-    }
-  }
-
-  /**
-   * Update the store's error state.
-   */
-  setError<T>(error: T) {
-    if (error !== this._value().error) {
-      this.updateRoot({ error } as Partial<S>, { type: 'Set Error' });
-    }
-  }
-
-  /**
    *
    * Replace current collection with provided collection
    *
@@ -63,12 +42,9 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    *
    */
   set(entities: E[] | HashMap<E> | Entities<E>, options: { entityClass?: Newable<E> } = {}) {
-    applyTransaction(() => {
-      this.setState(state => _crud._set(state, entities, options.entityClass, this.idKey));
-      this.setDirty();
-      this.setLoading();
-      isDev() && globalState.setAction({ type: 'Set Entities' });
-    });
+    isDev() && __globalState.setAction({ type: 'Set Entities' });
+    this.setState(state => _crud._set(state, entities, options.entityClass, this.idKey));
+    this.setDirty();
   }
 
   /**
@@ -85,7 +61,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
       }
       return this.add(entity);
     }
-    isDev() && globalState.setAction({ type: 'Upsert Entity', entityId: [id] });
+    isDev() && __globalState.setAction({ type: 'Upsert Entity', entityId: [id] });
     this.setState(state => _crud._replaceEntity(state, id, entity));
   }
 
@@ -99,7 +75,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   add(entities: E[] | E) {
     const toArray = coerceArray(entities);
     if (toArray.length === 0) return;
-    isDev() && globalState.setAction({ type: 'Add Entity' });
+    isDev() && __globalState.setAction({ type: 'Add Entity' });
     this.setState(state => _crud._add<S, E>(state, toArray, this.idKey));
   }
 
@@ -137,11 +113,15 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   update(id: ID | ID[] | null, newStateFn: ((entity: Readonly<E>) => Partial<E>));
   update(id: ID | ID[] | null, newState: Partial<E>);
   update(id: ID | ID[] | null, newState: Partial<S>);
+  update(newState: (state: Readonly<S>) => Partial<S>);
   update(predicate: ((entity: Readonly<E>) => boolean), newStateFn: ((entity: Readonly<E>) => Partial<E>));
   update(predicate: ((entity: Readonly<E>) => boolean), newState: Partial<E>);
   update(predicate: ((entity: Readonly<E>) => boolean), newState: Partial<S>);
   update(newState: Partial<S>);
-  update(idsOrFn: ID | ID[] | null | Partial<S> | ((entity: Readonly<E>) => boolean), newStateOrFn?: ((entity: Readonly<E>) => Partial<E>) | Partial<E> | Partial<S>) {
+  update(
+    idsOrFn: ID | ID[] | null | Partial<S> | ((state: Readonly<S>) => Partial<S>) | ((entity: Readonly<E>) => boolean),
+    newStateOrFn?: ((entity: Readonly<E>) => Partial<E>) | Partial<E> | Partial<S>
+  ) {
     let ids: ID[] = [];
     const storeIds = this._value().ids;
 
@@ -149,7 +129,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
       for (let i = 0, len = storeIds.length; i < len; i++) {
         const id = storeIds[i];
         const entity = this._value().entities[id];
-        if (entity && idsOrFn(entity)) {
+        if (entity && (idsOrFn as Function)(entity)) {
           ids.push(id);
         }
       }
@@ -158,7 +138,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
     }
 
     if (ids.length === 0) return;
-    isDev() && globalState.setAction({ type: 'Update Entity', entityId: ids });
+    isDev() && __globalState.setAction({ type: 'Update Entity', entityId: ids });
 
     this.setState(state => {
       return _crud._update(state, ids, newStateOrFn, this.idKey);
@@ -197,7 +177,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
       throw new AkitaImmutabilityError(this.storeName);
     }
 
-    isDev() && globalState.setAction(action || { type: 'Update Root' });
+    isDev() && __globalState.setAction(action || { type: 'Update Root' });
 
     this.setState(state => {
       return {
@@ -240,7 +220,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
     }
 
     if (ids && ids.length === 0) return;
-    isDev() && globalState.setAction({ type: 'Remove Entity', entityId: ids });
+    isDev() && __globalState.setAction({ type: 'Remove Entity', entityId: ids });
 
     this.setState(state => {
       return _crud._remove(state, ids);
@@ -263,7 +243,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    */
   updateActive(newStateFn: ((entity: Readonly<E>) => Partial<E>) | Partial<E>) {
     assertActive(this._value());
-    isDev() && globalState.setAction({ type: 'Update Active Entity', entityId: this._value().active });
+    isDev() && __globalState.setAction({ type: 'Update Active Entity', entityId: this._value().active });
     this.setState(state => {
       const activeId = state.active;
       const newState = isFunction(newStateFn) ? newStateFn(state.entities[activeId]) : newStateFn;
@@ -279,7 +259,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    */
   setActive(id: ID) {
     if (id === this._value().active) return;
-    isDev() && globalState.setAction({ type: 'Set Active Entity', entityId: id });
+    isDev() && __globalState.setAction({ type: 'Set Active Entity', entityId: id });
     this.setState(state => {
       return {
         ...(state as any),

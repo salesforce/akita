@@ -1,12 +1,12 @@
 import { HashMap, ID } from './types';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
-import { AkitaImmutabilityError } from '../internal/error';
+import { AkitaImmutabilityError, assertDecorator } from '../internal/error';
 import { commit, isTransactionInProcess } from '../internal/transaction.internal';
-import { isPlainObject } from '../internal/utils';
+import { isFunction, isPlainObject } from '../internal/utils';
 import { deepFreeze } from '../internal/deep-freeze';
 import { configKey, StoreConfigOptions } from './store-config';
-import { globalState } from '../internal/global-state';
+import { __globalState } from '../internal/global-state';
 
 /** Whether we are in dev mode */
 let __DEV__ = true;
@@ -67,13 +67,31 @@ export class Store<S> {
    * Initial the store with the state
    */
   constructor(initialState) {
-    globalState.setAction({ type: '@@INIT' });
+    __globalState.setAction({ type: '@@INIT' });
     __stores__[this.storeName] = this;
     this.setState(() => initialState);
     rootDispatcher.next({
       type: Actions.NEW_STORE,
       payload: { store: this }
     });
+    isDev() && assertDecorator(this.storeName, this.constructor.name);
+  }
+
+  setLoading(loading = false) {
+    if (loading !== (this._value() as S & { loading: boolean }).loading) {
+      isDev() && __globalState.setAction({ type: 'Set Loading' });
+      this.setState(s => ({ ...(s as object), loading } as any));
+    }
+  }
+
+  /**
+   * Update the store's error state.
+   */
+  setError<T>(error: T) {
+    if (error !== (this._value() as S & { error: any }).error) {
+      isDev() && __globalState.setAction({ type: 'Set Error' });
+      this.setState(s => ({ ...(s as object), error } as any));
+    }
   }
 
   /**
@@ -125,6 +143,7 @@ export class Store<S> {
     if (!this.store) {
       this.store = new BehaviorSubject(this.storeValue);
       rootDispatcher.next(nextState(this.storeName, true));
+      isDev() && __globalState.setAction({ type: 'Set State' });
       return;
     }
 
@@ -144,16 +163,14 @@ export class Store<S> {
    * this.store.update(newState)
    */
   update(newState: Partial<S>);
+  update(newState: (state: Readonly<S>) => Partial<S>);
   update(id: ID | ID[] | null, newState: Partial<S>);
-  update(newStateOrId: Partial<S> | ID | ID[] | null, newState?: Partial<S>) {
-    globalState.setAction({ type: 'Update Store' });
+  update(newStateOrId: Partial<S> | ID | ID[] | null | ((state: Readonly<S>) => Partial<S>), newState?: Partial<S>) {
+    __globalState.setAction({ type: 'Update Store' });
     this.setState(state => {
-      const merged = Object.assign({}, state, newStateOrId);
-      if (isPlainObject(this._value())) {
-        return merged;
-      } else {
-        return new (state as any).constructor(merged);
-      }
+      let value = isFunction(newStateOrId) ? newStateOrId(state) : newStateOrId;
+      let merged = Object.assign({}, state, value);
+      return isPlainObject(state) ? merged : new (state as any).constructor(merged);
     });
     this.setDirty();
   }
@@ -176,7 +193,7 @@ export class Store<S> {
     this.store.next(state);
     if (_rootDispatcher) {
       rootDispatcher.next(nextState(this.storeName));
-      isDev() && globalState.setAction({ type: 'Set State' });
+      isDev() && __globalState.setAction({ type: 'Set State' });
     }
   }
 
@@ -190,12 +207,12 @@ export class Store<S> {
   private watchTransaction() {
     commit().subscribe(() => {
       this.inTransaction = false;
-      if (isDev() && !globalState.skipTransactionMsg) {
-        globalState.setAction({ type: '@Transaction' });
+      if (isDev() && !__globalState.skipTransactionMsg) {
+        __globalState.setAction({ type: '@Transaction' });
       }
       this.dispatch(this._value());
-      globalState.currentT = [];
-      globalState.skipTransactionMsg = false;
+      __globalState.currentT = [];
+      __globalState.skipTransactionMsg = false;
     });
   }
 
@@ -206,6 +223,12 @@ export class Store<S> {
     if (!this.inTransaction) {
       this.watchTransaction();
       this.inTransaction = true;
+    }
+  }
+
+  private ngOnDestroy() {
+    if(this === __stores__[this.storeName]) {
+      delete __stores__[this.storeName];
     }
   }
 }

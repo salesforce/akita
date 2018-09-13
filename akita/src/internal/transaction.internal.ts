@@ -1,4 +1,4 @@
-import { globalState } from './global-state';
+import { __globalState } from './global-state';
 import { Observable, Subject, of } from 'rxjs';
 
 /**
@@ -6,18 +6,18 @@ import { Observable, Subject, of } from 'rxjs';
  */
 export function startBatch() {
   if (!isTransactionInProcess()) {
-    globalState.batchTransaction = new Subject();
+    __globalState.batchTransaction = new Subject();
   }
-  globalState.activeTransactions++;
+  __globalState.activeTransactions++;
 }
 
 /**
  * End the transaction
  */
 export function endBatch() {
-  if (--globalState.activeTransactions === 0) {
-    globalState.batchTransaction.next(true);
-    globalState.batchTransaction.complete();
+  if (--__globalState.activeTransactions === 0) {
+    __globalState.batchTransaction.next(true);
+    __globalState.batchTransaction.complete();
   }
 }
 
@@ -25,11 +25,11 @@ export function endBatch() {
  * Whether we're inside batch
  */
 export function isTransactionInProcess() {
-  return globalState.activeTransactions > 0;
+  return __globalState.activeTransactions > 0;
 }
 
 /**
  */
 export function commit(): Observable<boolean> {
-  return globalState.batchTransaction ? globalState.batchTransaction.asObservable() : of(true);
+  return __globalState.batchTransaction ? __globalState.batchTransaction.asObservable() : of(true);
 }

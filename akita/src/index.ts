@@ -26,3 +26,4 @@ export * from './plugins/dirty-check/dirty-check-plugin';
 export * from './plugins/dirty-check/entity-dirty-check-plugin';
 export * from './api/operators';
 export * from './api/store-utils';
+export { __globalState } from './internal/global-state';

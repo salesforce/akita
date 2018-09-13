@@ -751,7 +751,7 @@ describe('Sort by - Query Level', () => {
 });
 
 describe('selectAll - limit to and filterBy', () => {
-  const store = new EntityStore<any, any>();
+  const store = new TodosStore();
   const query = new QueryEntity<any, any>(store);
 
   const elements = [
@@ -802,7 +802,7 @@ describe('selectAll - limit to and filterBy', () => {
 });
 
 describe('selectAll - limit to and filterBy and sorting', () => {
-  const store = new EntityStore<any, any>();
+  const store = new TodosStore();
   const query = new QueryEntity<any, any>(store);
 
   const elements = [

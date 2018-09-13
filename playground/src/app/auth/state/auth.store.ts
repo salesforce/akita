@@ -15,11 +15,3 @@ export class AuthStore extends Store<User> {
     super(initialState);
   }
 }
-
-export function saveInStorage(token: string) {
-  localStorage.setItem('token', token);
-}
-
-export function clearStorage() {
-  localStorage.removeItem('token');
-}

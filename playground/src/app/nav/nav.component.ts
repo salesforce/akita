@@ -10,21 +10,19 @@ import { Router } from '@angular/router';
     <nav>
       <div class="nav-wrapper cyan lighten-2">
         <a class="brand-logo" routerLink="/">Akita Store</a>
-
         <ul id="nav-mobile" class="right hide-on-med-and-down">
           <li *ngIf="isLoggedIn$ | async"><a (click)="logout()">Logout</a></li>
-          <li><a routerLink="todos">Todos</a></li>
-          <li><a routerLink="contacts">Contacts</a></li>
-          <li><a routerLink="stories">Stories</a></li>
-          <li><a routerLink="movies">Movies</a></li>
-          <li><a routerLink="widgets">Widgets</a></li>
-          <li><a routerLink="cart">Cart <span class="new badge">{{count$ | async}}</span></a></li>
+          <li *ngFor="let item of navItems">
+            <a routerLinkActive="blue-text text-lighten-2" [routerLink]="item.toLowerCase()">{{item}}</a>
+          </li>
+          <li><a routerLinkActive="blue-text text-lighten-2" routerLink="cart">Cart <span class="new badge">{{count$ | async}}</span></a></li>
         </ul>
       </div>
     </nav>
   `
 })
 export class NavComponent {
+  navItems = ['Todos', 'Contacts', 'Stories', 'Movies', 'Widgets'];
   count$: Observable<number>;
   isLoggedIn$: Observable<boolean>;
 

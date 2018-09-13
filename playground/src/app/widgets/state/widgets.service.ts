@@ -10,12 +10,25 @@ import { ID } from '../../../../../../akita/akita/src/index';
 export class WidgetsService {
   constructor(private widgetsStore: WidgetsStore, private widgetsDataService: WidgetsDataService) {}
 
-  add() {
+  initWidgets() {
     const widgets = [createWidget(), createWidget(), createWidget(), createWidget(), createWidget()];
-    this.widgetsStore.add(widgets);
+    this.widgetsStore.set(widgets);
   }
 
   updateWidget(id: ID, name: string) {
     this.widgetsStore.update(id, { name });
+  }
+
+  add() {
+    this.widgetsStore.add(createWidget());
+  }
+
+  remove(id?: ID) {
+    this.widgetsStore.remove(id);
+    this.widgetsStore.setDirty();
+  }
+
+  updateName(name: string) {
+    this.widgetsStore.updateRoot({name});
   }
 }

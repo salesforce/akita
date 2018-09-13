@@ -1,3 +1,90 @@
+## [1.8.4](https://github.com/datorama/akita/compare/v1.8.3...v1.8.4) (2018-09-12)
+
+
+### Bug Fixes
+
+* **persist-state:** persist state should mark the store as dirty ([0fb427b](https://github.com/datorama/akita/commit/0fb427b)), closes [#79](https://github.com/datorama/akita/issues/79)
+
+## [1.8.3](https://github.com/datorama/akita/compare/v1.8.2...v1.8.3) (2018-09-08)
+
+
+### Bug Fixes
+
+* **store:** return support for non singletons providers ([d1b6810](https://github.com/datorama/akita/commit/d1b6810))
+
+## [1.8.2](https://github.com/datorama/akita/compare/v1.8.1...v1.8.2) (2018-09-05)
+
+
+### Bug Fixes
+
+* **entity-state:** allow error generic in entity state ([8293f16](https://github.com/datorama/akita/commit/8293f16)), closes [#66](https://github.com/datorama/akita/issues/66)
+
+## [1.8.1](https://github.com/datorama/akita/compare/v1.8.0...v1.8.1) (2018-09-04)
+
+
+### Bug Fixes
+
+* **devtools:** change console error to console warn ([55b4525](https://github.com/datorama/akita/commit/55b4525)), closes [#64](https://github.com/datorama/akita/issues/64)
+
+# [1.8.0](https://github.com/datorama/akita/compare/v1.7.2...v1.8.0) (2018-09-02)
+
+
+### Features
+
+* **store:** support loading and error state in base store ([bd811e0](https://github.com/datorama/akita/commit/bd811e0)), closes [#61](https://github.com/datorama/akita/issues/61)
+
+## [1.7.2](https://github.com/datorama/akita/compare/v1.7.1...v1.7.2) (2018-08-28)
+
+
+### Bug Fixes
+
+* **update:** the update() of basic store can take a function and return partial state ([50d2040](https://github.com/datorama/akita/commit/50d2040))
+
+## [1.7.1](https://github.com/datorama/akita/compare/v1.7.0...v1.7.1) (2018-08-28)
+
+
+### Bug Fixes
+
+* **persist-state:** support ssr ([4d2e5a7](https://github.com/datorama/akita/commit/4d2e5a7))
+
+# [1.7.0](https://github.com/datorama/akita/compare/v1.6.2...v1.7.0) (2018-08-27)
+
+
+### Bug Fixes
+
+* **state-history:** present should take the entity state on init ([1aa30d2](https://github.com/datorama/akita/commit/1aa30d2))
+
+
+### Features
+
+* **persist-form:** add the ability to sync a specific store key ([01dbfb8](https://github.com/datorama/akita/commit/01dbfb8))
+* **persist-state:** check localstorage support for ssr ([5e02410](https://github.com/datorama/akita/commit/5e02410)), closes [#58](https://github.com/datorama/akita/issues/58)
+* **persist-state:** include now can accept nested key ([d2dabb4](https://github.com/datorama/akita/commit/d2dabb4)), closes [#59](https://github.com/datorama/akita/issues/59)
+
+## [1.6.2](https://github.com/datorama/akita/compare/v1.6.1...v1.6.2) (2018-08-22)
+
+
+### Bug Fixes
+
+* **store:** warn when storeconfig is missing ([68c00e9](https://github.com/datorama/akita/commit/68c00e9)), closes [#56](https://github.com/datorama/akita/issues/56)
+* **update:** allow EntityStore updating entity id ([fbdb100](https://github.com/datorama/akita/commit/fbdb100)), closes [#52](https://github.com/datorama/akita/issues/52)
+* **update:** assure order of ids is the same ([1a32b8b](https://github.com/datorama/akita/commit/1a32b8b))
+* **update:** tighten up check for id field change ([f65e50a](https://github.com/datorama/akita/commit/f65e50a))
+
+## [1.6.1](https://github.com/datorama/akita/compare/v1.6.0...v1.6.1) (2018-08-21)
+
+
+### Bug Fixes
+
+* **dirty-check:** types ([8174fe0](https://github.com/datorama/akita/commit/8174fe0))
+
+# [1.6.0](https://github.com/datorama/akita/compare/v1.5.0...v1.6.0) (2018-08-21)
+
+
+### Features
+
+* **dirty-check:** add support for key based check ([ee52619](https://github.com/datorama/akita/commit/ee52619))
+
 # [1.5.0](https://github.com/datorama/akita/compare/v1.4.1...v1.5.0) (2018-08-16)
 
 

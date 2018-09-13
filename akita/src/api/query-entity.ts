@@ -200,20 +200,6 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
   }
 
   /**
-   * Select the store's loading state.
-   */
-  selectLoading() {
-    return this.select(state => state.loading);
-  }
-
-  /**
-   * Select the store's error state.
-   */
-  selectError() {
-    return this.select(state => state.error);
-  }
-
-  /**
    * Returns whether entity exists.
    */
   hasEntity(id: ID): boolean;

@@ -2,8 +2,8 @@ import { AkitaPlugin } from '../plugin';
 import { Query } from '../../api/query';
 import { Observable, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { globalState } from '../../internal/global-state';
-import { isUndefined } from '../../internal/utils';
+import { __globalState } from '../../internal/global-state';
+import { getValue, isString, setValue } from '../../internal/utils';
 
 export type FormGroupLike = {
   patchValue: Function;
@@ -18,15 +18,19 @@ export type AkitaFormProp<T> = {
 export type PersistFormParams = {
   debounceTime?: number;
   formKey?: string;
+  emitEvent?: boolean;
 };
 
 export class PersistNgFormPlugin<T = any> extends AkitaPlugin {
   formChanges: Subscription;
   private form: FormGroupLike;
+  private isKeyBased: boolean;
+  private initialValue;
 
-  constructor(protected query: Query<any>, private factoryFunction: Function, private params: PersistFormParams = {}) {
+  constructor(protected query: Query<any>, private factoryFnOrPath: Function | string, private params: PersistFormParams = {}) {
     super(query);
-    this.params = { ...{ debounceTime: 100, formKey: 'akitaForm' }, ...params };
+    this.params = { ...{ debounceTime: 300, formKey: 'akitaForm', emitEvent: false }, ...params };
+    this.isKeyBased = isString(factoryFnOrPath);
   }
 
   setForm(form: FormGroupLike) {
@@ -36,37 +40,44 @@ export class PersistNgFormPlugin<T = any> extends AkitaPlugin {
   }
 
   reset(initialState?: T) {
-    const value = isUndefined(initialState) ? this.factoryFunction() : initialState;
+    let value;
+    if (initialState) {
+      value = initialState;
+    } else {
+      value = this.isKeyBased ? this.initialValue : (this as any).factoryFnOrPath();
+    }
+
     this.form.patchValue(value);
 
-    this.getStore().setState(state => {
-      return {
-        ...state,
-        [this.params.formKey]: value
-      };
-    });
+    const storeValue = this.isKeyBased ? setValue(this.getStore()._value(), `${this.getStore().storeName}.${this.factoryFnOrPath}`, value) : { [this.params.formKey]: value };
+    this.updateStore(storeValue);
   }
 
   private activate() {
-    if (!(this.getQuery().getSnapshot() as AkitaFormProp<T>)[this.params.formKey]) {
-      globalState.setAction({ type: '@PersistNgFormPlugin activate' });
-      this.getStore().setState(state => {
-        return {
-          ...state,
-          [this.params.formKey]: this.factoryFunction()
-        };
-      });
+    let path;
+
+    if (this.isKeyBased) {
+      path = `${this.getStore().storeName}.${this.factoryFnOrPath}`;
+      this.initialValue = getValue(this.getStore()._value(), path);
+      this.form.patchValue(this.initialValue, { emitEvent: this.params.emitEvent });
+    } else {
+      if (!(this.getQuery().getSnapshot() as AkitaFormProp<T>)[this.params.formKey]) {
+        __globalState.setAction({ type: '@PersistNgFormPlugin activate' });
+        this.updateStore({ [this.params.formKey]: (this as any).factoryFnOrPath() });
+      }
+
+      this.query.selectOnce(state => (state as AkitaFormProp<T>)[this.params.formKey]).subscribe(formValue => this.form.patchValue(formValue));
     }
 
-    this.query.selectOnce(state => (state as AkitaFormProp<T>)[this.params.formKey]).subscribe(formValue => this.form.patchValue(formValue));
     this.formChanges = this.form.valueChanges.pipe(debounceTime(this.params.debounceTime)).subscribe(value => {
-      globalState.setAction({ type: '@PersistForm - Update' });
-      this.getStore().setState(state => {
-        return {
-          ...state,
-          [this.params.formKey]: value
-        };
-      });
+      __globalState.setAction({ type: '@PersistForm - Update' });
+      let newState;
+      if (this.isKeyBased) {
+        newState = state => setValue(state, path, value);
+      } else {
+        newState = () => ({ [this.params.formKey]: value });
+      }
+      this.updateStore(newState(this.getStore()._value()));
     });
   }
 

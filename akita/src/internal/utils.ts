@@ -73,3 +73,44 @@ export function resetActive<E>(state: EntityState<E>) {
 export function isActiveState<E>(state: EntityState<E>) {
   return (state as ActiveState).hasOwnProperty('active');
 }
+
+/**
+ * setValue(state, 'todos.ui', { filter: {}})
+ */
+export const setValue = (obj: any, prop: string, val: any) => {
+  const split = prop.split('.');
+
+  if (split.length === 1) return val;
+
+  obj = { ...obj };
+
+  const lastIndex = split.length - 2;
+  const removeStoreName = prop.split('.').slice(1);
+
+  removeStoreName.reduce((acc, part, index) => {
+    if (index === lastIndex) {
+      acc[part] = val;
+    } else {
+      acc[part] = { ...acc[part] };
+    }
+
+    return acc && acc[part];
+  }, obj);
+
+  return obj;
+};
+
+/**
+ * getValue(state, 'todos.ui')
+ */
+export const getValue = (obj: any, prop: string) => {
+  /** return the whole state  */
+  if (prop.split('.').length === 1) {
+    return obj;
+  }
+  const removeStoreName = prop
+    .split('.')
+    .slice(1)
+    .join('.');
+  return removeStoreName.split('.').reduce((acc: any, part: string) => acc && acc[part], obj);
+};

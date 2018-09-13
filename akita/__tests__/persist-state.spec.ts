@@ -39,10 +39,9 @@ class AuthStore extends Store<any> {
   }
 }
 
-const mock = `{"cart":{"entities":{},"ids":[],"loading":true,"error":null},"products":{"entities":{},"ids":[],"loading":true,"error":null},"auth":{"id":null,"firstName":"","lastName":"","token":""},"todos":{"ui":{"filter":"SHOW_ALL"},"entities":{"0.5666823893391795":{"id":0.5666823893391795,"title":"ds","completed":true},"0.16954788680591548":{"id":0.16954788680591548,"title":"ds","completed":false}},"ids":[0.5666823893391795,0.16954788680591548],"loading":true,"error":null}}`;
-localStorage.setItem('AkitaStores', mock);
-
 describe('persistState', () => {
+  const mock = `{"cart":{"entities":{},"ids":[],"loading":true,"error":null},"products":{"entities":{},"ids":[],"loading":true,"error":null},"auth":{"id":null,"firstName":"","lastName":"","token":""},"todos":{"ui":{"filter":"SHOW_ALL"},"entities":{"0.5666823893391795":{"id":0.5666823893391795,"title":"ds","completed":true},"0.16954788680591548":{"id":0.16954788680591548,"title":"ds","completed":false}},"ids":[0.5666823893391795,0.16954788680591548],"loading":true,"error":null}}`;
+  localStorage.setItem('AkitaStores', mock);
   const storage = persistState();
 
   afterAll(() => storage.destroy());
@@ -51,10 +50,6 @@ describe('persistState', () => {
   const products = new ProductsStore();
   const cart = new CartStore();
   const auth = new AuthStore();
-
-  it('should get data from storage', () => {
-    expect(localStorage.getItem).toHaveBeenCalledTimes(5);
-  });
 
   it('should initial the value if in storage', () => {
     expect(todos._value()).toEqual({
@@ -87,6 +82,7 @@ describe('persistState', () => {
         error: null
       }
     };
+
     expect(localStorage.setItem).toHaveBeenCalledTimes(1);
     expect(JSON.parse(localStorage.getItem('AkitaStores'))).toEqual(expected);
   });
@@ -116,6 +112,7 @@ describe('persistState', () => {
         error: null
       }
     };
+
     expect(localStorage.setItem).toHaveBeenCalledTimes(1);
     expect(JSON.parse(localStorage.getItem('AkitaStores'))).toEqual(expected);
   });

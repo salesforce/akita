@@ -25,7 +25,8 @@ export class CRUD {
     const newState = {
       ...(state as any),
       entities: normalized,
-      ids
+      ids,
+      loading: false
     };
 
     if (resetActive(newState)) {

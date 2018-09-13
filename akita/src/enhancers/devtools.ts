@@ -1,5 +1,5 @@
 import { __stores__, Actions, rootDispatcher } from '../api/store';
-import { globalState } from '../internal/global-state';
+import { __globalState } from '../internal/global-state';
 import { isDefined } from '../internal/utils';
 
 export type DevtoolsOptions = {
@@ -15,7 +15,7 @@ export type DevtoolsOptions = {
 
 export function akitaDevtools(ngZone, options: Partial<DevtoolsOptions> = {}) {
   if (!(window as any).__REDUX_DEVTOOLS_EXTENSION__) {
-    console.error(`Can't find the Redux dev-tools extension`);
+    console.warn(`Can't find the Redux dev-tools extension 😔`);
     return;
   }
 
@@ -32,8 +32,8 @@ export function akitaDevtools(ngZone, options: Partial<DevtoolsOptions> = {}) {
 
   rootDispatcher.subscribe(action => {
     if (action.type === Actions.NEW_STATE) {
-      if (globalState.skipAction) {
-        globalState.setSkipAction(false);
+      if (__globalState.skipAction) {
+        __globalState.setSkipAction(false);
         return;
       }
 
@@ -42,7 +42,7 @@ export function akitaDevtools(ngZone, options: Partial<DevtoolsOptions> = {}) {
         [action.payload.name]: __stores__[action.payload.name]._value()
       };
 
-      const { type, entityId } = globalState.currentAction;
+      const { type, entityId } = __globalState.currentAction;
       const storeName = capitalize(action.payload.name);
       let msg = isDefined(entityId) ? `[${storeName}] - ${type} (ids: ${entityId})` : `[${storeName}] - ${type}`;
 
@@ -52,7 +52,7 @@ export function akitaDevtools(ngZone, options: Partial<DevtoolsOptions> = {}) {
         console.groupEnd();
       }
 
-      devTools.send({ type: msg, transaction: globalState.currentT.map(t => t.type) }, appState);
+      devTools.send({ type: msg, transaction: __globalState.currentT.map(t => t.type) }, appState);
     }
   });
 
@@ -81,5 +81,5 @@ export function akitaDevtools(ngZone, options: Partial<DevtoolsOptions> = {}) {
 }
 
 function capitalize(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
+  return string && string.charAt(0).toUpperCase() + string.slice(1);
 }

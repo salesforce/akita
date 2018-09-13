@@ -1,13 +1,18 @@
-import { coerceArray, isFunction, isUndefined, toBoolean } from '../internal/utils';
-import { QueryEntity } from '../api/query-entity';
-import { ID, IDS } from '../api/types';
-import { Observable } from 'rxjs';
+import {coerceArray, isFunction, isUndefined, toBoolean} from '../internal/utils';
+import {QueryEntity} from '../api/query-entity';
+import {ID, IDS} from '../api/types';
+import {Observable} from 'rxjs';
+
 /**
  * Each plugin that wants to add support for entities should extend this interface.
  */
 export type EntityParam = ID;
 
 export type EntityCollectionParams = ID | ID[];
+
+export type RebaseActions<P = any> = { beforeRemove?: Function; beforeAdd?: Function; afterAdd?: (plugin: P) => any; };
+
+const defaultActions: RebaseActions = {beforeRemove: plugin => plugin.destroy()};
 
 export abstract class EntityCollectionPlugin<E, P> {
   protected entities = new Map<ID, P>();
@@ -17,14 +22,14 @@ export abstract class EntityCollectionPlugin<E, P> {
   /**
    * Get the entity plugin instance.
    */
-  protected getEntity(id: ID) {
+  protected getEntity(id: ID): P {
     return this.entities.get(id);
   }
 
   /**
    * Whether the entity plugin exist.
    */
-  protected hasEntity(id: ID) {
+  protected hasEntity(id: ID): boolean {
     return this.entities.has(id);
   }
 
@@ -45,14 +50,14 @@ export abstract class EntityCollectionPlugin<E, P> {
   /**
    * If the user passes `entityIds` we take them; otherwise, we take all.
    */
-  protected getIds() {
+  protected getIds(): ID[] {
     return isUndefined(this.entityIds) ? this.query.getSnapshot().ids : coerceArray(this.entityIds);
   }
 
   /**
    * When you call one of the plugin methods, you can pass id/ids or undefined which means all.
    */
-  protected resolvedIds(ids?) {
+  protected resolvedIds(ids?): ID[] {
     return isUndefined(ids) ? this.getIds() : coerceArray(ids);
   }
 
@@ -63,7 +68,7 @@ export abstract class EntityCollectionPlugin<E, P> {
    *
    * this.query.select(state => state.ids).pipe(skip(1)).subscribe(ids => this.activate(ids));
    */
-  protected rebase(ids: ID[], beforeRemove?: Function, beforeAdd?: Function) {
+  protected rebase(ids: ID[], actions: RebaseActions<P> = defaultActions) {
     /**
      *
      * If the user passes `entityIds` & we have new ids check if we need to add/remove instances.
@@ -78,14 +83,16 @@ export abstract class EntityCollectionPlugin<E, P> {
         for (let i = 0, len = ids.length; i < len; i++) {
           const entityId = ids[i];
           if (this.hasEntity(entityId) === false) {
-            isFunction(beforeAdd) && beforeAdd(entityId);
-            this.entities.set(entityId, this.instantiatePlugin(entityId));
+            isFunction(actions.beforeAdd) && actions.beforeAdd(entityId);
+            const plugin = this.instantiatePlugin(entityId);
+            this.entities.set(entityId, plugin);
+            isFunction(actions.afterAdd) && actions.afterAdd(plugin);
           }
         }
 
         this.entities.forEach((plugin, entityId) => {
           if (ids.indexOf(entityId) === -1) {
-            isFunction(beforeRemove) && beforeRemove(plugin);
+            isFunction(actions.beforeRemove) && actions.beforeRemove(plugin);
             this.removeEntity(entityId);
           }
         });
@@ -98,13 +105,15 @@ export abstract class EntityCollectionPlugin<E, P> {
           const entityId = _ids[i];
           /** The Entity in current ids and doesn't exist, add it. */
           if (ids.indexOf(entityId) > -1 && this.hasEntity(entityId) === false) {
-            isFunction(beforeAdd) && beforeAdd(entityId);
-            this.entities.set(entityId, this.instantiatePlugin(entityId));
+            isFunction(actions.beforeAdd) && actions.beforeAdd(entityId);
+            const plugin = this.instantiatePlugin(entityId);
+            this.entities.set(entityId, plugin);
+            isFunction(actions.afterAdd) && actions.afterAdd(plugin);
           } else {
             this.entities.forEach((plugin, entityId) => {
               /** The Entity not in current ids and exists, remove it. */
               if (ids.indexOf(entityId) === -1 && this.hasEntity(entityId) === true) {
-                isFunction(beforeRemove) && beforeRemove(plugin);
+                isFunction(actions.beforeRemove) && actions.beforeRemove(plugin);
                 this.removeEntity(entityId);
               }
             });
@@ -115,14 +124,16 @@ export abstract class EntityCollectionPlugin<E, P> {
       /**
        * Otherwise, start with the provided ids or all.
        */
-      this.getIds().forEach(id => this.createEntity(id, this.instantiatePlugin(id)));
+      this.getIds().forEach(id => {
+        if (!this.hasEntity(id)) this.createEntity(id, this.instantiatePlugin(id))
+      });
     }
   }
 
   /**
    * Listen for add/remove entities.
    */
-  protected selectIds() {
+  protected selectIds(): Observable<ID[]> {
     return this.query.select(state => state.ids);
   }
 
@@ -130,7 +141,7 @@ export abstract class EntityCollectionPlugin<E, P> {
    * Base method for activation, you can override it if you need to.
    */
   protected activate(ids?: ID[]) {
-    this.rebase(ids, plugin => plugin.destroy());
+    this.rebase(ids);
   }
 
   /**

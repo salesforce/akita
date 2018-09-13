@@ -84,7 +84,9 @@
       "avatar_url": "https://avatars2.githubusercontent.com/u/17194830?v=4",
       "profile": "https://github.com/shaharkazaz",
       "contributions": [
-        "code"
+        "code",
+        "doc",
+        "blog"
       ]
     },
     {
@@ -103,6 +105,24 @@
       "profile": "http://dmitryefimenko.github.io/",
       "contributions": [
         "code"
+      ]
+    },
+    {
+      "login": "hiepxanh",
+      "name": "hiepxanh",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/16970990?v=4",
+      "profile": "https://github.com/hiepxanh",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "sgwatgit",
+      "name": "Sean G. Wright",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1382768?v=4",
+      "profile": "http://www.seangwright.me",
+      "contributions": [
+        "ideas"
       ]
     }
   ]

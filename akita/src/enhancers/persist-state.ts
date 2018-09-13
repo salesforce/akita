@@ -1,6 +1,10 @@
 import { AkitaError } from '../internal/error';
 import { __stores__, Actions, rootDispatcher } from '../api/store';
-import { globalState } from '../internal/global-state';
+import { skip } from 'rxjs/operators';
+import { getValue, setValue } from '../internal/utils';
+import { __globalState } from '../internal/global-state';
+
+const notBs = typeof localStorage === 'undefined';
 
 export interface PersistStateParams {
   /** The storage key */
@@ -23,16 +27,17 @@ export interface PersistStateParams {
   exclude: string[];
 }
 
-const defaults: PersistStateParams = {
-  key: 'AkitaStores',
-  storage: localStorage,
-  deserialize: JSON.parse,
-  serialize: JSON.stringify,
-  include: [],
-  exclude: []
-};
-
 export function persistState(params?: Partial<PersistStateParams>) {
+  if (notBs) return;
+
+  const defaults: PersistStateParams = {
+    key: 'AkitaStores',
+    storage: localStorage,
+    deserialize: JSON.parse,
+    serialize: JSON.stringify,
+    include: [],
+    exclude: []
+  };
   const { storage, deserialize, serialize, include, exclude, key } = Object.assign({}, defaults, params);
 
   const hasInclude = include.length > 0;
@@ -44,58 +49,67 @@ export function persistState(params?: Partial<PersistStateParams>) {
 
   const storageState = deserialize(storage.getItem(key) || '{}');
 
-  /**
-   * When we have a new Store, check if we have value in storage and set it.
-   */
-  const subscription = rootDispatcher.subscribe(action => {
-    if (action.type === Actions.NEW_STORE) {
-      const store = action.payload.store;
-      if (storageState[store.storeName]) {
-        globalState.setAction({ type: '@PersistState' });
-        store.setState(() => storageState[store.storeName]);
+  let stores = {};
+  let acc = {};
+
+  function save() {
+    storage.setItem(key, serialize(Object.assign({}, storageState, acc)));
+  }
+
+  function subscribe(storeName, path) {
+    stores[storeName] = __stores__[storeName]
+      ._select(state => getValue(state, path))
+      .pipe(skip(1))
+      .subscribe(data => {
+        acc[storeName] = data;
+        save();
+      });
+  }
+
+  function setInitial(storeName, store, path) {
+    if (storageState[storeName]) {
+      __globalState.setAction({ type: '@PersistState' });
+      store.setState(state => {
+        return setValue(state, path, storageState[storeName]);
+      });
+      if (store.setDirty) {
+        store.setDirty();
       }
     }
+  }
 
-    if (action.type === Actions.NEW_STATE) {
-      const storeName = action.payload.name;
-      if (action.payload.initialState) {
+  const subscription = rootDispatcher.subscribe(action => {
+    if (action.type === Actions.NEW_STORE) {
+      let currentStoreName = action.payload.store.storeName;
+
+      if (hasExclude && exclude.indexOf(currentStoreName) > -1 === true) {
         return;
       }
 
-      if (hasExclude && exclude.includes(storeName) === true) {
-        return;
-      }
-
-      if (hasInclude && include.includes(storeName) === false) {
-        return;
-      }
-
-      let acc = {};
-
-      for (let i = 0, keys = Object.keys(__stores__); i < keys.length; i++) {
-        const storeName = keys[i];
-
-        if (hasExclude) {
-          if (storeName === storeName && !exclude.includes(storeName)) {
-            acc[storeName] = __stores__[storeName]._value();
-          }
-        } else if (hasInclude) {
-          if (storeName === storeName && include.includes(storeName)) {
-            acc[storeName] = __stores__[storeName]._value();
-          }
+      if (hasInclude) {
+        const path = include.find(name => name.indexOf(currentStoreName) > -1);
+        if (!path) {
+          return;
         } else {
-          acc[storeName] = __stores__[storeName]._value();
+          currentStoreName = path.split('.')[0];
+          setInitial(currentStoreName, action.payload.store, path);
+          subscribe(currentStoreName, path);
         }
+      } else {
+        setInitial(currentStoreName, action.payload.store, currentStoreName);
+        subscribe(currentStoreName, currentStoreName);
       }
-
-      const storageState = deserialize(storage.getItem(key));
-      storage.setItem(key, serialize(Object.assign({}, storageState, acc)));
     }
   });
 
   return {
     destroy() {
       subscription.unsubscribe();
+      for (let i = 0, keys = Object.keys(stores); i < keys.length; i++) {
+        const storeName = keys[i];
+        stores[storeName].unsubscribe();
+      }
+      stores = {};
     },
     clear() {
       storage.clear();

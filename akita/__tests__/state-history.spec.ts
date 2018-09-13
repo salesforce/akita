@@ -1,11 +1,13 @@
 import { Store } from '../src/api/store';
 import { Query } from '../src/api/query';
 import { StateHistoryPlugin } from '../src/plugins/state-history/state-history-plugin';
+import { StoreConfig } from '../src/api/store-config';
 
 interface State {
   counter: number;
 }
 
+@StoreConfig({ name: 'count' })
 class CounterStore extends Store<State> {
   constructor() {
     super({ counter: 0 });
