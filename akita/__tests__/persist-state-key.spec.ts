@@ -49,13 +49,12 @@ describe('Persist state - nested key', () => {
     }
   }
 
-  persistState({ include: ['todos.a.b.c.d'] });
-
+  persistState({ include: ['todos.a.b.c.d'], key: 'TestA' });
   const todosStore = new TodosStore();
 
   it('should persist only the nested key', () => {
     todosStore.updateRoot({ a: { b: { c: { d: 'changed' } } } });
-    expect(JSON.parse(localStorage.getItem('AkitaStores')).todos).toEqual('changed');
+    expect(JSON.parse(localStorage.getItem('TestA')).todos).toEqual('changed');
   });
 });
 

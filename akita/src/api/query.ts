@@ -15,10 +15,14 @@ export class Query<S> {
    * Select a slice from the store.
    *
    * @example
+   * this.query.select()
    * this.query.select(state => state.entities)
    */
-  select<R>(project: (store: S) => R): Observable<R> {
-    return this.store._select(project);
+  select<R>(project?: (store: S) => R);
+  select<R>(): S;
+  select<R>(project?: (store: S) => R): Observable<R | S> {
+      let state = project ? project : (state) => state;
+      return this.store._select(state);
   }
 
   /**

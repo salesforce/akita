@@ -35,10 +35,16 @@ class UserQuery extends Query<User> {
 const query = new UserQuery();
 
 describe('With Class', () => {
-  it('should select', () => {
+  it('should select a slice from the state', () => {
     const spy = jest.fn();
     query.select(state => state.firstName).subscribe(spy);
     expect(spy).toHaveBeenCalledWith('Netanel');
+  });
+
+  it('should select all', () => {
+    const spy = jest.fn();
+    query.select().subscribe(spy);
+    expect(spy).toHaveBeenCalledWith({ firstName: 'Netanel', lastName: 'Basal' });
   });
 
   it('should select once', () => {
