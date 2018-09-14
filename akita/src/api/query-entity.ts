@@ -54,7 +54,7 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
     options.sortByOrder = options.sortByOrder || (this.config && this.config.sortByOrder);
 
     return selectEntities$.pipe(
-      withLatestFrom(selectState$, (entities, state: S) => {
+      withLatestFrom(selectState$, (entities: HashMap<E>, state: S) => {
         const { ids } = state;
         if (options.asObject) {
           return toMap(ids, entities, options);
@@ -248,7 +248,7 @@ function toArray<E, S extends EntityState>(state: S, options: SelectOptions<E>):
   }
 
   if (sortBy) {
-    let _sortBy = isFunction(sortBy) ? sortBy : compareValues(sortBy, sortByOrder);
+    let _sortBy: any = isFunction(sortBy) ? sortBy : compareValues(sortBy, sortByOrder);
     arr = arr.sort((a, b) => _sortBy(a, b, state));
   }
   const length = Math.min(limitTo || arr.length, arr.length);

@@ -13,7 +13,7 @@ export type DirtyCheckCollectionParams<E> = {
 export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = DirtyCheckPlugin<E, any>> extends EntityCollectionPlugin<E, P> {
 
   isSomeDirty$: Observable<boolean> = this.query.select(state => state.entities)
-    .pipe(map(entities => this.checkSomeDirty(entities)));
+    .pipe(map((entities: any) => this.checkSomeDirty(entities)));
 
   constructor(protected query: QueryEntity<any, E>, private readonly params: DirtyCheckCollectionParams<E> = {}) {
     super(query, params.entityIds);

@@ -55,7 +55,7 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
       : [this.selectSource(this._entityId)];
     this.subscription = merge(...source)
       .pipe(skip(1))
-      .subscribe(currentState => {
+      .subscribe((currentState: any) => {
         if (isUndefined(this.head)) return;
         /** __akitaKey is used to determine if we are tracking a specific property or a store change */
         const head = currentState.__akitaKey ? this.head[currentState.__akitaKey as any] : this.head;

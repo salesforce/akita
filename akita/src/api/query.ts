@@ -19,10 +19,10 @@ export class Query<S> {
    * this.query.select(state => state.entities)
    */
   select<R>(project?: (store: S) => R);
-  select<R>(): S;
+  select(): Observable<S>;
   select<R>(project?: (store: S) => R): Observable<R | S> {
-      let state = project ? project : (state) => state;
-      return this.store._select(state);
+    let state = project ? project : state => state;
+    return this.store._select(state);
   }
 
   /**
