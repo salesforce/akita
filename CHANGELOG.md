@@ -1,3 +1,16 @@
+# [1.9.0](https://github.com/datorama/akita/compare/v1.8.4...v1.9.0) (2018-09-14)
+
+
+### Bug Fixes
+
+* **select:** call select without a callback ([b6bfbc2](https://github.com/datorama/akita/commit/b6bfbc2))
+* **ts:** fix types in query ([aaddc95](https://github.com/datorama/akita/commit/aaddc95))
+
+
+### Features
+
+* **sort:** allow use of state in sort fn ([7ba1795](https://github.com/datorama/akita/commit/7ba1795))
+
 ## [1.8.4](https://github.com/datorama/akita/compare/v1.8.3...v1.8.4) (2018-09-12)
 
 
