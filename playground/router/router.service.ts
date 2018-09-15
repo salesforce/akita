@@ -1,34 +1,45 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import { Router, RouterStateSnapshot, RoutesRecognized, NavigationCancel, NavigationError, ActivatedRouteSnapshot } from '@angular/router';
+import { Injectable } from '@angular/core';
+import { ActivatedRouteSnapshot, NavigationCancel, NavigationError, Router, RouterStateSnapshot, RoutesRecognized } from '@angular/router';
 import { of } from 'rxjs';
 import { RouterStore } from './router.store';
-import {RouterQuery} from "./router.query";
-import {filter} from "rxjs/operators";
-import {action, toBoolean} from "@datorama/akita";
-import {globalState} from "@datorama/akita/src/internal/global-state";
+import { RouterQuery } from './router.query';
+import { __globalState, action } from '../../akita/src';
 
 @Injectable({
   providedIn: 'root'
 })
-export class RouterService implements OnDestroy {
-
+export class RouterService {
   private routerStateSnapshot;
   private lastRoutesRecognized: RoutesRecognized;
+  private dispatchTriggeredByRouter = false;
+  private navigationTriggeredByDispatch = false;
+  private routerState;
 
-  constructor(private routerStore: RouterStore,
-              private routerQuery: RouterQuery,
-              private router: Router) {
-    this.init();
-  }
+  constructor(private routerStore: RouterStore, private routerQuery: RouterQuery, private router: Router) {}
 
   @action({ type: 'Navigation Cancelled' })
-  dispatchRouterCancel(event: NavigationCancel) { }
+  dispatchRouterCancel(event: NavigationCancel) {
+    this.update();
+  }
 
   @action({ type: 'Navigation Error' })
-  dispatchRouterError(event: NavigationError) { }
+  dispatchRouterError(event: NavigationError) {
+    this.update();
+  }
 
   @action({ type: 'Navigation' })
   dispatchRouterNavigation() {
+    this.update();
+  }
+
+  init() {
+    this.setUpRouterHook();
+    this.setUpStoreListener();
+    this.setUpStateRollbackEvents();
+  }
+
+  private update() {
+    this.dispatchTriggeredByRouter = true;
     this.routerStore.setState(state => {
       return {
         ...state,
@@ -36,31 +47,51 @@ export class RouterService implements OnDestroy {
         navigationId: this.lastRoutesRecognized.id
       };
     });
+    this.dispatchTriggeredByRouter = false;
+    this.navigationTriggeredByDispatch = false;
   }
 
-  ngOnDestroy() {
-    //
-  }
-
-  private init() {
-    this.routerQuery.select(state => state).pipe(
-      filter(({navigationId, state}) => toBoolean(navigationId) && toBoolean(state)))
-      .subscribe(({navigationId, state}) => {
-        if ((this.router as any).navigationId != navigationId) {
-          globalState.setSkipAction();
-          this.router.navigateByUrl(state.url);
-        }
-      });
-
+  /**
+   * Hook into the angular router before each navigation action is performed
+   * since the route tree can be large, we serialize it into something more manageable
+   */
+  private setUpRouterHook(): void {
     (this.router as any).hooks.beforePreactivation = (routerStateSnapshot: RouterStateSnapshot) => {
       this.routerStateSnapshot = {
         root: this.serializeRoute(routerStateSnapshot.root),
         url: routerStateSnapshot.url
       };
-      this.dispatchRouterNavigation();
+      if (this.shouldDispatchRouterNavigation()) this.dispatchRouterNavigation();
       return of(true);
     };
+  }
 
+  private setUpStoreListener(): void {
+    this.routerQuery.select(state => state).subscribe(s => {
+      this.routerState = s;
+      this.navigateIfNeeded();
+    });
+  }
+
+  private shouldDispatchRouterNavigation(): boolean {
+    if (!this.routerState) return true;
+    return !this.navigationTriggeredByDispatch;
+  }
+
+  private navigateIfNeeded(): void {
+    if (!this.routerState || !this.routerState.state) {
+      return;
+    }
+    if (this.dispatchTriggeredByRouter) return;
+
+    if (this.router.url !== this.routerState.state.url) {
+      this.navigationTriggeredByDispatch = true;
+      __globalState.setSkipAction();
+      this.router.navigateByUrl(this.routerState.state.url);
+    }
+  }
+
+  private setUpStateRollbackEvents(): void {
     this.router.events.subscribe(e => {
       if (e instanceof RoutesRecognized) {
         this.lastRoutesRecognized = e;
@@ -72,25 +103,15 @@ export class RouterService implements OnDestroy {
     });
   }
 
-  private serializeRoute(route: ActivatedRouteSnapshot): ActivatedRouteSnapshot {
+  private serializeRoute(route: ActivatedRouteSnapshot): Partial<ActivatedRouteSnapshot> {
     return {
       url: route.url,
       params: route.params,
       queryParams: route.queryParams,
       fragment: route.fragment,
       data: route.data,
-      outlet: route.outlet,
-      component: undefined,
-      routeConfig: null,
-      root: undefined,
-      parent: undefined,
-      firstChild: undefined,
-      children: undefined,
-      pathFromRoot: undefined,
       paramMap: route.paramMap,
-      queryParamMap: route.queryParamMap,
-      toString: route.toString
+      queryParamMap: route.queryParamMap
     };
   }
-
 }

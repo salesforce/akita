@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { RouterStateSnapshot, Router} from '@angular/router';
-import {Store, StoreConfig} from "@datorama/akita";
+import { RouterStateSnapshot } from '@angular/router';
+import { Store, StoreConfig } from '../../akita/src';
 
 export type RouterState<T = RouterStateSnapshot> = {
   state: T;
@@ -14,13 +14,10 @@ export function createInitialRouterState(): RouterState {
   };
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 @StoreConfig({ name: 'router' })
 export class RouterStore extends Store<RouterState> {
-
-  constructor(private router: Router) {
+  constructor() {
     super(createInitialRouterState());
   }
-
 }
-

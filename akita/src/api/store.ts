@@ -1,5 +1,5 @@
 import { HashMap, ID } from './types';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { AkitaImmutabilityError, assertDecorator } from '../internal/error';
 import { commit, isTransactionInProcess } from '../internal/transaction.internal';
@@ -23,7 +23,7 @@ export type Action = {
   payload: HashMap<any>;
 };
 
-export const rootDispatcher = new Subject<Action>();
+export const rootDispatcher = new ReplaySubject<Action>();
 
 function nextState(storeName, initialState = false) {
   return {
@@ -143,7 +143,6 @@ export class Store<S> {
     if (!this.store) {
       this.store = new BehaviorSubject(this.storeValue);
       rootDispatcher.next(nextState(this.storeName, true));
-      isDev() && __globalState.setAction({ type: 'Set State' });
       return;
     }
 
@@ -227,7 +226,7 @@ export class Store<S> {
   }
 
   private ngOnDestroy() {
-    if(this === __stores__[this.storeName]) {
+    if (this === __stores__[this.storeName]) {
       delete __stores__[this.storeName];
     }
   }

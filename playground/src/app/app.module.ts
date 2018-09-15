@@ -11,10 +11,11 @@ import { ProductPageComponent } from './product-page/product-page.component';
 import { NavComponent } from './nav/nav.component';
 import { AuthModule } from './auth/auth.module';
 import { AuthGuard } from './auth/auth.guard';
+import { RouterStoreModule } from '../../router';
 
 @NgModule({
   declarations: [AppComponent, NavComponent, ProductPageComponent],
-  imports: [BrowserModule, ReactiveFormsModule, AppRoutingModule, HttpClientModule, BrowserAnimationsModule, ProductsModule, CartModule, AuthModule],
+  imports: [BrowserModule, ReactiveFormsModule, RouterStoreModule.forRoot(), AppRoutingModule, HttpClientModule, BrowserAnimationsModule, ProductsModule, CartModule, AuthModule],
   providers: [AuthGuard],
   bootstrap: [AppComponent]
 })

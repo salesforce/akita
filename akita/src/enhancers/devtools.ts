@@ -13,21 +13,27 @@ export type DevtoolsOptions = {
   predicate: (state: any, action: any) => boolean;
 };
 
-export function akitaDevtools(ngZone, options: Partial<DevtoolsOptions> = {}) {
+export type NgZoneLike = { run: any };
+
+export function akitaDevtools(ngZone: NgZoneLike, options?: Partial<DevtoolsOptions>);
+export function akitaDevtools(options?: Partial<DevtoolsOptions>);
+export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOptions>, options: Partial<DevtoolsOptions> = {}) {
   if (!(window as any).__REDUX_DEVTOOLS_EXTENSION__) {
-    console.warn(`Can't find the Redux dev-tools extension 😔`);
     return;
   }
 
-  const defaultOptions: Partial<DevtoolsOptions> & { name: string } = { name: 'Akita' };
-  if (options.maxAge) defaultOptions.maxAge = options.maxAge;
-  if (options.maxAge) defaultOptions.latency = options.latency;
-  if (options.actionsBlacklist) defaultOptions.actionsBlacklist = options.actionsBlacklist;
-  if (options.actionsWhitelist) defaultOptions.actionsWhitelist = options.actionsWhitelist;
-  if (options.shouldCatchErrors) defaultOptions.shouldCatchErrors = options.shouldCatchErrors;
-  if (options.predicate) defaultOptions.predicate = options.predicate;
+  const isAngular = ngZoneOrOptions && ngZoneOrOptions['run'];
 
-  const devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__.connect(defaultOptions);
+  if (!isAngular) {
+    ngZoneOrOptions = ngZoneOrOptions || {};
+    (ngZoneOrOptions as any).run = cb => cb();
+    options = ngZoneOrOptions as Partial<DevtoolsOptions>;
+  }
+
+  const defaultOptions: Partial<DevtoolsOptions> & { name: string } = { name: 'Akita' };
+  const merged = Object.assign({}, defaultOptions, options);
+
+  const devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__.connect(merged);
   let appState = {};
 
   rootDispatcher.subscribe(action => {
@@ -57,6 +63,21 @@ export function akitaDevtools(ngZone, options: Partial<DevtoolsOptions> = {}) {
   });
 
   devTools.subscribe(message => {
+    if (message.type === 'ACTION') {
+      const [storeName] = message.payload.split('.');
+
+      if (__stores__[storeName]) {
+        (ngZoneOrOptions as NgZoneLike).run(() => {
+          const funcCall = message.payload.replace(storeName, `this['${storeName}']`);
+          try {
+            new Function(`${funcCall}`).call(__stores__);
+          } catch (e) {
+            console.warn('Unknown Method ☹️');
+          }
+        });
+      }
+    }
+
     if (message.type === 'DISPATCH') {
       const payloadType = message.payload.type;
 
@@ -70,7 +91,7 @@ export function akitaDevtools(ngZone, options: Partial<DevtoolsOptions> = {}) {
         for (let i = 0, keys = Object.keys(rootState); i < keys.length; i++) {
           const storeName = keys[i];
           if (__stores__[storeName]) {
-            ngZone.run(() => {
+            (ngZoneOrOptions as NgZoneLike).run(() => {
               __stores__[storeName].setState(() => rootState[storeName], false);
             });
           }
