@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/datorama/akita/compare/v1.9.0...v1.9.1) (2018-09-15)
+
+
+### Bug Fixes
+
+* **devtools:** remove angular coupling ([df73a83](https://github.com/datorama/akita/commit/df73a83))
+
 # [1.9.0](https://github.com/datorama/akita/compare/v1.8.4...v1.9.0) (2018-09-14)
 
 
