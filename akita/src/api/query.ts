@@ -18,7 +18,7 @@ export class Query<S> {
    * this.query.select()
    * this.query.select(state => state.entities)
    */
-  select<R>(project?: (store: S) => R);
+  select<R>(project?: (store: S) => R): Observable<R>;
   select(): Observable<S>;
   select<R>(project?: (store: S) => R): Observable<R | S> {
     let state = project ? project : state => state;
