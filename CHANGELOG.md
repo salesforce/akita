@@ -1,3 +1,10 @@
+## [1.9.2](https://github.com/datorama/akita/compare/v1.9.1...v1.9.2) (2018-09-19)
+
+
+### Bug Fixes
+
+* **query:** select method signature missing Observable return type ([3b038b3](https://github.com/datorama/akita/commit/3b038b3))
+
 ## [1.9.1](https://github.com/datorama/akita/compare/v1.9.0...v1.9.1) (2018-09-15)
 
 
