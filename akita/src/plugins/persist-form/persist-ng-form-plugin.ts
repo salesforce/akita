@@ -47,7 +47,7 @@ export class PersistNgFormPlugin<T = any> extends AkitaPlugin {
       value = this.isKeyBased ? this.initialValue : (this as any).factoryFnOrPath();
     }
 
-    this.form.patchValue(value);
+    this.form.patchValue(value, { emitEvent: this.params.emitEvent });
 
     const storeValue = this.isKeyBased ? setValue(this.getStore()._value(), `${this.getStore().storeName}.${this.factoryFnOrPath}`, value) : { [this.params.formKey]: value };
     this.updateStore(storeValue);

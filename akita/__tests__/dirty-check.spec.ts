@@ -1,7 +1,7 @@
-import {DirtyCheckPlugin, EntityDirtyCheckPlugin} from '../src/index';
-import {Widget, WidgetsQuery, WidgetsStore} from './setup';
-import {Observable} from 'rxjs';
-import {skip} from "rxjs/operators";
+import { DirtyCheckPlugin, EntityDirtyCheckPlugin } from '../src/index';
+import { Widget, WidgetsQuery, WidgetsStore } from './setup';
+import { Observable } from 'rxjs';
+import { skip } from 'rxjs/operators';
 
 describe('DirtyCheck', () => {
   function createWidget() {
@@ -139,9 +139,9 @@ describe('DirtyCheck', () => {
   });
 
   describe('Watch specific property', () => {
-    const widgetsStore = new WidgetsStore({name: 'akita'});
+    const widgetsStore = new WidgetsStore({ name: 'akita' });
     const widgetsQuery = new WidgetsQuery(widgetsStore);
-    const dirtyCheck = new DirtyCheckPlugin(widgetsQuery, {watchProperty: 'name'}).setHead();
+    const dirtyCheck = new DirtyCheckPlugin(widgetsQuery, { watchProperty: 'name' }).setHead();
     const spy = jest.fn();
     dirtyCheck.isDirty$.pipe(skip(1)).subscribe(spy);
 
@@ -153,7 +153,7 @@ describe('DirtyCheck', () => {
     });
 
     it('should return true if state is dirty', () => {
-      widgetsStore.updateRoot({name: 'kazaz'});
+      widgetsStore.updateRoot({ name: 'kazaz' });
       expect(spy).toHaveBeenLastCalledWith(true);
     });
 
@@ -167,26 +167,24 @@ describe('DirtyCheck', () => {
     });
 
     describe('Watch entities', () => {
-      const dirtyCheck = new DirtyCheckPlugin(widgetsQuery, {watchProperty: 'entities'}).setHead();
+      const dirtyCheck = new DirtyCheckPlugin(widgetsQuery, { watchProperty: 'entities' }).setHead();
       it(`should watch 'ids' property if 'entities' is watched`, () => {
-        const watching = !['entities', 'ids'].some((key) => !(dirtyCheck.params.watchProperty as any[]).includes(key));
+        const watching = !['entities', 'ids'].some(key => !(dirtyCheck.params.watchProperty as any[]).includes(key));
         expect(watching).toBe(true);
       });
 
       it('should reset to original entities after store changes', () => {
         dirtyCheck.setHead();
         /** do some manipulation */
-        widgetsStore.add([createWidget(),createWidget(),createWidget()]);
+        widgetsStore.add([createWidget(), createWidget(), createWidget()]);
         widgetsStore.remove(1);
-        widgetsStore.updateRoot({name: 'Akita'});
-        widgetsStore.update(2, {title: 'kazaz widget'});
+        widgetsStore.updateRoot({ name: 'Akita' });
+        widgetsStore.update(2, { title: 'kazaz widget' });
         dirtyCheck.reset();
-        expect(widgetsStore.entities).toEqual({'1': {id: 1, title: 'Widget 1'}, '2': {id: 2, title: 'Widget 2'}});
+        expect(widgetsStore.entities).toEqual({ '1': { id: 1, title: 'Widget 1' }, '2': { id: 2, title: 'Widget 2' } });
         expect(widgetsStore._value().name).toEqual('Akita');
       });
-
     });
-
   });
 });
 
@@ -207,7 +205,6 @@ describe('DirtyCheckEntity', () => {
   collection.setHead();
 
   describe('Not passing ids', () => {
-
     it('should select all when not passing entityIds', () => {
       expect(collection.entities.size).toEqual(3);
     });
@@ -216,27 +213,27 @@ describe('DirtyCheckEntity', () => {
       const spy = jest.fn();
       collection.isDirty(1).subscribe(spy);
       expect(spy).toHaveBeenLastCalledWith(false);
-      widgetsStore.update(2, {title: 'Changed'});
+      widgetsStore.update(2, { title: 'Changed' });
       expect(spy).toHaveBeenLastCalledWith(false);
-      widgetsStore.update(1, {title: 'Changed'});
+      widgetsStore.update(1, { title: 'Changed' });
       expect(spy).toHaveBeenLastCalledWith(true);
-      widgetsStore.update(1, {title: 'Widget 1'});
+      widgetsStore.update(1, { title: 'Widget 1' });
       expect(spy).toHaveBeenLastCalledWith(false);
-      widgetsStore.update(1, {title: 'Changed'});
+      widgetsStore.update(1, { title: 'Changed' });
       expect(spy).toHaveBeenLastCalledWith(true);
-      expect(widgetsQuery.getEntity(1)).toEqual({id: 1, title: 'Changed', complete: false});
+      expect(widgetsQuery.getEntity(1)).toEqual({ id: 1, title: 'Changed', complete: false });
       collection.reset(1);
-      expect(widgetsQuery.getEntity(1)).toEqual({id: 1, title: 'Widget 1', complete: false});
-      widgetsStore.update(1, {title: 'Changed', complete: true});
-      expect(widgetsQuery.getEntity(1)).toEqual({id: 1, title: 'Changed', complete: true});
+      expect(widgetsQuery.getEntity(1)).toEqual({ id: 1, title: 'Widget 1', complete: false });
+      widgetsStore.update(1, { title: 'Changed', complete: true });
+      expect(widgetsQuery.getEntity(1)).toEqual({ id: 1, title: 'Changed', complete: true });
       const updateFn = (head, current) => {
         return {
           ...head,
           title: current.title
         };
       };
-      collection.reset(1, {updateFn});
-      expect(widgetsQuery.getEntity(1)).toEqual({id: 1, title: 'Changed', complete: false});
+      collection.reset(1, { updateFn });
+      expect(widgetsQuery.getEntity(1)).toEqual({ id: 1, title: 'Changed', complete: false });
       expect(spy).toHaveBeenLastCalledWith(true);
     });
 
@@ -246,23 +243,23 @@ describe('DirtyCheckEntity', () => {
       collection.setHead();
       const spy = jest.fn();
       collection.isSomeDirty$.subscribe(spy);
-      let isDirty = collection.isSomeDirty();
+      let isDirty = collection.someDirty();
       expect(isDirty).toBe(false);
       expect(spy).toHaveBeenLastCalledWith(false);
-      widgetsStore.update(5, {title: 'Changed'});
-      isDirty = collection.isSomeDirty();
+      widgetsStore.update(5, { title: 'Changed' });
+      isDirty = collection.someDirty();
       expect(isDirty).toBe(true);
       expect(spy).toHaveBeenLastCalledWith(true);
-      widgetsStore.update(4, {title: 'Changed'});
-      isDirty = collection.isSomeDirty();
+      widgetsStore.update(4, { title: 'Changed' });
+      isDirty = collection.someDirty();
       expect(isDirty).toBe(true);
       expect(spy).toHaveBeenLastCalledWith(true);
-      widgetsStore.update(4, {title: 'Widget 4'});
-      isDirty = collection.isSomeDirty();
+      widgetsStore.update(4, { title: 'Widget 4' });
+      isDirty = collection.someDirty();
       expect(isDirty).toBe(true);
       expect(spy).toHaveBeenLastCalledWith(true);
-      widgetsStore.update(5, {title: 'Widget 5'});
-      isDirty = collection.isSomeDirty();
+      widgetsStore.update(5, { title: 'Widget 5' });
+      isDirty = collection.someDirty();
       expect(isDirty).toBe(false);
       expect(spy).toHaveBeenLastCalledWith(false);
     });
@@ -295,14 +292,13 @@ describe('DirtyCheckEntity', () => {
     });
   });
 
-
   describe('Passing ids', () => {
     let widgetsStore = new WidgetsStore();
     let widgetsQuery = new WidgetsQuery(widgetsStore);
     _id = 0;
-    let collection = new EntityDirtyCheckPlugin(widgetsQuery, {entityIds: [1, 2]});
+    let collection = new EntityDirtyCheckPlugin(widgetsQuery, { entityIds: [1, 2] });
     widgetsStore.add([createWidget(), createWidget(), createWidget()]);
-    collection.setHead([1,2]);
+    collection.setHead([1, 2]);
 
     it('should select given ids', () => {
       expect(collection.entities.size).toEqual(2);
@@ -312,27 +308,27 @@ describe('DirtyCheckEntity', () => {
       const spy = jest.fn();
       collection.isDirty(1).subscribe(spy);
       expect(spy).toHaveBeenLastCalledWith(false);
-      widgetsStore.update(2, {title: 'Changed'});
+      widgetsStore.update(2, { title: 'Changed' });
       expect(spy).toHaveBeenLastCalledWith(false);
-      widgetsStore.update(1, {title: 'Changed'});
+      widgetsStore.update(1, { title: 'Changed' });
       expect(spy).toHaveBeenLastCalledWith(true);
-      widgetsStore.update(1, {title: 'Widget 1'});
+      widgetsStore.update(1, { title: 'Widget 1' });
       expect(spy).toHaveBeenLastCalledWith(false);
-      widgetsStore.update(1, {title: 'Changed'});
+      widgetsStore.update(1, { title: 'Changed' });
       expect(spy).toHaveBeenLastCalledWith(true);
-      expect(widgetsQuery.getEntity(1)).toEqual({id: 1, title: 'Changed', complete: false});
+      expect(widgetsQuery.getEntity(1)).toEqual({ id: 1, title: 'Changed', complete: false });
       collection.reset(1);
-      expect(widgetsQuery.getEntity(1)).toEqual({id: 1, title: 'Widget 1', complete: false});
-      widgetsStore.update(1, {title: 'Changed', complete: true});
-      expect(widgetsQuery.getEntity(1)).toEqual({id: 1, title: 'Changed', complete: true});
+      expect(widgetsQuery.getEntity(1)).toEqual({ id: 1, title: 'Widget 1', complete: false });
+      widgetsStore.update(1, { title: 'Changed', complete: true });
+      expect(widgetsQuery.getEntity(1)).toEqual({ id: 1, title: 'Changed', complete: true });
       const updateFn = (head, current) => {
         return {
           ...head,
           title: current.title
         };
       };
-      collection.reset(1, {updateFn});
-      expect(widgetsQuery.getEntity(1)).toEqual({id: 1, title: 'Changed', complete: false});
+      collection.reset(1, { updateFn });
+      expect(widgetsQuery.getEntity(1)).toEqual({ id: 1, title: 'Changed', complete: false });
       expect(spy).toHaveBeenLastCalledWith(true);
     });
 
@@ -340,35 +336,35 @@ describe('DirtyCheckEntity', () => {
       widgetsStore.remove();
       _id = 3;
       widgetsStore.add([createWidget(), createWidget(), createWidget()]);
-      collection = new EntityDirtyCheckPlugin(widgetsQuery, {entityIds: [4, 6]});
+      collection = new EntityDirtyCheckPlugin(widgetsQuery, { entityIds: [4, 6] });
       collection.setHead();
       const spy = jest.fn();
-      collection.isSomeDirty$.subscribe(spy);
-      let isDirty = collection.isSomeDirty();
+      collection.someDirty$.subscribe(spy);
+      let isDirty = collection.someDirty();
       expect(isDirty).toBe(false);
       expect(spy).toHaveBeenLastCalledWith(false);
-      widgetsStore.update(5, {title: 'Changed'});
-      isDirty = collection.isSomeDirty();
+      widgetsStore.update(5, { title: 'Changed' });
+      isDirty = collection.someDirty();
       expect(isDirty).toBe(false);
       expect(spy).toHaveBeenLastCalledWith(false);
-      widgetsStore.update(6, {title: 'Changed'});
-      isDirty = collection.isSomeDirty();
+      widgetsStore.update(6, { title: 'Changed' });
+      isDirty = collection.someDirty();
       expect(isDirty).toBe(true);
       expect(spy).toHaveBeenLastCalledWith(true);
-      widgetsStore.update(4, {title: 'Changed'});
-      isDirty = collection.isSomeDirty();
+      widgetsStore.update(4, { title: 'Changed' });
+      isDirty = collection.someDirty();
       expect(isDirty).toBe(true);
       expect(spy).toHaveBeenLastCalledWith(true);
-      widgetsStore.update(4, {title: 'Widget 4'});
-      isDirty = collection.isSomeDirty();
+      widgetsStore.update(4, { title: 'Widget 4' });
+      isDirty = collection.someDirty();
       expect(isDirty).toBe(true);
       expect(spy).toHaveBeenLastCalledWith(true);
-      widgetsStore.update(5, {title: 'Widget 5'});
-      isDirty = collection.isSomeDirty();
+      widgetsStore.update(5, { title: 'Widget 5' });
+      isDirty = collection.someDirty();
       expect(isDirty).toBe(true);
       expect(spy).toHaveBeenLastCalledWith(true);
-      widgetsStore.update(6, {title: 'Widget 6'});
-      isDirty = collection.isSomeDirty();
+      widgetsStore.update(6, { title: 'Widget 6' });
+      isDirty = collection.someDirty();
       expect(isDirty).toBe(false);
       expect(spy).toHaveBeenLastCalledWith(false);
     });
@@ -380,7 +376,5 @@ describe('DirtyCheckEntity', () => {
       collection.setHead(widget.id);
       expect(collection.hasHead(widget.id)).toBeFalsy();
     });
-
-  })
-
+  });
 });
