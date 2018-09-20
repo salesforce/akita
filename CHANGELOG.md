@@ -1,3 +1,10 @@
+## [1.9.3](https://github.com/datorama/akita/compare/v1.9.2...v1.9.3) (2018-09-20)
+
+
+### Bug Fixes
+
+* **dirty-check-entity:** fix typo deprecate issomedirty and use somedirty ([16f1a67](https://github.com/datorama/akita/commit/16f1a67))
+
 ## [1.9.2](https://github.com/datorama/akita/compare/v1.9.1...v1.9.2) (2018-09-19)
 
 
