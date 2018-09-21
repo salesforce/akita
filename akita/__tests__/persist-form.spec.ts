@@ -42,7 +42,7 @@ const query = new StoriesQuery(store);
 
 describe('PersistForm', () => {
   const customFormKey = 'customFormKey';
-  const persistForm = new PersistNgFormPlugin(query, createStory).setForm(formGroupA); //default formKey
+  const persistForm = new PersistNgFormPlugin(query, createStory).setForm(formGroupA); // default formKey
   const persistFormWithCustomKey = new PersistNgFormPlugin(query, createStory, { formKey: customFormKey }).setForm(formGroupB);
 
   it('should set the form initial state from the store', () => {
@@ -106,5 +106,81 @@ describe('PersistForm - key based', () => {
     persistForm.reset({ isAdmin: false, time: 'changed' });
     jest.runAllTimers();
     expect(query.getSnapshot().config).toEqual({ time: 'changed', isAdmin: false });
+  });
+});
+
+describe('PersistForm - root key', () => {
+  @StoreConfig({ name: 'stories' })
+  class StoriesStore extends EntityStore<any, any> {
+    constructor() {
+      super({ someBoolean: true, other: 'Akita' });
+    }
+  }
+
+  class StoriesQuery extends QueryEntity<any, Story> {
+    constructor(protected store) {
+      super(store);
+    }
+  }
+
+  const store = new StoriesStore();
+  const query = new StoriesQuery(store);
+
+  const formGroup = formFactory();
+  // simulate controls
+  formGroup.patchValue({ someBoolean: false });
+  const persistForm = new PersistNgFormPlugin(query).setForm(formGroup);
+
+  it('should set the form initial state from the store', () => {
+    expect(formGroup.value).toEqual({ someBoolean: true });
+  });
+
+  it('should persist the store with the form', () => {
+    const patch = {
+      someBoolean: false
+    };
+
+    formGroup.patchValue(patch);
+    jest.runAllTimers();
+
+    expect(query.getSnapshot().someBoolean).toEqual(patch.someBoolean);
+    // it doesn't need to effect other props
+    expect(query.getSnapshot().other).toEqual('Akita');
+  });
+
+  it('should reset the form', () => {
+    persistForm.reset();
+    jest.runAllTimers();
+    expect(query.getSnapshot().someBoolean).toEqual(true);
+    persistForm.reset({ someBoolean: false });
+    jest.runAllTimers();
+    expect(query.getSnapshot().someBoolean).toEqual(false);
+  });
+});
+
+describe('PersistForm - support rool level arrays', () => {
+  @StoreConfig({ name: 'stories' })
+  class StoriesStore extends EntityStore<any, any> {
+    constructor() {
+      super({ someBoolean: true, skills: ['js'] });
+    }
+  }
+
+  class StoriesQuery extends QueryEntity<any, Story> {
+    constructor(protected store) {
+      super(store);
+    }
+  }
+
+  const store = new StoriesStore();
+  const query = new StoriesQuery(store);
+
+  const formGroup = formFactory();
+  // simulate controls
+  formGroup.patchValue({ skills: [] });
+  new PersistNgFormPlugin(query).setForm(formGroup);
+
+  it('should set the form initial state from the store', () => {
+    expect(formGroup.value).toEqual({ skills: ['js'] });
   });
 });

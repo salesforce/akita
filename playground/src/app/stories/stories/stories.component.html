@@ -1,5 +1,22 @@
 <section class="padding">
 
+  <h5>Root Key</h5>
+  <form class="col s12" [formGroup]="formRootKey">
+    <div class="row">
+      <div class="col s12">
+        <p>
+          <label>
+            <input type="checkbox" formControlName="someBoolean"/>
+            <span>Is Admin</span>
+          </label>
+        </p>
+      </div>
+    </div>
+    <button (click)="addSkill()">Add skill</button>
+    {{formRootKey.value | json}}
+  </form>
+
+  {{formKeyBased.value | json}}
   <h5>Key Based</h5>
   <form class="col s12" [formGroup]="formKeyBased" (ngSubmit)="submit()">
     <div class="row">
