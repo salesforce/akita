@@ -1,3 +1,10 @@
+## [1.9.4](https://github.com/datorama/akita/compare/v1.9.3...v1.9.4) (2018-09-22)
+
+
+### Bug Fixes
+
+* **persist-form:** should support root keys and root array value ([4103d2c](https://github.com/datorama/akita/commit/4103d2c))
+
 ## [1.9.3](https://github.com/datorama/akita/compare/v1.9.2...v1.9.3) (2018-09-20)
 
 
