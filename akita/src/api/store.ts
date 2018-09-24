@@ -161,8 +161,8 @@ export class Store<S> {
    * @example
    * this.store.update(newState)
    */
-  update(newState: Partial<S>);
   update(newState: (state: Readonly<S>) => Partial<S>);
+  update(newState: Partial<S>);
   update(id: ID | ID[] | null, newState: Partial<S>);
   update(newStateOrId: Partial<S> | ID | ID[] | null | ((state: Readonly<S>) => Partial<S>), newState?: Partial<S>) {
     __globalState.setAction({ type: 'Update Store' });
