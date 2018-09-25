@@ -188,6 +188,8 @@ export class Store<S> {
     this._isPristine = false;
   }
 
+  destroy = this.ngOnDestroy;
+
   private dispatch(state: S, _rootDispatcher = true) {
     this.store.next(state);
     if (_rootDispatcher) {
