@@ -1,3 +1,10 @@
+## [1.9.5](https://github.com/datorama/akita/compare/v1.9.4...v1.9.5) (2018-09-24)
+
+
+### Bug Fixes
+
+* **store:** change overloading order in update method ([c6d98a1](https://github.com/datorama/akita/commit/c6d98a1))
+
 ## [1.9.4](https://github.com/datorama/akita/compare/v1.9.3...v1.9.4) (2018-09-22)
 
 
