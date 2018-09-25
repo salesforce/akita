@@ -1,3 +1,10 @@
+## [1.9.6](https://github.com/datorama/akita/compare/v1.9.5...v1.9.6) (2018-09-25)
+
+
+### Bug Fixes
+
+* **store:** add destroy method for non-angular apps ([9f96fb0](https://github.com/datorama/akita/commit/9f96fb0))
+
 ## [1.9.5](https://github.com/datorama/akita/compare/v1.9.4...v1.9.5) (2018-09-24)
 
 
