@@ -125,6 +125,15 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "xperiments",
+      "name": "Pedro Casaubon",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/417709?v=4",
+      "profile": "http://www.xperiments.in",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }
