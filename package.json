@@ -103,6 +103,9 @@
     "ts-jest": "^22.4.6",
     "typescript": "^2.9.2"
   },
+  "peerDependencies": {
+    "rxjs": "^6.2.0"
+  },
   "release": {
     "verifyConditions": [
       "@semantic-release/changelog",

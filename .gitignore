@@ -9,6 +9,7 @@
 # dependencies
 /node_modules
 playground/node_modules
+react-playground/node_modules
 # IDEs and editors
 /.idea
 .project
