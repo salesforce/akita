@@ -1,7 +1,7 @@
 import { _crud } from '../internal/crud';
 import { AkitaImmutabilityError, assertActive } from '../internal/error';
 import { Action, __globalState } from '../internal/global-state';
-import { coerceArray, entityExists, isFunction, toBoolean } from '../internal/utils';
+import { coerceArray, entityExists, isDefined, isFunction, toBoolean } from '../internal/utils';
 import { isDev, Store } from './store';
 import { ActiveState, Entities, EntityState, HashMap, ID, Newable } from './types';
 
@@ -257,13 +257,14 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   /**
    * Set the given entity as active.
    */
-  setActive(id: ID) {
-    if (id === this._value().active) return;
-    isDev() && __globalState.setAction({ type: 'Set Active Entity', entityId: id });
+  setActive(id?: ID) {
+    const activeId = isDefined(id) ? id : null;
+    if (activeId === this._value().active) return;
+    isDev() && __globalState.setAction({ type: 'Set Active Entity', entityId: activeId });
     this.setState(state => {
       return {
         ...(state as any),
-        active: id
+        active: activeId
       };
     });
   }
