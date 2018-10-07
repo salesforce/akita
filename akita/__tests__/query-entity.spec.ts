@@ -191,6 +191,30 @@ describe('Entities Query', () => {
     });
   });
 
+  describe('hasActive', () => {
+    it('should have active entity', () => {
+      let todo = cot();
+      store.add(todo);
+      store.setActive(1);
+      expect(query.hasActive()).toBeTruthy();
+    });
+
+    it('should NOT have active entity initially', () => {
+      let todo = cot();
+      store.add(todo);
+      expect(query.hasActive()).toBeFalsy();
+    });
+
+    it('should NOT have active entity after unset', () => {
+      let todo = cot();
+      store.add(todo);
+      store.setActive(1);
+      expect(query.hasActive()).toBeTruthy();
+      store.setActive(null);
+      expect(query.hasActive()).toBeFalsy();
+    });
+  });
+
   describe('selectCount', () => {
     it('should return the count', () => {
       let factory = ct();
