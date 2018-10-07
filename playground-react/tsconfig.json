@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "skipLibCheck": true,
     "baseUrl": ".",
     "outDir": "build/dist",
     "module": "esnext",
