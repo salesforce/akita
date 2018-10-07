@@ -127,8 +127,5 @@
       }
     ]
   },
-  "license": "Apache License 2.0",
-  "dependencies": {
-    "faker": "^4.1.0"
-  }
+  "license": "Apache License 2.0"
 }
