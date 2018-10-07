@@ -36,7 +36,7 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
     if (this.params.watchProperty) {
       let watchProp = this.params.watchProperty;
       watchProp = coerceArray(watchProp);
-      if (watchProp.includes('entities') && !watchProp.includes('ids') && query instanceof QueryEntity) {
+      if ((watchProp as any).includes('entities') && !(watchProp as any).includes('ids') && query instanceof QueryEntity) {
         watchProp.push('ids');
       }
       this.params.watchProperty = watchProp;
