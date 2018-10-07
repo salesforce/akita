@@ -212,6 +212,13 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
     return projectOrId in this.store.entities;
   }
 
+  /**
+   * Returns whether entity store has an active entity.
+   */
+  hasActive(): boolean {
+    return this.getSnapshot().active !== null;
+  }
+
   isEmpty() {
     return this.getSnapshot().ids.length === 0;
   }
