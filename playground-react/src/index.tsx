@@ -7,6 +7,7 @@ import { NavWithRouter } from './Nav';
 import Loadable from 'react-loadable';
 import { akitaDevtools } from '../../akita/src/enhancers/devtools';
 import { persistState } from '../../akita/src';
+import { TodosPageComponent } from './todos/TodosPage';
 
 akitaDevtools();
 
@@ -26,7 +27,13 @@ const Books = Loadable({
   loading: Loading,
 });
 
+const Users = Loadable({
+  loader: () => import('./users/usersPage'),
+  loading: Loading,
+});
+
 Books.preload();
+Users.preload();
 
 export class AppComponent extends React.PureComponent<any> {
   render() {
@@ -36,6 +43,8 @@ export class AppComponent extends React.PureComponent<any> {
           <NavWithRouter/>
           <Route exact={true} path="/" component={Home}/>
           <Route path="/login" component={LoginPageComponent}/>
+          <Route path="/todos" component={TodosPageComponent}/>
+          <Route path="/users" component={Users}/>
           <ProtectedRoute path='/books' component={Books}/>
         </React.Fragment>
       </Router>

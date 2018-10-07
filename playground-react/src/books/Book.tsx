@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { pure } from 'recompose';
-import { Book as BookModel} from './state';
+import { Book as BookModel } from './state';
 
-export const Book = pure(({ title, price }: BookModel) => {
+export const Book = pure(( { title, price }: BookModel ) => {
   console.log('Book - rerender');
   return (
     <div>
@@ -12,12 +12,7 @@ export const Book = pure(({ title, price }: BookModel) => {
   );
 });
 
-
-export const Books = pure(({ books }: { books: BookModel[]}) => {
+export const Books = pure(( { books }: { books: BookModel[] } ) => {
   console.log('Books - rerender');
-  return (
-    books.map(book => {
-      return <Book key={book.id} {...book} />
-    })
-  );
+  return (books.map(book => <Book key={book.id} {...book} />));
 });
