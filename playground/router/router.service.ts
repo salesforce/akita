@@ -104,9 +104,16 @@ export class RouterService {
   }
 
   private serializeRoute(route: ActivatedRouteSnapshot): Partial<ActivatedRouteSnapshot> {
+    let state: ActivatedRouteSnapshot = route.root;
+    while (state.firstChild) {
+      state = state.firstChild;
+    }
+
+    const { params } = state;
+
     return {
       url: route.url,
-      params: route.params,
+      params,
       queryParams: route.queryParams,
       fragment: route.fragment,
       data: route.data,

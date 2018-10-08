@@ -1,3 +1,22 @@
+# [1.11.0](https://github.com/datorama/akita/compare/v1.10.0...v1.11.0) (2018-10-08)
+
+
+### Features
+
+* **history plugin:** add public api for ignoreNext ([f221bb9](https://github.com/datorama/akita/commit/f221bb9))
+
+# [1.10.0](https://github.com/datorama/akita/compare/v1.9.6...v1.10.0) (2018-10-07)
+
+
+### Bug Fixes
+
+* **active:** enable unset of active entity in strict null check envs ([79a9c69](https://github.com/datorama/akita/commit/79a9c69))
+
+
+### Features
+
+* **active:** add hasActive method for EntityQuery ([d333aac](https://github.com/datorama/akita/commit/d333aac))
+
 ## [1.9.6](https://github.com/datorama/akita/compare/v1.9.5...v1.9.6) (2018-09-25)
 
 

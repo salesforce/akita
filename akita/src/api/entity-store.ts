@@ -257,7 +257,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   /**
    * Set the given entity as active.
    */
-  setActive(id: ID) {
+  setActive(id: ID | null) {
     if (id === this._value().active) return;
     isDev() && __globalState.setAction({ type: 'Set Active Entity', entityId: id });
     this.setState(state => {
