@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/datorama/akita/compare/v1.10.0...v1.11.0) (2018-10-08)
+
+
+### Features
+
+* **history plugin:** add public api for ignoreNext ([f221bb9](https://github.com/datorama/akita/commit/f221bb9))
+
 # [1.10.0](https://github.com/datorama/akita/compare/v1.9.6...v1.10.0) (2018-10-07)
 
 
