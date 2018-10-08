@@ -55,6 +55,10 @@ export class EntityStateHistoryPlugin<E, P extends StateHistoryPlugin<E, any> = 
     this.forEachId(ids, e => e.destroy(clearHistory));
   }
 
+  ignoreNext(ids?: IDS) {
+    this.forEachId(ids, e => e.ignoreNext());
+  }
+
   protected instantiatePlugin(id: ID) {
     return new StateHistoryPlugin<E, any>(this.query, this.params, id) as P;
   }
