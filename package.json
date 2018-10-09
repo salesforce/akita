@@ -1,7 +1,7 @@
 {
   "name": "@datorama/akita",
   "version": "0.0.0-development",
-  "description": "Simple and Effective State Management for Angular Applications",
+  "description": "State Management Tailored-Made for JS Applications",
   "$schema": "./node_modules/ng-packagr/package.schema.json",
   "scripts": {
     "build": "ng-packagr -p package.json && npm run copy",
@@ -45,6 +45,11 @@
   "keywords": [
     "angular",
     "state management",
+    "react",
+    "vue",
+    "typescript",
+    "javascript",
+    "rxjs",
     "angular store",
     "store",
     "observable data stores",
