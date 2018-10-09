@@ -1,5 +1,7 @@
 ![Akita](https://s8.postimg.cc/d4m3fc9tx/image.png)
-> *Simple and Effective State Management for Angular Applications*
+> *State Management Tailored-Made for JS Applications*
+
+Whether it be Angular, React, Vue, Web Components or plain old vanilla JS, Akita can do the heavy lifting and serve as a useful tool for maintaining clean, boilerplate-free, and scalable applications.
 
 <hr />
 
