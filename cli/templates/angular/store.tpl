@@ -5,7 +5,7 @@ export interface {{ pascalCase name }}State {
   key: string;
 }
 
-export function createInitialState() : {{ pascalCase name }}State {
+export function createInitialState(): {{ pascalCase name }}State {
   return {
     key: ''
   };
@@ -13,7 +13,7 @@ export function createInitialState() : {{ pascalCase name }}State {
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: '{{name}}' })
-export class {{pascalCase name}}Store extends Store<{{singular (pascalCase name)}}State> {
+export class {{pascalCase name}}Store extends Store<{{pascalCase name}}State> {
 
   constructor() {
     super(createInitialState());
