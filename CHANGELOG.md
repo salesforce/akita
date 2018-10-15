@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/datorama/akita/compare/v1.11.0...v1.12.0) (2018-10-15)
+
+
+### Features
+
+* **schematics:** add ng add command ([2703a00](https://github.com/datorama/akita/commit/2703a00))
+
 # [1.11.0](https://github.com/datorama/akita/compare/v1.10.0...v1.11.0) (2018-10-08)
 
 
