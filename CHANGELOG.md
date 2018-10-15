@@ -1,3 +1,10 @@
+## [1.12.1](https://github.com/datorama/akita/compare/v1.12.0...v1.12.1) (2018-10-15)
+
+
+### Bug Fixes
+
+* **ng-add:** fix router imports ([5975689](https://github.com/datorama/akita/commit/5975689))
+
 # [1.12.0](https://github.com/datorama/akita/compare/v1.11.0...v1.12.0) (2018-10-15)
 
 
