@@ -1,16 +1,10 @@
 {
-  "name": "@netbasal/test1234",
-  "version": "1.0.26",
-  "description": "A blank schematics",
+  "name": "ng-add",
+  "version": "0.0.0",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "npm run build && jasmine src/**/*_spec.js"
   },
-  "keywords": [
-    "schematics"
-  ],
-  "author": "",
-  "license": "MIT",
   "schematics": "./src/collection.json",
   "dependencies": {
     "@angular-devkit/core": "^0.7.2",

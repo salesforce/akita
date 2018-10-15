@@ -13,19 +13,19 @@ function addPackageJsonDependencies(options) {
                 name: '@datorama/akita'
             },
             {
-                type: schematics_utilities_1.NodeDependencyType.Default,
+                type: schematics_utilities_1.NodeDependencyType.Dev,
                 version: '~1.0.2',
                 name: '@datorama/akita-ngdevtools'
             },
             {
-                type: schematics_utilities_1.NodeDependencyType.Default,
+                type: schematics_utilities_1.NodeDependencyType.Dev,
                 version: '~1.0.0',
                 name: 'akita-schematics'
             }
         ];
         if (options.withRouter) {
             dependencies.push({
-                type: schematics_utilities_1.NodeDependencyType.Default,
+                type: schematics_utilities_1.NodeDependencyType.Dev,
                 version: '~1.0.0',
                 name: '@datorama/akita-ng-router-store'
             });
@@ -71,11 +71,13 @@ function injectImports(options) {
                 host.commitUpdate(recorder);
             }
         }
-        const routerChange = schematics_utilities_1.insertImport(moduleSource, modulePath, 'AkitaNgRouterStoreModule', '@datorama/akita-ng-router-store');
-        if (routerChange) {
-            const recorder = host.beginUpdate(modulePath);
-            recorder.insertLeft(routerChange.pos, routerChange.toAdd);
-            host.commitUpdate(recorder);
+        if (options.withRouter) {
+            const routerChange = schematics_utilities_1.insertImport(moduleSource, modulePath, 'AkitaNgRouterStoreModule', '@datorama/akita-ng-router-store');
+            if (routerChange) {
+                const recorder = host.beginUpdate(modulePath);
+                recorder.insertLeft(routerChange.pos, routerChange.toAdd);
+                host.commitUpdate(recorder);
+            }
         }
         const devtoolsChange = schematics_utilities_1.insertImport(moduleSource, modulePath, 'AkitaNgDevtools', '@datorama/akita-ngdevtools');
         if (devtoolsChange) {
@@ -109,7 +111,7 @@ function addModuleToImports(options) {
       `;
         }
         else {
-            importm = `environment.production ? [] : AkitaNgRouterStoreModule.forRoot()`;
+            importm = `environment.production ? [] : AkitaNgDevtools.forRoot()`;
         }
         schematics_utilities_1.addModuleImportToRootModule(host, importm, null, project);
         context.logger.log('info', `✅️ AkitaNgDevtools is imported`);
@@ -127,7 +129,9 @@ function log() {
 }
 function akitaNgAdd(options) {
     return schematics_1.chain([
-        options && options.skipPackageJson ? schematics_1.noop() : addPackageJsonDependencies(options),
+        options && options.skipPackageJson
+            ? schematics_1.noop()
+            : addPackageJsonDependencies(options),
         options && options.skipPackageJson
             ? schematics_1.noop()
             : installPackageJsonDependencies(),
