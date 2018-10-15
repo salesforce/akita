@@ -22,7 +22,7 @@ Akita encourages simplicity. It saves you the hassle of creating boilerplate cod
 - 😎 Use the [CLI](https://github.com/datorama/akita/tree/master/cli)
 - 👉 Checkout the [sample application](http://akita.surge.sh/)
 - 📖 Read the blog [posts](https://netbasal.gitbook.io/akita/entity-store/blog-posts)
-
+- 🍄 Join Akita's [Gitter](https://gitter.im/akita-state-management/Lobby#) room
 ## Contributors 
 
 Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):

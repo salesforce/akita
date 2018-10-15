@@ -3,8 +3,9 @@
   "version": "0.0.0-development",
   "description": "State Management Tailored-Made for JS Applications",
   "$schema": "./node_modules/ng-packagr/package.schema.json",
+  "schematics": "./schematics/src/collection.json",
   "scripts": {
-    "build": "ng-packagr -p package.json && npm run copy",
+    "build": "ng-packagr -p package.json && npm run copy:readme && npm run copy:schematics",
     "test": "jest",
     "test:debug": "node --inspect-brk ./node_modules/.bin/jest --runInBand --watch",
     "test:watch": "jest --watch",
@@ -12,7 +13,8 @@
     "github-pages": "push-dir --dir=playground/dist --branch=gh-pages --overwrite-local",
     "contributors:add": "all-contributors add",
     "contributors:generate": "all-contributors generate",
-    "copy": "copy README.md dist",
+    "copy:readme": "copy README.md dist",
+    "copy:schematics": "copy schematics/src/* dist && copy schematics/src/**/* dist",
     "precommit": "lint-staged",
     "commit": "git-cz",
     "commitmsg": "commitlint -e $GIT_PARAMS",
@@ -62,7 +64,10 @@
         "dom",
         "es2017"
       ]
-    }
+    },
+    "whitelistedNonPeerDependencies": [
+      "schematics-utilities"
+    ]
   },
   "author": "Netanel Basal",
   "jest": {
@@ -110,6 +115,9 @@
   },
   "peerDependencies": {
     "rxjs": "^6.2.0"
+  },
+  "dependencies": {
+    "schematics-utilities": "^1.1.1"
   },
   "release": {
     "verifyConditions": [
