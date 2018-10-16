@@ -213,6 +213,11 @@ describe('Entities Query', () => {
       store.setActive(null);
       expect(query.hasActive()).toBeFalsy();
     });
+
+    it('should NOT have active entity after unset undefined', () => {
+      store.setActive(undefined);
+      expect(query.hasActive()).toBeFalsy();
+    });
   });
 
   describe('selectCount', () => {

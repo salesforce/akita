@@ -216,7 +216,7 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
    * Returns whether entity store has an active entity.
    */
   hasActive(): boolean {
-    return this.getSnapshot().active !== null;
+    return this.getSnapshot().active != null;
   }
 
   isEmpty() {
