@@ -1,3 +1,10 @@
+## [1.12.3](https://github.com/datorama/akita/compare/v1.12.2...v1.12.3) (2018-10-24)
+
+
+### Bug Fixes
+
+* **store:** use IE11 strict mode compatible deep-freeze ([8a63065](https://github.com/datorama/akita/commit/8a63065)), closes [#94](https://github.com/datorama/akita/issues/94)
+
 ## [1.12.2](https://github.com/datorama/akita/compare/v1.12.1...v1.12.2) (2018-10-16)
 
 
