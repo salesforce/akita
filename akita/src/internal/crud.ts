@@ -115,7 +115,7 @@ export class CRUD {
         if (isPlainObject(newState)) {
           newEntity = new oldEntity.constructor(merged);
         } else {
-          newEntity = new (newState.constructor(merged) as any)();
+          newEntity = new (newState as any).constructor(merged);
         }
       }
 
