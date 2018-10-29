@@ -102,7 +102,21 @@ export class CRUD {
       if (isPlainObject(oldEntity)) {
         newEntity = merged;
       } else {
-        newEntity = new (newState.constructor(merged) as any)();
+        /**
+         * In case that new state is class of it's own, there's
+         * a possibility that it will be different than the old
+         * class.
+         * For example, Old state is an instance of animal class
+         * and new state is instance of person class.
+         * To avoid run over new person class with the old animal
+         * class we check if the new state is a class of it's own.
+         * If so, use it. Otherwise, use the old state class
+         */
+        if (isPlainObject(newState)) {
+          newEntity = new oldEntity.constructor(merged);
+        } else {
+          newEntity = new (newState.constructor(merged) as any)();
+        }
       }
 
       updatedEntities[idToUpdate] = newEntity;
