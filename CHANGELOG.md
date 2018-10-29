@@ -1,3 +1,10 @@
+## [1.12.5](https://github.com/datorama/akita/compare/v1.12.4...v1.12.5) (2018-10-29)
+
+
+### Bug Fixes
+
+* **crud-update:** use new state constructor instead of the old state ([f8ae5a1](https://github.com/datorama/akita/commit/f8ae5a1))
+
 ## [1.12.4](https://github.com/datorama/akita/compare/v1.12.3...v1.12.4) (2018-10-29)
 
 
