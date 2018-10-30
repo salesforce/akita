@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/datorama/akita/compare/v1.12.5...v1.13.0) (2018-10-30)
+
+
+### Features
+
+* **entity-query:** hasEntity can take an array of ids ([7404dc5](https://github.com/datorama/akita/commit/7404dc5))
+
 ## [1.12.5](https://github.com/datorama/akita/compare/v1.12.4...v1.12.5) (2018-10-29)
 
 
