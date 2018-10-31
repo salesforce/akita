@@ -3,7 +3,7 @@ import { AkitaImmutabilityError, assertActive } from '../internal/error';
 import { Action, __globalState } from '../internal/global-state';
 import { coerceArray, entityExists, isFunction, toBoolean } from '../internal/utils';
 import { isDev, Store } from './store';
-import { ActiveState, Entities, EntityState, HashMap, ID, Newable, AddParams } from './types';
+import { ActiveState, Entities, EntityState, HashMap, ID, Newable, AddOptions } from './types';
 
 /**
  * The Root Store that every sub store needs to inherit and
@@ -73,11 +73,11 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    * this.store.add(Entity);
    * this.store.add(Entity, { prepend: true });
    */
-  add(entities: E[] | E, params ?: AddParams) {
+  add(entities: E[] | E, options ?: AddOptions) {
     const toArray = coerceArray(entities);
     if (toArray.length === 0) return;
     isDev() && __globalState.setAction({ type: 'Add Entity' });
-    this.setState(state => _crud._add<S, E>(state, toArray, this.idKey, params));
+    this.setState(state => _crud._add<S, E>(state, toArray, this.idKey, options));
   }
 
   /**

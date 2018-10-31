@@ -1,4 +1,4 @@
-import { Entities, EntityState, HashMap, ID, Newable, AddParams } from '../api/types';
+import { Entities, EntityState, HashMap, ID, Newable, AddOptions } from '../api/types';
 import { AkitaUpdateIdKeyError, assertEntityExists, assertEntityState } from './error';
 import { entityExists, isFunction, isPlainObject, resetActive } from './utils';
 
@@ -46,7 +46,7 @@ export class CRUD {
     };
   }
 
-  _add<S extends EntityState, E>(state: S, entities: E[], idKey, params: AddParams = {}): S {
+  _add<S extends EntityState, E>(state: S, entities: E[], idKey, options: AddOptions = {}): S {
     let addedEntities = {};
     let addedIds = [];
 
@@ -56,7 +56,7 @@ export class CRUD {
 
       if (!entityExists(entityId, state.entities)) {
         addedEntities[entityId] = entity;
-        if (params && params.prepend) addedIds.unshift(entityId);
+        if (options.prepend) addedIds.unshift(entityId);
         else addedIds.push(entityId);
       }
     }
@@ -67,7 +67,7 @@ export class CRUD {
         ...state.entities,
         ...addedEntities
       },
-      ids: params.prepend ? [ ...addedIds, ...state.ids] : [...state.ids, ...addedIds]
+      ids: options.prepend ? [ ...addedIds, ...state.ids] : [...state.ids, ...addedIds]
     };
   }
 
