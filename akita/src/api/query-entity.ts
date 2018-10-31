@@ -50,8 +50,7 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
     const selectState$ = this.select(state => state);
     const selectEntities$ = this.select(state => state.entities);
 
-    options.sortBy = options.sortBy || (this.config && (this.config.sortBy as SortBy<E>));
-    options.sortByOrder = options.sortByOrder || (this.config && this.config.sortByOrder);
+    this.sortByOptions(options);
 
     return selectEntities$.pipe(
       withLatestFrom(selectState$, (entities: HashMap<E>, state: S) => {
@@ -91,8 +90,7 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
       return toMap(state.ids, state.entities, options, true);
     }
 
-    options.sortBy = options.sortBy || (this.config && (this.config.sortBy as SortBy<E>));
-    options.sortByOrder = options.sortByOrder || (this.config && this.config.sortByOrder);
+    this.sortByOptions(options);
 
     return toArray(state, options);
   }
@@ -234,6 +232,11 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
 
   private _byId(id: ID): Observable<E> {
     return this.select(state => this.getEntity(id));
+  }
+
+  private sortByOptions(options) {
+    options.sortBy = options.sortBy || (this.config && (this.config.sortBy as SortBy<E>));
+    options.sortByOrder = options.sortByOrder || (this.config && this.config.sortByOrder);
   }
 
   ngOnDestroy() {
