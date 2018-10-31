@@ -62,7 +62,9 @@ describe('EntitiesStore', () => {
       store.add(new Todo({ id: 2 }));
       store.add(new Todo({ id: 3 }));
       store.add(new Todo({ id: 0 }), { prepend:true });
-      expect(Object.keys(store.entities).map(item => +item)).toEqual([0, 1, 2, 3]);
+      store.add(new Todo({ id: 2 }), { prepend:true });
+      store.add(new Todo({ id: 44 }), { prepend:true });
+      expect(store._value().ids).toEqual([44, 0, 1, 2, 3]);
     });
  
     it('should prepend with multi add', () => {
@@ -70,7 +72,7 @@ describe('EntitiesStore', () => {
       store.add(new Todo({ id: 2 }));
       store.add(new Todo({ id: 3 }));
       store.add([new Todo({ id: 0 }), new Todo({ id: 2 }), new Todo({ id: 44 })], {  prepend:true });
-      expect(Object.keys(store.entities).map(item => +item)).toEqual([0, 1, 2, 3, 44]);
+      expect(store._value().ids).toEqual([44, 0, 1, 2, 3]);
     });
   });
 
