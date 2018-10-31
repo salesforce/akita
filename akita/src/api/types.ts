@@ -46,4 +46,4 @@ export type IDS = ID | ID[];
 export type Newable<T> = { new (...args: any[]): T };
 
 /** Optional config for Store.add() to prepend entity or entities to stores */
-export type AddParams = { prepend: boolean }
+export type AddParams = { prepend?: boolean }

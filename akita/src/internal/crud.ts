@@ -46,7 +46,7 @@ export class CRUD {
     };
   }
 
-  _add<S extends EntityState, E>(state: S, entities: E[], idKey, addConfig ?: AddParams): S {
+  _add<S extends EntityState, E>(state: S, entities: E[], idKey, addConfig: AddParams = {}): S {
     let addedEntities = {};
     let addedIds = [];
 
