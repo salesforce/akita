@@ -1,3 +1,53 @@
+# [1.13.0](https://github.com/datorama/akita/compare/v1.12.5...v1.13.0) (2018-10-30)
+
+
+### Features
+
+* **entity-query:** hasEntity can take an array of ids ([7404dc5](https://github.com/datorama/akita/commit/7404dc5))
+
+## [1.12.5](https://github.com/datorama/akita/compare/v1.12.4...v1.12.5) (2018-10-29)
+
+
+### Bug Fixes
+
+* **crud-update:** use new state constructor instead of the old state ([f8ae5a1](https://github.com/datorama/akita/commit/f8ae5a1))
+
+## [1.12.4](https://github.com/datorama/akita/compare/v1.12.3...v1.12.4) (2018-10-29)
+
+
+### Bug Fixes
+
+* **crud-update:** use new state constructor instead of the old state ([0bc3104](https://github.com/datorama/akita/commit/0bc3104))
+* **crud-update:** use new state constructor instead of the old state ([e177ed6](https://github.com/datorama/akita/commit/e177ed6))
+
+## [1.12.3](https://github.com/datorama/akita/compare/v1.12.2...v1.12.3) (2018-10-24)
+
+
+### Bug Fixes
+
+* **store:** use IE11 strict mode compatible deep-freeze ([8a63065](https://github.com/datorama/akita/commit/8a63065)), closes [#94](https://github.com/datorama/akita/issues/94)
+
+## [1.12.2](https://github.com/datorama/akita/compare/v1.12.1...v1.12.2) (2018-10-16)
+
+
+### Bug Fixes
+
+* **query-entity:** has active should return false when value is undefined ([ba56933](https://github.com/datorama/akita/commit/ba56933)), closes [#92](https://github.com/datorama/akita/issues/92)
+
+## [1.12.1](https://github.com/datorama/akita/compare/v1.12.0...v1.12.1) (2018-10-15)
+
+
+### Bug Fixes
+
+* **ng-add:** fix router imports ([5975689](https://github.com/datorama/akita/commit/5975689))
+
+# [1.12.0](https://github.com/datorama/akita/compare/v1.11.0...v1.12.0) (2018-10-15)
+
+
+### Features
+
+* **schematics:** add ng add command ([2703a00](https://github.com/datorama/akita/commit/2703a00))
+
 # [1.11.0](https://github.com/datorama/akita/compare/v1.10.0...v1.11.0) (2018-10-08)
 
 

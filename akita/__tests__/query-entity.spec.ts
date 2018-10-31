@@ -213,6 +213,11 @@ describe('Entities Query', () => {
       store.setActive(null);
       expect(query.hasActive()).toBeFalsy();
     });
+
+    it('should NOT have active entity after unset undefined', () => {
+      store.setActive(undefined);
+      expect(query.hasActive()).toBeFalsy();
+    });
   });
 
   describe('selectCount', () => {
@@ -279,6 +284,26 @@ describe('Entities Query', () => {
 
     it('should NOT have entity', () => {
       expect(query.hasEntity(5)).toBeFalsy();
+    });
+
+    describe('multi', () => {
+      it('should return true if all entities in the store', () => {
+        const factory = ct();
+        store.add(factory());
+        store.add(factory());
+        store.add(factory());
+
+        expect(query.hasEntity([0, 1, 2])).toBeTruthy();
+      });
+
+      it('should return false if NOT all entities in the store', () => {
+        const factory = ct();
+        store.add(factory());
+        store.add(factory());
+        store.add(factory());
+
+        expect(query.hasEntity([0, 1, 23])).toBeFalsy();
+      });
     });
   });
 });

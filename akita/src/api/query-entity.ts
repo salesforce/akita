@@ -207,19 +207,25 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
    * Returns whether entity exists.
    */
   hasEntity(id: ID): boolean;
+  hasEntity(id: ID[]): boolean;
   hasEntity(project: (entity: E) => boolean): boolean;
-  hasEntity(projectOrId: any): boolean {
-    if (isFunction(projectOrId)) {
-      return this.getAll().some(projectOrId);
+  hasEntity(projectOrIds: ID | ID[] | ((entity: E) => boolean)): boolean {
+    if (isFunction(projectOrIds)) {
+      return this.getAll().some(projectOrIds);
     }
-    return projectOrId in this.store.entities;
+
+    if (Array.isArray(projectOrIds)) {
+      return projectOrIds.every(id => id in this.store.entities);
+    }
+
+    return projectOrIds in this.store.entities;
   }
 
   /**
    * Returns whether entity store has an active entity.
    */
   hasActive(): boolean {
-    return this.getSnapshot().active !== null;
+    return this.getSnapshot().active != null;
   }
 
   isEmpty() {
