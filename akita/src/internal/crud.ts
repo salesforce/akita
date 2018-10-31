@@ -46,7 +46,7 @@ export class CRUD {
     };
   }
 
-  _add<S extends EntityState, E>(state: S, entities: E[], idKey,config?:{prepend: boolean}): S {
+  _add<S extends EntityState, E>(state: S, entities: E[], idKey, addConfig ?: { prepend: boolean }): S {
     let addedEntities = {};
     let addedIds = [];
 
@@ -56,7 +56,7 @@ export class CRUD {
 
       if (!entityExists(entityId, state.entities)) {
         addedEntities[entityId] = entity;
-        if (config && config.prepend) addedIds.unshift(entityId);
+        if (addConfig && addConfig.prepend) addedIds.unshift(entityId);
         else addedIds.push(entityId);
       }
     }
@@ -67,7 +67,7 @@ export class CRUD {
         ...state.entities,
         ...addedEntities
       },
-      ids: [...state.ids, ...addedIds]
+      ids: addConfig && addConfig.prepend ? [ ...addedIds, ...state.ids] : [...state.ids, ...addedIds]
     };
   }
 
