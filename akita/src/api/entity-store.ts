@@ -71,12 +71,13 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    * @example
    * this.store.add([Entity, Entity]);
    * this.store.add(Entity);
+   * this.store.add(Entity,{prepend: true});
    */
-  add(entities: E[] | E) {
+  add(entities: E[] | E,config?:{prepend: boolean}) {
     const toArray = coerceArray(entities);
     if (toArray.length === 0) return;
     isDev() && __globalState.setAction({ type: 'Add Entity' });
-    this.setState(state => _crud._add<S, E>(state, toArray, this.idKey));
+    this.setState(state => _crud._add<S, E>(state, toArray, this.idKey,config));
   }
 
   /**

@@ -56,6 +56,16 @@ describe('EntitiesStore', () => {
       store.add(new Todo({ id: 1 }));
       expect(store.entities[1]).toBeDefined();
     });
+   
+    it('should prepend with uid', () => {
+      store.add(new Todo({ id: 1 }));
+      store.add(new Todo({ id: 2 }));
+      store.add(new Todo({ id: 3 }));
+      store.add(new Todo({ id: 0 }),{prepend:true});
+      console.log('store.entities',store.entities);
+      
+      expect(store.entities[0]).toBeDefined();
+    });
   });
 
   describe('update', () => {
