@@ -1,3 +1,10 @@
+## [1.13.1](https://github.com/datorama/akita/compare/v1.13.0...v1.13.1) (2018-10-31)
+
+
+### Bug Fixes
+
+* **query-entity:** sortby should work with getall ([75ed1b7](https://github.com/datorama/akita/commit/75ed1b7)), closes [#102](https://github.com/datorama/akita/issues/102)
+
 # [1.13.0](https://github.com/datorama/akita/compare/v1.12.5...v1.13.0) (2018-10-30)
 
 
