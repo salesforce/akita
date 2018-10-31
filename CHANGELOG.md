@@ -1,3 +1,20 @@
+# [1.14.0](https://github.com/datorama/akita/compare/v1.13.1...v1.14.0) (2018-10-31)
+
+
+### Bug Fixes
+
+* **entity store:** change type and update test for add option ([5ef1776](https://github.com/datorama/akita/commit/5ef1776))
+* **entity store:** change type of AddParams and add default value ([1b2eeba](https://github.com/datorama/akita/commit/1b2eeba))
+* **entity store:** fix test issue ([736a53f](https://github.com/datorama/akita/commit/736a53f))
+* **entity store:** update test and default case for prepend add ([4d9d91f](https://github.com/datorama/akita/commit/4d9d91f))
+* **entity store:** update test for prepend add ([07822ae](https://github.com/datorama/akita/commit/07822ae))
+
+
+### Features
+
+* **entity store:** allow prepend option when adding ([2c4708d](https://github.com/datorama/akita/commit/2c4708d))
+* **entity store:** rename prepend params to options ([6da7837](https://github.com/datorama/akita/commit/6da7837))
+
 ## [1.13.1](https://github.com/datorama/akita/compare/v1.13.0...v1.13.1) (2018-10-31)
 
 
