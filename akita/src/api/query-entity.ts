@@ -91,6 +91,9 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
       return toMap(state.ids, state.entities, options, true);
     }
 
+    options.sortBy = options.sortBy || (this.config && (this.config.sortBy as SortBy<E>));
+    options.sortByOrder = options.sortByOrder || (this.config && this.config.sortByOrder);
+
     return toArray(state, options);
   }
 
