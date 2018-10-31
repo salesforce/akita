@@ -67,7 +67,7 @@ export class CRUD {
         ...state.entities,
         ...addedEntities
       },
-      ids: params && params.prepend ? [ ...addedIds, ...state.ids] : [...state.ids, ...addedIds]
+      ids: params.prepend ? [ ...addedIds, ...state.ids] : [...state.ids, ...addedIds]
     };
   }
 
