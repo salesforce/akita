@@ -10,24 +10,24 @@ function addPackageJsonDependencies(options) {
         const dependencies = [
             {
                 type: schematics_utilities_1.NodeDependencyType.Default,
-                version: '~1.10.0',
+                version: '^1.15.0',
                 name: '@datorama/akita'
             },
             {
                 type: schematics_utilities_1.NodeDependencyType.Dev,
-                version: '~1.0.2',
+                version: '^1.0.2',
                 name: '@datorama/akita-ngdevtools'
             },
             {
                 type: schematics_utilities_1.NodeDependencyType.Dev,
-                version: '~1.0.0',
+                version: '^2.0.0',
                 name: 'akita-schematics'
             }
         ];
         if (options.withRouter) {
             dependencies.push({
                 type: schematics_utilities_1.NodeDependencyType.Dev,
-                version: '~1.0.0',
+                version: '^1.0.0',
                 name: '@datorama/akita-ng-router-store'
             });
         }
@@ -130,12 +130,8 @@ function log() {
 }
 function akitaNgAdd(options) {
     return schematics_1.chain([
-        options && options.skipPackageJson
-            ? schematics_1.noop()
-            : addPackageJsonDependencies(options),
-        options && options.skipPackageJson
-            ? schematics_1.noop()
-            : installPackageJsonDependencies(),
+        options && options.skipPackageJson ? schematics_1.noop() : addPackageJsonDependencies(options),
+        options && options.skipPackageJson ? schematics_1.noop() : installPackageJsonDependencies(),
         addModuleToImports(options),
         injectImports(options),
         setSchematicsAsDefault(),
