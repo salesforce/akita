@@ -4,6 +4,7 @@ const schematics_1 = require("@angular-devkit/schematics");
 const schematics_utilities_1 = require("schematics-utilities");
 const tasks_1 = require("@angular-devkit/schematics/tasks");
 const ts = require("typescript");
+const utils_1 = require("./utils");
 function addPackageJsonDependencies(options) {
     return (host, context) => {
         const dependencies = [
@@ -63,8 +64,8 @@ function injectImports(options) {
         let moduleSource = getTsSourceFile(host, modulePath);
         let importModule = 'environment';
         let importPath = '../environments/environment';
-        if (!schematics_utilities_1.isImported(moduleSource, importModule, importPath)) {
-            const change = schematics_utilities_1.insertImport(moduleSource, modulePath, importModule, importPath);
+        if (!utils_1.isImported(moduleSource, importModule, importPath)) {
+            const change = utils_1.insertImport(moduleSource, modulePath, importModule, importPath);
             if (change) {
                 const recorder = host.beginUpdate(modulePath);
                 recorder.insertLeft(change.pos, change.toAdd);
@@ -72,14 +73,14 @@ function injectImports(options) {
             }
         }
         if (options.withRouter) {
-            const routerChange = schematics_utilities_1.insertImport(moduleSource, modulePath, 'AkitaNgRouterStoreModule', '@datorama/akita-ng-router-store');
+            const routerChange = utils_1.insertImport(moduleSource, modulePath, 'AkitaNgRouterStoreModule', '@datorama/akita-ng-router-store');
             if (routerChange) {
                 const recorder = host.beginUpdate(modulePath);
                 recorder.insertLeft(routerChange.pos, routerChange.toAdd);
                 host.commitUpdate(recorder);
             }
         }
-        const devtoolsChange = schematics_utilities_1.insertImport(moduleSource, modulePath, 'AkitaNgDevtools', '@datorama/akita-ngdevtools');
+        const devtoolsChange = utils_1.insertImport(moduleSource, modulePath, 'AkitaNgDevtools', '@datorama/akita-ngdevtools');
         if (devtoolsChange) {
             const recorder = host.beginUpdate(modulePath);
             recorder.insertLeft(devtoolsChange.pos, devtoolsChange.toAdd);

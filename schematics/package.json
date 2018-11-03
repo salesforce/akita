@@ -7,12 +7,12 @@
   },
   "schematics": "./src/collection.json",
   "dependencies": {
-    "@angular-devkit/core": "^0.7.2",
-    "@angular-devkit/schematics": "^0.7.2",
+    "@angular-devkit/core": "7.0.4",
+    "@angular-devkit/schematics": "7.0.4",
     "@types/jasmine": "^2.6.0",
     "@types/node": "^8.0.31",
     "jasmine": "^2.8.0",
-    "schematics-utilities": "^1.1.1",
-    "typescript": "^2.5.2"
+    "schematics-utilities": "1.1.1",
+    "typescript": "3.1.6"
   }
 }

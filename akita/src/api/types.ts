@@ -35,7 +35,7 @@ export interface Entities<E> {
  * Interface for stores that needs an active indication
  */
 export interface ActiveState<T = ID> {
-  active: T;
+  active: T | null;
 }
 
 /** Entity id interface */

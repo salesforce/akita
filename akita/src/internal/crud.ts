@@ -3,7 +3,7 @@ import { AkitaUpdateIdKeyError, assertEntityExists, assertEntityState } from './
 import { entityExists, isFunction, isPlainObject, resetActive } from './utils';
 
 export class CRUD {
-  _set<S, E>(state: S, entities: E[] | HashMap<E> | Entities<E>, entityClass: Newable<E>, idKey): S {
+  _set<S, E>(state: S, entities: E[] | HashMap<E> | Entities<E>, entityClass: Newable<E> | undefined, idKey): S {
     let ids, normalized;
 
     if ((entities as Entities<E>).ids && (entities as Entities<E>).entities) {
@@ -67,7 +67,7 @@ export class CRUD {
         ...state.entities,
         ...addedEntities
       },
-      ids: options.prepend ? [ ...addedIds, ...state.ids] : [...state.ids, ...addedIds]
+      ids: options.prepend ? [...addedIds, ...state.ids] : [...state.ids, ...addedIds]
     };
   }
 

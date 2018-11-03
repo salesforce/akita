@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Todo } from '../state/todo.model';
 import { FormControl } from '@angular/forms';
-import { TakeUntilDestroy, untilDestroyed } from 'ngx-take-until-destroy';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 import { ID } from '../../../../../akita/src';
 
-@TakeUntilDestroy()
 @Component({
   selector: 'app-todo',
   templateUrl: './todo.component.html',

@@ -14,13 +14,12 @@ import {
   getProjectFromWorkspace,
   addModuleImportToRootModule,
   getAppModulePath,
-  insertImport,
-  isImported,
   InsertChange
 } from 'schematics-utilities';
 import { NodePackageInstallTask } from '@angular-devkit/schematics/tasks';
 import { Schema } from './schema';
 import * as ts from 'typescript';
+import { isImported, insertImport } from './utils';
 
 function addPackageJsonDependencies(options: Schema): Rule {
   return (host: Tree, context: SchematicContext) => {
@@ -111,6 +110,7 @@ function injectImports(options): Rule {
         importModule,
         importPath
       );
+
       if (change) {
         const recorder = host.beginUpdate(modulePath);
         recorder.insertLeft(

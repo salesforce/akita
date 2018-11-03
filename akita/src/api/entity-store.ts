@@ -41,7 +41,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    * this.store.set([{id: 1}, {id: 2}], { entityClass: Product });
    *
    */
-  set(entities: E[] | HashMap<E> | Entities<E>, options: { entityClass?: Newable<E> } = {}) {
+  set(entities: E[] | HashMap<E> | Entities<E>, options: { entityClass?: Newable<E> | undefined } = {}) {
     isDev() && __globalState.setAction({ type: 'Set Entities' });
     this.setState(state => _crud._set(state, entities, options.entityClass, this.idKey));
     this.setDirty();
@@ -73,7 +73,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    * this.store.add(Entity);
    * this.store.add(Entity, { prepend: true });
    */
-  add(entities: E[] | E, options ?: AddOptions) {
+  add(entities: E[] | E, options?: AddOptions) {
     const toArray = coerceArray(entities);
     if (toArray.length === 0) return;
     isDev() && __globalState.setAction({ type: 'Add Entity' });
@@ -246,7 +246,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
     assertActive(this._value());
     isDev() && __globalState.setAction({ type: 'Update Active Entity', entityId: this._value().active });
     this.setState(state => {
-      const activeId = state.active;
+      const activeId = state.active as ID;
       const newState = isFunction(newStateFn) ? newStateFn(state.entities[activeId]) : newStateFn;
       if (newState === state) {
         throw new AkitaImmutabilityError(this.storeName);
@@ -258,7 +258,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   /**
    * Set the given entity as active.
    */
-  setActive(id: ID | null) {
+  setActive(id: ID | undefined) {
     if (id === this._value().active) return;
     isDev() && __globalState.setAction({ type: 'Set Active Entity', entityId: id });
     this.setState(state => {
