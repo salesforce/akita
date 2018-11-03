@@ -1,3 +1,10 @@
+# [1.15.0](https://github.com/datorama/akita/compare/v1.14.0...v1.15.0) (2018-11-03)
+
+
+### Features
+
+* **akita:** upgrade to ng7 and ts3 ([17a7a95](https://github.com/datorama/akita/commit/17a7a95))
+
 # [1.14.0](https://github.com/datorama/akita/compare/v1.13.1...v1.14.0) (2018-10-31)
 
 
