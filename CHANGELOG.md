@@ -1,3 +1,10 @@
+## [1.15.1](https://github.com/datorama/akita/compare/v1.15.0...v1.15.1) (2018-11-03)
+
+
+### Bug Fixes
+
+* **schematics:** upgrade libs version ([70468b0](https://github.com/datorama/akita/commit/70468b0))
+
 # [1.15.0](https://github.com/datorama/akita/compare/v1.14.0...v1.15.0) (2018-11-03)
 
 
