@@ -62,6 +62,8 @@ export class Store<S> {
 
   private _isPristine = true;
 
+  private _initialState: S;
+
   /**
    *
    * Initial the store with the state
@@ -69,6 +71,7 @@ export class Store<S> {
   constructor(initialState) {
     __globalState.setAction({ type: '@@INIT' });
     __stores__[this.storeName] = this;
+    __stores__[this.storeName]._initialState = initialState;
     this.setState(() => initialState);
     rootDispatcher.next({
       type: Actions.NEW_STORE,
@@ -127,6 +130,10 @@ export class Store<S> {
     return this._isPristine;
   }
 
+  get initialState() {
+    return this._initialState;
+  }
+
   /**
    * `setState()` is the only way to update a store; It receives a callback function,
    * which gets the current state, and returns a new immutable state,
@@ -169,6 +176,7 @@ export class Store<S> {
     this.setState(state => {
       let value = isFunction(newStateOrId) ? newStateOrId(state) : newStateOrId;
       let merged = Object.assign({}, state, value);
+      console.log(isPlainObject(state) ? merged : new (state as any).constructor(merged));
       return isPlainObject(state) ? merged : new (state as any).constructor(merged);
     });
     this.setDirty();
