@@ -62,6 +62,8 @@ export class Store<S> {
 
   private _isPristine = true;
 
+  private _initialState: S;
+
   /**
    *
    * Initial the store with the state
@@ -69,6 +71,7 @@ export class Store<S> {
   constructor(initialState) {
     __globalState.setAction({ type: '@@INIT' });
     __stores__[this.storeName] = this;
+    __stores__[this.storeName]._initialState = initialState;
     this.setState(() => initialState);
     rootDispatcher.next({
       type: Actions.NEW_STORE,
@@ -125,6 +128,10 @@ export class Store<S> {
 
   get isPristine() {
     return this._isPristine;
+  }
+
+  get initialState() {
+    return this._initialState;
   }
 
   /**
