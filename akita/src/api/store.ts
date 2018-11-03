@@ -176,7 +176,6 @@ export class Store<S> {
     this.setState(state => {
       let value = isFunction(newStateOrId) ? newStateOrId(state) : newStateOrId;
       let merged = Object.assign({}, state, value);
-      console.log(isPlainObject(state) ? merged : new (state as any).constructor(merged));
       return isPlainObject(state) ? merged : new (state as any).constructor(merged);
     });
     this.setDirty();
