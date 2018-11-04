@@ -48,7 +48,10 @@ export interface ResetStoresParams {
   exclude: string[];
 }
 
-
+/**
+ *
+ * @param options
+ */
 export function resetStores(options?: Partial<ResetStoresParams>) {
 
   const defaults: ResetStoresParams = {
