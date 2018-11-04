@@ -62,12 +62,15 @@ export class Store<S> {
 
   private _isPristine = true;
 
+  private _initialState: S;
+
   /**
    *
    * Initial the store with the state
    */
   constructor(initialState) {
     __globalState.setAction({ type: '@@INIT' });
+    this._initialState = initialState;
     __stores__[this.storeName] = this;
     this.setState(() => initialState);
     rootDispatcher.next({
@@ -152,6 +155,15 @@ export class Store<S> {
     }
 
     this.dispatch(this.storeValue, _rootDispatcher);
+  }
+
+  /**
+   * Resets the store to it's initial state and set the store to a pristine state.
+   */
+  reset() {
+    __globalState.setAction({ type: 'Reset Store' });
+    this.setState(() => Object.assign({}, this._initialState));
+    this.setPristine();
   }
 
   /**
