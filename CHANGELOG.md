@@ -1,3 +1,15 @@
+# [1.16.0](https://github.com/datorama/akita/compare/v1.15.1...v1.16.0) (2018-11-04)
+
+
+### Bug Fixes
+
+* **dirty-check:** remove type ([ca9e3d3](https://github.com/datorama/akita/commit/ca9e3d3))
+
+
+### Features
+
+* **dirty-check:** add the ability to subscribe to reset event ([9266b0e](https://github.com/datorama/akita/commit/9266b0e))
+
 ## [1.15.1](https://github.com/datorama/akita/compare/v1.15.0...v1.15.1) (2018-11-03)
 
 
