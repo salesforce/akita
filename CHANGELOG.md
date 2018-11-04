@@ -1,3 +1,14 @@
+# [1.17.0](https://github.com/datorama/akita/compare/v1.16.0...v1.17.0) (2018-11-04)
+
+
+### Features
+
+* **akita:** fixed global action name, removed unused imports ([8a11ed1](https://github.com/datorama/akita/commit/8a11ed1))
+* **akita:** reset single store, resetStore reset all stores ([0175cef](https://github.com/datorama/akita/commit/0175cef))
+* **akita:** resetStores func ([43601af](https://github.com/datorama/akita/commit/43601af))
+* **akita:** resetStores func ([cec89c9](https://github.com/datorama/akita/commit/cec89c9))
+* **akita:** resetStores func ([df5e39d](https://github.com/datorama/akita/commit/df5e39d))
+
 # [1.16.0](https://github.com/datorama/akita/compare/v1.15.1...v1.16.0) (2018-11-04)
 
 
