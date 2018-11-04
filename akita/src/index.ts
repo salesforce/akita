@@ -13,6 +13,7 @@ export * from './api/memoize';
 export * from './api/snapshot-manager';
 export * from './api/store-config';
 export * from './api/query-config';
+export * from './api/config';
 export * from './internal/sort';
 export * from './plugins/plugin';
 export * from './plugins/paginator/paginator-plugin';
