@@ -1,5 +1,6 @@
 import { isNumber } from '../internal/utils';
 import { __stores__ } from './store';
+import { applyTransaction } from './transaction';
 
 /**
  * @example
@@ -48,21 +49,25 @@ export interface ResetStoresParams {
 }
 
 
-export function resetStores(params?: Partial<ResetStoresParams>) {
+export function resetStores(options?: Partial<ResetStoresParams>) {
 
   const defaults: ResetStoresParams = {
     exclude: []
   };
 
-  const { exclude } = Object.assign({}, defaults, params);
-  let stores = Object.keys(__stores__);
+  options = Object.assign({}, defaults, options);
+  const stores = Object.keys(__stores__);
 
-  if (exclude.length > 0) {
-    stores = stores.filter(key => !params.exclude.includes(key))
-  }
-
-  stores.forEach(storeName => {
-    __stores__[storeName].setState(() => ({ ...__stores__[storeName].initialState }));
-    __stores__[storeName].setPristine();
+  applyTransaction(() => {
+    for (const store of stores) {
+      const s = __stores__[store];
+      if (!options.exclude) {
+        s.reset();
+      } else {
+        if (options.exclude.indexOf(s.storeName) === -1) {
+          s.reset();
+        }
+      }
+    }
   });
 }

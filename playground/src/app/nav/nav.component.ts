@@ -3,6 +3,7 @@ import { CartQuery } from '../cart/state';
 import { Observable } from 'rxjs';
 import { AuthQuery, AuthService } from '../auth/state';
 import { Router } from '@angular/router';
+import { resetStores } from '../../../../akita/index';
 
 @Component({
   selector: 'app-nav',
@@ -11,6 +12,7 @@ import { Router } from '@angular/router';
       <div class="nav-wrapper cyan lighten-2">
         <a class="brand-logo" routerLink="/">Akita Store</a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li><a (click)="resetStores()">Reset Stores</a></li>
           <li *ngIf="isLoggedIn$ | async"><a (click)="logout()">Logout</a></li>
           <li *ngFor="let item of navItems">
             <a routerLinkActive="blue-text text-lighten-2" [routerLink]="item.toLowerCase()">{{item}}</a>
@@ -34,5 +36,9 @@ export class NavComponent {
   logout() {
     this.authService.logout();
     this.router.navigateByUrl('login');
+  }
+
+  resetStores() {
+    resetStores();
   }
 }

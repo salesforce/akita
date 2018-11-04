@@ -70,8 +70,8 @@ export class Store<S> {
    */
   constructor(initialState) {
     __globalState.setAction({ type: '@@INIT' });
+    this._initialState = initialState;
     __stores__[this.storeName] = this;
-    __stores__[this.storeName]._initialState = initialState;
     this.setState(() => initialState);
     rootDispatcher.next({
       type: Actions.NEW_STORE,
@@ -130,10 +130,6 @@ export class Store<S> {
     return this._isPristine;
   }
 
-  get initialState() {
-    return this._initialState;
-  }
-
   /**
    * `setState()` is the only way to update a store; It receives a callback function,
    * which gets the current state, and returns a new immutable state,
@@ -159,6 +155,15 @@ export class Store<S> {
     }
 
     this.dispatch(this.storeValue, _rootDispatcher);
+  }
+
+  /**
+   * Resets the store to it's initial state and set the store to a pristine state.
+   */
+  reset() {
+    __globalState.setAction({ type: 'Update Store' });
+    this.setState(() => Object.assign({}, this._initialState));
+    this.setPristine();
   }
 
   /**
