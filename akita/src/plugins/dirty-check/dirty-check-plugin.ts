@@ -1,6 +1,6 @@
 import { AkitaPlugin, Queries } from '../plugin';
 import { QueryEntity } from '../../api/query-entity';
-import { Observable, BehaviorSubject, Subscription, merge } from 'rxjs';
+import { Observable, BehaviorSubject, Subscription, merge, Subject } from 'rxjs';
 import { distinctUntilChanged, map, skip } from 'rxjs/operators';
 import { coerceArray, isFunction, isUndefined, toBoolean } from '../../internal/utils';
 import { EntityParam } from '../entity-collection-plugin';
@@ -27,8 +27,10 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
   private dirty = new BehaviorSubject(false);
   private subscription: Subscription;
   private active = false;
+  private _reset = new Subject();
 
   isDirty$: Observable<boolean> = this.dirty.asObservable().pipe(distinctUntilChanged());
+  reset$: Observable<void> = this._reset.asObservable();
 
   constructor(protected query: Queries<Entity, StoreState>, private params?: DirtyCheckParams, private _entityId?: EntityParam) {
     super(query);
@@ -80,6 +82,7 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
     if (update) {
       __globalState.setCustomAction({ type: `@DirtyCheck - Revert` });
       this.updateStore(currentValue, this._entityId);
+      this._reset.next();
     }
   }
 
