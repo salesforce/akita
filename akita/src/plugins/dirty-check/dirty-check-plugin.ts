@@ -30,7 +30,7 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
   private _reset = new Subject();
 
   isDirty$: Observable<boolean> = this.dirty.asObservable().pipe(distinctUntilChanged());
-  reset$: Observable<void> = this._reset.asObservable();
+  reset$ = this._reset.asObservable();
 
   constructor(protected query: Queries<Entity, StoreState>, private params?: DirtyCheckParams, private _entityId?: EntityParam) {
     super(query);
