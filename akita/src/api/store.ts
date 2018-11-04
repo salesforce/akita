@@ -161,7 +161,7 @@ export class Store<S> {
    * Resets the store to it's initial state and set the store to a pristine state.
    */
   reset() {
-    __globalState.setAction({ type: 'Update Store' });
+    __globalState.setAction({ type: 'Reset Store' });
     this.setState(() => Object.assign({}, this._initialState));
     this.setPristine();
   }

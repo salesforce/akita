@@ -2,7 +2,6 @@ import { EntityStore } from '../src/api/entity-store';
 import { Store } from '../src/api/store';
 import { resetStores } from '../src/api/store-utils';
 import { StoreConfig } from '../src/api/store-config';
-import { todosStore } from '../../playground-react/src/todos/state/todos.store';
 
 @StoreConfig({
     name: 'todos'
