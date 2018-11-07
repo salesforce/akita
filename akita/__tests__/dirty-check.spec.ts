@@ -135,6 +135,35 @@ describe('DirtyCheck', () => {
         const hasHead = dirtyCheck.hasHead();
         expect(hasHead).toBeFalsy();
       });
+
+      describe('dirtyPath',()=>{
+        const widgetsStore = new WidgetsStore({ some: { nested: { value: '' } } });
+        const widgetsQuery = new WidgetsQuery(widgetsStore);
+        const dirtyCheck = new DirtyCheckPlugin(widgetsQuery).setHead();
+        it('should not return dirty for isPathDirty', function() {
+          let isPathDirty: boolean;
+          dirtyCheck.setHead();
+          const firstWidget = createWidget();
+          widgetsStore.add(firstWidget);
+          isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
+          expect(isPathDirty).toBeFalsy();
+        });
+
+        it('should return dirty for isPathDirty', function() {
+          let isPathDirty: boolean;
+          dirtyCheck.setHead();
+          widgetsStore.updateRoot({
+            some: {
+              nested: {
+                value: 'some other name'
+              }
+            }
+          });
+
+          isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
+          expect(isPathDirty).toBeTruthy();
+        });
+      })
     });
   });
 
@@ -290,6 +319,32 @@ describe('DirtyCheckEntity', () => {
       widgetsStore.add(widget);
       expect(collection.hasHead(widget.id)).toBeTruthy();
     });
+
+    describe('dirtyPath',()=>{
+      it('should not return dirty for isPathDirty', function() {
+        let isPathDirty: boolean;
+        const firstWidget = createWidget();
+        widgetsStore.add(firstWidget);
+        isPathDirty = collection.isPathDirty(firstWidget.id, 'title');
+        expect(isPathDirty).toBeFalsy();
+      });
+
+      it('should return dirty for isPathDirty', function() {
+        let isPathDirty: boolean;
+        let widget = createWidget();
+        widgetsStore.add(widget);
+
+        widgetsStore.update(widget.id, {
+          ...widget,
+          title: 'some other name'
+        });
+
+        isPathDirty = collection.isPathDirty(widget.id, 'title');
+        expect(isPathDirty).toBeTruthy();
+      });
+    });
+
+
   });
 
   describe('Passing ids', () => {
