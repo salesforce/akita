@@ -1,6 +1,6 @@
 import { AkitaPlugin, Queries } from '../plugin';
 import { QueryEntity } from '../../api/query-entity';
-import { BehaviorSubject, merge, Observable, Subscription } from 'rxjs';
+import { Observable, BehaviorSubject, Subscription, merge, Subject } from 'rxjs';
 import { distinctUntilChanged, map, skip } from 'rxjs/operators';
 import { coerceArray, isFunction, isUndefined, toBoolean } from '../../internal/utils';
 import { EntityParam } from '../entity-collection-plugin';
@@ -27,11 +27,14 @@ export type DirtyCheckResetParams<StoreState = any> = {
 };
 
 export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugin<Entity, StoreState> {
-  head: StoreState | Partial<StoreState> | Entity;
+  private head: StoreState | Partial<StoreState> | Entity;
   private dirty = new BehaviorSubject(false);
-  isDirty$: Observable<boolean> = this.dirty.asObservable().pipe(distinctUntilChanged());
   private subscription: Subscription;
   private active = false;
+  private _reset = new Subject();
+
+  isDirty$: Observable<boolean> = this.dirty.asObservable().pipe(distinctUntilChanged());
+  reset$ = this._reset.asObservable();
 
   constructor(protected query: Queries<Entity, StoreState>, private params?: DirtyCheckParams, private _entityId?: EntityParam) {
     super(query);
@@ -44,6 +47,29 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
       }
       this.params.watchProperty = watchProp;
     }
+  }
+
+  protected getHead() {
+    return this.head;
+  }
+
+  private activate() {
+    this.head = this._getHead();
+    /** if we are tracking specific properties select only the relevant ones */
+    const source = this.params.watchProperty
+      ? (this.params.watchProperty as (keyof StoreState)[]).map(prop => this.query.select(state => state[prop]).pipe(map(val => ({ val, __akitaKey: prop }))))
+      : [this.selectSource(this._entityId)];
+    this.subscription = merge(...source)
+      .pipe(skip(1))
+      .subscribe((currentState: any) => {
+        if (isUndefined(this.head)) return;
+        /** __akitaKey is used to determine if we are tracking a specific property or a store change */
+        const head = currentState.__akitaKey ? this.head[currentState.__akitaKey as any] : this.head;
+        const compareTo = currentState.__akitaKey ? currentState.val : currentState;
+        const isChange = this.params.comparator(head, compareTo);
+
+        this.updateDirtiness(isChange);
+      });
   }
 
   reset(params: DirtyCheckResetParams = {}) {
@@ -60,6 +86,7 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
     if (update) {
       __globalState.setCustomAction({ type: `@DirtyCheck - Revert` });
       this.updateStore(currentValue, this._entityId);
+      this._reset.next();
     }
   }
 
@@ -87,7 +114,11 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
     this.subscription && this.subscription.unsubscribe();
   }
 
-  _getHead(): Partial<StoreState> | StoreState {
+  private updateDirtiness(isDirty: boolean) {
+    this.dirty.next(isDirty);
+  }
+
+  private _getHead(): Partial<StoreState> | StoreState {
     let head: StoreState | Partial<StoreState> = this.getSource(this._entityId) as StoreState;
     if (this.params.watchProperty) {
       head = (this.params.watchProperty as (keyof StoreState)[]).reduce(
@@ -113,40 +144,6 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
       } catch (e) {
         return null;
       }
-  }
-
-  protected getHead() {
-    return this.head;
-  }
-
-  private activate() {
-    this.head = this._getHead();
-    /** if we are tracking specific properties select only the relevant ones */
-    const source = this.params.watchProperty
-      ? (this.params.watchProperty as (keyof StoreState)[]).map(prop =>
-          this.query.select(state => state[prop]).pipe(
-            map(val => ({
-              val,
-              __akitaKey: prop
-            }))
-          )
-        )
-      : [this.selectSource(this._entityId)];
-    this.subscription = merge(...source)
-      .pipe(skip(1))
-      .subscribe((currentState: any) => {
-        if (isUndefined(this.head)) return;
-        /** __akitaKey is used to determine if we are tracking a specific property or a store change */
-        const head = currentState.__akitaKey ? this.head[currentState.__akitaKey as any] : this.head;
-        const compareTo = currentState.__akitaKey ? currentState.val : currentState;
-        const isChange = this.params.comparator(head, compareTo);
-
-        this.updateDirtiness(isChange);
-      });
-  }
-
-  private updateDirtiness(isDirty: boolean) {
-    this.dirty.next(isDirty);
   }
 
   private compareProp(currentState: Partial<StoreState>): boolean {
