@@ -1,6 +1,6 @@
 import { AkitaPlugin, Queries } from '../plugin';
 import { QueryEntity } from '../../api/query-entity';
-import { Observable, BehaviorSubject, Subscription, merge, Subject } from 'rxjs';
+import { BehaviorSubject, merge, Observable, Subject, Subscription } from 'rxjs';
 import { distinctUntilChanged, map, skip } from 'rxjs/operators';
 import { coerceArray, isFunction, isUndefined, toBoolean } from '../../internal/utils';
 import { EntityParam } from '../entity-collection-plugin';
@@ -18,8 +18,9 @@ export const dirtyCheckDefaultParams = {
   comparator: (head, current) => JSON.stringify(head) !== JSON.stringify(current)
 };
 
-export function getNestedObject (nestedObj, pathArr) {
-  return pathArr.reduce((obj, key) => (obj && obj[key] !== 'undefined' ? obj[key] : undefined), nestedObj);
+export function getNestedPath(nestedObj, path: string) {
+  const pathAsArray: string[] = path.split('.');
+  return pathAsArray.reduce((obj, key) => (obj && obj[key] !== 'undefined' ? obj[key] : undefined), nestedObj);
 }
 
 export type DirtyCheckResetParams<StoreState = any> = {
@@ -29,11 +30,10 @@ export type DirtyCheckResetParams<StoreState = any> = {
 export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugin<Entity, StoreState> {
   private head: StoreState | Partial<StoreState> | Entity;
   private dirty = new BehaviorSubject(false);
+  isDirty$: Observable<boolean> = this.dirty.asObservable().pipe(distinctUntilChanged());
   private subscription: Subscription;
   private active = false;
   private _reset = new Subject();
-
-  isDirty$: Observable<boolean> = this.dirty.asObservable().pipe(distinctUntilChanged());
   reset$ = this._reset.asObservable();
 
   constructor(protected query: Queries<Entity, StoreState>, private params?: DirtyCheckParams, private _entityId?: EntityParam) {
@@ -47,29 +47,6 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
       }
       this.params.watchProperty = watchProp;
     }
-  }
-
-  protected getHead() {
-    return this.head;
-  }
-
-  private activate() {
-    this.head = this._getHead();
-    /** if we are tracking specific properties select only the relevant ones */
-    const source = this.params.watchProperty
-      ? (this.params.watchProperty as (keyof StoreState)[]).map(prop => this.query.select(state => state[prop]).pipe(map(val => ({ val, __akitaKey: prop }))))
-      : [this.selectSource(this._entityId)];
-    this.subscription = merge(...source)
-      .pipe(skip(1))
-      .subscribe((currentState: any) => {
-        if (isUndefined(this.head)) return;
-        /** __akitaKey is used to determine if we are tracking a specific property or a store change */
-        const head = currentState.__akitaKey ? this.head[currentState.__akitaKey as any] : this.head;
-        const compareTo = currentState.__akitaKey ? currentState.val : currentState;
-        const isChange = this.params.comparator(head, compareTo);
-
-        this.updateDirtiness(isChange);
-      });
   }
 
   reset(params: DirtyCheckResetParams = {}) {
@@ -114,6 +91,41 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
     this.subscription && this.subscription.unsubscribe();
   }
 
+  isPathDirty(path: string) {
+    const head = this.getHead();
+    const current = (this.getQuery() as Query<StoreState>).getSnapshot();
+      const currentPathValue = getNestedPath(current, path);
+      const headPathValue = getNestedPath(head, path);
+
+      return this.params.comparator(currentPathValue, headPathValue);
+  }
+
+  protected getHead() {
+    return this.head;
+  }
+
+  private activate() {
+    this.head = this._getHead();
+    /** if we are tracking specific properties select only the relevant ones */
+    const source = this.params.watchProperty
+      ? (this.params.watchProperty as (keyof StoreState)[]).map(prop => this.query.select(state => state[prop]).pipe(map(val => ({
+        val,
+        __akitaKey: prop
+      }))))
+      : [this.selectSource(this._entityId)];
+    this.subscription = merge(...source)
+      .pipe(skip(1))
+      .subscribe((currentState: any) => {
+        if (isUndefined(this.head)) return;
+        /** __akitaKey is used to determine if we are tracking a specific property or a store change */
+        const head = currentState.__akitaKey ? this.head[currentState.__akitaKey as any] : this.head;
+        const compareTo = currentState.__akitaKey ? currentState.val : currentState;
+        const isChange = this.params.comparator(head, compareTo);
+
+        this.updateDirtiness(isChange);
+      });
+  }
+
   private updateDirtiness(isDirty: boolean) {
     this.dirty.next(isDirty);
   }
@@ -130,20 +142,6 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
       );
     }
     return head;
-  }
-
-  isPathDirty(path: string) {
-      const head = this.getHead();
-      const current = (this.getQuery() as Query<StoreState>).getSnapshot();
-      const pathAsArray: string[] = path.split('.');
-      try {
-        const currentPathValue = getNestedObject(current, pathAsArray);
-        const headPathValue = getNestedObject(head, pathAsArray);
-
-        return this.params.comparator(currentPathValue, headPathValue);
-      } catch (e) {
-        return null;
-      }
   }
 
   private compareProp(currentState: Partial<StoreState>): boolean {

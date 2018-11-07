@@ -139,7 +139,7 @@ describe('DirtyCheck', () => {
       describe('dirtyPath',()=>{
         const widgetsStore = new WidgetsStore({ some: { nested: { value: '' } } });
         const widgetsQuery = new WidgetsQuery(widgetsStore);
-        const dirtyCheck = new DirtyCheckPlugin(widgetsQuery).setHead();
+        const dirtyCheck = new DirtyCheckPlugin(widgetsQuery);
         it('should not return dirty for isPathDirty', function() {
           let isPathDirty: boolean;
           dirtyCheck.setHead();

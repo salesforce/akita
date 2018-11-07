@@ -4,7 +4,7 @@ import {
   dirtyCheckDefaultParams,
   DirtyCheckPlugin,
   DirtyCheckResetParams,
-  getNestedObject
+  getNestedPath
 } from './dirty-check-plugin';
 import { QueryEntity } from '../../api/query-entity';
 import { EntityCollectionPlugin } from '../entity-collection-plugin';
@@ -78,15 +78,10 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
     if (this.entities.has(id)) {
       const head = (this.getEntity(id) as any).getHead();
       const current = this.query.getEntity(id);
-      const pathAsArray: string[] = path.split('.');
-      try {
-        const currentPathValue = getNestedObject(current, pathAsArray);
-        const headPathValue = getNestedObject(head, pathAsArray);
+      const currentPathValue = getNestedPath(current, path);
+      const headPathValue = getNestedPath(head, path);
 
-        return this.params.comparator(currentPathValue, headPathValue);
-      } catch (e) {
-        return null;
-      }
+      return this.params.comparator(currentPathValue, headPathValue);
     }
 
     return null;
