@@ -1,3 +1,10 @@
+# [1.19.0](https://github.com/datorama/akita/compare/v1.18.0...v1.19.0) (2018-11-11)
+
+
+### Features
+
+* **active-entity:** add the ability to explicitly set the active type ([1a6365d](https://github.com/datorama/akita/commit/1a6365d)), closes [#112](https://github.com/datorama/akita/issues/112)
+
 # [1.18.0](https://github.com/datorama/akita/compare/v1.17.0...v1.18.0) (2018-11-10)
 
 
