@@ -1,9 +1,8 @@
 import { Subject } from 'rxjs';
-import { ID } from '../api/types';
 
 export type Action = {
   type: string;
-  entityId?: ID[] | ID;
+  entityId?: any[] | any;
   payload?: any;
 };
 
