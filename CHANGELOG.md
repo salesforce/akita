@@ -1,3 +1,10 @@
+# [1.18.0](https://github.com/datorama/akita/compare/v1.17.0...v1.18.0) (2018-11-10)
+
+
+### Features
+
+* **schematics:** add prompts ([99be7ab](https://github.com/datorama/akita/commit/99be7ab))
+
 # [1.17.0](https://github.com/datorama/akita/compare/v1.16.0...v1.17.0) (2018-11-04)
 
 
