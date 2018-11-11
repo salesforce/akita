@@ -18,14 +18,14 @@ export interface SelectOptions<E> extends SortByOptions<E> {
 /**
  *  An abstraction for querying the entities from the store
  */
-export class QueryEntity<S extends EntityState, E> extends Query<S> {
-  protected store: EntityStore<S, E>;
+export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Query<S> {
+  protected store: EntityStore<S, E, ActiveEntity>;
   private memoized;
 
   /** Use only for internal plugins like Pagination - don't use this property **/
   __store__;
 
-  constructor(store: EntityStore<S, E>) {
+  constructor(store: EntityStore<S, E, ActiveEntity>) {
     super(store);
     this.__store__ = store;
   }
@@ -50,8 +50,7 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
     const selectState$ = this.select(state => state);
     const selectEntities$ = this.select(state => state.entities);
 
-    options.sortBy = options.sortBy || (this.config && (this.config.sortBy as SortBy<E>));
-    options.sortByOrder = options.sortByOrder || (this.config && this.config.sortByOrder);
+    this.sortByOptions(options);
 
     return selectEntities$.pipe(
       withLatestFrom(selectState$, (entities: HashMap<E>, state: S) => {
@@ -91,6 +90,8 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
       return toMap(state.ids, state.entities, options, true);
     }
 
+    this.sortByOptions(options);
+
     return toArray(state, options);
   }
 
@@ -100,7 +101,7 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
    * @example
    * this.store.selectMany([1,2]);
    */
-  selectMany(ids: ID[], options: { filterUndefined?: boolean } = {}): Observable<E[]> {
+  selectMany(ids: ActiveEntity[], options: { filterUndefined?: boolean } = {}): Observable<E[]> {
     const filterUndefined = isUndefined(options.filterUndefined) ? true : options.filterUndefined;
     const entities = ids.map(id => this.selectEntity(id));
 
@@ -120,9 +121,9 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
    * this.pagesStore.selectEntity(1, entity => entity.config.date)
    *
    */
-  selectEntity<R>(id: ID): Observable<E>;
-  selectEntity<R>(id: ID, project: (entity: E) => R): Observable<R>;
-  selectEntity<R>(id: ID, project?: (entity: E) => R): Observable<R | E> {
+  selectEntity<R>(id: ActiveEntity): Observable<E>;
+  selectEntity<R>(id: ActiveEntity, project: (entity: E) => R): Observable<R>;
+  selectEntity<R>(id: ActiveEntity, project?: (entity: E) => R): Observable<R | E> {
     if (!project) {
       return this._byId(id);
     }
@@ -142,22 +143,22 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
    * @example
    * this.store.getEntity(1);
    */
-  getEntity(id: ID): E {
-    return this.getSnapshot().entities[id];
+  getEntity(id: ActiveEntity): E {
+    return this.getSnapshot().entities[id as any];
   }
 
   /**
    * Select the active entity's id.
    */
-  selectActiveId(): Observable<ID> {
-    return this.select(state => (state as S & ActiveState).active);
+  selectActiveId(): Observable<ActiveEntity> {
+    return this.select(state => (state as S & ActiveState<ActiveEntity>).active);
   }
 
   /**
    * Get the active id
    */
-  getActiveId(): ID {
-    return (this.getSnapshot() as S & ActiveState).active;
+  getActiveId(): ActiveEntity {
+    return (this.getSnapshot() as S & ActiveState<ActiveEntity>).active;
   }
 
   /**
@@ -173,7 +174,7 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
    * Get the active entity.
    */
   getActive(): E {
-    const activeId: ID = this.getActiveId();
+    const activeId: ActiveEntity = this.getActiveId();
     return toBoolean(activeId) ? this.getEntity(activeId) : undefined;
   }
 
@@ -203,13 +204,19 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
   /**
    * Returns whether entity exists.
    */
-  hasEntity(id: ID): boolean;
+  hasEntity(id: ActiveEntity): boolean;
+  hasEntity(id: ActiveEntity[]): boolean;
   hasEntity(project: (entity: E) => boolean): boolean;
-  hasEntity(projectOrId: any): boolean {
-    if (isFunction(projectOrId)) {
-      return this.getAll().some(projectOrId);
+  hasEntity(projectOrIds: ActiveEntity | ActiveEntity[] | ((entity: E) => boolean)): boolean {
+    if (isFunction(projectOrIds)) {
+      return this.getAll().some(projectOrIds);
     }
-    return projectOrId in this.store.entities;
+
+    if (Array.isArray(projectOrIds)) {
+      return projectOrIds.every(id => (id as any) in this.store.entities);
+    }
+
+    return (projectOrIds as any) in this.store.entities;
   }
 
   /**
@@ -223,8 +230,13 @@ export class QueryEntity<S extends EntityState, E> extends Query<S> {
     return this.getSnapshot().ids.length === 0;
   }
 
-  private _byId(id: ID): Observable<E> {
+  private _byId(id: ActiveEntity): Observable<E> {
     return this.select(state => this.getEntity(id));
+  }
+
+  private sortByOptions(options) {
+    options.sortBy = options.sortBy || (this.config && (this.config.sortBy as SortBy<E>));
+    options.sortByOrder = options.sortByOrder || (this.config && this.config.sortByOrder);
   }
 
   ngOnDestroy() {
@@ -263,7 +275,7 @@ function toArray<E, S extends EntityState>(state: S, options: SelectOptions<E>):
   return length === arr.length ? arr : arr.slice(0, length);
 }
 
-function toMap<E>(ids: ID[], entities: HashMap<E>, options: SelectOptions<E>, get = false): HashMap<E> {
+function toMap<E>(ids: any[], entities: HashMap<E>, options: SelectOptions<E>, get = false): HashMap<E> {
   const map = {};
   const { filterBy, limitTo } = options;
 

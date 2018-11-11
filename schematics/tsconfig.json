@@ -18,7 +18,7 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "sourceMap": true,
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "target": "es6",
     "types": [
       "jasmine",

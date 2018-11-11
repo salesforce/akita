@@ -30,10 +30,11 @@ export type DirtyCheckResetParams<StoreState = any> = {
 export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugin<Entity, StoreState> {
   private head: StoreState | Partial<StoreState> | Entity;
   private dirty = new BehaviorSubject(false);
-  isDirty$: Observable<boolean> = this.dirty.asObservable().pipe(distinctUntilChanged());
   private subscription: Subscription;
   private active = false;
   private _reset = new Subject();
+
+  isDirty$: Observable<boolean> = this.dirty.asObservable().pipe(distinctUntilChanged());
   reset$ = this._reset.asObservable();
 
   constructor(protected query: Queries<Entity, StoreState>, private params?: DirtyCheckParams, private _entityId?: EntityParam) {
@@ -94,10 +95,10 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
   isPathDirty(path: string) {
     const head = this.getHead();
     const current = (this.getQuery() as Query<StoreState>).getSnapshot();
-      const currentPathValue = getNestedPath(current, path);
-      const headPathValue = getNestedPath(head, path);
+    const currentPathValue = getNestedPath(current, path);
+    const headPathValue = getNestedPath(head, path);
 
-      return this.params.comparator(currentPathValue, headPathValue);
+    return this.params.comparator(currentPathValue, headPathValue);
   }
 
   protected getHead() {
@@ -108,10 +109,14 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
     this.head = this._getHead();
     /** if we are tracking specific properties select only the relevant ones */
     const source = this.params.watchProperty
-      ? (this.params.watchProperty as (keyof StoreState)[]).map(prop => this.query.select(state => state[prop]).pipe(map(val => ({
-        val,
-        __akitaKey: prop
-      }))))
+      ? (this.params.watchProperty as (keyof StoreState)[]).map(prop =>
+          this.query.select(state => state[prop]).pipe(
+            map(val => ({
+              val,
+              __akitaKey: prop
+            }))
+          )
+        )
       : [this.selectSource(this._entityId)];
     this.subscription = merge(...source)
       .pipe(skip(1))

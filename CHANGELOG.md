@@ -1,3 +1,100 @@
+# [1.19.0](https://github.com/datorama/akita/compare/v1.18.0...v1.19.0) (2018-11-11)
+
+
+### Features
+
+* **active-entity:** add the ability to explicitly set the active type ([1a6365d](https://github.com/datorama/akita/commit/1a6365d)), closes [#112](https://github.com/datorama/akita/issues/112)
+
+# [1.18.0](https://github.com/datorama/akita/compare/v1.17.0...v1.18.0) (2018-11-10)
+
+
+### Features
+
+* **schematics:** add prompts ([99be7ab](https://github.com/datorama/akita/commit/99be7ab))
+
+# [1.17.0](https://github.com/datorama/akita/compare/v1.16.0...v1.17.0) (2018-11-04)
+
+
+### Features
+
+* **akita:** fixed global action name, removed unused imports ([8a11ed1](https://github.com/datorama/akita/commit/8a11ed1))
+* **akita:** reset single store, resetStore reset all stores ([0175cef](https://github.com/datorama/akita/commit/0175cef))
+* **akita:** resetStores func ([43601af](https://github.com/datorama/akita/commit/43601af))
+* **akita:** resetStores func ([cec89c9](https://github.com/datorama/akita/commit/cec89c9))
+* **akita:** resetStores func ([df5e39d](https://github.com/datorama/akita/commit/df5e39d))
+
+# [1.16.0](https://github.com/datorama/akita/compare/v1.15.1...v1.16.0) (2018-11-04)
+
+
+### Bug Fixes
+
+* **dirty-check:** remove type ([ca9e3d3](https://github.com/datorama/akita/commit/ca9e3d3))
+
+
+### Features
+
+* **dirty-check:** add the ability to subscribe to reset event ([9266b0e](https://github.com/datorama/akita/commit/9266b0e))
+
+## [1.15.1](https://github.com/datorama/akita/compare/v1.15.0...v1.15.1) (2018-11-03)
+
+
+### Bug Fixes
+
+* **schematics:** upgrade libs version ([70468b0](https://github.com/datorama/akita/commit/70468b0))
+
+# [1.15.0](https://github.com/datorama/akita/compare/v1.14.0...v1.15.0) (2018-11-03)
+
+
+### Features
+
+* **akita:** upgrade to ng7 and ts3 ([17a7a95](https://github.com/datorama/akita/commit/17a7a95))
+
+# [1.14.0](https://github.com/datorama/akita/compare/v1.13.1...v1.14.0) (2018-10-31)
+
+
+### Bug Fixes
+
+* **entity store:** change type and update test for add option ([5ef1776](https://github.com/datorama/akita/commit/5ef1776))
+* **entity store:** change type of AddParams and add default value ([1b2eeba](https://github.com/datorama/akita/commit/1b2eeba))
+* **entity store:** fix test issue ([736a53f](https://github.com/datorama/akita/commit/736a53f))
+* **entity store:** update test and default case for prepend add ([4d9d91f](https://github.com/datorama/akita/commit/4d9d91f))
+* **entity store:** update test for prepend add ([07822ae](https://github.com/datorama/akita/commit/07822ae))
+
+
+### Features
+
+* **entity store:** allow prepend option when adding ([2c4708d](https://github.com/datorama/akita/commit/2c4708d))
+* **entity store:** rename prepend params to options ([6da7837](https://github.com/datorama/akita/commit/6da7837))
+
+## [1.13.1](https://github.com/datorama/akita/compare/v1.13.0...v1.13.1) (2018-10-31)
+
+
+### Bug Fixes
+
+* **query-entity:** sortby should work with getall ([75ed1b7](https://github.com/datorama/akita/commit/75ed1b7)), closes [#102](https://github.com/datorama/akita/issues/102)
+
+# [1.13.0](https://github.com/datorama/akita/compare/v1.12.5...v1.13.0) (2018-10-30)
+
+
+### Features
+
+* **entity-query:** hasEntity can take an array of ids ([7404dc5](https://github.com/datorama/akita/commit/7404dc5))
+
+## [1.12.5](https://github.com/datorama/akita/compare/v1.12.4...v1.12.5) (2018-10-29)
+
+
+### Bug Fixes
+
+* **crud-update:** use new state constructor instead of the old state ([f8ae5a1](https://github.com/datorama/akita/commit/f8ae5a1))
+
+## [1.12.4](https://github.com/datorama/akita/compare/v1.12.3...v1.12.4) (2018-10-29)
+
+
+### Bug Fixes
+
+* **crud-update:** use new state constructor instead of the old state ([0bc3104](https://github.com/datorama/akita/commit/0bc3104))
+* **crud-update:** use new state constructor instead of the old state ([e177ed6](https://github.com/datorama/akita/commit/e177ed6))
+
 ## [1.12.3](https://github.com/datorama/akita/compare/v1.12.2...v1.12.3) (2018-10-24)
 
 

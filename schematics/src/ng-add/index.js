@@ -4,30 +4,33 @@ const schematics_1 = require("@angular-devkit/schematics");
 const schematics_utilities_1 = require("schematics-utilities");
 const tasks_1 = require("@angular-devkit/schematics/tasks");
 const ts = require("typescript");
+const utils_1 = require("./utils");
 function addPackageJsonDependencies(options) {
     return (host, context) => {
         const dependencies = [
             {
                 type: schematics_utilities_1.NodeDependencyType.Default,
-                version: '~1.10.0',
+                version: '^1.15.0',
                 name: '@datorama/akita'
             },
             {
                 type: schematics_utilities_1.NodeDependencyType.Dev,
-                version: '~1.0.2',
-                name: '@datorama/akita-ngdevtools'
-            },
-            {
-                type: schematics_utilities_1.NodeDependencyType.Dev,
-                version: '~1.0.0',
+                version: '^2.0.0',
                 name: 'akita-schematics'
             }
         ];
-        if (options.withRouter) {
+        if (options.withRouter || options.router) {
             dependencies.push({
                 type: schematics_utilities_1.NodeDependencyType.Dev,
-                version: '~1.0.0',
+                version: '^1.0.0',
                 name: '@datorama/akita-ng-router-store'
+            });
+        }
+        if (options.devtools) {
+            dependencies.push({
+                type: schematics_utilities_1.NodeDependencyType.Dev,
+                version: '^1.0.2',
+                name: '@datorama/akita-ngdevtools'
             });
         }
         dependencies.forEach(dependency => {
@@ -55,6 +58,9 @@ function getTsSourceFile(host, path) {
 }
 function injectImports(options) {
     return (host, context) => {
+        if (!options.router && !options.devtools) {
+            return;
+        }
         const workspace = schematics_utilities_1.getWorkspace(host);
         const project = schematics_utilities_1.getProjectFromWorkspace(workspace, 
         // Takes the first project in case it's not provided by CLI
@@ -63,27 +69,29 @@ function injectImports(options) {
         let moduleSource = getTsSourceFile(host, modulePath);
         let importModule = 'environment';
         let importPath = '../environments/environment';
-        if (!schematics_utilities_1.isImported(moduleSource, importModule, importPath)) {
-            const change = schematics_utilities_1.insertImport(moduleSource, modulePath, importModule, importPath);
+        if (!utils_1.isImported(moduleSource, importModule, importPath)) {
+            const change = utils_1.insertImport(moduleSource, modulePath, importModule, importPath);
             if (change) {
                 const recorder = host.beginUpdate(modulePath);
                 recorder.insertLeft(change.pos, change.toAdd);
                 host.commitUpdate(recorder);
             }
         }
-        if (options.withRouter) {
-            const routerChange = schematics_utilities_1.insertImport(moduleSource, modulePath, 'AkitaNgRouterStoreModule', '@datorama/akita-ng-router-store');
+        if (options.withRouter || options.router) {
+            const routerChange = utils_1.insertImport(moduleSource, modulePath, 'AkitaNgRouterStoreModule', '@datorama/akita-ng-router-store');
             if (routerChange) {
                 const recorder = host.beginUpdate(modulePath);
                 recorder.insertLeft(routerChange.pos, routerChange.toAdd);
                 host.commitUpdate(recorder);
             }
         }
-        const devtoolsChange = schematics_utilities_1.insertImport(moduleSource, modulePath, 'AkitaNgDevtools', '@datorama/akita-ngdevtools');
-        if (devtoolsChange) {
-            const recorder = host.beginUpdate(modulePath);
-            recorder.insertLeft(devtoolsChange.pos, devtoolsChange.toAdd);
-            host.commitUpdate(recorder);
+        if (options.devtools) {
+            const devtoolsChange = utils_1.insertImport(moduleSource, modulePath, 'AkitaNgDevtools', '@datorama/akita-ngdevtools');
+            if (devtoolsChange) {
+                const recorder = host.beginUpdate(modulePath);
+                recorder.insertLeft(devtoolsChange.pos, devtoolsChange.toAdd);
+                host.commitUpdate(recorder);
+            }
         }
         return host;
     };
@@ -103,19 +111,22 @@ function addModuleToImports(options) {
         const project = schematics_utilities_1.getProjectFromWorkspace(workspace, 
         // Takes the first project in case it's not provided by CLI
         options.project ? options.project : Object.keys(workspace['projects'])[0]);
-        let importm;
-        if (options.withRouter) {
+        let importm = '';
+        if ((options.withRouter || options.router) && options.devtools) {
             importm = `environment.production ?
         [] :
-        [ AkitaNgDevtools.forRoot(), AkitaNgRouterStoreModule.forRoot() ]
-      `;
+        [ AkitaNgDevtools.forRoot(), AkitaNgRouterStoreModule.forRoot() ]`;
         }
-        else {
+        else if (options.devtools) {
             importm = `environment.production ? [] : AkitaNgDevtools.forRoot()`;
         }
-        schematics_utilities_1.addModuleImportToRootModule(host, importm, null, project);
-        context.logger.log('info', `✅️ AkitaNgDevtools is imported`);
-        if (options.withRouter) {
+        if (importm) {
+            schematics_utilities_1.addModuleImportToRootModule(host, importm, null, project);
+        }
+        if (options.devtools) {
+            context.logger.log('info', `✅️ AkitaNgDevtools is imported`);
+        }
+        if (options.withRouter || options.router) {
             context.logger.log('info', `✅️ AkitaNgRouterStoreModule is imported`);
         }
         return host;

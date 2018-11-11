@@ -3,13 +3,13 @@ import { AkitaImmutabilityError, assertActive } from '../internal/error';
 import { Action, __globalState } from '../internal/global-state';
 import { coerceArray, entityExists, isFunction, toBoolean } from '../internal/utils';
 import { isDev, Store } from './store';
-import { ActiveState, Entities, EntityState, HashMap, ID, Newable } from './types';
+import { ActiveState, Entities, EntityState, HashMap, ID, Newable, AddOptions } from './types';
 
 /**
  * The Root Store that every sub store needs to inherit and
  * invoke `super` with the initial state.
  */
-export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
+export class EntityStore<S extends EntityState<E>, E, ActiveEntity = ID> extends Store<S> {
   /**
    *
    * Initiate the store with the state
@@ -41,7 +41,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    * this.store.set([{id: 1}, {id: 2}], { entityClass: Product });
    *
    */
-  set(entities: E[] | HashMap<E> | Entities<E>, options: { entityClass?: Newable<E> } = {}) {
+  set(entities: E[] | HashMap<E> | Entities<E>, options: { entityClass?: Newable<E> | undefined } = {}) {
     isDev() && __globalState.setAction({ type: 'Set Entities' });
     this.setState(state => _crud._set(state, entities, options.entityClass, this.idKey));
     this.setDirty();
@@ -71,12 +71,13 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    * @example
    * this.store.add([Entity, Entity]);
    * this.store.add(Entity);
+   * this.store.add(Entity, { prepend: true });
    */
-  add(entities: E[] | E) {
+  add(entities: E[] | E, options?: AddOptions) {
     const toArray = coerceArray(entities);
     if (toArray.length === 0) return;
     isDev() && __globalState.setAction({ type: 'Add Entity' });
-    this.setState(state => _crud._add<S, E>(state, toArray, this.idKey));
+    this.setState(state => _crud._add<S, E>(state, toArray, this.idKey, options));
   }
 
   /**
@@ -245,7 +246,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
     assertActive(this._value());
     isDev() && __globalState.setAction({ type: 'Update Active Entity', entityId: this._value().active });
     this.setState(state => {
-      const activeId = state.active;
+      const activeId = state.active as ID;
       const newState = isFunction(newStateFn) ? newStateFn(state.entities[activeId]) : newStateFn;
       if (newState === state) {
         throw new AkitaImmutabilityError(this.storeName);
@@ -257,7 +258,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   /**
    * Set the given entity as active.
    */
-  setActive(id: ID | null) {
+  setActive(id: ActiveEntity) {
     if (id === this._value().active) return;
     isDev() && __globalState.setAction({ type: 'Set Active Entity', entityId: id });
     this.setState(state => {

@@ -3,7 +3,11 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
-import { enableAkitaProdMode, persistState } from '../../akita/src';
+import { akitaConfig, enableAkitaProdMode, persistState } from '../../akita/src';
+
+akitaConfig({
+  resettable: true
+});
 
 if (environment.production) {
   enableProdMode();
