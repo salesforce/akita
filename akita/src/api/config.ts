@@ -9,7 +9,7 @@ let CONFIG: AkitaConfig = {
   resettable: false
 };
 
-export function akitaConfig( config: AkitaConfig ) {
+export function akitaConfig(config: AkitaConfig) {
   CONFIG = { ...CONFIG, ...config };
 }
 

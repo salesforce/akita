@@ -24,8 +24,10 @@ export class TodosFiltersComponent implements OnInit, OnDestroy {
       this.control.patchValue(filter, { emitEvent: false });
     }
   }
-  @Input() filters: TodoFilter[];
-  @Output() update = new EventEmitter<VISIBILITY_FILTER>();
+  @Input()
+  filters: TodoFilter[];
+  @Output()
+  update = new EventEmitter<VISIBILITY_FILTER>();
 
   control: FormControl;
 

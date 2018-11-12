@@ -1,62 +1,62 @@
 import * as ts from 'typescript';
 export interface Host {
-    write(path: string, content: string): Promise<void>;
-    read(path: string): Promise<string>;
+  write(path: string, content: string): Promise<void>;
+  read(path: string): Promise<string>;
 }
 export interface Change {
-    apply(host: Host): Promise<void>;
-    readonly path: string | null;
-    readonly order: number;
-    readonly description: string;
+  apply(host: Host): Promise<void>;
+  readonly path: string | null;
+  readonly order: number;
+  readonly description: string;
 }
 /**
  * An operation that does nothing.
  */
 export declare class NoopChange implements Change {
-    description: string;
-    order: number;
-    path: any;
-    apply(): Promise<void>;
+  description: string;
+  order: number;
+  path: any;
+  apply(): Promise<void>;
 }
 /**
  * Will add text to the source code.
  */
 export declare class InsertChange implements Change {
-    path: string;
-    pos: number;
-    toAdd: string;
-    order: number;
-    description: string;
-    constructor(path: string, pos: number, toAdd: string);
-    /**
-     * This method does not insert spaces if there is none in the original string.
-     */
-    apply(host: Host): Promise<void>;
+  path: string;
+  pos: number;
+  toAdd: string;
+  order: number;
+  description: string;
+  constructor(path: string, pos: number, toAdd: string);
+  /**
+   * This method does not insert spaces if there is none in the original string.
+   */
+  apply(host: Host): Promise<void>;
 }
 /**
  * Will remove text from the source code.
  */
 export declare class RemoveChange implements Change {
-    path: string;
-    private pos;
-    private toRemove;
-    order: number;
-    description: string;
-    constructor(path: string, pos: number, toRemove: string);
-    apply(host: Host): Promise<void>;
+  path: string;
+  private pos;
+  private toRemove;
+  order: number;
+  description: string;
+  constructor(path: string, pos: number, toRemove: string);
+  apply(host: Host): Promise<void>;
 }
 /**
  * Will replace text from the source code.
  */
 export declare class ReplaceChange implements Change {
-    path: string;
-    private pos;
-    private oldText;
-    private newText;
-    order: number;
-    description: string;
-    constructor(path: string, pos: number, oldText: string, newText: string);
-    apply(host: Host): Promise<void>;
+  path: string;
+  private pos;
+  private oldText;
+  private newText;
+  order: number;
+  description: string;
+  constructor(path: string, pos: number, oldText: string, newText: string);
+  apply(host: Host): Promise<void>;
 }
 export declare function insertImport(source: ts.SourceFile, fileToEdit: string, symbolName: string, fileName: string, isDefault?: boolean): Change | NoopChange;
 /**

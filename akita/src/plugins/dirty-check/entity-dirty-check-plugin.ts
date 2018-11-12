@@ -1,5 +1,11 @@
 import { HashMap, ID, IDS } from '../../api/types';
-import { DirtyCheckComparator, dirtyCheckDefaultParams, DirtyCheckPlugin, DirtyCheckResetParams } from './dirty-check-plugin';
+import {
+  DirtyCheckComparator,
+  dirtyCheckDefaultParams,
+  DirtyCheckPlugin,
+  DirtyCheckResetParams,
+  getNestedPath
+} from './dirty-check-plugin';
 import { QueryEntity } from '../../api/query-entity';
 import { EntityCollectionPlugin } from '../entity-collection-plugin';
 import { map, skip } from 'rxjs/operators';
@@ -17,6 +23,7 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
   isSomeDirty$: Observable<boolean> = this.query.select(state => state.entities).pipe(map((entities: any) => this.checkSomeDirty(entities)));
 
   someDirty$ = this.isSomeDirty$;
+  someDirty = this.isSomeDirty;
 
   constructor(protected query: QueryEntity<any, E>, private readonly params: DirtyCheckCollectionParams<E> = {}) {
     super(query, params.entityIds);
@@ -67,7 +74,18 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
     return this.checkSomeDirty(entities);
   }
 
-  someDirty = this.isSomeDirty;
+  isPathDirty(id: ID, path: string) {
+    if (this.entities.has(id)) {
+      const head = (this.getEntity(id) as any).getHead();
+      const current = this.query.getEntity(id);
+      const currentPathValue = getNestedPath(current, path);
+      const headPathValue = getNestedPath(head, path);
+
+      return this.params.comparator(currentPathValue, headPathValue);
+    }
+
+    return null;
+  }
 
   destroy(ids?: IDS) {
     this.forEachId(ids, e => e.destroy());

@@ -1,21 +1,5 @@
-import {
-  Rule,
-  SchematicContext,
-  Tree,
-  noop,
-  chain,
-  SchematicsException
-} from '@angular-devkit/schematics';
-import {
-  NodeDependency,
-  addPackageJsonDependency,
-  NodeDependencyType,
-  getWorkspace,
-  getProjectFromWorkspace,
-  addModuleImportToRootModule,
-  getAppModulePath,
-  InsertChange
-} from 'schematics-utilities';
+import { Rule, SchematicContext, Tree, noop, chain, SchematicsException } from '@angular-devkit/schematics';
+import { NodeDependency, addPackageJsonDependency, NodeDependencyType, getWorkspace, getProjectFromWorkspace, addModuleImportToRootModule, getAppModulePath, InsertChange } from 'schematics-utilities';
 import { NodePackageInstallTask } from '@angular-devkit/schematics/tasks';
 import { Schema } from './schema';
 import * as ts from 'typescript';
@@ -54,10 +38,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
 
     dependencies.forEach(dependency => {
       addPackageJsonDependency(host, dependency);
-      context.logger.log(
-        'info',
-        `✅️ Added "${dependency.name}" into ${dependency.type}`
-      );
+      context.logger.log('info', `✅️ Added "${dependency.name}" into ${dependency.type}`);
     });
 
     return host;
@@ -79,12 +60,7 @@ function getTsSourceFile(host: Tree, path: string): ts.SourceFile {
     throw new SchematicsException(`Could not read file (${path}).`);
   }
   const content = buffer.toString();
-  const source = ts.createSourceFile(
-    path,
-    content,
-    ts.ScriptTarget.Latest,
-    true
-  );
+  const source = ts.createSourceFile(path, content, ts.ScriptTarget.Latest, true);
 
   return source;
 }
@@ -100,63 +76,36 @@ function injectImports(options: Schema): Rule {
       // Takes the first project in case it's not provided by CLI
       options.project ? options.project : Object.keys(workspace['projects'])[0]
     );
-    const modulePath = getAppModulePath(
-      host,
-      (project as any).architect.build.options.main
-    );
+    const modulePath = getAppModulePath(host, (project as any).architect.build.options.main);
 
     let moduleSource = getTsSourceFile(host, modulePath);
     let importModule = 'environment';
     let importPath = '../environments/environment';
 
     if (!isImported(moduleSource, importModule, importPath)) {
-      const change = insertImport(
-        moduleSource,
-        modulePath,
-        importModule,
-        importPath
-      );
+      const change = insertImport(moduleSource, modulePath, importModule, importPath);
 
       if (change) {
         const recorder = host.beginUpdate(modulePath);
-        recorder.insertLeft(
-          (change as InsertChange).pos,
-          (change as InsertChange).toAdd
-        );
+        recorder.insertLeft((change as InsertChange).pos, (change as InsertChange).toAdd);
         host.commitUpdate(recorder);
       }
     }
 
     if (options.withRouter || options.router) {
-      const routerChange = insertImport(
-        moduleSource,
-        modulePath,
-        'AkitaNgRouterStoreModule',
-        '@datorama/akita-ng-router-store'
-      );
+      const routerChange = insertImport(moduleSource, modulePath, 'AkitaNgRouterStoreModule', '@datorama/akita-ng-router-store');
       if (routerChange) {
         const recorder = host.beginUpdate(modulePath);
-        recorder.insertLeft(
-          (routerChange as InsertChange).pos,
-          (routerChange as InsertChange).toAdd
-        );
+        recorder.insertLeft((routerChange as InsertChange).pos, (routerChange as InsertChange).toAdd);
         host.commitUpdate(recorder);
       }
     }
 
     if (options.devtools) {
-      const devtoolsChange = insertImport(
-        moduleSource,
-        modulePath,
-        'AkitaNgDevtools',
-        '@datorama/akita-ngdevtools'
-      );
+      const devtoolsChange = insertImport(moduleSource, modulePath, 'AkitaNgDevtools', '@datorama/akita-ngdevtools');
       if (devtoolsChange) {
         const recorder = host.beginUpdate(modulePath);
-        recorder.insertLeft(
-          (devtoolsChange as InsertChange).pos,
-          (devtoolsChange as InsertChange).toAdd
-        );
+        recorder.insertLeft((devtoolsChange as InsertChange).pos, (devtoolsChange as InsertChange).toAdd);
         host.commitUpdate(recorder);
       }
     }
@@ -213,10 +162,7 @@ function addModuleToImports(options: Schema): Rule {
 
 function log(): Rule {
   return (host: Tree, context: SchematicContext) => {
-    context.logger.log(
-      'info',
-      `👏 Create your first entity store by running: ng g af todos/todos`
-    );
+    context.logger.log('info', `👏 Create your first entity store by running: ng g af todos/todos`);
 
     return host;
   };
@@ -224,12 +170,8 @@ function log(): Rule {
 
 export function akitaNgAdd(options: Schema): Rule {
   return chain([
-    options && options.skipPackageJson
-      ? noop()
-      : addPackageJsonDependencies(options),
-    options && options.skipPackageJson
-      ? noop()
-      : installPackageJsonDependencies(),
+    options && options.skipPackageJson ? noop() : addPackageJsonDependencies(options),
+    options && options.skipPackageJson ? noop() : installPackageJsonDependencies(),
     addModuleToImports(options),
     injectImports(options),
     setSchematicsAsDefault(),

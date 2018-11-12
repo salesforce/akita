@@ -10,9 +10,12 @@ import { ID } from '../../../../../akita/src';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodoComponent implements OnInit, OnDestroy {
-  @Input() todo: Todo;
-  @Output() complete = new EventEmitter<Todo>();
-  @Output() delete = new EventEmitter<ID>();
+  @Input()
+  todo: Todo;
+  @Output()
+  complete = new EventEmitter<Todo>();
+  @Output()
+  delete = new EventEmitter<ID>();
 
   control: FormControl;
 
