@@ -245,7 +245,7 @@ export class Store<S> {
     }
   }
 
-  private ngOnDestroy() {
+  ngOnDestroy() {
     if (this === __stores__[this.storeName]) {
       delete __stores__[this.storeName];
     }
