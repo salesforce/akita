@@ -246,7 +246,7 @@ export class Store<S> {
   }
 
   ngOnDestroy() {
-    if (this === __stores__[this.storeName]) {
+    if (!(window as any).hmrEnabled && this === __stores__[this.storeName]) {
       delete __stores__[this.storeName];
     }
   }
