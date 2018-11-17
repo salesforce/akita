@@ -1,3 +1,11 @@
+## [1.19.1](https://github.com/datorama/akita/compare/v1.19.0...v1.19.1) (2018-11-14)
+
+
+### Bug Fixes
+
+* **hmr:** add support for hmr ([180c8c3](https://github.com/datorama/akita/commit/180c8c3)), closes [#108](https://github.com/datorama/akita/issues/108)
+* **store:** make ngOnDestroy method public ([de24ad3](https://github.com/datorama/akita/commit/de24ad3))
+
 # [1.19.0](https://github.com/datorama/akita/compare/v1.18.0...v1.19.0) (2018-11-11)
 
 
