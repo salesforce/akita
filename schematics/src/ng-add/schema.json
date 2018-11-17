@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "akita-ng-add",
+  "title": "Akita ng-add schematic",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "Name of the project.",
+      "$default": {
+        "$source": "projectName"
+      }
+    },
+    "devtools": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether to include Akita's dev-tools",
+      "x-prompt": "😍 Set up Akita's devtools?"
+    },
+    "router": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to include Akita's router",
+      "x-prompt": "💎 Set up Akita's router store?"
+    }
+  },
+  "required": []
+}

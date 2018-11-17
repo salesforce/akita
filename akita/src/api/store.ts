@@ -1,14 +1,14 @@
 import { HashMap, ID } from './types';
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
-import { AkitaImmutabilityError, assertDecorator } from '../internal/error';
+import { AkitaError, AkitaImmutabilityError, assertDecorator } from '../internal/error';
 import { commit, isTransactionInProcess } from '../internal/transaction.internal';
 import { isFunction, isPlainObject } from '../internal/utils';
 import { deepFreeze } from '../internal/deep-freeze';
 import { configKey, StoreConfigOptions } from './store-config';
 import { __globalState } from '../internal/global-state';
+import { getAkitaConfig } from './config';
 
-/** Whether we are in dev mode */
 let __DEV__ = true;
 
 export const __stores__: { [storeName: string]: Store<any> } = {};
@@ -70,7 +70,6 @@ export class Store<S> {
    */
   constructor(initialState) {
     __globalState.setAction({ type: '@@INIT' });
-    this._initialState = initialState;
     __stores__[this.storeName] = this;
     this.setState(() => initialState);
     rootDispatcher.next({
@@ -78,6 +77,9 @@ export class Store<S> {
       payload: { store: this }
     });
     isDev() && assertDecorator(this.storeName, this.constructor.name);
+    if (getAkitaConfig().resettable) {
+      this._initialState = initialState;
+    }
   }
 
   setLoading(loading = false) {
@@ -161,9 +163,13 @@ export class Store<S> {
    * Resets the store to it's initial state and set the store to a pristine state.
    */
   reset() {
-    __globalState.setAction({ type: 'Reset Store' });
-    this.setState(() => Object.assign({}, this._initialState));
-    this.setPristine();
+    if (getAkitaConfig().resettable) {
+      __globalState.setAction({ type: 'Reset Store' });
+      this.setState(() => Object.assign({}, this._initialState));
+      this.setPristine();
+    } else {
+      throw new AkitaError(`You need to enable the reset functionality`);
+    }
   }
 
   /**
@@ -239,8 +245,8 @@ export class Store<S> {
     }
   }
 
-  private ngOnDestroy() {
-    if (this === __stores__[this.storeName]) {
+  ngOnDestroy() {
+    if (!(window as any).hmrEnabled && this === __stores__[this.storeName]) {
       delete __stores__[this.storeName];
     }
   }

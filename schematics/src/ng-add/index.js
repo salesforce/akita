@@ -15,20 +15,22 @@ function addPackageJsonDependencies(options) {
             },
             {
                 type: schematics_utilities_1.NodeDependencyType.Dev,
-                version: '^1.0.2',
-                name: '@datorama/akita-ngdevtools'
-            },
-            {
-                type: schematics_utilities_1.NodeDependencyType.Dev,
                 version: '^2.0.0',
                 name: 'akita-schematics'
             }
         ];
-        if (options.withRouter) {
+        if (options.withRouter || options.router) {
             dependencies.push({
                 type: schematics_utilities_1.NodeDependencyType.Dev,
                 version: '^1.0.0',
                 name: '@datorama/akita-ng-router-store'
+            });
+        }
+        if (options.devtools) {
+            dependencies.push({
+                type: schematics_utilities_1.NodeDependencyType.Dev,
+                version: '^1.0.2',
+                name: '@datorama/akita-ngdevtools'
             });
         }
         dependencies.forEach(dependency => {
@@ -56,6 +58,9 @@ function getTsSourceFile(host, path) {
 }
 function injectImports(options) {
     return (host, context) => {
+        if (!options.router && !options.devtools) {
+            return;
+        }
         const workspace = schematics_utilities_1.getWorkspace(host);
         const project = schematics_utilities_1.getProjectFromWorkspace(workspace, 
         // Takes the first project in case it's not provided by CLI
@@ -72,7 +77,7 @@ function injectImports(options) {
                 host.commitUpdate(recorder);
             }
         }
-        if (options.withRouter) {
+        if (options.withRouter || options.router) {
             const routerChange = utils_1.insertImport(moduleSource, modulePath, 'AkitaNgRouterStoreModule', '@datorama/akita-ng-router-store');
             if (routerChange) {
                 const recorder = host.beginUpdate(modulePath);
@@ -80,11 +85,13 @@ function injectImports(options) {
                 host.commitUpdate(recorder);
             }
         }
-        const devtoolsChange = utils_1.insertImport(moduleSource, modulePath, 'AkitaNgDevtools', '@datorama/akita-ngdevtools');
-        if (devtoolsChange) {
-            const recorder = host.beginUpdate(modulePath);
-            recorder.insertLeft(devtoolsChange.pos, devtoolsChange.toAdd);
-            host.commitUpdate(recorder);
+        if (options.devtools) {
+            const devtoolsChange = utils_1.insertImport(moduleSource, modulePath, 'AkitaNgDevtools', '@datorama/akita-ngdevtools');
+            if (devtoolsChange) {
+                const recorder = host.beginUpdate(modulePath);
+                recorder.insertLeft(devtoolsChange.pos, devtoolsChange.toAdd);
+                host.commitUpdate(recorder);
+            }
         }
         return host;
     };
@@ -104,19 +111,22 @@ function addModuleToImports(options) {
         const project = schematics_utilities_1.getProjectFromWorkspace(workspace, 
         // Takes the first project in case it's not provided by CLI
         options.project ? options.project : Object.keys(workspace['projects'])[0]);
-        let importm;
-        if (options.withRouter) {
+        let importm = '';
+        if ((options.withRouter || options.router) && options.devtools) {
             importm = `environment.production ?
         [] :
-        [ AkitaNgDevtools.forRoot(), AkitaNgRouterStoreModule.forRoot() ]
-      `;
+        [ AkitaNgDevtools.forRoot(), AkitaNgRouterStoreModule.forRoot() ]`;
         }
-        else {
+        else if (options.devtools) {
             importm = `environment.production ? [] : AkitaNgDevtools.forRoot()`;
         }
-        schematics_utilities_1.addModuleImportToRootModule(host, importm, null, project);
-        context.logger.log('info', `✅️ AkitaNgDevtools is imported`);
-        if (options.withRouter) {
+        if (importm) {
+            schematics_utilities_1.addModuleImportToRootModule(host, importm, null, project);
+        }
+        if (options.devtools) {
+            context.logger.log('info', `✅️ AkitaNgDevtools is imported`);
+        }
+        if (options.withRouter || options.router) {
             context.logger.log('info', `✅️ AkitaNgRouterStoreModule is imported`);
         }
         return host;
@@ -130,8 +140,12 @@ function log() {
 }
 function akitaNgAdd(options) {
     return schematics_1.chain([
-        options && options.skipPackageJson ? schematics_1.noop() : addPackageJsonDependencies(options),
-        options && options.skipPackageJson ? schematics_1.noop() : installPackageJsonDependencies(),
+        options && options.skipPackageJson
+            ? schematics_1.noop()
+            : addPackageJsonDependencies(options),
+        options && options.skipPackageJson
+            ? schematics_1.noop()
+            : installPackageJsonDependencies(),
         addModuleToImports(options),
         injectImports(options),
         setSchematicsAsDefault(),

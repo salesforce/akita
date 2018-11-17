@@ -1,3 +1,48 @@
+## [1.19.1](https://github.com/datorama/akita/compare/v1.19.0...v1.19.1) (2018-11-14)
+
+
+### Bug Fixes
+
+* **hmr:** add support for hmr ([180c8c3](https://github.com/datorama/akita/commit/180c8c3)), closes [#108](https://github.com/datorama/akita/issues/108)
+* **store:** make ngOnDestroy method public ([de24ad3](https://github.com/datorama/akita/commit/de24ad3))
+
+# [1.19.0](https://github.com/datorama/akita/compare/v1.18.0...v1.19.0) (2018-11-11)
+
+
+### Features
+
+* **active-entity:** add the ability to explicitly set the active type ([1a6365d](https://github.com/datorama/akita/commit/1a6365d)), closes [#112](https://github.com/datorama/akita/issues/112)
+
+# [1.18.0](https://github.com/datorama/akita/compare/v1.17.0...v1.18.0) (2018-11-10)
+
+
+### Features
+
+* **schematics:** add prompts ([99be7ab](https://github.com/datorama/akita/commit/99be7ab))
+
+# [1.17.0](https://github.com/datorama/akita/compare/v1.16.0...v1.17.0) (2018-11-04)
+
+
+### Features
+
+* **akita:** fixed global action name, removed unused imports ([8a11ed1](https://github.com/datorama/akita/commit/8a11ed1))
+* **akita:** reset single store, resetStore reset all stores ([0175cef](https://github.com/datorama/akita/commit/0175cef))
+* **akita:** resetStores func ([43601af](https://github.com/datorama/akita/commit/43601af))
+* **akita:** resetStores func ([cec89c9](https://github.com/datorama/akita/commit/cec89c9))
+* **akita:** resetStores func ([df5e39d](https://github.com/datorama/akita/commit/df5e39d))
+
+# [1.16.0](https://github.com/datorama/akita/compare/v1.15.1...v1.16.0) (2018-11-04)
+
+
+### Bug Fixes
+
+* **dirty-check:** remove type ([ca9e3d3](https://github.com/datorama/akita/commit/ca9e3d3))
+
+
+### Features
+
+* **dirty-check:** add the ability to subscribe to reset event ([9266b0e](https://github.com/datorama/akita/commit/9266b0e))
+
 ## [1.15.1](https://github.com/datorama/akita/compare/v1.15.0...v1.15.1) (2018-11-03)
 
 

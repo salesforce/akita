@@ -8,6 +8,11 @@ export interface Schema {
    * Add the the router store
    */
   withRouter?: boolean;
+  router?: boolean;
+  /**
+   * Add the the devtools
+   */
+  devtools?: boolean;
 
   project?: any;
 }

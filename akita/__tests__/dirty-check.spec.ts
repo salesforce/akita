@@ -51,7 +51,7 @@ describe('DirtyCheck', () => {
         expect(spy).toHaveBeenLastCalledWith(false);
       });
 
-      it("should mark as dirty when the store value doesn't equal to head", () => {
+      it('should mark as dirty when the store value doesn\'t equal to head', () => {
         widgetsStore.add(createWidget());
         expect(spy).toHaveBeenLastCalledWith(true);
       });
@@ -134,6 +134,108 @@ describe('DirtyCheck', () => {
         dirtyCheck.head = null;
         const hasHead = dirtyCheck.hasHead();
         expect(hasHead).toBeFalsy();
+      });
+
+      describe('dirtyPath', () => {
+        const widgetsStore = new WidgetsStore({ some: { nested: { value: '' } } });
+        const widgetsQuery = new WidgetsQuery(widgetsStore);
+        const dirtyCheck = new DirtyCheckPlugin(widgetsQuery);
+        it('should not return dirty for isPathDirty', function() {
+          let isPathDirty: boolean;
+          dirtyCheck.setHead();
+          isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
+          expect(isPathDirty).toBeFalsy();
+
+          widgetsStore.updateRoot({
+            some: {
+              nested: {
+                value: 'other value'
+              }
+            }
+          });
+
+          isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
+          expect(isPathDirty).toBeTruthy();
+
+          dirtyCheck.reset();
+          isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
+          expect(isPathDirty).toBeFalsy();
+
+          widgetsStore.updateRoot({
+            some: {
+              nested: {
+                value: 'other value'
+              }
+            }
+          });
+
+          isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
+          expect(isPathDirty).toBeTruthy();
+
+          widgetsStore.updateRoot({
+            some: {
+              nested: {
+                value: ''
+              }
+            }
+          });
+
+          isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
+          expect(isPathDirty).toBeFalsy();
+        });
+
+        it('should return dirty for isPathDirty', function() {
+          let isPathDirty: boolean;
+          dirtyCheck.setHead();
+          widgetsStore.updateRoot({
+            some: {
+              nested: {
+                value: 'some other name'
+              }
+            }
+          });
+
+          isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
+          expect(isPathDirty).toBeTruthy();
+
+          dirtyCheck.reset();
+          isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
+          expect(isPathDirty).toBeFalsy();
+
+          widgetsStore.updateRoot({
+            some: {
+              nested: {
+                value: 'some other name'
+              }
+            }
+          });
+
+          isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
+          expect(isPathDirty).toBeTruthy();
+
+          widgetsStore.updateRoot({
+            some: {
+              nested: {
+                value: ''
+              }
+            }
+          });
+
+          isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
+          expect(isPathDirty).toBeFalsy();
+
+          widgetsStore.updateRoot({
+            some: {
+              nested: {
+                value: 'some value'
+              }
+            }
+          });
+
+          isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
+          expect(isPathDirty).toBeTruthy();
+
+        });
       });
     });
   });
@@ -289,6 +391,67 @@ describe('DirtyCheckEntity', () => {
       const widget = createWidget();
       widgetsStore.add(widget);
       expect(collection.hasHead(widget.id)).toBeTruthy();
+    });
+
+    describe('dirtyPath', () => {
+      it('should not return dirty for isPathDirty', function() {
+        let isPathDirty: boolean;
+        const widget = createWidget();
+        widgetsStore.add(widget);
+        collection.setHead();
+        isPathDirty = collection.isPathDirty(widget.id, 'title');
+        expect(isPathDirty).toBeFalsy();
+
+        widgetsStore.update(widget.id, { title: 'some value' });
+        isPathDirty = collection.isPathDirty(widget.id, 'title');
+        expect(isPathDirty).toBeTruthy();
+
+        collection.reset();
+        isPathDirty = collection.isPathDirty(widget.id, 'title');
+        expect(isPathDirty).toBeFalsy();
+
+        widgetsStore.update(widget.id, { title: 'some value' });
+        isPathDirty = collection.isPathDirty(widget.id, 'title');
+        expect(isPathDirty).toBeTruthy();
+
+        widgetsStore.update(widget.id, { title: `Widget ${widget.id}` });
+        isPathDirty = collection.isPathDirty(widget.id, 'title');
+        expect(isPathDirty).toBeFalsy();
+      });
+
+      it('should return dirty for isPathDirty', function() {
+        let isPathDirty: boolean;
+        let widget = createWidget();
+        widgetsStore.add(widget);
+        collection.setHead();
+
+        isPathDirty = collection.isPathDirty(widget.id, 'title');
+        expect(isPathDirty).toBeFalsy();
+
+        widgetsStore.update(widget.id, {
+          ...widget,
+          title: 'some other name'
+        });
+
+        isPathDirty = collection.isPathDirty(widget.id, 'title');
+        expect(isPathDirty).toBeTruthy();
+
+        widgetsStore.update(widget.id, {
+          ...widget,
+          title: `Widget ${widget.id}`
+        });
+
+        isPathDirty = collection.isPathDirty(widget.id, 'title');
+        expect(isPathDirty).toBeFalsy();
+
+        widgetsStore.update(widget.id, {
+          ...widget,
+          title: 'some other name'
+        });
+
+        isPathDirty = collection.isPathDirty(widget.id, 'title');
+        expect(isPathDirty).toBeTruthy();
+      });
     });
   });
 

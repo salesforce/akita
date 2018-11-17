@@ -9,7 +9,7 @@ import { ActiveState, Entities, EntityState, HashMap, ID, Newable, AddOptions } 
  * The Root Store that every sub store needs to inherit and
  * invoke `super` with the initial state.
  */
-export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
+export class EntityStore<S extends EntityState<E>, E, ActiveEntity = ID> extends Store<S> {
   /**
    *
    * Initiate the store with the state
@@ -258,7 +258,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   /**
    * Set the given entity as active.
    */
-  setActive(id: ID | undefined) {
+  setActive(id: ActiveEntity) {
     if (id === this._value().active) return;
     isDev() && __globalState.setAction({ type: 'Set Active Entity', entityId: id });
     this.setState(state => {
