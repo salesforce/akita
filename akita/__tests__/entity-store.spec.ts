@@ -46,6 +46,35 @@ describe('EntitiesStore', () => {
     });
   });
 
+  describe('upsert', () => {
+    it('should insert if does not exists', () => {
+      store.upsert(150, new Todo({ id: 150 }));
+      expect(store.entities[150]).toBeDefined();
+    });
+
+    it('should update if exists', () => {
+      store.upsert(150, new Todo({ id: 150 }));
+      expect(store.entities[150]).toBeDefined();
+      store.upsert(150, {
+        completed: true
+      });
+      expect(store.entities[150].completed).toBe(true);
+    });
+
+    it('should support update callback', () => {
+      store.upsert(150, new Todo({ id: 150 }));
+      expect(store.entities[150]).toBeDefined();
+      store.upsert(150, entity => ({
+        completed: !entity.completed
+      }));
+      expect(store.entities[150].completed).toBe(true);
+      store.upsert(150, entity => ({
+        completed: !entity.completed
+      }));
+      expect(store.entities[150].completed).toBe(false);
+    });
+  });
+
   describe('add', () => {
     it('should add entity', () => {
       store.add(new Todo({ id: 1 }));
