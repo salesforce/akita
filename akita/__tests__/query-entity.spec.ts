@@ -360,6 +360,15 @@ describe('getAll', () => {
     expect(result[1].title).toEqual('aaa');
   });
 
+  it('should support filter by function with index', () => {
+    const result = queryTodos.getAll({
+      filterBy: (entity, index) => index % 2 === 0
+    });
+    expect(Array.isArray(result)).toBeTruthy();
+    expect(result.length).toEqual(1);
+    expect(result[0].title).toEqual('aaa');
+  });
+
   it('should support limitTo', () => {
     const res = queryTodos.getAll({
       limitTo: 1
