@@ -1,3 +1,10 @@
+# [1.20.0](https://github.com/datorama/akita/compare/v1.19.1...v1.20.0) (2018-11-17)
+
+
+### Features
+
+* **entity-store:** add upsert method ([659b4d1](https://github.com/datorama/akita/commit/659b4d1))
+
 ## [1.19.1](https://github.com/datorama/akita/compare/v1.19.0...v1.19.1) (2018-11-14)
 
 
