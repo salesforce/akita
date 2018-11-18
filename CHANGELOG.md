@@ -1,3 +1,10 @@
+# [1.21.0](https://github.com/datorama/akita/compare/v1.20.0...v1.21.0) (2018-11-18)
+
+
+### Features
+
+* **query-entity:** provide index in filter function ([#118](https://github.com/datorama/akita/issues/118)) ([b12f451](https://github.com/datorama/akita/commit/b12f451))
+
 # [1.20.0](https://github.com/datorama/akita/compare/v1.19.1...v1.20.0) (2018-11-17)
 
 
