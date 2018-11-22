@@ -107,3 +107,11 @@ export function createWidget(id) {
     complete: false
   } as Widget;
 }
+
+export function createWidgetCompleted(id) {
+  return {
+    id,
+    title: `Widget ${id}`,
+    complete: true
+  } as Widget;
+}
