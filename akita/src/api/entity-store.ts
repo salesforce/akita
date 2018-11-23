@@ -1,7 +1,7 @@
 import { _crud } from '../internal/crud';
 import { AkitaImmutabilityError, assertActive } from '../internal/error';
 import { Action, __globalState } from '../internal/global-state';
-import { coerceArray, entityExists, isFunction, toBoolean } from '../internal/utils';
+import { coerceArray, entityExists, isFunction, onlyNewEntity, toBoolean } from '../internal/utils';
 import { isDev, Store } from './store';
 import { ActiveState, Entities, EntityState, HashMap, ID, Newable, AddOptions } from './types';
 
@@ -64,6 +64,23 @@ export class EntityStore<S extends EntityState<E>, E, ActiveEntity = ID> extends
   }
 
   /**
+   * Create or replace an entity in the store.
+   *
+   * @example
+   * this.store.createIfNotExist(3, Entity);
+   *
+   * Return Boolean if added, or not
+   *
+   */
+  createIfNotExist( id: ID, entity: E ): boolean {
+    if( !entityExists(id, this._value().entities) ) {
+      this.addWhenNotExists(id, entity);
+      return true;
+    }
+    return false;
+  }
+
+  /**
    *
    * Insert or Update
    */
@@ -90,6 +107,27 @@ export class EntityStore<S extends EntityState<E>, E, ActiveEntity = ID> extends
     isDev() && __globalState.setAction({ type: 'Add Entity' });
     this.setState(state => _crud._add<S, E>(state, toArray, this.idKey, options));
   }
+
+  /**
+   * Add an entity or entities to the store only if exist.
+   *
+   * Return false, if not entities added, dans array of added entities
+   *
+   * @example
+   * this.store.addIfNotExist([Entity, Entity]);
+   * this.store.addIfNotExist(Entity);
+   * this.store.addIfNotExist(Entity, { prepend: true });
+   */
+  addIfNotExist( entities: E[] | E, options?: AddOptions ): boolean | E[] {
+    const toArray = coerceArray(entities);
+    if( toArray.length === 0 ) return false;
+    const newEntity = onlyNewEntity<E>(this.entities, toArray, this.idKey);
+    if( newEntity.length === 0 ) return false;
+    isDev() && __globalState.setAction({ type: 'Add new Entity' });
+    this.setState(state => _crud._add<S, E>(state, newEntity, this.idKey, options));
+    return newEntity;
+  }
+
 
   /**
    *

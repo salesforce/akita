@@ -35,6 +35,27 @@ export function entityExists<E>(id: ID, entities: HashMap<E>) {
 }
 
 /**
+ * Function to compile, only not added Entity.
+ * @param stateEntities
+ * @param entities
+ * @param idKey
+ */
+export function onlyNewEntity<E>(stateEntities: HashMap<E>, entities: E[], idKey): E[] {
+  let addedEntities: E[] = [];
+
+  for (let i = 0; i < entities.length; i++) {
+    const entity = entities[i];
+    const entityId = entity[idKey];
+
+    if (!entityExists(entityId, stateEntities)) {
+      addedEntities.push(entity);
+    }
+  }
+
+  return addedEntities;
+}
+
+/**
  * Observable that emits empty value and complete
  */
 export function noop<T>(): Observable<T> {

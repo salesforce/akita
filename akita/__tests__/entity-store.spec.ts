@@ -46,6 +46,20 @@ describe('EntitiesStore', () => {
     });
   });
 
+  describe('createIfNotExist', () => {
+    it('should create if does not exists', () => {
+      expect(store.createIfNotExist(1, new Todo({ id: 1 }))).toEqual(true);
+      expect(store.entities[1]).toBeDefined();
+    });
+
+    it('should not create/update if exists', () => {
+      expect(store.createIfNotExist(1, new Todo({ id: 1, title: 'initial' }))).toEqual(true);
+      expect(store.entities[1]).toBeDefined();
+      expect(store.createIfNotExist(1, new Todo({ id: 1, title: 'replaced' }))).toEqual(false);
+      expect(store.entities[1].title).toEqual('initial');
+    });
+  });
+
   describe('upsert', () => {
     it('should insert if does not exists', () => {
       store.upsert(150, new Todo({ id: 150 }));
@@ -102,6 +116,39 @@ describe('EntitiesStore', () => {
       store.add(new Todo({ id: 3 }));
       store.add([new Todo({ id: 4 }), new Todo({ id: 5 }), new Todo({ id: 6 })], { prepend: true });
       expect(store._value().ids).toEqual([6, 5, 4, 1, 2, 3]);
+    });
+  });
+
+  describe('addIfNotExist', () => {
+    it('should add entity if not exist', () => {
+      store.add(new Todo({ id: 1 }));
+      expect(store.addIfNotExist(new Todo({ id: 2 }))).toEqual([{"completed": false, "id": 2, "title": "2"}]);
+      expect(store.entities[2]).toBeDefined();
+    });
+
+    it('should not add if already added', () => {
+      expect(store.addIfNotExist(new Todo({ id: 1, title: 'initial' }))).toEqual([{"completed": false, "id": 1, "title": "initial"}]);
+      expect(store.entities[1]).toBeDefined();
+      expect(store.addIfNotExist(new Todo({ id: 1, title: 'modified' }))).toEqual(false);
+      expect(store.entities[1].title).toEqual('initial');
+    });
+
+    it('should with multi add', () => {
+      store.add(new Todo({ id: 1 }));
+      store.add(new Todo({ id: 2 }));
+      store.add(new Todo({ id: 3 }));
+      const added = store.addIfNotExist([new Todo({ id: 2 }), new Todo({ id: 3 }), new Todo({ id: 4 }), new Todo({ id: 5 })]5);
+      expect(added).toEqual([{"completed": false, "id": 4, "title": "4"}, {"completed": false, "id": 5, "title": "5"}]);
+      expect(store._value().ids).toEqual([1, 2, 3, 4, 5]);
+    });
+
+    it('should with multi add with prepend', () => {
+      store.add(new Todo({ id: 1 }));
+      store.add(new Todo({ id: 2 }));
+      store.add(new Todo({ id: 3 }));
+      const added = store.addIfNotExist([new Todo({ id: 2 }), new Todo({ id: 3 }), new Todo({ id: 4 }), new Todo({ id: 5 })], { prepend: true });
+      expect(added).toEqual([{"completed": false, "id": 4, "title": "4"}, {"completed": false, "id": 5, "title": "5"}]);
+      expect(store._value().ids).toEqual([5, 4, 1, 2, 3]);
     });
   });
 
