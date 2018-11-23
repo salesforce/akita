@@ -1,0 +1,29 @@
+<div class="card app-product-filter">
+
+  <div class="card-image pointer activator waves-effect waves-block waves-light">
+    <img src="{{product.image}}">
+    <span class="card-title truncate">{{product.title}} - {{product.scientificName}}</span>
+
+  </div>
+  <div class="card-content pointer activator waves-effect waves-block waves-light">
+
+    <span class="mbb">Category: <b>{{product.category}}</b></span>
+    <span class="material-icons" *ngIf="product.rapidDelivery">fast_forward</span>
+    <span class="white-text badge red">{{product.price}} $</span>
+    <p>
+      <span class="">Family: <b>{{product.familly}}</b> &nbsp;</span>
+      <span class="">Origin: <b>{{product.origin}}</b>  &nbsp;</span>
+      <span class="">size: <b>{{product.size}}</b>  &nbsp;</span>
+      <span class="">Rapid: <b>{{product.rapidDelivery}}  &nbsp;</b></span>
+    </p>
+    <p>{{product.description}}</p>
+  </div>
+  <div class="card-action flex flex-end">
+    <button class="btn waves-effect waves-light cyan lighten-2 mr" (click)="add.emit(product)">
+      <i class="material-icons">exposure_plus_1</i>
+    </button>
+    <button class="btn waves-effect waves-light blue-grey lighten-3" (click)="subtract.emit(product)">
+      <i class="material-icons">exposure_neg_1</i>
+    </button>
+  </div>
+</div>

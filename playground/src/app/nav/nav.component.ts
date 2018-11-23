@@ -24,7 +24,7 @@ import { resetStores } from '../../../../akita/index';
   `
 })
 export class NavComponent {
-  navItems = ['Todos', 'Contacts', 'Stories', 'Movies', 'Widgets'];
+  navItems = ['Todos', 'Contacts', 'Products', 'Stories', 'Movies', 'Widgets'];
   count$: Observable<number>;
   isLoggedIn$: Observable<boolean>;
 

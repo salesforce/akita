@@ -220,6 +220,7 @@ export class Store<S> {
     return this.store.asObservable();
   }
 
+
   /**
    * When the transaction ends dispatch the final value once
    */

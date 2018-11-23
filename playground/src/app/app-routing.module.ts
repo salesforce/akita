@@ -38,6 +38,10 @@ const routes: Routes = [
     loadChildren: 'app/contacts/contacts.module#ContactsModule'
   },
   {
+    path: 'products',
+    loadChildren: 'app/products-filters/products-filters.module#ProductsFiltersModule'
+  },
+  {
     path: 'stories',
     loadChildren: 'app/stories/stories.module#StoriesModule'
   },
