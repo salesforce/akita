@@ -73,7 +73,7 @@
   </div>
 </div>
 
-<div>Filter :
+<div *ngIf="(filters$ | async).length">Filter :
 
   <div class="chip" *ngFor="let filter of (filters$ | async)" (click)="removeFilter(filter.id)">
     {{filter.name}}

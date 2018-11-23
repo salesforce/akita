@@ -15,9 +15,7 @@ import { Filter } from '../../../../../akita/src/plugins/filters/filters-store';
 export class ProductsFiltersService {
   private filtersProduct: FiltersPlugin<ProductPlantState, ProductPlant>;
 
-  constructor(private productsStore: ProductsFiltersStore,
-              private productsQuery: ProductsFiltersQuery,
-              private productsDataService: ProductsFiltersDataService) {
+  constructor(private productsStore: ProductsFiltersStore, private productsQuery: ProductsFiltersQuery, private productsDataService: ProductsFiltersDataService) {
     this.filtersProduct = new FiltersPlugin<ProductPlantState, ProductPlant>(this.productsQuery);
   }
 
@@ -45,24 +43,23 @@ export class ProductsFiltersService {
     this.filtersProduct.setFilter(filter);
   }
 
-  setOrder(by: any, order: '+'|'-') {
-
-    this.filtersProduct.setSortBy({sortBy: by, sortByOrder: order === '+'? Order.ASC : Order.DESC});
+  setOrderBy(by: any, order: string | '+' | '-') {
+    this.filtersProduct.setSortBy({ sortBy: by, sortByOrder: order === '+' ? Order.ASC : Order.DESC });
   }
 
   removeFilter(id: string) {
     this.filtersProduct.removeFilter(id);
   }
 
-   getFilterValue(id: string): any | null {
+  getFilterValue(id: string): any | null {
     return this.filtersProduct.getFilterValue(id);
   }
 
   getSortValue(): string | null {
     const sortValue = this.filtersProduct.getSortValue();
     if (!sortValue) return '+title';
-    const order = sortValue.sortByOrder === Order.ASC? '+' : '-';
-    return sortValue.sortBy? order + sortValue.sortBy : '+title';
+    const order = sortValue.sortByOrder === Order.ASC ? '+' : '-';
+    return sortValue.sortBy ? order + sortValue.sortBy : '+title';
   }
 
   selectFilters(): Observable<Filter[]> {

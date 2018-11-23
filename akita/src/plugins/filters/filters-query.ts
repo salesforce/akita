@@ -4,16 +4,11 @@ import { QueryConfig } from '../../api/query-config';
 import { Order } from '../../internal/sort';
 
 @QueryConfig({
-  sortBy: "order",
+  sortBy: 'order',
   sortByOrder: Order.ASC
 })
-export class FiltersQuery extends QueryEntity<
-  FiltersState,
-  Filter,
-  string
-  > {
+export class FiltersQuery extends QueryEntity<FiltersState, Filter, string> {
   constructor(protected store: FiltersStore) {
     super(store);
   }
 }
-
