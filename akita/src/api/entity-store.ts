@@ -1,9 +1,9 @@
 import { _crud } from '../internal/crud';
 import { AkitaImmutabilityError, assertActive } from '../internal/error';
 import { Action, __globalState } from '../internal/global-state';
-import { coerceArray, entityExists, isFunction, toBoolean } from '../internal/utils';
+import { coerceArray, entityExists, isFunction, isNil, isObject, isUndefined, toBoolean } from '../internal/utils';
 import { isDev, Store } from './store';
-import { ActiveState, Entities, EntityState, HashMap, ID, Newable, AddOptions } from './types';
+import { ActiveState, Entities, EntityState, HashMap, ID, Newable, AddOptions, SetActiveOptions } from './types';
 
 /**
  * The Root Store that every sub store needs to inherit and
@@ -274,13 +274,28 @@ export class EntityStore<S extends EntityState<E>, E, ActiveEntity = ID> extends
   /**
    * Set the given entity as active.
    */
-  setActive(id: ActiveEntity) {
-    if (id === this._value().active) return;
-    isDev() && __globalState.setAction({ type: 'Set Active Entity', entityId: id });
+  setActive(idOrOptions: ActiveEntity | SetActiveOptions) {
+    let activeId: ActiveEntity;
+
+    if (isObject(idOrOptions)) {
+      if (isNil(this._value().active)) return;
+      const ids = this._value().ids;
+      const currentIdIndex = ids.indexOf(this._value().active);
+      if ((idOrOptions as SetActiveOptions).prev) {
+        activeId = currentIdIndex === 0 ? ids[ids.length - 1] : (ids[currentIdIndex - 1] as any);
+      } else if ((idOrOptions as SetActiveOptions).next) {
+        activeId = ids.length === currentIdIndex + 1 ? ids[0] : (ids[currentIdIndex + 1] as any);
+      }
+    } else {
+      if (idOrOptions === this._value().active) return;
+      activeId = idOrOptions as ActiveEntity;
+    }
+
+    isDev() && __globalState.setAction({ type: 'Set Active Entity', entityId: activeId });
     this.setState(state => {
       return {
         ...(state as any),
-        active: id
+        active: activeId
       };
     });
   }
