@@ -81,9 +81,29 @@ describe('EntitiesStore', () => {
       expect(store.entities[1]).toBeDefined();
     });
 
-    it('should add with uid', () => {
-      store.add(new Todo({ id: 1 }));
+    it('should add many', () => {
+      store.add([new Todo({ id: 1 }), new Todo({ id: 2 })]);
       expect(store.entities[1]).toBeDefined();
+      expect(store.entities[2]).toBeDefined();
+    });
+
+    it('should NOT add if all exist', () => {
+      store.add([new Todo({ id: 1 }), new Todo({ id: 2 })]);
+      expect(store.entities[1]).toBeDefined();
+      expect(store.entities[2]).toBeDefined();
+      spyOn(store, 'setState').and.callThrough();
+      store.add([new Todo({ id: 1 }), new Todo({ id: 2 })]);
+      expect(store.setState).not.toHaveBeenCalled();
+    });
+
+    it('should add if one of them NOT exist', () => {
+      store.add([new Todo({ id: 1 }), new Todo({ id: 2 })]);
+      expect(store.entities[1]).toBeDefined();
+      expect(store.entities[2]).toBeDefined();
+      spyOn(store, 'setState').and.callThrough();
+      store.add([new Todo({ id: 1 }), new Todo({ id: 3 })]);
+      expect(store.setState).toHaveBeenCalled();
+      expect(store.entities[3]).toBeDefined();
     });
 
     it('should prepend with uid', () => {
