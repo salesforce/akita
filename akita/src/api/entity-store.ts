@@ -279,12 +279,17 @@ export class EntityStore<S extends EntityState<E>, E, ActiveEntity = ID> extends
 
     if (isObject(idOrOptions)) {
       if (isNil(this._value().active)) return;
+      (idOrOptions as SetActiveOptions) = Object.assign({ wrap: true }, idOrOptions);
       const ids = this._value().ids;
       const currentIdIndex = ids.indexOf(this._value().active);
       if ((idOrOptions as SetActiveOptions).prev) {
-        activeId = currentIdIndex === 0 ? ids[ids.length - 1] : (ids[currentIdIndex - 1] as any);
+        const isFirst = currentIdIndex === 0;
+        if (isFirst && !(idOrOptions as SetActiveOptions).wrap) return;
+        activeId = isFirst ? ids[ids.length - 1] : (ids[currentIdIndex - 1] as any);
       } else if ((idOrOptions as SetActiveOptions).next) {
-        activeId = ids.length === currentIdIndex + 1 ? ids[0] : (ids[currentIdIndex + 1] as any);
+        const isLast = ids.length === currentIdIndex + 1;
+        if (isLast && !(idOrOptions as SetActiveOptions).wrap) return;
+        activeId = isLast ? ids[0] : (ids[currentIdIndex + 1] as any);
       }
     } else {
       if (idOrOptions === this._value().active) return;

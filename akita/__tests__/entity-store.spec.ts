@@ -342,6 +342,22 @@ describe('EntitiesStore', () => {
       store.setActive({ prev: true });
       expect(store._value().active).toBe(2);
     });
+
+    it('should work without cycle', () => {
+      const todos = [new Todo({ id: 1 }), new Todo({ id: 2 }), new Todo({ id: 3 }), new Todo({ id: 4 })];
+      store.add(todos);
+      store.setActive(1);
+      store.setActive({ prev: true, wrap: false });
+      expect(store._value().active).toBe(1);
+      store.setActive({ next: true, wrap: false });
+      expect(store._value().active).toBe(2);
+      store.setActive({ next: true, wrap: false });
+      expect(store._value().active).toBe(3);
+      store.setActive({ next: true, wrap: false });
+      expect(store._value().active).toBe(4);
+      store.setActive({ next: true, wrap: false });
+      expect(store._value().active).toBe(4);
+    });
   });
 
   describe('remove', () => {

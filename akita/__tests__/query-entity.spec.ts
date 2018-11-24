@@ -369,6 +369,24 @@ describe('getAll', () => {
     expect(result[0].title).toEqual('aaa');
   });
 
+  it('should support filter by multi functions', () => {
+    const result = queryTodos.getAll({
+      filterBy: [(entity, index) => index % 2 === 0, entity => entity.completed === false]
+    });
+    expect(Array.isArray(result)).toBeTruthy();
+    expect(result.length).toEqual(1);
+
+    const result2 = queryTodos.getAll({
+      filterBy: [(entity, index) => index % 2 === 0, entity => entity.completed === true]
+    });
+    expect(result2.length).toEqual(0);
+
+    const result3 = queryTodos.getAll({
+      filterBy: [entity => entity.completed === false]
+    });
+    expect(result3.length).toEqual(2);
+  });
+
   it('should support limitTo', () => {
     const res = queryTodos.getAll({
       limitTo: 1
