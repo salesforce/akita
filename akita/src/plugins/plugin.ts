@@ -4,11 +4,18 @@ import { Observable } from 'rxjs';
 import { filterNil } from '../api/operators';
 import { toBoolean } from '../internal/utils';
 import { ID } from '../api/types';
+import { getAkitaConfig } from '../api/config';
 
 export type Queries<E, S> = Query<S> | QueryEntity<S, E>;
 
 export abstract class AkitaPlugin<E = any, S = any> {
-  protected constructor(protected query: Queries<E, S>) {}
+  protected constructor(protected query: Queries<E, S>, config?: { resetFn?: Function }) {
+    if (config && config.resetFn) {
+      if (getAkitaConfig().resettable) {
+        this.onReset(config.resetFn);
+      }
+    }
+  }
 
   /** This method is responsible for getting access to the query. */
   protected getQuery(): Queries<E, S> {
@@ -50,7 +57,21 @@ export abstract class AkitaPlugin<E = any, S = any> {
     if (this.isEntityBased(entityId)) {
       this.getStore().update(entityId, newState);
     } else {
-      this.getStore().setState((state) => ({...state, ...newState}));
+      this.getStore().setState(state => ({ ...state, ...newState }));
     }
+  }
+
+  /**
+   * Function to invoke upon reset
+   */
+  private onReset(fn: Function) {
+    const original = this.getStore().reset;
+    this.getStore().reset = (...params) => {
+      /** It should run after the plugin destroy method */
+      setTimeout(() => {
+        original.apply(this.getStore(), params);
+        fn();
+      });
+    };
   }
 }
