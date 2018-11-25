@@ -43,7 +43,7 @@ export class EntityStore<S extends EntityState<E>, E, ActiveEntity = ID> extends
    */
   set(entities: E[] | HashMap<E> | Entities<E>, options: { entityClass?: Newable<E> | undefined } = {}) {
     isDev() && __globalState.setAction({ type: 'Set Entities' });
-    this.setState(state => _crud._set(state, entities, options.entityClass, this.idKey));
+    this.setState(state => _crud._set(state, isNil(entities) ? [] : entities, options.entityClass, this.idKey));
     this.setDirty();
   }
 
