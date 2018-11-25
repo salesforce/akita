@@ -14,6 +14,16 @@ describe('EntitiesStore', () => {
       expect(store._value().entities[1]).toBeDefined();
     });
 
+    it(`should set empty array when passing null`, () => {
+      store.set(null);
+      expect(store._value().entities).toEqual([]);
+    })
+
+    it(`should set empty array when passing undefined`, () => {
+      store.set(undefined);
+      expect(store._value().entities).toEqual([]);
+    })
+
     it('should set a new instance when passing a class', () => {
       store.set([{ id: 1, title: '1' }], { entityClass: Todo });
       expect(store._value().entities[1]).toBeDefined();
@@ -143,7 +153,7 @@ describe('EntitiesStore', () => {
     it('should throw when updating entity id for multiple entities', () => {
       store.add(new Todo({ id: 1 }));
       store.add(new Todo({ id: 2 }));
-      expect(function() {
+      expect(function () {
         store.update([1, 2], { id: 2 });
       }).toThrow(new AkitaUpdateIdKeyError() as any);
     });
@@ -214,7 +224,7 @@ describe('EntitiesStore', () => {
 
     it('should throw if the entity does not exists', () => {
       store.add(new Todo({ id: 1 }));
-      expect(function() {
+      expect(function () {
         store.update(100, { title: 'update' });
       }).toThrow(new AkitaEntityNotExistsError(100) as any);
     });
@@ -272,7 +282,7 @@ describe('EntitiesStore', () => {
 
     it('should throw if active is undefined', () => {
       store.setActive(null);
-      expect(function() {
+      expect(function () {
         store.updateActive({ title: 'update' });
       }).toThrow(new AkitaNoActiveError() as any);
     });
