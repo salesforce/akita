@@ -16,7 +16,6 @@ export type FiltersParams = {
   [key: string]: any;
 };
 
-
 /**
  * Filters plugins is usefull to define some filters to be apply for your query
  *
@@ -36,7 +35,7 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P extends Fi
 
   constructor(protected query: QueryEntity<S, E>, private params: FiltersParams = {}) {
     super(query, params.entityIds);
-    this.params = { ...{ filtersStoreName: query.__store__.storeName + '/filters' }, ...params };
+    this.params = { ...{ filtersStoreName: query.__store__.storeName + 'Filters' }, ...params };
 
     this._filterStore = new FiltersStore();
     this._filterQuery = new FiltersQuery(this._filterStore);
@@ -103,10 +102,9 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P extends Fi
 
   /**
    * Clear all filters
-   * @param id
    */
-  resetFilters() {
-    this.filterStore.reset();
+  cleanFilters() {
+    this.filterStore.clean();
   }
 
   /**
@@ -138,15 +136,16 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P extends Fi
     this.filterStore.updateRoot({ sort: order });
   }
 
-  private applyFilters(entities: E[], filters: Filter[]) {
-    let entitiesFiltered: E[] = entities;
-    for (let filter of filters) {
-      if (filter.function) {
-        // @ts-ignore
-        entitiesFiltered = entitiesFiltered.filter<E>(filter.function);
-      }
-    }
-    return entitiesFiltered;
+  private applyFilters(entities: E[], filters: Filter[]): E[] {
+    if (filters.length === 0) return entities;
+    return entities.filter((value: E, index: number, array: E[]) => {
+      return !filters.some((filter: Filter) => {
+        if (filter.function) {
+          return !filter.function(value, index, array, filter);
+        }
+        return false;
+      });
+    });
   }
 
   protected instantiatePlugin(id: ID): P {

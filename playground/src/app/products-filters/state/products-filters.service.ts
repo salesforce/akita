@@ -51,6 +51,10 @@ export class ProductsFiltersService {
     this.filtersProduct.removeFilter(id);
   }
 
+  removeAllFilter() {
+    this.filtersProduct.cleanFilters();
+  }
+
   getFilterValue(id: string): any | null {
     return this.filtersProduct.getFilterValue(id);
   }

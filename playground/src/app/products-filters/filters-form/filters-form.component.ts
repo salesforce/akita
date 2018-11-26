@@ -1,9 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { Filter, searchFilter } from '../../../../../akita/src/plugins/filters/filters-store';
+import { Filter } from '../../../../../akita/src/plugins/filters/filters-store';
 import { ProductPlant, ProductsFiltersService } from '../state';
 import { untilDestroyed } from 'ngx-take-until-destroy';
+import { searchFilter } from '../../../../../akita/src/plugins/filters/filters-utils';
 
 @Component({
   selector: 'app-filters-form',
@@ -11,11 +12,13 @@ import { untilDestroyed } from 'ngx-take-until-destroy';
   styles: []
 })
 export class FiltersFormComponent implements OnInit, OnDestroy {
-  search = new FormControl();
-  sortControl = new FormControl('title');
-  categoryControl = new FormControl();
-  size = new FormControl();
-  fastDeliveryControl = new FormControl();
+  filterForm = new FormGroup({
+    search: new FormControl(),
+    sortControl: new FormControl('title'),
+    categoryControl: new FormControl(),
+    size: new FormControl(),
+    fastDeliveryControl: new FormControl(),
+});
 
   category: string;
   filterFastDelivery: boolean = false;
@@ -24,8 +27,9 @@ export class FiltersFormComponent implements OnInit, OnDestroy {
   constructor(private productsService: ProductsFiltersService) {}
 
   ngOnInit() {
-    this.search.setValue(this.productsService.getFilterValue('search'), { emitEvent: false });
-    this.search.valueChanges.pipe(untilDestroyed(this)).subscribe((search: string) => {
+    this.getallFiltersValues();
+
+   this.filterForm.controls.search.valueChanges.pipe(untilDestroyed(this)).subscribe((search: string) => {
       if (search) {
         this.productsService.setFilter({
           id: 'search',
@@ -41,8 +45,7 @@ export class FiltersFormComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.categoryControl.setValue(this.productsService.getFilterValue('category'), { emitEvent: false });
-    this.categoryControl.valueChanges.pipe(untilDestroyed(this)).subscribe(category => {
+    this.filterForm.controls.categoryControl.valueChanges.pipe(untilDestroyed(this)).subscribe(category => {
       this.productsService.setFilter({
         id: 'category',
         value: category,
@@ -50,16 +53,24 @@ export class FiltersFormComponent implements OnInit, OnDestroy {
       });
     });
 
-    this.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((sortBy: string) => {
+    this.filterForm.controls.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((sortBy: string) => {
       this.productsService.setOrderBy(sortBy.slice(1), sortBy.slice(0, 1));
     });
-    this.sortControl.setValue(this.productsService.getSortValue());
+    this.filterForm.controls.sortControl.setValue(this.productsService.getSortValue());
 
     this.filterFastDelivery = this.productsService.getFilterValue('fastDelivery');
-    this.fastDeliveryControl.setValue(this.filterFastDelivery, { emitEvent: false });
-    this.size.setValue(this.productsService.getFilterValue('size'), { emitEvent: false });
 
     this.filters$ = this.productsService.selectFilters();
+  }
+
+  private getallFiltersValues() {
+    this.filterForm.setValue({
+      search: this.productsService.getFilterValue('search'),
+      sortControl: this.productsService.getSortValue(),
+      categoryControl: this.productsService.getFilterValue('category'),
+      size: this.productsService.getFilterValue('size'),
+      fastDeliveryControl: this.productsService.getFilterValue('fastDelivery')
+    }, { emitEvent: false });
   }
 
   filterSize(size: string) {
@@ -82,24 +93,15 @@ export class FiltersFormComponent implements OnInit, OnDestroy {
   }
 
   removeFilter(id: any) {
-    switch (id) {
-      case 'search':
-        this.search.reset('');
-        break;
-      case 'category':
-        this.categoryControl.reset();
-        break;
-
-      case 'fastDelivery':
-        this.fastDeliveryControl.setValue(false);
-        break;
-
-      case 'size':
-        this.size.reset();
-        break;
-    }
     this.productsService.removeFilter(id);
+    this.getallFiltersValues();
   }
+
+  removeFilterAll() {
+    this.productsService.removeAllFilter();
+    this.getallFiltersValues();
+  }
+
 
   ngOnDestroy(): void {}
 }

@@ -1,8 +1,8 @@
-<div class="row">
+<form [formGroup]="filterForm" class="row">
   <div class="col m2 s6">
     <label>Filter Category</label>
     <div class="input-field col s12">
-      <select class="browser-default" [formControl]="categoryControl">
+      <select class="browser-default" formControlName="categoryControl">
         <option value="" disabled selected>Choose your catgory</option>
         <option value="Interior">Interior</option>
         <option value="Garden">Garden</option>
@@ -17,48 +17,48 @@
     <label>Size</label>
     <div class="">
       <label>
-        <input class="with-gap" name="size" [formControl]="size" type="radio" (click)="filterSize('XS')"  value="XS"/>
+        <input class="with-gap" name="size" formControlName="size" type="radio" (click)="filterSize('XS')"  value="XS"/>
         <span>XS</span>
       </label>
       <label>
-        <input class="with-gap" name="size" [formControl]="size" type="radio" (click)="filterSize('S')" value="S"/>
+        <input class="with-gap" name="size" formControlName="size" type="radio" (click)="filterSize('S')" value="S"/>
         <span>S</span>
       </label>
       <label>
-        <input class="with-gap" name="size" [formControl]="size" type="radio" (click)="filterSize('M')" value="M"/>
+        <input class="with-gap" name="size" formControlName="size" type="radio" (click)="filterSize('M')" value="M"/>
         <span>M</span>
       </label>
       <label>
-        <input class="with-gap" name="size" [formControl]="size" type="radio" (click)="filterSize('L')" value="L"/>
+        <input class="with-gap" name="size" formControlName="size" type="radio" (click)="filterSize('L')" value="L"/>
         <span>L</span>
       </label>
       <label>
-        <input class="with-gap" name="size" [formControl]="size" type="radio" (click)="filterSize('XL')" value="XL"/>
+        <input class="with-gap" name="size" formControlName="size" type="radio" (click)="filterSize('XL')" value="XL"/>
         <span>XL</span>
       </label>
       <label>
-        <input class="with-gap" name="size" [formControl]="size" type="radio" (click)="filterSize('2XL')" value="2XL"/>
+        <input class="with-gap" name="size" formControlName="size" type="radio" (click)="filterSize('2XL')" value="2XL"/>
         <span>2XL</span>
       </label>
       <label>
-        <input class="with-gap" name="size" [formControl]="size" type="radio" (click)="filterSize('3XL')" value="3XL"/>
+        <input class="with-gap" name="size" formControlName="size" type="radio" (click)="filterSize('3XL')" value="3XL"/>
         <span>3XL</span>
       </label>
     </div>
   </div>
   <div class="col m1 s6"><label>
-    <input type="checkbox" (change)="changeFastDelivery()" [formControl]="fastDeliveryControl" />
+    <input type="checkbox" (change)="changeFastDelivery()" formControlName="fastDeliveryControl" />
     <span>Only Fast Delivery</span>
   </label></div>
   <div class="col m4 s6">
     <div class="input-field">
       <i class="material-icons prefix">search</i>
-      <input placeholder="Search Product.." [formControl]="search">
+      <input placeholder="Search Product.." formControlName="search">
     </div>
   </div>
   <div class="col m2 s6">
     <label>Sort by</label>
-    <select class="browser-default" [formControl]="sortControl">
+    <select class="browser-default" formControlName="sortControl">
       <option value="+title">Name - ASC</option>
       <option value="-title">Name - DESC</option>
       <option value="+price">Price - ASC</option>
@@ -71,13 +71,16 @@
       <option value="-familly">Family - DESC</option>
     </select>
   </div>
-</div>
+</form>
 
-<div *ngIf="(filters$ | async).length">Filter :
+<div *ngIf="(filters$ | async).length">
+  Filter :
 
   <div class="chip" *ngFor="let filter of (filters$ | async)" (click)="removeFilter(filter.id)">
     {{filter.name}}
     <i class="close material-icons">close</i>
   </div>
+
+  <a class="waves-effect waves-teal btn-flat" (click)="removeFilterAll()">remove all</a>
 
 </div>
