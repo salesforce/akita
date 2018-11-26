@@ -10,6 +10,7 @@ import { __globalState } from '../internal/global-state';
 import { getAkitaConfig } from './config';
 
 let __DEV__ = true;
+const isNotBrowser = typeof window === 'undefined';
 
 export const __stores__: { [storeName: string]: Store<any> } = {};
 
@@ -246,6 +247,7 @@ export class Store<S> {
   }
 
   ngOnDestroy() {
+    if (isNotBrowser) return;
     if (!(window as any).hmrEnabled && this === __stores__[this.storeName]) {
       delete __stores__[this.storeName];
     }
