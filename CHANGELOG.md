@@ -1,3 +1,10 @@
+## [1.22.1](https://github.com/datorama/akita/compare/v1.22.0...v1.22.1) (2018-11-26)
+
+
+### Bug Fixes
+
+* **store:** support ssr ([f871066](https://github.com/datorama/akita/commit/f871066)), closes [#131](https://github.com/datorama/akita/issues/131)
+
 # [1.22.0](https://github.com/datorama/akita/compare/v1.21.0...v1.22.0) (2018-11-24)
 
 
