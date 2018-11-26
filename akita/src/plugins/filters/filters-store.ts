@@ -46,8 +46,4 @@ export class FiltersStore extends EntityStore<FiltersState, Filter> {
   constructor() {
     super();
   }
-
-  clean() {
-    this.remove(this._value().id);
-  }
 }

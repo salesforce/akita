@@ -104,7 +104,7 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P extends Fi
    * Clear all filters
    */
   cleanFilters() {
-    this.filterStore.clean();
+    this.filterStore.remove();
   }
 
   /**
