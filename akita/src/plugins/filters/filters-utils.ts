@@ -1,4 +1,4 @@
-import { isDefined, isObject } from '../../internal/utils';
+import { isDefined, isObject, isString } from '../../internal/utils';
 import { Filter } from './filters-store';
 
 /**
@@ -7,7 +7,7 @@ import { Filter } from './filters-store';
  * @param inObj
  */
 export function defaultFilter<E = any>(inElement: E, index: number, array: E[], filter: Filter) {
-  if (isObject(inElement) && isDefined(filter.value)) {
+  if (isObject(inElement) && isDefined(filter.value) && isString(filter.value)) {
     return searchFilter(filter.value, inElement);
   }
   return isDefined(filter.value) ? filter.value === inElement : inElement;
