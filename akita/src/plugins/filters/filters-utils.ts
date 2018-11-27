@@ -2,7 +2,7 @@ import { isDefined, isObject } from '../../internal/utils';
 import { Filter } from './filters-store';
 
 /**
- * Helper function to do do a default filter
+ * Helper function to do a default filter
  * @param searchKey
  * @param inObj
  */

@@ -25,7 +25,7 @@ describe('FiltersPlugin', () => {
         expect(filters.filterQuery.hasEntity('filter3')).toEqual(true);
       });
 
-      it('should add filter if not exist with all default value', () => {
+      it('should add filter if not exist with all default values', () => {
         filters.setFilter({ id: 'filter4', function: filter => filter.id });
         expect(filters.filterQuery.getCount()).toEqual(4);
         expect(filters.filterQuery.getEntity('filter4').id).toEqual('filter4');
@@ -77,7 +77,7 @@ describe('FiltersPlugin', () => {
         expect(filtersAll[1].id).toEqual('filter3');
       });
     });
-    describe('SelectALL with Filters ', () => {
+    describe('SelectAll with Filters ', () => {
       beforeEach(() => {
         widgetsStore.remove();
         filters.filterStore.remove();
@@ -163,7 +163,7 @@ describe('FiltersPlugin', () => {
       });
     });
 
-    describe('SelectALL when any change in filter, or entities', () => {
+    describe('SelectAll when any change in filter, or entities', () => {
       jest.useFakeTimers();
 
       beforeEach(() => {
