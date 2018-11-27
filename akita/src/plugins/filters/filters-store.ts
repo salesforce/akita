@@ -27,7 +27,7 @@ export type Filter = {
  */
 export function createFilter(filterParams: Partial<Filter>) {
   const id: ID = filterParams.id ? filterParams.id : guid();
-  const computedName: string = filterParams.value && filterParams.id ? capitalize(filterParams.id.toString()) + ': ' + filterParams.value.toString() : undefined;
+  const computedName: string = filterParams.value && filterParams.id ? ` ${capitalize(filterParams.id.toString())}: ${filterParams.value.toString()} ` : undefined;
 
   if (!filterParams.function && filterParams.value) {
     /** use default function, if not provided */

@@ -170,4 +170,14 @@ export abstract class EntityCollectionPlugin<E, P> {
       }
     }
   }
+
+  /** This method is responsible for getting access to the query. */
+  protected getQuery(): QueryEntity<E, any> {
+    return this.query;
+  }
+
+  /** This method is responsible for getting access to the store. */
+  protected getStore() {
+    return this.getQuery().__store__;
+  }
 }

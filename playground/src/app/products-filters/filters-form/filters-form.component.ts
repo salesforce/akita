@@ -35,7 +35,8 @@ export class FiltersFormComponent implements OnInit, OnDestroy {
           id: 'search',
           value: search,
           order: 20,
-          name: '" ' + search + ' "',
+          name: `" ${search} "`,
+
           function: (value: ProductPlant, index, array) => {
             return searchFilter(search, value);
           }

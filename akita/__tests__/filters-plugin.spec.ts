@@ -44,7 +44,7 @@ describe('FiltersPlugin', () => {
 
         filters.setFilter({ id: 'filter2', value: 'aaaa' });
         expect(filters.filterQuery.getEntity('filter2').value).toEqual('aaaa');
-        expect(filters.filterQuery.getEntity('filter2').name).toEqual('Filter2: aaaa');
+        expect(filters.filterQuery.getEntity('filter2').name).toEqual(' Filter2: aaaa ');
       });
 
       it('should remove filter 2', () => {
@@ -100,7 +100,7 @@ describe('FiltersPlugin', () => {
           });
       });
 
-      it('should apply filter if provided when select all', done1 => {
+      it('should apply filter if provided when select all', () => {
         filters.setFilter({ id: 'filter1', function: filter => filter.id % 2 === 1 });
 
         filters
@@ -111,11 +111,10 @@ describe('FiltersPlugin', () => {
             expect(result.length).toEqual(2);
             expect(result[0].id).toEqual(1);
             expect(result[1].id).toEqual(3);
-            done1();
           });
       });
 
-      it('should apply 2 filter if provided when select all', done2 => {
+      it('should apply 2 filter if provided when select all', () => {
         filters.setFilter({ id: 'filter1', function: filter => filter.id % 2 === 1 });
         filters.setFilter({ id: 'filter2', function: filter => filter.complete });
 
@@ -126,11 +125,10 @@ describe('FiltersPlugin', () => {
             expect(Array.isArray(result1)).toBeTruthy();
             expect(result1.length).toEqual(1);
             expect(result1[0].id).toEqual(3);
-            done2();
           });
       });
 
-      it('should apply 2 filter in current order if provided when select all', done3 => {
+      it('should apply 2 filter in current order if provided when select all', () => {
         filters.setFilter({ id: 'filter2', function: filter => filter.complete });
         filters.setFilter({ id: 'filter1', function: filter => filter.id % 2 === 1 });
 
@@ -142,11 +140,10 @@ describe('FiltersPlugin', () => {
             expect(result2.length).toEqual(1);
             expect(result2[0].id).toEqual(3);
 
-            done3();
           });
       });
 
-      it('should apply 2 filter with specified order if order is specified when select all', done3 => {
+      it('should apply 2 filter with specified order if order is specified when select all', () => {
         filters.setFilter({ id: 'filter1', function: filter => filter.id % 2 === 1, order: 2 });
         filters.setFilter({ id: 'filter2', function: filter => filter.complete, order: 1 });
 
@@ -157,8 +154,6 @@ describe('FiltersPlugin', () => {
             expect(Array.isArray(result2)).toBeTruthy();
             expect(result2.length).toEqual(1);
             expect(result2[0].id).toEqual(3);
-
-            done3();
           });
       });
     });
@@ -247,7 +242,7 @@ describe('FiltersPlugin', () => {
           });
       });
 
-      it('should apply sort if provided in other sens', done1 => {
+      it('should apply sort if provided in other sens', () => {
         jest.setTimeout(1000);
 
         filters.setSortBy({ sortBy: 'id', sortByOrder: Order.DESC });
@@ -263,11 +258,10 @@ describe('FiltersPlugin', () => {
             expect(result[1].id).toEqual(3);
             expect(result[2].id).toEqual(2);
             expect(result[3].id).toEqual(1);
-            done1();
           });
       });
 
-      it('should apply filter and sort', done2 => {
+      it('should apply filter and sort', () => {
         filters.setSortBy({ sortBy: 'id', sortByOrder: Order.DESC });
         filters.setFilter({ id: 'filter1', function: filter => filter.id % 2 === 1 });
 
@@ -279,7 +273,6 @@ describe('FiltersPlugin', () => {
             expect(result.length).toEqual(2);
             expect(result[0].id).toEqual(3);
             expect(result[1].id).toEqual(1);
-            done2();
           });
       });
     });

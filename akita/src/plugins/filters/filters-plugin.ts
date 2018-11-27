@@ -20,7 +20,7 @@ export type FiltersParams = {
  * Filters plugins is usefull to define some filters to be apply for your query
  *
  */
-export class FiltersPlugin<S extends EntityState<E> = any, E = any, P extends FilterPlugin<E, S> = any> extends EntityCollectionPlugin<E, P> {
+export class FiltersPlugin<S extends EntityState<E> = any, E = any, P = any> extends EntityCollectionPlugin<E, P> {
   private _selectFilter$: Observable<Filter[]>;
   private readonly _filterStore: FiltersStore;
   private readonly _filterQuery: FiltersQuery;
@@ -35,7 +35,7 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P extends Fi
 
   constructor(protected query: QueryEntity<S, E>, private params: FiltersParams = {}) {
     super(query, params.entityIds);
-    this.params = { ...{ filtersStoreName: query.__store__.storeName + 'Filters' }, ...params };
+    this.params = { ...{ filtersStoreName: this.getStore().storeName + 'Filters' }, ...params };
 
     this._filterStore = new FiltersStore();
     this._filterQuery = new FiltersQuery(this._filterStore);
@@ -68,7 +68,7 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P extends Fi
    * @param options
    */
   selectAllByFilter(options: SelectOptions<E> = {}): Observable<E[]> {
-    return combineLatest(this._selectFilter$, this.query.selectAll(options), this.filterQuery.select(state => state.sort)).pipe(
+    return combineLatest(this._selectFilter$, this.getQuery().selectAll(options), this.filterQuery.select(state => state.sort)).pipe(
       map(([filters, entities, sort]) => {
         let entitiesFiltered = this.applyFilters(entities, filters);
 
@@ -149,15 +149,11 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P extends Fi
   }
 
   protected instantiatePlugin(id: ID): P {
-    return new FilterPlugin(this.query) as P;
+    return null;
   }
 
-  destroy(id?: ID) {}
+  destroy() {
+    this.cleanFilters();
+  }
 }
 
-class FilterPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
-  constructor(protected query: Queries<E, S>) {
-    super(query);
-  }
-  destroy() {}
-}
