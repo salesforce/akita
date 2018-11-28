@@ -22,7 +22,7 @@ export interface Filter<E> {
 
 export function createFilter<E>( filterParams: Partial<Filter<E>> ) {
   const id = filterParams.id ? filterParams.id : guid();
-  const name = filterParams.name || filterParams.value && filterParams.id ? `${capitalize(filterParams.id.toString())}: ${filterParams.value.toString()} ` : undefined;
+  const name = filterParams.name || (filterParams.value && filterParams.id ? `${capitalize(filterParams.id.toString())}: ${filterParams.value.toString()} ` : undefined);
   if( !filterParams.predicate && filterParams.value ) {
     /** use default function, if not provided */
     filterParams.predicate = defaultFilter;

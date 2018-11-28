@@ -44,7 +44,7 @@ describe('FiltersPlugin', () => {
 
         filters.setFilter({ id: 'filter2', value: 'aaaa' });
         expect(filters.filterQuery.getEntity('filter2').value).toEqual('aaaa');
-        expect(filters.filterQuery.getEntity('filter2').name).toEqual(' Filter2: aaaa ');
+        expect(filters.filterQuery.getEntity('filter2').name).toEqual('Filter2: aaaa');
       });
 
       it('should remove filter 2', () => {
