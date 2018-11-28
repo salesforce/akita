@@ -17,7 +17,7 @@
     <label>Size</label>
     <div class="">
       <label>
-        <input class="with-gap" name="size" formControlName="size" type="radio" (click)="filterSize('XS')"  value="XS"/>
+        <input class="with-gap" name="size" formControlName="size" type="radio" (click)="filterSize('XS')" value="XS"/>
         <span>XS</span>
       </label>
       <label>
@@ -37,17 +37,19 @@
         <span>XL</span>
       </label>
       <label>
-        <input class="with-gap" name="size" formControlName="size" type="radio" (click)="filterSize('2XL')" value="2XL"/>
+        <input class="with-gap" name="size" formControlName="size" type="radio" (click)="filterSize('2XL')"
+               value="2XL"/>
         <span>2XL</span>
       </label>
       <label>
-        <input class="with-gap" name="size" formControlName="size" type="radio" (click)="filterSize('3XL')" value="3XL"/>
+        <input class="with-gap" name="size" formControlName="size" type="radio" (click)="filterSize('3XL')"
+               value="3XL"/>
         <span>3XL</span>
       </label>
     </div>
   </div>
   <div class="col m1 s6"><label>
-    <input type="checkbox" (change)="changeFastDelivery()" formControlName="fastDeliveryControl" />
+    <input type="checkbox" (change)="changeFastDelivery()" formControlName="fastDeliveryControl"/>
     <span>Only Fast Delivery</span>
   </label></div>
   <div class="col m4 s6">

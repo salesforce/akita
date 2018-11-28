@@ -13,9 +13,9 @@ describe('FiltersPlugin', () => {
       beforeEach(() => {
         filters.filterStore.remove();
 
-        filters.setFilter({ id: 'filter1', function: filter => filter.id % 2 === 0 });
-        filters.setFilter({ id: 'filter2', function: filter => filter });
-        filters.setFilter({ id: 'filter3', function: filter => filter });
+        filters.setFilter({ id: 'filter1', predicate: filter => filter.id % 2 === 0 });
+        filters.setFilter({ id: 'filter2', predicate: filter => filter });
+        filters.setFilter({ id: 'filter3', predicate: filter => filter });
       });
 
       it('should take all filters by default', () => {
@@ -26,7 +26,7 @@ describe('FiltersPlugin', () => {
       });
 
       it('should add filter if not exist with all default values', () => {
-        filters.setFilter({ id: 'filter4', function: filter => filter.id });
+        filters.setFilter({ id: 'filter4', predicate: filter => filter.id });
         expect(filters.filterQuery.getCount()).toEqual(4);
         expect(filters.filterQuery.getEntity('filter4').id).toEqual('filter4');
         expect(filters.filterQuery.getEntity('filter4').hide).toEqual(false);
@@ -101,7 +101,7 @@ describe('FiltersPlugin', () => {
       });
 
       it('should apply filter if provided when select all', () => {
-        filters.setFilter({ id: 'filter1', function: filter => filter.id % 2 === 1 });
+        filters.setFilter({ id: 'filter1', predicate: filter => filter.id % 2 === 1 });
 
         filters
           .selectAllByFilter()
@@ -115,8 +115,8 @@ describe('FiltersPlugin', () => {
       });
 
       it('should apply 2 filter if provided when select all', () => {
-        filters.setFilter({ id: 'filter1', function: filter => filter.id % 2 === 1 });
-        filters.setFilter({ id: 'filter2', function: filter => filter.complete });
+        filters.setFilter({ id: 'filter1', predicate: filter => filter.id % 2 === 1 });
+        filters.setFilter({ id: 'filter2', predicate: filter => filter.complete });
 
         filters
           .selectAllByFilter()
@@ -129,8 +129,8 @@ describe('FiltersPlugin', () => {
       });
 
       it('should apply 2 filter in current order if provided when select all', () => {
-        filters.setFilter({ id: 'filter2', function: filter => filter.complete });
-        filters.setFilter({ id: 'filter1', function: filter => filter.id % 2 === 1 });
+        filters.setFilter({ id: 'filter2', predicate: filter => filter.complete });
+        filters.setFilter({ id: 'filter1', predicate: filter => filter.id % 2 === 1 });
 
         filters
           .selectAllByFilter()
@@ -144,8 +144,8 @@ describe('FiltersPlugin', () => {
       });
 
       it('should apply 2 filter with specified order if order is specified when select all', () => {
-        filters.setFilter({ id: 'filter1', function: filter => filter.id % 2 === 1, order: 2 });
-        filters.setFilter({ id: 'filter2', function: filter => filter.complete, order: 1 });
+        filters.setFilter({ id: 'filter1', predicate: filter => filter.id % 2 === 1, order: 2 });
+        filters.setFilter({ id: 'filter2', predicate: filter => filter.complete, order: 1 });
 
         filters
           .selectAllByFilter()
@@ -186,14 +186,14 @@ describe('FiltersPlugin', () => {
           });
 
         jest.runAllTimers();
-        filters.setFilter({ id: 'filter2', function: filter => filter.complete });
+        filters.setFilter({ id: 'filter2', predicate: filter => filter.complete });
         jest.runAllTimers();
       });
 
       it('should send a new value when add new entity', done3 => {
         jest.setTimeout(3000);
         let count = 0;
-        filters.setFilter({ id: 'filter2', function: filter => filter.complete });
+        filters.setFilter({ id: 'filter2', predicate: filter => filter.complete });
 
         filters
           .selectAllByFilter()
@@ -263,7 +263,7 @@ describe('FiltersPlugin', () => {
 
       it('should apply filter and sort', () => {
         filters.setSortBy({ sortBy: 'id', sortByOrder: Order.DESC });
-        filters.setFilter({ id: 'filter1', function: filter => filter.id % 2 === 1 });
+        filters.setFilter({ id: 'filter1', predicate: filter => filter.id % 2 === 1 });
 
         filters
           .selectAllByFilter()

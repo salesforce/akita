@@ -13,7 +13,8 @@ export class ProductsListComponent implements OnInit {
   products$: Observable<ProductPlant[]>;
   loading$: Observable<boolean>;
 
-  constructor(private productsService: ProductsFiltersService, private containerBasedService: ContainerBasedService, private cartService: CartService, private productsQuery: ProductsFiltersQuery) {}
+  constructor( private productsService: ProductsFiltersService, private containerBasedService: ContainerBasedService, private cartService: CartService, private productsQuery: ProductsFiltersQuery ) {
+  }
 
   ngOnInit() {
     this.productsService.get().subscribe();
@@ -26,7 +27,7 @@ export class ProductsListComponent implements OnInit {
    *
    * @param {ID} id
    */
-  addProductToCart({ id }: ProductPlant) {
+  addProductToCart( { id }: ProductPlant ) {
     this.cartService.addProductToCart(id);
   }
 
@@ -34,7 +35,7 @@ export class ProductsListComponent implements OnInit {
    *
    * @param {ID} id
    */
-  subtract({ id }: ProductPlant) {
+  subtract( { id }: ProductPlant ) {
     this.cartService.subtract(id);
   }
 }

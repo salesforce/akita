@@ -4,24 +4,15 @@ import { ProductPlant } from '../state';
 @Component({
   selector: 'app-product-filter',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  styles: [
-    `
-      .app-product-filter {
-        min-height: 600px;
-        max-height: 600px;
-      }
-      .app-product-filter .card-image img {
-        min-height: 250px;
-        height: 250px;
-        max-height: 250px;
-      }
-    `
-  ],
-  templateUrl: `./product-filters.component.html`
+  templateUrl: `./product-filters.component.html`,
+  styles: [`:host {
+    display: block;
+    width: 100%;
+  }`]
 })
 export class ProductFiltersComponent {
   @Input()
-  product: ProductPlant;
+  products: ProductPlant[];
   @Output()
   add = new EventEmitter<ProductPlant>();
   @Output()
