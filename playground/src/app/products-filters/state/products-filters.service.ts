@@ -15,9 +15,7 @@ import { Filter } from '../../../../../akita/src/plugins/filters/filters-store';
 export class ProductsFiltersService {
   private filtersProduct: FiltersPlugin<ProductPlantState, ProductPlant>;
 
-  constructor(private productsStore: ProductsFiltersStore,
-              private productsQuery: ProductsFiltersQuery,
-              private productsDataService: ProductsFiltersDataService) {
+  constructor(private productsStore: ProductsFiltersStore, private productsQuery: ProductsFiltersQuery, private productsDataService: ProductsFiltersDataService) {
     this.filtersProduct = new FiltersPlugin<ProductPlantState, ProductPlant>(this.productsQuery);
   }
 
@@ -29,12 +27,6 @@ export class ProductsFiltersService {
     const request = this.productsDataService.get().pipe(
       tap(response => {
         this.productsStore.set(response);
-        // applyAction(
-        //   () => {
-        //     this.productsStore.set(response);
-        //   },
-        //   { type: '[Products Service] Fetch All' }
-        // );
       })
     );
 
@@ -45,24 +37,27 @@ export class ProductsFiltersService {
     this.filtersProduct.setFilter(filter);
   }
 
-  setOrder(by: any, order: '+'|'-') {
-
-    this.filtersProduct.setSortBy({sortBy: by, sortByOrder: order === '+'? Order.ASC : Order.DESC});
+  setOrderBy(by: any, order: string | '+' | '-') {
+    this.filtersProduct.setSortBy({ sortBy: by, sortByOrder: order === '+' ? Order.ASC : Order.DESC });
   }
 
   removeFilter(id: string) {
     this.filtersProduct.removeFilter(id);
   }
 
-   getFilterValue(id: string): any | null {
+  removeAllFilter() {
+    this.filtersProduct.cleanFilters();
+  }
+
+  getFilterValue(id: string): any | null {
     return this.filtersProduct.getFilterValue(id);
   }
 
   getSortValue(): string | null {
     const sortValue = this.filtersProduct.getSortValue();
     if (!sortValue) return '+title';
-    const order = sortValue.sortByOrder === Order.ASC? '+' : '-';
-    return sortValue.sortBy? order + sortValue.sortBy : '+title';
+    const order = sortValue.sortByOrder === Order.ASC ? '+' : '-';
+    return sortValue.sortBy ? order + sortValue.sortBy : '+title';
   }
 
   selectFilters(): Observable<Filter[]> {
@@ -73,13 +68,5 @@ export class ProductsFiltersService {
     return this.filtersProduct.selectAllByFilter();
   }
 
-  /**
-   *
-   * @param {ID} id
-   */
-  getProduct(id: ID) {
-    this.productsDataService.getProduct(id).subscribe(product => {
-      this.productsStore.add(product);
-    });
-  }
+
 }

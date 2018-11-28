@@ -8,8 +8,8 @@ export type ProductPlant = {
   description: string;
   origin: string;
   price: number;
-  category: string, //"Interior|Garden|Balcony|Flowers|Tree|Roses"
-  size: string,
-  image: string,
-  rapidDelivery: boolean
+  category: string; //"Interior|Garden|Balcony|Flowers|Tree|Roses"
+  size: string;
+  image: string;
+  rapidDelivery: boolean;
 };

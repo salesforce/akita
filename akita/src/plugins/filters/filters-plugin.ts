@@ -1,6 +1,5 @@
-import { AddOptions, EntityState, ID } from '../../api/types';
+import { EntityState, ID } from '../../api/types';
 import { EntityCollectionPlugin } from '../entity-collection-plugin';
-import { FilterPlugin } from './filter-plugin';
 import { QueryEntity, SelectOptions } from '../../api/query-entity';
 import { createFilter, Filter, FiltersState, FiltersStore } from './filters-store';
 import { FiltersQuery } from './filters-query';
@@ -9,28 +8,19 @@ import { map } from 'rxjs/operators';
 import { SortByOptions } from '../../api/query-config';
 import { isFunction } from '../../internal/utils';
 import { compareValues } from '../../internal/sort';
+import { AkitaPlugin, Queries } from '../plugin';
 
 export type FiltersParams = {
   entityIds?: ID | ID[];
+  filtersStoreName?: string;
   [key: string]: any;
-};
-
-/**
- * Helper function to do search
- * @param searchKey
- * @param inObj
- */
-export var searchObjFunction = function(searchKey: string, inObj) {
-  return Object.keys(inObj).some(function(key) {
-    return  typeof inObj[key] === 'string' && inObj[key].toLocaleLowerCase().includes(searchKey.toLocaleLowerCase());
-  });
 };
 
 /**
  * Filters plugins is usefull to define some filters to be apply for your query
  *
  */
-export class FiltersPlugin<S extends EntityState<E> = any, E = any, P extends FilterPlugin<E, S> = any> extends EntityCollectionPlugin<E, P> {
+export class FiltersPlugin<S extends EntityState<E> = any, E = any, P = any> extends EntityCollectionPlugin<E, P> {
   private _selectFilter$: Observable<Filter[]>;
   private readonly _filterStore: FiltersStore;
   private readonly _filterQuery: FiltersQuery;
@@ -43,30 +33,34 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P extends Fi
     return this._filterQuery;
   }
 
-
-
   constructor(protected query: QueryEntity<S, E>, private params: FiltersParams = {}) {
     super(query, params.entityIds);
-    this.params = { ...{  }, ...params };
+    this.params = { ...{ filtersStoreName: this.getStore().storeName + 'Filters' }, ...params };
 
     this._filterStore = new FiltersStore();
     this._filterQuery = new FiltersQuery(this._filterStore);
 
-    this._selectFilter$ = this._filterQuery.selectAll({sortBy: 'order'});
+    this._selectFilter$ = this._filterQuery.selectAll({ sortBy: 'order' });
   }
 
   /**
-   * Get all the filters
+   * Select all the filters
+   *
+   * Note: filters with hide=true, will not be displayed. If you want it, call directly the filterQuery :
+   * `this.filterQuery.selectAll()`
    */
   selectFilters(): Observable<Filter[]> {
-    return this._filterQuery.selectAll({sortBy: 'order', filterBy: (filter) => !filter.hide});
+    return this._filterQuery.selectAll({ sortBy: 'order', filterBy: filter => !filter.hide });
   }
 
   /**
-   * Get all the filters
+   * Get all the current snapshot filters
+   *
+   *  Note: filters with hide=true, will not be displayed. If you want it, call directly the filterQuery :
+   * `this.filterQuery.getAll()`
    */
   getFilters(): Filter[] {
-    return this._filterQuery.getAll({filterBy: (filter) => !filter.hide});
+    return this._filterQuery.getAll({ filterBy: filter => !filter.hide });
   }
 
   /**
@@ -74,22 +68,18 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P extends Fi
    * @param options
    */
   selectAllByFilter(options: SelectOptions<E> = {}): Observable<E[]> {
-      return combineLatest(
-          this._selectFilter$,
-          this.query.selectAll(options),
-          this.filterQuery.select((state) => state.sort))
-        .pipe(
-          map(([filters, entities, sort]) => {
-            let entitiesFiltered = this.applyFilters(entities, filters);
+    return combineLatest(this._selectFilter$, this.getQuery().selectAll(options), this.filterQuery.select(state => state.sort)).pipe(
+      map(([filters, entities, sort]) => {
+        let entitiesFiltered = this.applyFilters(entities, filters);
 
-            if (sort) {
-              let _sortBy: any = isFunction(sort.sortBy) ? sort.sortBy : compareValues(sort.sortBy, sort.sortByOrder);
-              entitiesFiltered = entitiesFiltered.sort((a, b) => _sortBy(a, b, entities));
-            }
+        if (sort) {
+          let _sortBy: any = isFunction(sort.sortBy) ? sort.sortBy : compareValues(sort.sortBy, sort.sortByOrder);
+          entitiesFiltered = entitiesFiltered.sort((a, b) => _sortBy(a, b, entities));
+        }
 
-            return entitiesFiltered;
-          })
-        );
+        return entitiesFiltered;
+      })
+    );
   }
 
   /**
@@ -102,7 +92,6 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P extends Fi
     this.filterStore.createOrReplace(entity.id, entity);
   }
 
-
   /**
    * Remove a Filter
    * @param id
@@ -112,13 +101,20 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P extends Fi
   }
 
   /**
+   * Clear all filters
+   */
+  cleanFilters() {
+    this.filterStore.remove();
+  }
+
+  /**
    * Get filter value, return null, if value not available
    * @param id
    */
   getFilterValue(id: string): any | null {
     if (this.filterQuery.hasEntity(id)) {
       const entity: Filter = this.filterQuery.getEntity(id);
-      return entity.value? entity.value : null;
+      return entity.value ? entity.value : null;
     }
     return null;
   }
@@ -128,8 +124,8 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P extends Fi
    * @param id
    */
   getSortValue(): SortByOptions<E> | null {
-      const state: FiltersState = this.filterQuery.getSnapshot();
-      return state.sort? state.sort : null;
+    const state: FiltersState = this.filterQuery.getSnapshot();
+    return state.sort ? state.sort : null;
   }
 
   /**
@@ -137,30 +133,27 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P extends Fi
    * @param order
    */
   setSortBy(order: SortByOptions<E>) {
-    this.filterStore.updateRoot({sort: order});
+    this.filterStore.updateRoot({ sort: order });
   }
 
-
-
-  private applyFilters(entities: E[], filters: Filter[]) {
-    let entitiesFiltered: E[] = entities;
-    for (let filter of filters) {
-      if (filter.function) {
-        // @ts-ignore
-        entitiesFiltered = entitiesFiltered.filter<E>(filter.function);
-      }
-    }
-    return entitiesFiltered;
+  private applyFilters(entities: E[], filters: Filter[]): E[] {
+    if (filters.length === 0) return entities;
+    return entities.filter((value: E, index: number, array: E[]) => {
+      return !filters.some((filter: Filter) => {
+        if (filter.function) {
+          return !filter.function(value, index, array, filter);
+        }
+        return false;
+      });
+    });
   }
 
   protected instantiatePlugin(id: ID): P {
-    return new FilterPlugin(this.query) as P;
+    return null;
   }
 
-  destroy(id?: ID) {
-
+  destroy() {
+    this.cleanFilters();
   }
-
 }
-
 

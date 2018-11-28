@@ -114,3 +114,9 @@ export const getValue = (obj: any, prop: string) => {
     .join('.');
   return removeStoreName.split('.').reduce((acc: any, part: string) => acc && acc[part], obj);
 };
+
+
+export function capitalize(s: string)
+{
+  return s && s[0].toUpperCase() + s.slice(1);
+}
