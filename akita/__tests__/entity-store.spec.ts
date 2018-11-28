@@ -14,6 +14,18 @@ describe('EntitiesStore', () => {
       expect(store._value().entities[1]).toBeDefined();
     });
 
+    it(`should set empty array when passing null`, () => {
+      store.set(null);
+      expect(store._value().ids).toEqual([]);
+      expect(Object.keys(store._value().entities).length).toEqual(0);
+    });
+
+    it(`should set empty array when passing undefined`, () => {
+      store.set(undefined);
+      expect(store._value().ids).toEqual([]);
+      expect(Object.keys(store._value().entities).length).toEqual(0);
+    });
+
     it('should set a new instance when passing a class', () => {
       store.set([{ id: 1, title: '1' }], { entityClass: Todo });
       expect(store._value().entities[1]).toBeDefined();
@@ -81,9 +93,29 @@ describe('EntitiesStore', () => {
       expect(store.entities[1]).toBeDefined();
     });
 
-    it('should add with uid', () => {
-      store.add(new Todo({ id: 1 }));
+    it('should add many', () => {
+      store.add([new Todo({ id: 1 }), new Todo({ id: 2 })]);
       expect(store.entities[1]).toBeDefined();
+      expect(store.entities[2]).toBeDefined();
+    });
+
+    it('should NOT add if all exist', () => {
+      store.add([new Todo({ id: 1 }), new Todo({ id: 2 })]);
+      expect(store.entities[1]).toBeDefined();
+      expect(store.entities[2]).toBeDefined();
+      spyOn(store, 'setState').and.callThrough();
+      store.add([new Todo({ id: 1 }), new Todo({ id: 2 })]);
+      expect(store.setState).not.toHaveBeenCalled();
+    });
+
+    it('should add if one of them NOT exist', () => {
+      store.add([new Todo({ id: 1 }), new Todo({ id: 2 })]);
+      expect(store.entities[1]).toBeDefined();
+      expect(store.entities[2]).toBeDefined();
+      spyOn(store, 'setState').and.callThrough();
+      store.add([new Todo({ id: 1 }), new Todo({ id: 3 })]);
+      expect(store.setState).toHaveBeenCalled();
+      expect(store.entities[3]).toBeDefined();
     });
 
     it('should prepend with uid', () => {
@@ -255,6 +287,88 @@ describe('EntitiesStore', () => {
       expect(function() {
         store.updateActive({ title: 'update' });
       }).toThrow(new AkitaNoActiveError() as any);
+    });
+  });
+
+  describe('setActive - next/prev', () => {
+    it('should work next', () => {
+      const todos = [new Todo({ id: 1 }), new Todo({ id: 2 }), new Todo({ id: 3 }), new Todo({ id: 4 })];
+      store.add(todos);
+      store.setActive(1);
+      store.setActive({ next: true });
+      expect(store._value().active).toBe(2);
+      store.setActive({ next: true });
+      expect(store._value().active).toBe(3);
+      store.setActive({ next: true });
+      expect(store._value().active).toBe(4);
+      store.setActive({ next: true });
+      expect(store._value().active).toBe(1);
+      store.setActive({ next: true });
+      expect(store._value().active).toBe(2);
+    });
+
+    it('should work prev', () => {
+      const todos = [new Todo({ id: 1 }), new Todo({ id: 2 }), new Todo({ id: 3 }), new Todo({ id: 4 })];
+      store.add(todos);
+      store.setActive(1);
+      store.setActive({ prev: true });
+      expect(store._value().active).toBe(4);
+      store.setActive({ prev: true });
+      expect(store._value().active).toBe(3);
+      store.setActive({ prev: true });
+      expect(store._value().active).toBe(2);
+      store.setActive({ prev: true });
+      expect(store._value().active).toBe(1);
+      store.setActive({ prev: true });
+      expect(store._value().active).toBe(4);
+    });
+
+    it('should work mixed', () => {
+      const todos = [new Todo({ id: 1 }), new Todo({ id: 2 }), new Todo({ id: 3 }), new Todo({ id: 4 })];
+      store.add(todos);
+      store.setActive(1);
+      store.setActive({ prev: true });
+      expect(store._value().active).toBe(4);
+      store.setActive({ next: true });
+      expect(store._value().active).toBe(1);
+      store.setActive({ next: true });
+      expect(store._value().active).toBe(2);
+      store.setActive({ prev: true });
+      expect(store._value().active).toBe(1);
+    });
+
+    it('should not do anything if active isNil', () => {
+      const todos = [new Todo({ id: 1 }), new Todo({ id: 2 }), new Todo({ id: 3 }), new Todo({ id: 4 })];
+      store.add(todos);
+      store.setActive({ prev: true });
+      expect(store._value().active).toBe(null);
+    });
+
+    it('should work normally without object', () => {
+      const todos = [new Todo({ id: 1 }), new Todo({ id: 2 }), new Todo({ id: 3 }), new Todo({ id: 4 })];
+      store.add(todos);
+      store.setActive(2);
+      expect(store._value().active).toBe(2);
+      store.setActive(3);
+      expect(store._value().active).toBe(3);
+      store.setActive({ prev: true });
+      expect(store._value().active).toBe(2);
+    });
+
+    it('should work without cycle', () => {
+      const todos = [new Todo({ id: 1 }), new Todo({ id: 2 }), new Todo({ id: 3 }), new Todo({ id: 4 })];
+      store.add(todos);
+      store.setActive(1);
+      store.setActive({ prev: true, wrap: false });
+      expect(store._value().active).toBe(1);
+      store.setActive({ next: true, wrap: false });
+      expect(store._value().active).toBe(2);
+      store.setActive({ next: true, wrap: false });
+      expect(store._value().active).toBe(3);
+      store.setActive({ next: true, wrap: false });
+      expect(store._value().active).toBe(4);
+      store.setActive({ next: true, wrap: false });
+      expect(store._value().active).toBe(4);
     });
   });
 

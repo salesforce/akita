@@ -1,4 +1,4 @@
-import { EntityState, ID } from '../../api/types';
+import { EntityState, HashMap, ID } from '../../api/types';
 import { EntityCollectionPlugin } from '../entity-collection-plugin';
 import { QueryEntity, SelectOptions } from '../../api/query-entity';
 import { createFilter, Filter, FiltersState, FiltersStore } from './filters-store';
@@ -39,9 +39,9 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P = any> ext
   }
 
   /**
-   * Select all the filters
+   *  Select all filters
    *
-   * Note: filters with hide=true, will not be displayed. If you want it, call directly the filterQuery:
+   *  Note: filters with hide=true, will not be displayed. If you want it, call directly to:
    * `this.filterQuery.selectAll()`
    */
   selectFilters(): Observable<Filter<E>[]> {
@@ -51,7 +51,7 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P = any> ext
   /**
    * Get all the current snapshot filters
    *
-   *  Note: filters with hide=true, will not be displayed. If you want it, call directly the filterQuery :
+   *  Note: filters with hide=true, will not be displayed. If you want it, call directly to:
    * `this.filterQuery.getAll()`
    */
   getFilters(): Filter<E>[] {
@@ -87,25 +87,26 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P = any> ext
   /**
    * Remove a Filter
    */
-  removeFilter( id: string ) {
+  removeFilter( id: ID ) {
     this.filterStore.remove(id);
   }
 
   /**
    * Clear all filters
    */
-  cleanFilters() {
+  clearFilters() {
     this.filterStore.remove();
   }
 
   /**
    * Get filter value, return null, if value not available
    */
-  getFilterValue( id: string ): any | null {
+  getFilterValue<T = any>( id: string ): T | null {
     if( this.filterQuery.hasEntity(id) ) {
       const entity: Filter<E> = this.filterQuery.getEntity(id);
       return entity.value ? entity.value : null;
     }
+
     return null;
   }
 
@@ -122,6 +123,34 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P = any> ext
    */
   setSortBy( order: SortByOptions<E> ) {
     this.filterStore.updateRoot({ sort: order });
+  }
+
+  /**
+   * Get the filters normalized as key value or as query params.
+   * This can be useful for server-side filtering
+   */
+  getNormalizedFilters( options: { withSort?: boolean, asQueryParams?: boolean } = {} ): string | HashMap<any> {
+    let result = {};
+
+    for( const filter of this.getFilters() ) {
+      result[filter.id] = filter.value;
+    }
+
+    if( options.withSort ) {
+      const sort = this.getSortValue();
+      result['sortBy'] = sort.sortBy;
+      result['sortByOrder'] = sort.sortByOrder;
+    }
+
+    if( options.asQueryParams ) {
+      return this.serialize(result);
+    }
+
+    return result;
+  }
+
+  private serialize( obj ) {
+    return Object.keys(obj).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(obj[k])}`).join('&');
   }
 
   private applyFilters( entities: E[], filters: Filter<E>[] ): E[] {
@@ -141,7 +170,7 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P = any> ext
   }
 
   destroy() {
-    this.cleanFilters();
+    this.clearFilters();
   }
 }
 

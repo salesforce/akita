@@ -11,7 +11,7 @@ import { ActiveState, EntityState, HashMap, ID } from './types';
 
 export interface SelectOptions<E> extends SortByOptions<E> {
   asObject?: boolean;
-  filterBy?: ((entity: E, index?: number) => boolean) | undefined;
+  filterBy?: ((entity: E, index?: number) => boolean) | ((entity: E, index?: number) => boolean)[] | undefined;
   limitTo?: number;
 }
 
@@ -261,8 +261,15 @@ function toArray<E, S extends EntityState>(state: S, options: SelectOptions<E>):
       continue;
     }
 
-    if (filterBy(entities[id], i)) {
-      arr.push(entities[id]);
+    if (Array.isArray(filterBy)) {
+      const allPass = filterBy.every(fn => fn(entities[id], i));
+      if (allPass) {
+        arr.push(entities[id]);
+      }
+    } else {
+      if (filterBy(entities[id], i)) {
+        arr.push(entities[id]);
+      }
     }
   }
 
@@ -293,9 +300,17 @@ function toMap<E>(ids: any[], entities: HashMap<E>, options: SelectOptions<E>, g
       if (!entityExists(id, entities)) {
         continue;
       }
-      if (filterBy(entities[id], i)) {
-        map[id] = entities[id];
-        count++;
+      if (Array.isArray(filterBy)) {
+        const allPass = filterBy.every(fn => fn(entities[id], i));
+        if (allPass) {
+          map[id] = entities[id];
+          count++;
+        }
+      } else {
+        if (filterBy(entities[id], i)) {
+          map[id] = entities[id];
+          count++;
+        }
       }
     }
   } else {
@@ -311,8 +326,15 @@ function toMap<E>(ids: any[], entities: HashMap<E>, options: SelectOptions<E>, g
         continue;
       }
 
-      if (toBoolean(filterBy(entities[id], i))) {
-        map[id] = entities[id];
+      if (Array.isArray(filterBy)) {
+        const allPass = filterBy.every(fn => fn(entities[id], i));
+        if (allPass) {
+          map[id] = entities[id];
+        }
+      } else {
+        if (filterBy(entities[id], i)) {
+          map[id] = entities[id];
+        }
       }
     }
   }

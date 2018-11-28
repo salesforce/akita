@@ -71,10 +71,14 @@ export class FiltersFormComponent implements OnInit, OnDestroy {
     }, { emitEvent: false });
   }
 
+  getNormalizedFilters() {
+    console.log(this.productsService.filtersProduct.getNormalizedFilters({ withSort: true, asQueryParams: true }));
+  }
+
   filterSize( size: string ) {
     this.productsService.setFilter({
       id: 'size',
-      name: size + ' size',
+      name: `${size} size`,
       value: size,
       predicate: entity => entity.size === size
     });

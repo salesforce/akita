@@ -13,7 +13,7 @@ import { Filter } from '../../../../../akita/src/plugins/filters/filters-store';
   providedIn: 'root'
 })
 export class ProductsFiltersService {
-  private filtersProduct: FiltersPlugin<ProductPlantState, ProductPlant>;
+  filtersProduct: FiltersPlugin<ProductPlantState, ProductPlant>;
 
   constructor( private productsStore: ProductsFiltersStore, private productsQuery: ProductsFiltersQuery, private productsDataService: ProductsFiltersDataService ) {
     this.filtersProduct = new FiltersPlugin<ProductPlantState, ProductPlant>(this.productsQuery);
@@ -46,7 +46,7 @@ export class ProductsFiltersService {
   }
 
   removeAllFilter() {
-    this.filtersProduct.cleanFilters();
+    this.filtersProduct.clearFilters();
   }
 
   getFilterValue( id: string ): any | null {

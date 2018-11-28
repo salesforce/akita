@@ -40,5 +40,6 @@ export class NavComponent {
 
   resetStores() {
     resetStores();
+    this.router.navigateByUrl('login');
   }
 }

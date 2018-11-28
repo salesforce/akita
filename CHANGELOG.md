@@ -1,3 +1,24 @@
+## [1.22.1](https://github.com/datorama/akita/compare/v1.22.0...v1.22.1) (2018-11-26)
+
+
+### Bug Fixes
+
+* **store:** support ssr ([f871066](https://github.com/datorama/akita/commit/f871066)), closes [#131](https://github.com/datorama/akita/issues/131)
+
+# [1.22.0](https://github.com/datorama/akita/compare/v1.21.0...v1.22.0) (2018-11-24)
+
+
+### Bug Fixes
+
+* **entity-store:** add method should not add if all entities exist ([cfebaac](https://github.com/datorama/akita/commit/cfebaac)), closes [#127](https://github.com/datorama/akita/issues/127)
+* **reset-stores:** pagination and state history should clean the state ([0a6c1b3](https://github.com/datorama/akita/commit/0a6c1b3)), closes [#129](https://github.com/datorama/akita/issues/129)
+
+
+### Features
+
+* **active-entity:** add support to set the next and prev entity ([d102ef6](https://github.com/datorama/akita/commit/d102ef6))
+* **query-entity:** filterby support array of functions ([4f8f9cd](https://github.com/datorama/akita/commit/4f8f9cd))
+
 # [1.21.0](https://github.com/datorama/akita/compare/v1.20.0...v1.21.0) (2018-11-18)
 
 

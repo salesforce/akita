@@ -21,15 +21,14 @@ export interface Filter<E> {
 }
 
 export function createFilter<E>( filterParams: Partial<Filter<E>> ) {
-  const id: ID = filterParams.id ? filterParams.id : guid();
-  const computedName: string = filterParams.value && filterParams.id ? ` ${capitalize(filterParams.id.toString())}: ${filterParams.value.toString()} ` : undefined;
-
+  const id = filterParams.id ? filterParams.id : guid();
+  const name = filterParams.name || filterParams.value && filterParams.id ? `${capitalize(filterParams.id.toString())}: ${filterParams.value.toString()} ` : undefined;
   if( !filterParams.predicate && filterParams.value ) {
     /** use default function, if not provided */
     filterParams.predicate = defaultFilter;
   }
 
-  return { id, name: computedName, hide: false, order: 10, ...filterParams } as Filter<E>;
+  return { id, name, hide: false, order: 10, ...filterParams } as Filter<E>;
 }
 
 export interface FiltersState<E> extends EntityState<Filter<E>> {
@@ -38,7 +37,7 @@ export interface FiltersState<E> extends EntityState<Filter<E>> {
 
 @StoreConfig({ name: 'filters' })
 export class FiltersStore<E> extends EntityStore<FiltersState<E>, Filter<E>> {
-  constructor(storeName: string) {
+  constructor( storeName: string ) {
     super(undefined, { storeName });
   }
 }
