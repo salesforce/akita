@@ -13,7 +13,7 @@ import { searchFilter } from '../../../../../akita/src/plugins/filters/filters-u
 export class FiltersFormComponent implements OnInit, OnDestroy {
   filterForm = new FormGroup({
     search: new FormControl(),
-    sortControl: new FormControl('title'),
+    sortControl: new FormControl('+title'),
     categoryControl: new FormControl(),
     size: new FormControl(),
     fastDeliveryControl: new FormControl()
@@ -21,7 +21,7 @@ export class FiltersFormComponent implements OnInit, OnDestroy {
 
   category: string;
   filterFastDelivery: boolean = false;
-  private filters$: Observable<Filter<ProductPlant>[]>;
+  public filters$: Observable<Filter<ProductPlant>[]>;
 
   constructor( private productsService: ProductsFiltersService ) {
   }

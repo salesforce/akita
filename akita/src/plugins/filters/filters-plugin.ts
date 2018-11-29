@@ -66,7 +66,7 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P = any> ext
       map(( [filters, entities, sort] ) => {
         let entitiesFiltered = this.applyFilters(entities, filters);
 
-        if( sort ) {
+        if( sort && sort.sortBy ) {
           let _sortBy: any = isFunction(sort.sortBy) ? sort.sortBy : compareValues(sort.sortBy, sort.sortByOrder);
           entitiesFiltered = entitiesFiltered.sort(( a, b ) => _sortBy(a, b, entities));
         }
@@ -156,11 +156,11 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P = any> ext
   private applyFilters( entities: E[], filters: Filter<E>[] ): E[] {
     if( filters.length === 0 ) return entities;
     return entities.filter(( entity: E, index: number, array: E[] ) => {
-      return !filters.some(( filter: Filter<E> ) => {
+      return filters.every(( filter: Filter<E> ) => {
         if( filter.predicate ) {
-          return !filter.predicate(entity, index, array, filter);
+          return !!filter.predicate(entity, index, array, filter);
         }
-        return false;
+        return true;
       });
     });
   }
