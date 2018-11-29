@@ -3,32 +3,26 @@ import { Filter } from './filters-store';
 
 /**
  * Helper function to do a default filter
- * @param searchKey
- * @param inObj
  */
-export function defaultFilter<E = any>(inElement: E, index: number, array: E[], filter: Filter) {
-  if (isObject(inElement) && isDefined(filter.value) && isString(filter.value)) {
-    return searchFilter(filter.value, inElement);
+export function defaultFilter<E = any>( value: E, index: number, array: E[], filter: Filter<E> ): boolean {
+  if( isObject(value) && isString(filter.value) ) {
+    return searchFilter(filter.value, value);
   }
-  return isDefined(filter.value) ? filter.value === inElement : inElement;
+  return isDefined(filter.value) ? filter.value === value : !!value;
 }
 
 /**
  * Helper function to do search on all string element
- * @param searchKey
- * @param inObj
  */
-export function searchFilter(searchKey: string, inObj: Object) {
-  return Object.keys(inObj).some(function(key) {
-    return typeof inObj[key] === 'string' && inObj[key].toLocaleLowerCase().includes(searchKey.toLocaleLowerCase());
+export function searchFilter( searchKey: string, inObj: Object ): boolean {
+  return Object.keys(inObj).some(function( key ) {
+    return isString(inObj[key]) && inObj[key].toLocaleLowerCase().includes(searchKey.toLocaleLowerCase());
   });
 }
 
 /**
  * Helper function to do search in one key of an object
- * @param searchKey
- * @param inObj
  */
-export function searchFilterIn(searchKey: string, inObj: Object, inKey: string) {
-  return typeof inObj[inKey] === 'string' && inObj[inKey].toLocaleLowerCase().includes(searchKey.toLocaleLowerCase());
+export function searchFilterIn( searchKey: string, inObj: Object, inKey: string ): boolean {
+  return isString(inObj[inKey]) && inObj[inKey].toLocaleLowerCase().includes(searchKey.toLocaleLowerCase());
 }

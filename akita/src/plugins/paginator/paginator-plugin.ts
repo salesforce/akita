@@ -55,7 +55,12 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
   private initial = false;
 
   constructor(protected query: QueryEntity<any, E>, public config: PaginatorConfig = {}) {
-    super(query);
+    super(query, {
+      resetFn: () => {
+        this.initial = false;
+        this.destroy({ clearCache: true, currentPage: 1 });
+      }
+    });
     this.config = Object.assign(paginatorDefaults, config);
     const { startWith, cacheTimeout } = this.config;
     this.page = new BehaviorSubject(startWith);
@@ -152,6 +157,7 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
         { type: '@Pagination - Clear Cache' }
       );
       this.pages = new Map();
+      this.metadata = new Map();
     }
     this.initial = false;
   }

@@ -7,25 +7,14 @@
 
   <ng-container *ngIf="!(loading$ | async); else loadingTpl">
 
-    <app-filters-form>
-
-    </app-filters-form>
-
-
-
+    <app-filters-form></app-filters-form>
 
     <!--Products List-->
-
-
     <div class="row">
-
-      <app-product-filter *ngFor="let product of (products$ | async)"
+      <app-product-filter [products]="products$ | async"
                           (add)="addProductToCart($event)"
-                          (subtract)="subtract($event)"
-                          [product]="product"
-                          class="col s12 m6 l3">
+                          (subtract)="subtract($event)">
       </app-product-filter>
-
     </div>
 
   </ng-container>

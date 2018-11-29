@@ -23,7 +23,9 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
   private subscription;
 
   constructor(protected query: Queries<E, S>, private params: StateHistoryParams = {}, private _entityId?: EntityParam) {
-    super(query);
+    super(query, {
+      resetFn: () => this.clear()
+    });
     params.maxAge = toBoolean(params.maxAge) ? params.maxAge : 10;
     this.activate();
   }

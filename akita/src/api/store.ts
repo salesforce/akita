@@ -10,6 +10,7 @@ import { __globalState } from '../internal/global-state';
 import { getAkitaConfig } from './config';
 
 let __DEV__ = true;
+const isNotBrowser = typeof window === 'undefined';
 
 export const __stores__: { [storeName: string]: Store<any> } = {};
 
@@ -25,7 +26,7 @@ export type Action = {
 
 export const rootDispatcher = new ReplaySubject<Action>();
 
-function nextState(storeName, initialState = false) {
+function nextState( storeName, initialState = false ) {
   return {
     type: Actions.NEW_STATE,
     payload: {
@@ -62,13 +63,13 @@ export class Store<S> {
 
   private _isPristine = true;
 
-  private _initialState: S;
+  private readonly _initialState: S;
 
   /**
    *
    * Initial the store with the state
    */
-  constructor(initialState) {
+  constructor( initialState, private options: { idKey?: string, storeName?: string } = {} ) {
     __globalState.setAction({ type: '@@INIT' });
     __stores__[this.storeName] = this;
     this.setState(() => initialState);
@@ -77,13 +78,13 @@ export class Store<S> {
       payload: { store: this }
     });
     isDev() && assertDecorator(this.storeName, this.constructor.name);
-    if (getAkitaConfig().resettable) {
+    if( getAkitaConfig().resettable ) {
       this._initialState = initialState;
     }
   }
 
-  setLoading(loading = false) {
-    if (loading !== (this._value() as S & { loading: boolean }).loading) {
+  setLoading( loading = false ) {
+    if( loading !== (this._value() as S & { loading: boolean }).loading ) {
       isDev() && __globalState.setAction({ type: 'Set Loading' });
       this.setState(s => ({ ...(s as object), loading } as any));
     }
@@ -92,8 +93,8 @@ export class Store<S> {
   /**
    * Update the store's error state.
    */
-  setError<T>(error: T) {
-    if (error !== (this._value() as S & { error: any }).error) {
+  setError<T>( error: T ) {
+    if( error !== (this._value() as S & { error: any }).error ) {
       isDev() && __globalState.setAction({ type: 'Set Error' });
       this.setState(s => ({ ...(s as object), error } as any));
     }
@@ -106,7 +107,7 @@ export class Store<S> {
    * this.store.select(state => state.entities)
    *
    */
-  _select<R>(project: (store: S) => R): Observable<R> {
+  _select<R>( project: ( store: S ) => R ): Observable<R> {
     return this.store$.pipe(
       map(project),
       distinctUntilChanged()
@@ -125,7 +126,16 @@ export class Store<S> {
    * Get the store name
    */
   get storeName() {
-    return this.config && this.config['storeName'];
+    return this.options.storeName || (this.config && this.config['storeName']);
+  }
+
+  get idKey() {
+    /** backward compatibility */
+    const newIdKey = this.config && this.config.idKey;
+    if( !newIdKey ) {
+      return this.options.idKey || 'id';
+    }
+    return newIdKey;
   }
 
   get isPristine() {
@@ -137,21 +147,21 @@ export class Store<S> {
    * which gets the current state, and returns a new immutable state,
    * which will be the new value of the store.
    */
-  setState(newStateFn: (state: Readonly<S>) => S, _rootDispatcher = true) {
+  setState( newStateFn: ( state: Readonly<S> ) => S, _rootDispatcher = true ) {
     const prevState = this._value();
     this.storeValue = __DEV__ ? deepFreeze(newStateFn(this._value())) : newStateFn(this._value());
 
-    if (prevState === this.storeValue) {
+    if( prevState === this.storeValue ) {
       throw new AkitaImmutabilityError(this.storeName);
     }
 
-    if (!this.store) {
+    if( !this.store ) {
       this.store = new BehaviorSubject(this.storeValue);
       rootDispatcher.next(nextState(this.storeName, true));
       return;
     }
 
-    if (isTransactionInProcess()) {
+    if( isTransactionInProcess() ) {
       this.handleTransaction();
       return;
     }
@@ -163,7 +173,7 @@ export class Store<S> {
    * Resets the store to it's initial state and set the store to a pristine state.
    */
   reset() {
-    if (getAkitaConfig().resettable) {
+    if( getAkitaConfig().resettable ) {
       __globalState.setAction({ type: 'Reset Store' });
       this.setState(() => Object.assign({}, this._initialState));
       this.setPristine();
@@ -179,10 +189,10 @@ export class Store<S> {
    * @example
    * this.store.update(newState)
    */
-  update(newState: (state: Readonly<S>) => Partial<S>);
-  update(newState: Partial<S>);
-  update(id: ID | ID[] | null, newState: Partial<S>);
-  update(newStateOrId: Partial<S> | ID | ID[] | null | ((state: Readonly<S>) => Partial<S>), newState?: Partial<S>) {
+  update( newState: ( state: Readonly<S> ) => Partial<S> );
+  update( newState: Partial<S> );
+  update( id: ID | ID[] | null, newState: Partial<S> );
+  update( newStateOrId: Partial<S> | ID | ID[] | null | (( state: Readonly<S> ) => Partial<S>), newState?: Partial<S> ) {
     __globalState.setAction({ type: 'Update Store' });
     this.setState(state => {
       let value = isFunction(newStateOrId) ? newStateOrId(state) : newStateOrId;
@@ -208,9 +218,9 @@ export class Store<S> {
 
   destroy = this.ngOnDestroy;
 
-  private dispatch(state: S, _rootDispatcher = true) {
+  private dispatch( state: S, _rootDispatcher = true ) {
     this.store.next(state);
-    if (_rootDispatcher) {
+    if( _rootDispatcher ) {
       rootDispatcher.next(nextState(this.storeName));
       isDev() && __globalState.setAction({ type: 'Set State' });
     }
@@ -220,14 +230,13 @@ export class Store<S> {
     return this.store.asObservable();
   }
 
-
   /**
    * When the transaction ends dispatch the final value once
    */
   private watchTransaction() {
     commit().subscribe(() => {
       this.inTransaction = false;
-      if (isDev() && !__globalState.skipTransactionMsg) {
+      if( isDev() && !__globalState.skipTransactionMsg ) {
         __globalState.setAction({ type: '@Transaction' });
       }
       this.dispatch(this._value());
@@ -240,13 +249,14 @@ export class Store<S> {
    * Listen to the transaction stream
    */
   private handleTransaction() {
-    if (!this.inTransaction) {
+    if( !this.inTransaction ) {
       this.watchTransaction();
       this.inTransaction = true;
     }
   }
 
   ngOnDestroy() {
+    if (isNotBrowser) return;
     if (!(window as any).hmrEnabled && this === __stores__[this.storeName]) {
       delete __stores__[this.storeName];
     }

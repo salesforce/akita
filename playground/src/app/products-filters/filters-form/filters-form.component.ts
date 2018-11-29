@@ -8,8 +8,7 @@ import { searchFilter } from '../../../../../akita/src/plugins/filters/filters-u
 
 @Component({
   selector: 'app-filters-form',
-  templateUrl: './filters-form.component.html',
-  styles: []
+  templateUrl: './filters-form.component.html'
 })
 export class FiltersFormComponent implements OnInit, OnDestroy {
   filterForm = new FormGroup({
@@ -17,29 +16,27 @@ export class FiltersFormComponent implements OnInit, OnDestroy {
     sortControl: new FormControl('title'),
     categoryControl: new FormControl(),
     size: new FormControl(),
-    fastDeliveryControl: new FormControl(),
-});
+    fastDeliveryControl: new FormControl()
+  });
 
   category: string;
   filterFastDelivery: boolean = false;
-  private filters$: Observable<Filter[]>;
+  private filters$: Observable<Filter<ProductPlant>[]>;
 
-  constructor(private productsService: ProductsFiltersService) {}
+  constructor( private productsService: ProductsFiltersService ) {
+  }
 
   ngOnInit() {
-    this.getallFiltersValues();
+    this.setInitialFilters();
 
-   this.filterForm.controls.search.valueChanges.pipe(untilDestroyed(this)).subscribe((search: string) => {
-      if (search) {
+    this.filterForm.controls.search.valueChanges.pipe(untilDestroyed(this)).subscribe(( search: string ) => {
+      if( search ) {
         this.productsService.setFilter({
           id: 'search',
           value: search,
           order: 20,
           name: `" ${search} "`,
-
-          function: (value: ProductPlant, index, array) => {
-            return searchFilter(search, value);
-          }
+          predicate: entity => searchFilter(search, entity)
         });
       } else {
         this.productsService.removeFilter('search');
@@ -50,11 +47,11 @@ export class FiltersFormComponent implements OnInit, OnDestroy {
       this.productsService.setFilter({
         id: 'category',
         value: category,
-        function: (value: ProductPlant, index, array) => value.category === category
+        predicate: entity => entity.category === category
       });
     });
 
-    this.filterForm.controls.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((sortBy: string) => {
+    this.filterForm.controls.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe(( sortBy: string ) => {
       this.productsService.setOrderBy(sortBy.slice(1), sortBy.slice(0, 1));
     });
     this.filterForm.controls.sortControl.setValue(this.productsService.getSortValue());
@@ -64,7 +61,7 @@ export class FiltersFormComponent implements OnInit, OnDestroy {
     this.filters$ = this.productsService.selectFilters();
   }
 
-  private getallFiltersValues() {
+  private setInitialFilters() {
     this.filterForm.setValue({
       search: this.productsService.getFilterValue('search'),
       sortControl: this.productsService.getSortValue(),
@@ -74,35 +71,44 @@ export class FiltersFormComponent implements OnInit, OnDestroy {
     }, { emitEvent: false });
   }
 
-  filterSize(size: string) {
-    this.productsService.setFilter({ id: 'size', name: size + ' size', value: size, function: (value: ProductPlant, index, array) => value.size === size });
+  getNormalizedFilters() {
+    console.log(this.productsService.filtersProduct.getNormalizedFilters({ withSort: true, asQueryParams: true }));
+  }
+
+  filterSize( size: string ) {
+    this.productsService.setFilter({
+      id: 'size',
+      name: `${size} size`,
+      value: size,
+      predicate: entity => entity.size === size
+    });
   }
 
   changeFastDelivery() {
     this.filterFastDelivery = !this.filterFastDelivery;
-    if (this.filterFastDelivery) {
+    if( this.filterFastDelivery ) {
       this.productsService.setFilter({
         id: 'fastDelivery',
         name: 'Only fast Delivery',
         value: this.filterFastDelivery,
         order: 1,
-        function: (value: ProductPlant, index, array) => value.rapidDelivery
+        predicate: entity => entity.rapidDelivery
       });
     } else {
       this.removeFilter('fastDelivery');
     }
   }
 
-  removeFilter(id: any) {
+  removeFilter( id: any ) {
     this.productsService.removeFilter(id);
-    this.getallFiltersValues();
+    this.setInitialFilters();
   }
 
   removeFilterAll() {
     this.productsService.removeAllFilter();
-    this.getallFiltersValues();
+    this.setInitialFilters();
   }
 
-
-  ngOnDestroy(): void {}
+  ngOnDestroy() {
+  }
 }

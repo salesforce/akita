@@ -7,8 +7,8 @@ import { Order } from '../../internal/sort';
   sortBy: 'order',
   sortByOrder: Order.ASC
 })
-export class FiltersQuery extends QueryEntity<FiltersState, Filter, string> {
-  constructor(protected store: FiltersStore) {
+export class FiltersQuery<E> extends QueryEntity<FiltersState<E>, Filter<E>, string> {
+  constructor(protected store: FiltersStore<E>) {
     super(store);
   }
 }

@@ -24,7 +24,11 @@ export function toBoolean(value: any): boolean {
 }
 
 export function isUndefined(value) {
-  return typeof value === 'undefined';
+  return value === undefined;
+}
+
+export function isNil(v) {
+  return v === null || v === undefined;
 }
 
 /**
@@ -57,7 +61,7 @@ export function isNumber(value) {
 }
 
 export function isDefined(val) {
-  return val !== null && typeof val !== 'undefined';
+  return isNil(val) === false;
 }
 
 /**

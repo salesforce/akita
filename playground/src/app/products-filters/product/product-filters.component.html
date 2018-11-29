@@ -1,29 +1,27 @@
-<div class="card app-product-filter">
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Category</th>
+      <th>Rapid Delivery</th>
+      <th>Price</th>
+      <th>Family</th>
+      <th>Origin</th>
+      <th>Size</th>
+      <th>description</th>
+    </tr>
+  </thead>
 
-  <div class="card-image pointer activator waves-effect waves-block waves-light">
-    <img src="{{product.image}}">
-    <span class="card-title truncate">{{product.title}} - {{product.scientificName}}</span>
-
-  </div>
-  <div class="card-content pointer activator waves-effect waves-block waves-light">
-
-    <span class="mbb">Category: <b>{{product.category}}</b></span>
-    <span class="material-icons" *ngIf="product.rapidDelivery">fast_forward</span>
-    <span class="white-text badge red">{{product.price}} $</span>
-    <p>
-      <span class="">Family: <b>{{product.familly}}</b> &nbsp;</span>
-      <span class="">Origin: <b>{{product.origin}}</b>  &nbsp;</span>
-      <span class="">size: <b>{{product.size}}</b>  &nbsp;</span>
-      <span class="">Rapid: <b>{{product.rapidDelivery}}  &nbsp;</b></span>
-    </p>
-    <p>{{product.description}}</p>
-  </div>
-  <div class="card-action flex flex-end">
-    <button class="btn waves-effect waves-light cyan lighten-2 mr" (click)="add.emit(product)">
-      <i class="material-icons">exposure_plus_1</i>
-    </button>
-    <button class="btn waves-effect waves-light blue-grey lighten-3" (click)="subtract.emit(product)">
-      <i class="material-icons">exposure_neg_1</i>
-    </button>
-  </div>
-</div>
+  <tbody>
+    <tr *ngFor="let product of products">
+      <td (click)="add.emit(product)">{{product.title}}</td>
+      <td>{{product.category}}</td>
+      <td>{{product.rapidDelivery}}</td>
+      <td>{{product.price}}</td>
+      <td>{{product.family}}</td>
+      <td>{{product.origin}}</td>
+      <td>{{product.size}}</td>
+      <td>{{product.description | slice:0:100}}</td>
+    </tr>
+  </tbody>
+</table>

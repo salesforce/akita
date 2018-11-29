@@ -5,7 +5,7 @@ import { ProductPlant } from './products-filters.model';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { ProductsFiltersQuery } from './products-filters.query';
-import { ID, noop, Order } from '../../../../../akita/src';
+import { noop, Order } from '../../../../../akita/src';
 import { FiltersPlugin } from '../../../../../akita/src/plugins/filters/filters-plugin';
 import { Filter } from '../../../../../akita/src/plugins/filters/filters-store';
 
@@ -13,9 +13,9 @@ import { Filter } from '../../../../../akita/src/plugins/filters/filters-store';
   providedIn: 'root'
 })
 export class ProductsFiltersService {
-  private filtersProduct: FiltersPlugin<ProductPlantState, ProductPlant>;
+  filtersProduct: FiltersPlugin<ProductPlantState, ProductPlant>;
 
-  constructor(private productsStore: ProductsFiltersStore, private productsQuery: ProductsFiltersQuery, private productsDataService: ProductsFiltersDataService) {
+  constructor( private productsStore: ProductsFiltersStore, private productsQuery: ProductsFiltersQuery, private productsDataService: ProductsFiltersDataService ) {
     this.filtersProduct = new FiltersPlugin<ProductPlantState, ProductPlant>(this.productsQuery);
   }
 
@@ -33,40 +33,39 @@ export class ProductsFiltersService {
     return this.productsQuery.isPristine ? request : noop();
   }
 
-  setFilter(filter: Filter) {
+  setFilter( filter: Filter<ProductPlant> ) {
     this.filtersProduct.setFilter(filter);
   }
 
-  setOrderBy(by: any, order: string | '+' | '-') {
+  setOrderBy( by: any, order: string | '+' | '-' ) {
     this.filtersProduct.setSortBy({ sortBy: by, sortByOrder: order === '+' ? Order.ASC : Order.DESC });
   }
 
-  removeFilter(id: string) {
+  removeFilter( id: string ) {
     this.filtersProduct.removeFilter(id);
   }
 
   removeAllFilter() {
-    this.filtersProduct.cleanFilters();
+    this.filtersProduct.clearFilters();
   }
 
-  getFilterValue(id: string): any | null {
+  getFilterValue( id: string ): any | null {
     return this.filtersProduct.getFilterValue(id);
   }
 
   getSortValue(): string | null {
     const sortValue = this.filtersProduct.getSortValue();
-    if (!sortValue) return '+title';
+    if( !sortValue ) return '+title';
     const order = sortValue.sortByOrder === Order.ASC ? '+' : '-';
     return sortValue.sortBy ? order + sortValue.sortBy : '+title';
   }
 
-  selectFilters(): Observable<Filter[]> {
+  selectFilters(): Observable<Filter<ProductPlant>[]> {
     return this.filtersProduct.selectFilters();
   }
 
   selectAll(): Observable<ProductPlant[]> {
     return this.filtersProduct.selectAllByFilter();
   }
-
 
 }

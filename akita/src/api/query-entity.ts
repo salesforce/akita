@@ -11,7 +11,7 @@ import { ActiveState, EntityState, HashMap, ID } from './types';
 
 export interface SelectOptions<E> extends SortByOptions<E> {
   asObject?: boolean;
-  filterBy?: ((entity: E) => boolean) | undefined;
+  filterBy?: ((entity: E, index?: number) => boolean) | ((entity: E, index?: number) => boolean)[] | undefined;
   limitTo?: number;
 }
 
@@ -181,7 +181,7 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
   /**
    * Select the store's entity collection length.
    */
-  selectCount(predicate?: (entity: E) => boolean): Observable<number> {
+  selectCount(predicate?: (entity: E, index: number) => boolean): Observable<number> {
     if (isFunction(predicate)) {
       return this.selectAll({
         filterBy: predicate
@@ -194,7 +194,7 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
   /**
    * Get the store's entity collection length.
    */
-  getCount(predicate?: (entity: E) => boolean): number {
+  getCount(predicate?: (entity: E, index: number) => boolean): number {
     if (isFunction(predicate)) {
       return this.getAll().filter(predicate).length;
     }
@@ -261,8 +261,15 @@ function toArray<E, S extends EntityState>(state: S, options: SelectOptions<E>):
       continue;
     }
 
-    if (filterBy(entities[id])) {
-      arr.push(entities[id]);
+    if (Array.isArray(filterBy)) {
+      const allPass = filterBy.every(fn => fn(entities[id], i));
+      if (allPass) {
+        arr.push(entities[id]);
+      }
+    } else {
+      if (filterBy(entities[id], i)) {
+        arr.push(entities[id]);
+      }
     }
   }
 
@@ -293,9 +300,17 @@ function toMap<E>(ids: any[], entities: HashMap<E>, options: SelectOptions<E>, g
       if (!entityExists(id, entities)) {
         continue;
       }
-      if (filterBy(entities[id])) {
-        map[id] = entities[id];
-        count++;
+      if (Array.isArray(filterBy)) {
+        const allPass = filterBy.every(fn => fn(entities[id], i));
+        if (allPass) {
+          map[id] = entities[id];
+          count++;
+        }
+      } else {
+        if (filterBy(entities[id], i)) {
+          map[id] = entities[id];
+          count++;
+        }
       }
     }
   } else {
@@ -311,8 +326,15 @@ function toMap<E>(ids: any[], entities: HashMap<E>, options: SelectOptions<E>, g
         continue;
       }
 
-      if (toBoolean(filterBy(entities[id]))) {
-        map[id] = entities[id];
+      if (Array.isArray(filterBy)) {
+        const allPass = filterBy.every(fn => fn(entities[id], i));
+        if (allPass) {
+          map[id] = entities[id];
+        }
+      } else {
+        if (filterBy(entities[id], i)) {
+          map[id] = entities[id];
+        }
       }
     }
   }

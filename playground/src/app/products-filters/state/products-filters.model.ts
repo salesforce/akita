@@ -1,10 +1,8 @@
-import { ID } from '../../../../../akita/src';
-
 export type ProductPlant = {
   id: number;
   title: string;
   scientificName: string;
-  familly: string;
+  family: string;
   description: string;
   origin: string;
   price: number;
