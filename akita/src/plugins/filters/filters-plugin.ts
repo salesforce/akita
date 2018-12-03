@@ -16,59 +16,59 @@ export type FiltersParams = {
 };
 
 export class FiltersPlugin<S extends EntityState<E> = any, E = any, P = any> extends EntityCollectionPlugin<E, P> {
-  private _selectFilter$: Observable<Filter<E>[]>;
-  private readonly _filterStore: FiltersStore<E>;
-  private readonly _filterQuery: FiltersQuery<E>;
+  private _selectFilters$: Observable<Filter<E>[]>;
+  private readonly _filtersStore: FiltersStore<E>;
+  private readonly _filtersQuery: FiltersQuery<E>;
 
-  get filterStore(): FiltersStore<E> {
-    return this._filterStore;
+  get filtersStore(): FiltersStore<E> {
+    return this._filtersStore;
   }
 
-  get filterQuery(): FiltersQuery<E> {
-    return this._filterQuery;
+  get filtersQuery(): FiltersQuery<E> {
+    return this._filtersQuery;
   }
 
   constructor( protected query: QueryEntity<S, E>, private params: FiltersParams = {} ) {
     super(query, params.entityIds);
     this.params = { ...{ filtersStoreName: this.getStore().storeName + 'Filters' }, ...params };
 
-    this._filterStore = new FiltersStore<E>(this.params.filtersStoreName);
-    this._filterQuery = new FiltersQuery<E>(this._filterStore);
+    this._filtersStore = new FiltersStore<E>(this.params.filtersStoreName);
+    this._filtersQuery = new FiltersQuery<E>(this._filtersStore);
 
-    this._selectFilter$ = this._filterQuery.selectAll({ sortBy: 'order' });
+    this._selectFilters$ = this._filtersQuery.selectAll({ sortBy: 'order' });
   }
 
   /**
    *  Select all filters
    *
    *  Note: filters with hide=true, will not be displayed. If you want it, call directly to:
-   * `this.filterQuery.selectAll()`
+   * `this.filtersQuery.selectAll()`
    */
   selectFilters(): Observable<Filter<E>[]> {
-    return this._filterQuery.selectAll({ sortBy: 'order', filterBy: filter => !filter.hide });
+    return this._filtersQuery.selectAll({ sortBy: 'order', filterBy: filter => !filter.hide });
   }
 
   /**
    * Get all the current snapshot filters
    *
    *  Note: filters with hide=true, will not be displayed. If you want it, call directly to:
-   * `this.filterQuery.getAll()`
+   * `this.filtersQuery.getAll()`
    */
   getFilters(): Filter<E>[] {
-    return this._filterQuery.getAll({ filterBy: filter => !filter.hide });
+    return this._filtersQuery.getAll({ filterBy: filter => !filter.hide });
   }
 
   /**
    * Select All Entity with apply filter to it, and updated with any change (entity or filter)
    */
-  selectAllByFilter( options: SelectOptions<E> = {} ): Observable<E[]> {
-    return combineLatest(this._selectFilter$, this.getQuery().selectAll(options), this.filterQuery.select(state => state.sort)).pipe(
+  selectAllByFilters(options: SelectOptions<E> = {} ): Observable<E[]> {
+    return combineLatest(this._selectFilters$, this.getQuery().selectAll(options), this.filtersQuery.select(state => state.sort)).pipe(
       map(( [filters, entities, sort] ) => {
         let entitiesFiltered = this.applyFilters(entities, filters);
 
         if( sort && sort.sortBy ) {
           let _sortBy: any = isFunction(sort.sortBy) ? sort.sortBy : compareValues(sort.sortBy, sort.sortByOrder);
-          entitiesFiltered = entitiesFiltered.sort(( a, b ) => _sortBy(a, b, entities));
+          entitiesFiltered = [...entitiesFiltered.sort(( a, b ) => _sortBy(a, b, entities))];
         }
 
         return entitiesFiltered;
@@ -81,29 +81,29 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P = any> ext
    */
   setFilter( filter: Partial<Filter<E>> ) {
     const entity = createFilter(filter);
-    this.filterStore.createOrReplace(entity.id, entity);
+    this.filtersStore.createOrReplace(entity.id, entity);
   }
 
   /**
    * Remove a Filter
    */
   removeFilter( id: ID ) {
-    this.filterStore.remove(id);
+    this.filtersStore.remove(id);
   }
 
   /**
    * Clear all filters
    */
   clearFilters() {
-    this.filterStore.remove();
+    this.filtersStore.remove();
   }
 
   /**
    * Get filter value, return null, if value not available
    */
   getFilterValue<T = any>( id: string ): T | null {
-    if( this.filterQuery.hasEntity(id) ) {
-      const entity: Filter<E> = this.filterQuery.getEntity(id);
+    if( this.filtersQuery.hasEntity(id) ) {
+      const entity: Filter<E> = this.filtersQuery.getEntity(id);
       return entity.value ? entity.value : null;
     }
 
@@ -114,7 +114,7 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P = any> ext
    * Get filter value, return null, if value not available
    */
   getSortValue(): SortByOptions<E> | null {
-    const state: FiltersState<E> = this.filterQuery.getSnapshot();
+    const state: FiltersState<E> = this.filtersQuery.getSnapshot();
     return state.sort ? state.sort : null;
   }
 
@@ -122,15 +122,16 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P = any> ext
    * Set orderBy
    */
   setSortBy( order: SortByOptions<E> ) {
-    this.filterStore.updateRoot({ sort: order });
+    this.filtersStore.updateRoot({ sort: order });
   }
 
   /**
    * Get the filters normalized as key value or as query params.
    * This can be useful for server-side filtering
    */
-  getNormalizedFilters( options: { withSort?: boolean, asQueryParams?: boolean } = {} ): string | HashMap<any> {
+  getNormalizedFilters( options: { withSort?: boolean, asQueryParams?: boolean, sortByKey?: string, sortByOrderKey?: string,  } = {} ): string | HashMap<any> {
     let result = {};
+    options = {sortByKey: 'sortBy', sortByOrderKey: 'sortByOrder', ...options};
 
     for( const filter of this.getFilters() ) {
       result[filter.id] = filter.value;
@@ -138,8 +139,8 @@ export class FiltersPlugin<S extends EntityState<E> = any, E = any, P = any> ext
 
     if( options.withSort ) {
       const sort = this.getSortValue();
-      result['sortBy'] = sort.sortBy;
-      result['sortByOrder'] = sort.sortByOrder;
+      result[options.sortByKey] = sort.sortBy;
+      result[options.sortByOrderKey] = sort.sortByOrder;
     }
 
     if( options.asQueryParams ) {

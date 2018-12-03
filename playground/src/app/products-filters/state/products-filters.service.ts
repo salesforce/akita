@@ -65,7 +65,7 @@ export class ProductsFiltersService {
   }
 
   selectAll(): Observable<ProductPlant[]> {
-    return this.filtersProduct.selectAllByFilter();
+    return this.filtersProduct.selectAllByFilters();
   }
 
 }

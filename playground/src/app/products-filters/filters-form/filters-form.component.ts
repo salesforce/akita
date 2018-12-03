@@ -11,7 +11,7 @@ import { searchFilter } from '../../../../../akita/src/plugins/filters/filters-u
   templateUrl: './filters-form.component.html'
 })
 export class FiltersFormComponent implements OnInit, OnDestroy {
-  filterForm = new FormGroup({
+  filtersForm = new FormGroup({
     search: new FormControl(),
     sortControl: new FormControl('+title'),
     categoryControl: new FormControl(),
@@ -29,7 +29,7 @@ export class FiltersFormComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.setInitialFilters();
 
-    this.filterForm.controls.search.valueChanges.pipe(untilDestroyed(this)).subscribe(( search: string ) => {
+    this.filtersForm.controls.search.valueChanges.pipe(untilDestroyed(this)).subscribe((search: string ) => {
       if( search ) {
         this.productsService.setFilter({
           id: 'search',
@@ -43,7 +43,7 @@ export class FiltersFormComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.filterForm.controls.categoryControl.valueChanges.pipe(untilDestroyed(this)).subscribe(category => {
+    this.filtersForm.controls.categoryControl.valueChanges.pipe(untilDestroyed(this)).subscribe(category => {
       this.productsService.setFilter({
         id: 'category',
         value: category,
@@ -51,10 +51,10 @@ export class FiltersFormComponent implements OnInit, OnDestroy {
       });
     });
 
-    this.filterForm.controls.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe(( sortBy: string ) => {
+    this.filtersForm.controls.sortControl.valueChanges.pipe(untilDestroyed(this)).subscribe((sortBy: string ) => {
       this.productsService.setOrderBy(sortBy.slice(1), sortBy.slice(0, 1));
     });
-    this.filterForm.controls.sortControl.setValue(this.productsService.getSortValue());
+    this.filtersForm.controls.sortControl.setValue(this.productsService.getSortValue());
 
     this.filterFastDelivery = this.productsService.getFilterValue('fastDelivery');
 
@@ -62,7 +62,7 @@ export class FiltersFormComponent implements OnInit, OnDestroy {
   }
 
   private setInitialFilters() {
-    this.filterForm.setValue({
+    this.filtersForm.setValue({
       search: this.productsService.getFilterValue('search'),
       sortControl: this.productsService.getSortValue(),
       categoryControl: this.productsService.getFilterValue('category'),

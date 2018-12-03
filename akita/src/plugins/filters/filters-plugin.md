@@ -31,7 +31,7 @@ And have another components to manage all filters.
 
 ## Instantiation 
 
-You need to instanciate the filtersPlugins : 
+You need to instanciate the filters Plugins : 
 
 ```ts
 myFilter = new FiltersPlugin<MyEntitiesState, MyEntity>(this.myEntitiesQuery);
@@ -48,10 +48,10 @@ You could define it in the constructor of your service, and add it to property o
 
 ## Use 
 
-For getting, elements you need to call the function selectAllByFilter() form your filters plugins instance, instade of using the selectAll() function from your Query Class. 
+For getting, elements you need to call the function selectAllByFilters() form your filters plugins instance, instade of using the selectAll() function from your Query Class. 
 
 ```ts
-myFilter.selectAllByFilter();`
+myFilter.selectAllByFilters();`
 
 Then add filter 
 
@@ -146,7 +146,7 @@ type Filter = {
 # filterPlugins API
 
 ## Get Entity 
-### selectAllByFilter(options: SelectOptions<E> = {}): Observable<E[]>
+### selectAllByFilters(options: SelectOptions<E> = {}): Observable<E[]>
 
 The main function to subscribe to filtered data. Select All Entity with apply filter to it, and updated with any change (entity or filter)
 
@@ -186,7 +186,7 @@ filterPlugin.setFilter({
 
 Remove a specified filter. 
 
-### cleanFilters() 
+### clearFilters() 
 
 Remove all filters. 
 
@@ -234,7 +234,7 @@ private filters$: Observable<Filter[]>;
     }
   
     removeFilterAll() {
-      this.productsService.removeAllFilter();
+      this.productsService.clearFilters();
     }
 
 }

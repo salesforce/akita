@@ -3,6 +3,7 @@ import { ProductPlant } from '../state';
 
 @Component({
   selector: 'app-product-filter',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: `./product-filters.component.html`,
   styles: [`:host {
     display: block;

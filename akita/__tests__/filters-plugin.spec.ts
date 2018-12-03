@@ -11,7 +11,7 @@ describe('FiltersPlugin', () => {
   describe('Manages Filters', () => {
     describe('Filters', () => {
       beforeEach(() => {
-        filters.filterStore.remove();
+        filters.filtersStore.remove();
 
         filters.setFilter({ id: 'filter1', predicate: filter => filter.id % 2 === 0 });
         filters.setFilter({ id: 'filter2', predicate: filter => filter });
@@ -19,52 +19,52 @@ describe('FiltersPlugin', () => {
       });
 
       it('should take all filters by default', () => {
-        expect(filters.filterQuery.getCount()).toEqual(3);
-        expect(filters.filterQuery.hasEntity('filter1')).toEqual(true);
-        expect(filters.filterQuery.hasEntity('filter2')).toEqual(true);
-        expect(filters.filterQuery.hasEntity('filter3')).toEqual(true);
+        expect(filters.filtersQuery.getCount()).toEqual(3);
+        expect(filters.filtersQuery.hasEntity('filter1')).toEqual(true);
+        expect(filters.filtersQuery.hasEntity('filter2')).toEqual(true);
+        expect(filters.filtersQuery.hasEntity('filter3')).toEqual(true);
       });
 
       it('should add filter if not exist with all default values', () => {
         filters.setFilter({ id: 'filter4', predicate: filter => filter.id });
-        expect(filters.filterQuery.getCount()).toEqual(4);
-        expect(filters.filterQuery.getEntity('filter4').id).toEqual('filter4');
-        expect(filters.filterQuery.getEntity('filter4').hide).toEqual(false);
-        expect(filters.filterQuery.getEntity('filter4').name).toBeUndefined();
-        expect(filters.filterQuery.getEntity('filter4').order).toEqual(10);
+        expect(filters.filtersQuery.getCount()).toEqual(4);
+        expect(filters.filtersQuery.getEntity('filter4').id).toEqual('filter4');
+        expect(filters.filtersQuery.getEntity('filter4').hide).toEqual(false);
+        expect(filters.filtersQuery.getEntity('filter4').name).toBeUndefined();
+        expect(filters.filtersQuery.getEntity('filter4').order).toEqual(10);
       });
 
       it('should update filter if exist with new value', () => {
         filters.setFilter({ id: 'filter3', hide: true, name: 'Filter 3', order: 2 });
-        expect(filters.filterQuery.getCount()).toEqual(3);
-        expect(filters.filterQuery.getEntity('filter3').id).toEqual('filter3');
-        expect(filters.filterQuery.getEntity('filter3').hide).toEqual(true);
-        expect(filters.filterQuery.getEntity('filter3').name).toEqual('Filter 3');
-        expect(filters.filterQuery.getEntity('filter3').order).toEqual(2);
+        expect(filters.filtersQuery.getCount()).toEqual(3);
+        expect(filters.filtersQuery.getEntity('filter3').id).toEqual('filter3');
+        expect(filters.filtersQuery.getEntity('filter3').hide).toEqual(true);
+        expect(filters.filtersQuery.getEntity('filter3').name).toEqual('Filter 3');
+        expect(filters.filtersQuery.getEntity('filter3').order).toEqual(2);
 
         filters.setFilter({ id: 'filter2', value: 'aaaa' });
-        expect(filters.filterQuery.getEntity('filter2').value).toEqual('aaaa');
-        expect(filters.filterQuery.getEntity('filter2').name).toEqual('Filter2: aaaa');
+        expect(filters.filtersQuery.getEntity('filter2').value).toEqual('aaaa');
+        expect(filters.filtersQuery.getEntity('filter2').name).toEqual('Filter2: aaaa');
       });
 
       it('should remove filter 2', () => {
         filters.removeFilter('filter2');
-        expect(filters.filterQuery.getCount()).toEqual(2);
-        expect(filters.filterQuery.hasEntity('filter1')).toEqual(true);
-        expect(filters.filterQuery.hasEntity('filter2')).toEqual(false);
-        expect(filters.filterQuery.hasEntity('filter3')).toEqual(true);
+        expect(filters.filtersQuery.getCount()).toEqual(2);
+        expect(filters.filtersQuery.hasEntity('filter1')).toEqual(true);
+        expect(filters.filtersQuery.hasEntity('filter2')).toEqual(false);
+        expect(filters.filtersQuery.hasEntity('filter3')).toEqual(true);
       });
 
       it('should set / get value  ', () => {
         filters.setFilter({ id: 'filter1', value: true });
         filters.setFilter({ id: 'filter2', value: 'aaaa' });
-        expect(filters.filterQuery.getEntity('filter1').value).toEqual(true);
+        expect(filters.filtersQuery.getEntity('filter1').value).toEqual(true);
         expect(filters.getFilterValue('filter1')).toEqual(true);
 
-        expect(filters.filterQuery.getEntity('filter2').value).toEqual('aaaa');
+        expect(filters.filtersQuery.getEntity('filter2').value).toEqual('aaaa');
         expect(filters.getFilterValue('filter2')).toEqual('aaaa');
 
-        expect(filters.filterQuery.getEntity('filter3').value).toBeUndefined();
+        expect(filters.filtersQuery.getEntity('filter3').value).toBeUndefined();
         expect(filters.getFilterValue('filter3')).toBeNull();
       });
 
@@ -80,7 +80,7 @@ describe('FiltersPlugin', () => {
     describe('SelectAll with Filters ', () => {
       beforeEach(() => {
         widgetsStore.remove();
-        filters.filterStore.remove();
+        filters.filtersStore.remove();
         widgetsStore.add([createWidget(1), createWidget(2), createWidget(3), createWidget(4)]);
         widgetsStore.update(2, { complete: true });
         widgetsStore.update(3, { complete: true });
@@ -88,7 +88,7 @@ describe('FiltersPlugin', () => {
 
       it('should select all if no filters', () => {
         filters
-          .selectAllByFilter()
+          .selectAllByFilters()
           .pipe(take(1))
           .subscribe(result => {
             expect(Array.isArray(result)).toBeTruthy();
@@ -104,7 +104,7 @@ describe('FiltersPlugin', () => {
         filters.setFilter({ id: 'filter1', predicate: filter => filter.id % 2 === 1 });
 
         filters
-          .selectAllByFilter()
+          .selectAllByFilters()
           .pipe(take(1))
           .subscribe(result => {
             expect(Array.isArray(result)).toBeTruthy();
@@ -119,7 +119,7 @@ describe('FiltersPlugin', () => {
         filters.setFilter({ id: 'filter2', predicate: filter => filter.complete });
 
         filters
-          .selectAllByFilter()
+          .selectAllByFilters()
           .pipe(take(1))
           .subscribe(result1 => {
             expect(Array.isArray(result1)).toBeTruthy();
@@ -133,7 +133,7 @@ describe('FiltersPlugin', () => {
         filters.setFilter({ id: 'filter1', predicate: filter => filter.id % 2 === 1 });
 
         filters
-          .selectAllByFilter()
+          .selectAllByFilters()
           .pipe(take(1))
           .subscribe(result2 => {
             expect(Array.isArray(result2)).toBeTruthy();
@@ -148,7 +148,7 @@ describe('FiltersPlugin', () => {
         filters.setFilter({ id: 'filter2', predicate: filter => filter.complete, order: 1 });
 
         filters
-          .selectAllByFilter()
+          .selectAllByFilters()
           .pipe(take(1))
           .subscribe(result2 => {
             expect(Array.isArray(result2)).toBeTruthy();
@@ -163,7 +163,7 @@ describe('FiltersPlugin', () => {
 
       beforeEach(() => {
         widgetsStore.remove();
-        filters.filterStore.remove();
+        filters.filtersStore.remove();
         widgetsStore.add([createWidget(1), createWidgetCompleted(2), createWidgetCompleted(3), createWidget(4)]);
       });
 
@@ -171,7 +171,7 @@ describe('FiltersPlugin', () => {
         jest.setTimeout(2000);
         let count = 0;
         filters
-          .selectAllByFilter()
+          .selectAllByFilters()
           .pipe(
             skip(1),
             take(1)
@@ -196,7 +196,7 @@ describe('FiltersPlugin', () => {
         filters.setFilter({ id: 'filter2', predicate: filter => filter.complete });
 
         filters
-          .selectAllByFilter()
+          .selectAllByFilters()
           .pipe(
             skip(1),
             take(1)
@@ -222,7 +222,7 @@ describe('FiltersPlugin', () => {
 
       beforeEach(() => {
         widgetsStore.remove();
-        filters.filterStore.remove();
+        filters.filtersStore.remove();
         widgetsStore.add([createWidget(1), createWidget(2), createWidget(3), createWidget(4)]);
         widgetsStore.update(2, { complete: true });
         widgetsStore.update(3, { complete: true });
@@ -230,7 +230,7 @@ describe('FiltersPlugin', () => {
 
       it('should not sort if no sort specified', () => {
         filters
-          .selectAllByFilter()
+          .selectAllByFilters()
           .pipe(take(1))
           .subscribe(result => {
             expect(Array.isArray(result)).toBeTruthy();
@@ -249,7 +249,7 @@ describe('FiltersPlugin', () => {
         jest.runAllTimers();
 
         filters
-          .selectAllByFilter()
+          .selectAllByFilters()
           .pipe(take(1))
           .subscribe(result => {
             expect(Array.isArray(result)).toBeTruthy();
@@ -266,7 +266,7 @@ describe('FiltersPlugin', () => {
         filters.setFilter({ id: 'filter1', predicate: filter => filter.id % 2 === 1 });
 
         filters
-          .selectAllByFilter()
+          .selectAllByFilters()
           .pipe(take(1))
           .subscribe(result => {
             expect(Array.isArray(result)).toBeTruthy();
