@@ -1,3 +1,10 @@
+# [1.23.0](https://github.com/datorama/akita/compare/v1.22.1...v1.23.0) (2018-12-04)
+
+
+### Features
+
+* **store:** allow dynamic store name ([57a5577](https://github.com/datorama/akita/commit/57a5577))
+
 ## [1.22.1](https://github.com/datorama/akita/compare/v1.22.0...v1.22.1) (2018-11-26)
 
 
