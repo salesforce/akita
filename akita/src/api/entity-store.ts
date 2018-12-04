@@ -14,21 +14,12 @@ export class EntityStore<S extends EntityState<E>, E, ActiveEntity = ID> extends
    *
    * Initiate the store with the state
    */
-  constructor(initialState = {}, private options: { idKey?: string } = {}) {
-    super({ ...getInitialEntitiesState(), ...initialState });
+  constructor(initialState = {}, options: { idKey?: string; storeName?: string } = {}) {
+    super({ ...getInitialEntitiesState(), ...initialState }, options);
   }
 
   get entities() {
     return this._value().entities;
-  }
-
-  get idKey() {
-    /** backward compatibility */
-    const newIdKey = this.config && this.config.idKey;
-    if (!newIdKey) {
-      return this.options.idKey || 'id';
-    }
-    return newIdKey;
   }
 
   /**

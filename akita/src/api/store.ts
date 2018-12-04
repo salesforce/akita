@@ -63,13 +63,13 @@ export class Store<S> {
 
   private _isPristine = true;
 
-  private _initialState: S;
+  private readonly _initialState: S;
 
   /**
    *
    * Initial the store with the state
    */
-  constructor(initialState) {
+  constructor(initialState, private options: { idKey?: string; storeName?: string } = {}) {
     __globalState.setAction({ type: '@@INIT' });
     __stores__[this.storeName] = this;
     this.setState(() => initialState);
@@ -126,7 +126,16 @@ export class Store<S> {
    * Get the store name
    */
   get storeName() {
-    return this.config && this.config['storeName'];
+    return this.options.storeName || (this.config && this.config['storeName']);
+  }
+
+  get idKey() {
+    /** backward compatibility */
+    const newIdKey = this.config && this.config.idKey;
+    if (!newIdKey) {
+      return this.options.idKey || 'id';
+    }
+    return newIdKey;
   }
 
   get isPristine() {
