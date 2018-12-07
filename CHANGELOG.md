@@ -1,3 +1,10 @@
+## [1.23.1](https://github.com/datorama/akita/compare/v1.23.0...v1.23.1) (2018-12-07)
+
+
+### Bug Fixes
+
+* **devtools:** deleted stores should be reflected in devtools ([c0382f2](https://github.com/datorama/akita/commit/c0382f2)), closes [#136](https://github.com/datorama/akita/issues/136)
+
 # [1.23.0](https://github.com/datorama/akita/compare/v1.22.1...v1.23.0) (2018-12-04)
 
 
