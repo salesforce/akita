@@ -139,10 +139,12 @@
       },
       "@semantic-release/git"
     ],
-    "publish": [{
-      "path": "@semantic-release/npm",
-      "pkgRoot": "dist"
-    }]
+    "publish": [
+      {
+        "path": "@semantic-release/npm",
+        "pkgRoot": "dist"
+      }
+    ]
   },
   "license": "Apache License 2.0"
 }

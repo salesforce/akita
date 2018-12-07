@@ -6,17 +6,17 @@ import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { ProductsFiltersQuery } from './products-filters.query';
 import { noop, Order } from '../../../../../akita/src';
-import { FiltersPlugin } from '../../../../../akita/src/plugins/filters/filters-plugin';
-import { Filter } from '../../../../../akita/src/plugins/filters/filters-store';
+import { AkitaFiltersPlugin } from '../../../../../akita/src/plugins/akita-filters/akita-filters-plugin';
+import { AkitaFilter } from '../../../../../akita/src/plugins/akita-filters/akita-filters-store';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductsFiltersService {
-  filtersProduct: FiltersPlugin<ProductPlantState, ProductPlant>;
+  filtersProduct: AkitaFiltersPlugin<ProductPlantState, ProductPlant>;
 
   constructor( private productsStore: ProductsFiltersStore, private productsQuery: ProductsFiltersQuery, private productsDataService: ProductsFiltersDataService ) {
-    this.filtersProduct = new FiltersPlugin<ProductPlantState, ProductPlant>(this.productsQuery);
+    this.filtersProduct = new AkitaFiltersPlugin<ProductPlantState, ProductPlant>(this.productsQuery);
   }
 
   /**
@@ -33,7 +33,7 @@ export class ProductsFiltersService {
     return this.productsQuery.isPristine ? request : noop();
   }
 
-  setFilter( filter: Filter<ProductPlant> ) {
+  setFilter( filter: AkitaFilter<ProductPlant> ) {
     this.filtersProduct.setFilter(filter);
   }
 
@@ -60,7 +60,7 @@ export class ProductsFiltersService {
     return sortValue.sortBy ? order + sortValue.sortBy : '+title';
   }
 
-  selectFilters(): Observable<Filter<ProductPlant>[]> {
+  selectFilters(): Observable<AkitaFilter<ProductPlant>[]> {
     return this.filtersProduct.selectFilters();
   }
 

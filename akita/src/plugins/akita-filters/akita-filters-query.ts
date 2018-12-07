@@ -1,4 +1,4 @@
-import { Filter, FiltersState, FiltersStore } from './filters-store';
+import { AkitaFilter, FiltersState, AkitaFiltersStore } from './akita-filters-store';
 import { QueryEntity } from '../../api/query-entity';
 import { QueryConfig } from '../../api/query-config';
 import { Order } from '../../internal/sort';
@@ -7,8 +7,8 @@ import { Order } from '../../internal/sort';
   sortBy: 'order',
   sortByOrder: Order.ASC
 })
-export class FiltersQuery<E> extends QueryEntity<FiltersState<E>, Filter<E>, string> {
-  constructor(protected store: FiltersStore<E>) {
+export class AkitaFiltersQuery<E> extends QueryEntity<FiltersState<E>, AkitaFilter<E>, string> {
+  constructor(protected store: AkitaFiltersStore<E>) {
     super(store);
   }
 }

@@ -34,7 +34,7 @@ And have another components to manage all filters.
 You need to instanciate the filters Plugins : 
 
 ```ts
-myFilter = new FiltersPlugin<MyEntitiesState, MyEntity>(this.myEntitiesQuery);
+myFilter = new AkitaFiltersPlugin<MyEntitiesState, MyEntity>(this.myEntitiesQuery);
 `
 
 
@@ -42,7 +42,7 @@ myFilter = new FiltersPlugin<MyEntitiesState, MyEntity>(this.myEntitiesQuery);
 
 You could define it in the constructor of your service, and add it to property of your service. 
 ` constructor(private productsStore: ProductsFiltersStore, private productsQuery: ProductsFiltersQuery, private productsDataService: ProductsFiltersDataService) {
-     this.filtersProduct = new FiltersPlugin<ProductPlantState, ProductPlant>(this.productsQuery);
+     this.filtersProduct = new AkitaFiltersPlugin<ProductPlantState, ProductPlant>(this.productsQuery);
    }`
 
 
@@ -113,9 +113,9 @@ export class CategoryFiltersComponent {
 
 # API 
 
-### Filter type
+### AkitaFilter type
 
-A filter is an object with the corresponding format :
+A Akita filter is an object with the corresponding format :
 
 ```ts
 type Filter = {
@@ -129,7 +129,7 @@ type Filter = {
    /** If you want to have filter that is not displayed on the list */
    hide?: boolean;
    /** The function to apply filters, by default use defaultFilter helpers, that will search the value in the object */
-   predicate: (value: any, index: number, array: any[], filter: Filter) => any;
+   predicate: (value: any, index: number, array: any[], filter: AkitaFilter) => any;
  };'
  
  - Id and function was mandatored. (By default, Id will guid(), and default function, will be defaultFilter helpers). 
@@ -154,7 +154,7 @@ You can pass same options than selectAll Function in EntityQuery.
 
 ## Manage filters 
 
-### selectFilters(): Observable<E[]>
+### selectFilters(): Observable<AkitaFilter[]>
  
  Select all the filters
   
@@ -162,16 +162,16 @@ You can pass same options than selectAll Function in EntityQuery.
    ```ts
 this.filterQuery.selectAll()`
    
-### getFilters(): E[]
+### getFilters(): AkitaFilter[]
 
 Get all the current snapshot filters
  Note: filters with hide=true, will not be displayed. If you want it, call directly the filterQuery :
 ```ts
 this.filterQuery.getAll()`
 
-### setFilter(filter: Partial<Filter>)
+### setFilter(filter: Partial<AkitaFilter>)
 
-Create or update a filter (give a Partial Filter object)
+Create or update a filter (give a Partial AkitaFilter object)
 
 ```ts
 filterPlugin.setFilter({
@@ -221,7 +221,7 @@ this.filterForm.controls.searchControl.setValue( this.productsService.getFilterV
 })
 export class ListFiltersComponent {
 
-private filters$: Observable<Filter[]>;
+private filters$: Observable<AkitaFilter[]>;
   
   constructor(private productsService: ProductsFiltersService) {}
 
@@ -269,7 +269,7 @@ get the Filter Query. To query the list of your filters. Use the api of EntityFi
 
 If you want to use a different filterStore name, you can set it setting params : filtersStoreName when create plugins:
 ```ts
-myFilter = new FiltersPlugin<MyEntitiesState, MyEntity>(this.myEntitiesQuery, {filtersStoreName: 'newFiltersName'});`
+myFilter = new AkitaFiltersPlugin<MyEntitiesState, MyEntity>(this.myEntitiesQuery, {filtersStoreName: 'newFiltersName'});`
 
 By default, the name will, your 'EntityStoreName' concat with 'Filter'
 

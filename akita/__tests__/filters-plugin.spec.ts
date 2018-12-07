@@ -1,13 +1,13 @@
 import { skip, take } from 'rxjs/operators';
 import { createWidget, createWidgetCompleted, WidgetsQuery, WidgetsStore } from './setup';
-import { FiltersPlugin } from '../src/plugins/filters/filters-plugin';
+import { AkitaFiltersPlugin } from '../src/plugins/akita-filters/akita-filters-plugin';
 import { Order } from '../src/internal/sort';
 
 const widgetsStore = new WidgetsStore();
 const widgetsQuery = new WidgetsQuery(widgetsStore);
-const filters = new FiltersPlugin(widgetsQuery);
+const filters = new AkitaFiltersPlugin(widgetsQuery);
 
-describe('FiltersPlugin', () => {
+describe('AkitaFiltersPlugin', () => {
   describe('Manages Filters', () => {
     describe('Filters', () => {
       beforeEach(() => {
