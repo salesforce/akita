@@ -41,6 +41,12 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
   let appState = {};
 
   rootDispatcherSub = rootDispatcher.subscribe(action => {
+    if (action.type === Actions.DELETE_STORE) {
+      const storeName = action.payload.storeName;
+      delete appState[storeName];
+      devTools.send({ type: `[${storeName}] - Delete Store` }, appState);
+    }
+
     if (action.type === Actions.NEW_STATE) {
       if (__globalState.skipAction) {
         __globalState.setSkipAction(false);

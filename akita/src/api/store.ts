@@ -16,6 +16,7 @@ export const __stores__: { [storeName: string]: Store<any> } = {};
 
 export const enum Actions {
   NEW_STORE,
+  DELETE_STORE,
   NEW_STATE
 }
 
@@ -259,6 +260,10 @@ export class Store<S> {
     if (isNotBrowser) return;
     if (!(window as any).hmrEnabled && this === __stores__[this.storeName]) {
       delete __stores__[this.storeName];
+      rootDispatcher.next({
+        type: Actions.DELETE_STORE,
+        payload: { storeName: this.storeName }
+      });
     }
   }
 }
