@@ -15,7 +15,7 @@ export function defaultFilter<E = any>( value: E, index: number, array: E[], fil
  * Helper function to do search on all string element
  */
 export function searchFilter( searchKey: string, inObj: Object ): boolean {
-  return Object.keys(inObj).some(function( key ) {
+  return isString(searchKey)  && Object.keys(inObj).some(function( key ) {
     return isString(inObj[key]) && inObj[key].toLocaleLowerCase().includes(searchKey.toLocaleLowerCase());
   });
 }
@@ -24,5 +24,5 @@ export function searchFilter( searchKey: string, inObj: Object ): boolean {
  * Helper function to do search in one key of an object
  */
 export function searchFilterIn( searchKey: string, inObj: Object, inKey: string ): boolean {
-  return isString(inObj[inKey]) && inObj[inKey].toLocaleLowerCase().includes(searchKey.toLocaleLowerCase());
+  return  isString(searchKey)  && isString(inKey) && isString(inObj[inKey]) && inObj[inKey].toLocaleLowerCase().includes(searchKey.toLocaleLowerCase());
 }

@@ -18,6 +18,8 @@ export interface Filter<E> {
   hide?: boolean;
   /** The function to apply filters, by default use defaultFilter helpers, that will search the value in the object */
   predicate: ( entity: E, index: number, array: E[], filter: Filter<E> ) => boolean;
+  /** add any other data you want to add **/
+  [key: string]: any;
 }
 
 export function createFilter<E>( filterParams: Partial<Filter<E>> ) {
