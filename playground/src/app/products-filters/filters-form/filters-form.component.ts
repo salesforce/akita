@@ -1,10 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { Filter } from '../../../../../akita/src/plugins/filters/filters-store';
+import { AkitaFilter } from '../../../../../akita/src/plugins/akita-filters/akita-filters-store';
 import { ProductPlant, ProductsFiltersService } from '../state';
 import { untilDestroyed } from 'ngx-take-until-destroy';
-import { searchFilter } from '../../../../../akita/src/plugins/filters/filters-utils';
+import { searchFilter } from '../../../../../akita/src/plugins/akita-filters/filters-utils';
 
 @Component({
   selector: 'app-filters-form',
@@ -21,7 +21,7 @@ export class FiltersFormComponent implements OnInit, OnDestroy {
 
   category: string;
   filterFastDelivery: boolean = false;
-  public filters$: Observable<Filter<ProductPlant>[]>;
+  public filters$: Observable<AkitaFilter<ProductPlant>[]>;
 
   constructor( private productsService: ProductsFiltersService ) {
   }

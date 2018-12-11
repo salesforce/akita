@@ -6,7 +6,7 @@ import { SortByOptions } from '../../api/query-config';
 import { capitalize } from '../../internal/utils';
 import { defaultFilter } from './filters-utils';
 
-export interface Filter<E> {
+export interface AkitaFilter<E> {
   id: ID;
   /** A corresponding name for display the filter, by default, it will be ${id): ${value}  */
   name?: string;
@@ -17,12 +17,12 @@ export interface Filter<E> {
   /** If you want to have filter that is not displayed on the list */
   hide?: boolean;
   /** The function to apply filters, by default use defaultFilter helpers, that will search the value in the object */
-  predicate: ( entity: E, index: number, array: E[], filter: Filter<E> ) => boolean;
+  predicate: ( entity: E, index: number, array: E[], filter: AkitaFilter<E> ) => boolean;
   /** add any other data you want to add **/
   [key: string]: any;
 }
 
-export function createFilter<E>( filterParams: Partial<Filter<E>> ) {
+export function createFilter<E>( filterParams: Partial<AkitaFilter<E>> ) {
   const id = filterParams.id ? filterParams.id : guid();
   const name = filterParams.name || (filterParams.value && filterParams.id ? `${capitalize(filterParams.id.toString())}: ${filterParams.value.toString()}` : undefined);
   if( !filterParams.predicate && filterParams.value ) {
@@ -30,15 +30,15 @@ export function createFilter<E>( filterParams: Partial<Filter<E>> ) {
     filterParams.predicate = defaultFilter;
   }
 
-  return { id, name, hide: false, order: 10, ...filterParams } as Filter<E>;
+  return { id, name, hide: false, order: 10, ...filterParams } as AkitaFilter<E>;
 }
 
-export interface FiltersState<E> extends EntityState<Filter<E>> {
+export interface FiltersState<E> extends EntityState<AkitaFilter<E>> {
   sort: SortByOptions<any>;
 }
 
 @StoreConfig({ name: 'filters' })
-export class FiltersStore<E> extends EntityStore<FiltersState<E>, Filter<E>> {
+export class AkitaFiltersStore<E> extends EntityStore<FiltersState<E>, AkitaFilter<E>> {
   constructor( storeName: string ) {
     super(undefined, { storeName });
   }

@@ -1,10 +1,10 @@
 import { isDefined, isObject, isString } from '../../internal/utils';
-import { Filter } from './filters-store';
+import { AkitaFilter } from './akita-filters-store';
 
 /**
  * Helper function to do a default filter
  */
-export function defaultFilter<E = any>( value: E, index: number, array: E[], filter: Filter<E> ): boolean {
+export function defaultFilter<E = any>( value: E, index: number, array: E[], filter: AkitaFilter<E> ): boolean {
   if( isObject(value) && isString(filter.value) ) {
     return searchFilter(filter.value, value);
   }
