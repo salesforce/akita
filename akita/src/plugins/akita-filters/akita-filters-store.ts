@@ -16,6 +16,8 @@ export interface AkitaFilter<E> {
   value?: any;
   /** If you want to have filter that is not displayed on the list */
   hide?: boolean;
+  /** If you have enabled server filter, specify witch filters will be call to server, default to false. */
+  server?: boolean;
   /** The function to apply filters, by default use defaultFilter helpers, that will search the value in the object */
   predicate: ( entity: E, index: number, array: E[], filter: AkitaFilter<E> ) => boolean;
   /** add any other data you want to add **/
@@ -30,7 +32,7 @@ export function createFilter<E>( filterParams: Partial<AkitaFilter<E>> ) {
     filterParams.predicate = defaultFilter;
   }
 
-  return { id, name, hide: false, order: 10, ...filterParams } as AkitaFilter<E>;
+  return { id, name, hide: false, order: 10, server: false, ...filterParams } as AkitaFilter<E>;
 }
 
 export interface FiltersState<E> extends EntityState<AkitaFilter<E>> {

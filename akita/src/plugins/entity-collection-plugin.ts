@@ -1,7 +1,8 @@
-import {coerceArray, isFunction, isUndefined, toBoolean} from '../internal/utils';
-import {QueryEntity} from '../api/query-entity';
-import {ID, IDS} from '../api/types';
-import {Observable} from 'rxjs';
+import { coerceArray, isFunction, isUndefined, toBoolean } from '../internal/utils';
+import { QueryEntity } from '../api/query-entity';
+import { EntityState, ID, IDS } from '../api/types';
+import { Observable } from 'rxjs';
+import { EntityStore } from '../api/entity-store';
 
 /**
  * Each plugin that wants to add support for entities should extend this interface.
@@ -10,9 +11,9 @@ export type EntityParam = ID;
 
 export type EntityCollectionParams = ID | ID[];
 
-export type RebaseActions<P = any> = { beforeRemove?: Function; beforeAdd?: Function; afterAdd?: (plugin: P) => any; };
+export type RebaseActions<P = any> = { beforeRemove?: Function; beforeAdd?: Function; afterAdd?: (plugin: P) => any };
 
-const defaultActions: RebaseActions = {beforeRemove: plugin => plugin.destroy()};
+const defaultActions: RebaseActions = { beforeRemove: plugin => plugin.destroy() };
 
 export abstract class EntityCollectionPlugin<E, P> {
   protected entities = new Map<ID, P>();
@@ -125,7 +126,7 @@ export abstract class EntityCollectionPlugin<E, P> {
        * Otherwise, start with the provided ids or all.
        */
       this.getIds().forEach(id => {
-        if (!this.hasEntity(id)) this.createEntity(id, this.instantiatePlugin(id))
+        if (!this.hasEntity(id)) this.createEntity(id, this.instantiatePlugin(id));
       });
     }
   }
@@ -177,7 +178,7 @@ export abstract class EntityCollectionPlugin<E, P> {
   }
 
   /** This method is responsible for getting access to the store. */
-  protected getStore() {
+  protected getStore(): EntityStore<EntityState<E>, E> {
     return this.getQuery().__store__;
   }
 }
