@@ -1,3 +1,10 @@
+## [1.23.2](https://github.com/datorama/akita/compare/v1.23.1...v1.23.2) (2018-12-19)
+
+
+### Bug Fixes
+
+* **persist-form-plugin:** should support form array with groups ([68d8e9a](https://github.com/datorama/akita/commit/68d8e9a))
+
 ## [1.23.1](https://github.com/datorama/akita/compare/v1.23.0...v1.23.1) (2018-12-07)
 
 
