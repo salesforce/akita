@@ -77,11 +77,11 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
    * @example
    * this.store.getAll();
    */
-  getAll(options: { asObject: true; filterBy?: SelectOptions<E>['filterBy']; limitTo?: number }): HashMap<E>;
-  getAll(options: { filterBy: SelectOptions<E>['filterBy']; limitTo?: number }): E[];
-  getAll(options: { asObject: true; limitTo?: number }): HashMap<E>;
-  getAll(options: { limitTo?: number }): E[];
-  getAll(options: { asObject: false; filterBy?: SelectOptions<E>['filterBy']; limitTo?: number }): E[];
+  getAll(options: { asObject: true; filterBy?: SelectOptions<E>['filterBy']; limitTo?: number; sortBy?: undefined; sortByOrder?: undefined }): HashMap<E>;
+  getAll(options: { filterBy: SelectOptions<E>['filterBy']; limitTo?: number; sortBy?: SortBy<E>; sortByOrder?: Order }): E[];
+  getAll(options: { asObject: true; limitTo?: number; sortBy?: undefined; sortByOrder?: undefined }): HashMap<E>;
+  getAll(options: { limitTo?: number; sortBy?: SortBy<E>; sortByOrder?: Order }): E[];
+  getAll(options: { asObject: false; filterBy?: SelectOptions<E>['filterBy']; limitTo?: number; sortBy?: SortBy<E>; sortByOrder?: Order }): E[];
   getAll(): E[];
   getAll(options: SelectOptions<E> = { asObject: false, filterBy: undefined, limitTo: undefined }): E[] | HashMap<E> {
     const state = this.getSnapshot();
