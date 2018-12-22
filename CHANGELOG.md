@@ -1,3 +1,10 @@
+## [1.23.3](https://github.com/datorama/akita/compare/v1.23.2...v1.23.3) (2018-12-22)
+
+
+### Bug Fixes
+
+* **query-entity:** get all should support sorting ([b9efeb7](https://github.com/datorama/akita/commit/b9efeb7))
+
 ## [1.23.2](https://github.com/datorama/akita/compare/v1.23.1...v1.23.2) (2018-12-19)
 
 
