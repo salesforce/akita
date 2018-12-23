@@ -1,7 +1,7 @@
 import { InjectionToken } from '@angular/core';
 import { ContactsQuery } from './contacts.query';
 import { Contact } from './contact.model';
-import { Paginator } from '../../../../../akita/src';
+import { Paginator } from '@datorama/akita';
 
 // let paginator: Paginator<Contact>;
 //

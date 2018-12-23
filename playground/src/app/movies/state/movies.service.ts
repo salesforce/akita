@@ -3,7 +3,7 @@ import { MoviesStore } from './movies.store';
 import { MoviesDataService } from './movies-data.service';
 import { ActorsStore } from '../actors/state';
 import { GenresStore } from '../genres/state';
-import { ID } from '../../../../../akita/src';
+import { ID } from '@datorama/akita';
 
 @Injectable({
   providedIn: 'root'

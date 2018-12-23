@@ -6,7 +6,7 @@ import { FormControl } from '@angular/forms';
 import { Contact, ContactsQuery } from '../state';
 import { ActivatedRoute } from '@angular/router';
 import { CONTACTS_PAGINATOR } from '../state/contacts.pagination';
-import { PaginatorPlugin } from '../../../../../akita/src';
+import { PaginatorPlugin } from '@datorama/akita';
 
 @Component({
   selector: 'app-contacts-page',

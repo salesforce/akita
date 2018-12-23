@@ -5,8 +5,7 @@ import { TodosQuery } from '../state/todos.query';
 import { TodosService } from '../state/todos.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ID, isUndefined, StateHistoryPlugin } from '../../../../../akita/src';
-import { EntityStateHistoryPlugin } from '../../../../../akita/src/plugins/state-history/entity-state-history-plugin';
+import { ID, isUndefined, StateHistoryPlugin, EntityStateHistoryPlugin } from '@datorama/akita';
 
 @Component({
   selector: 'app-todos-page',

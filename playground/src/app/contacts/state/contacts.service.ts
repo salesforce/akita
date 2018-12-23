@@ -3,7 +3,7 @@ import { ContactsStore } from './contacts.store';
 import { ContactsDataService } from './contacts-data.service';
 import { Observable } from 'rxjs';
 import { Contact } from './contact.model';
-import { PaginationResponse } from '../../../../../akita/src';
+import { PaginationResponse } from '@datorama/akita';
 
 @Injectable({
   providedIn: 'root'

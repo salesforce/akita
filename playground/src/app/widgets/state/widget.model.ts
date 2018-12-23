@@ -1,4 +1,4 @@
-import { ID } from '../../../../../../akita/akita/src/index';
+import { ID } from '@datorama/akita';
 
 export type Widget = {
   id: ID;

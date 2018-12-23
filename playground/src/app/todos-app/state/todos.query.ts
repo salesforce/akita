@@ -3,7 +3,7 @@ import { State, TodosStore } from './todos.store';
 import { Todo } from './todo.model';
 import { combineLatest } from 'rxjs';
 import { VISIBILITY_FILTER } from '../filter/filter.model';
-import { QueryEntity } from '../../../../../akita/src';
+import { QueryEntity } from '@datorama/akita';
 import { map } from 'rxjs/operators';
 
 @Injectable({

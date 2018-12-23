@@ -3,7 +3,7 @@ import { CartQuery } from '../cart/state';
 import { Observable } from 'rxjs';
 import { AuthQuery, AuthService } from '../auth/state';
 import { Router } from '@angular/router';
-import { resetStores } from '../../../../akita/index';
+import { resetStores } from '@datorama/akita';
 
 @Component({
   selector: 'app-nav',
