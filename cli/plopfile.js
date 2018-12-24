@@ -3,7 +3,7 @@ const path = require('path');
 const pluralize = require('pluralize');
 const finder = require('find-package-json');
 const pjson = finder(process.cwd()).next().value;
-let userPath, customFolderName, isAngular = true;
+let userPath, customFolderName, isAngular = false;
 
 module.exports = function( plop ) {
   userPath = pjson.akitaCli && pjson.akitaCli.basePath || '';
