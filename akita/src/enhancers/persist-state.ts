@@ -1,16 +1,38 @@
 import { AkitaError } from '../internal/error';
 import { __stores__, Actions, rootDispatcher } from '../api/store';
 import { skip } from 'rxjs/operators';
-import { getValue, setValue } from '../internal/utils';
+import { getValue, isFunction, setValue } from '../internal/utils';
 import { __globalState } from '../internal/global-state';
+import { from, isObservable, of } from 'rxjs';
+import { MaybeAsync } from '../api/types';
 
 const notBs = typeof localStorage === 'undefined';
+
+export interface PersistStateStorage {
+  getItem(key: string): MaybeAsync;
+
+  setItem(key: string, value: any): MaybeAsync;
+
+  clear(): void;
+}
+
+function isPromise(v) {
+  return v && isFunction(v.then);
+}
+
+function resolve(asyncOrValue) {
+  if (isPromise(asyncOrValue) || isObservable(asyncOrValue)) {
+    return from(asyncOrValue);
+  }
+
+  return of(asyncOrValue);
+}
 
 export interface PersistStateParams {
   /** The storage key */
   key: string;
   /** Storage strategy to use. This defaults to LocalStorage but you can pass SessionStorage or anything that implements the StorageEngine API. */
-  storage: Storage;
+  storage: PersistStateStorage;
   /** Custom deserializer. Defaults to JSON.parse */
   deserialize: Function;
   /** Custom serializer, defaults to JSON.stringify */
@@ -46,60 +68,72 @@ export function persistState(params?: Partial<PersistStateParams>) {
   if (hasInclude && hasExclude) {
     throw new AkitaError("You can't use both include and exclude");
   }
-
-  const storageState = deserialize(storage.getItem(key) || '{}');
-
   let stores = {};
   let acc = {};
+  let subscription;
 
-  function save() {
-    storage.setItem(key, serialize(Object.assign({}, storageState, acc)));
+  const value = storage.getItem(key);
+  const buffer = [];
+
+  function _save(v) {
+    resolve(v).subscribe(() => {
+      const next = buffer.shift();
+      next && _save(next);
+    });
   }
 
-  function subscribe(storeName, path) {
-    stores[storeName] = __stores__[storeName]
-      ._select(state => getValue(state, path))
-      .pipe(skip(1))
-      .subscribe(data => {
-        acc[storeName] = data;
-        save();
-      });
-  }
+  resolve(value).subscribe(v => {
+    const storageState = deserialize(v || '{}');
 
-  function setInitial(storeName, store, path) {
-    if (storageState[storeName]) {
-      __globalState.setAction({ type: '@PersistState' });
-      store.setState(state => {
-        return setValue(state, path, storageState[storeName]);
-      });
-      if (store.setDirty) {
-        store.setDirty();
-      }
+    function save() {
+      buffer.push(storage.setItem(key, serialize(Object.assign({}, storageState, acc))));
+      _save(buffer.shift());
     }
-  }
 
-  const subscription = rootDispatcher.subscribe(action => {
-    if (action.type === Actions.NEW_STORE) {
-      let currentStoreName = action.payload.store.storeName;
+    function subscribe(storeName, path) {
+      stores[storeName] = __stores__[storeName]
+        ._select(state => getValue(state, path))
+        .pipe(skip(1))
+        .subscribe(data => {
+          acc[storeName] = data;
+          save();
+        });
+    }
 
-      if (hasExclude && exclude.indexOf(currentStoreName) > -1 === true) {
-        return;
-      }
-
-      if (hasInclude) {
-        const path = include.find(name => name.indexOf(currentStoreName) > -1);
-        if (!path) {
-          return;
-        } else {
-          currentStoreName = path.split('.')[0];
-          setInitial(currentStoreName, action.payload.store, path);
-          subscribe(currentStoreName, path);
+    function setInitial(storeName, store, path) {
+      if (storageState[storeName]) {
+        __globalState.setAction({ type: '@PersistState' });
+        store.setState(state => {
+          return setValue(state, path, storageState[storeName]);
+        });
+        if (store.setDirty) {
+          store.setDirty();
         }
-      } else {
-        setInitial(currentStoreName, action.payload.store, currentStoreName);
-        subscribe(currentStoreName, currentStoreName);
       }
     }
+
+    subscription = rootDispatcher.subscribe(action => {
+      if (action.type === Actions.NEW_STORE) {
+        let currentStoreName = action.payload.store.storeName;
+
+        if (hasExclude && exclude.indexOf(currentStoreName) > -1 === true) {
+          return;
+        }
+        if (hasInclude) {
+          const path = include.find(name => name.indexOf(currentStoreName) > -1);
+          if (!path) {
+            return;
+          } else {
+            currentStoreName = path.split('.')[0];
+            setInitial(currentStoreName, action.payload.store, path);
+            subscribe(currentStoreName, path);
+          }
+        } else {
+          setInitial(currentStoreName, action.payload.store, currentStoreName);
+          subscribe(currentStoreName, currentStoreName);
+        }
+      }
+    });
   });
 
   return {
@@ -115,12 +149,16 @@ export function persistState(params?: Partial<PersistStateParams>) {
       storage.clear();
     },
     clearStore(storeName: string) {
-      const storageState = deserialize(storage.getItem(key) || '{}');
+      const value = storage.getItem(key);
+      resolve(value).subscribe(v => {
+        const storageState = deserialize(v || '{}');
 
-      if (storageState[storeName]) {
-        delete storageState[storeName];
-        storage.setItem(key, serialize(storageState));
-      }
+        if (storageState[storeName]) {
+          delete storageState[storeName];
+          const value = resolve(storage.setItem(key, serialize(storageState)));
+          value.subscribe();
+        }
+      });
     }
   };
 }

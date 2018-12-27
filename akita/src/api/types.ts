@@ -6,6 +6,8 @@
  *   1: Dashboard
  * }
  */
+import { Observable } from 'rxjs';
+
 export interface HashMap<T> {
   [id: string]: T;
 }
@@ -49,3 +51,5 @@ export type Newable<T> = { new (...args: any[]): T };
 export type AddOptions = { prepend?: boolean };
 
 export type SetActiveOptions = { prev?: boolean; next?: boolean; wrap?: boolean };
+
+export type MaybeAsync<T = any> = Promise<T> | Observable<T> | T;
