@@ -14,15 +14,6 @@ const isNotBrowser = typeof window === 'undefined';
 
 export const __stores__: { [storeName: string]: Store<any> } = {};
 
-export interface AkitaOnInit {
-  /**
-   * A callback method that is invoked immediately after
-   * the creation of a store with the initial state.
-   * It is invoked only once when the store is instantiated.
-   */
-  akitaOnInit(): void;
-}
-
 export const enum Actions {
   NEW_STORE,
   DELETE_STORE,
@@ -58,7 +49,8 @@ export function isDev() {
 }
 
 export interface Store<S> {
-  akitaOnInit?(): void;
+  storeOnInit?(): void;
+  storeOnUpdate?(previousState, newState): void;
 }
 
 /**
@@ -97,8 +89,8 @@ export class Store<S> {
     }
 
     // TODO: map all life cycle events in a bit wise enum to simply the check. https://github.com/angular/angular/blob/7.2.x/packages/core/src/view/types.ts#L367-L387
-    if (this.akitaOnInit) {
-      this.akitaOnInit();
+    if (this.storeOnInit) {
+      this.storeOnInit();
     }
   }
 
@@ -184,8 +176,11 @@ export class Store<S> {
       this.handleTransaction();
       return;
     }
-
     this.dispatch(this.storeValue, _rootDispatcher);
+
+    if (this.storeOnUpdate) {
+      this.storeOnUpdate(prevState, this.storeValue);
+    }
   }
 
   /**

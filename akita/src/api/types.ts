@@ -49,3 +49,21 @@ export type Newable<T> = { new (...args: any[]): T };
 export type AddOptions = { prepend?: boolean };
 
 export type SetActiveOptions = { prev?: boolean; next?: boolean; wrap?: boolean };
+
+export interface StoreOnInit {
+  /**
+   * A callback method that is invoked immediately after
+   * the creation of a store with the initial state.
+   * It is invoked only once when the store is instantiated.
+   */
+  storeOnInit(): void;
+}
+
+export interface StoreOnUpdate {
+  /**
+   * A callback method that is invoked immediately after
+   * state change of a store, with the previous state and the new state
+   * as parameters.
+   */
+  storeOnUpdate(previousState, newState): void;
+}

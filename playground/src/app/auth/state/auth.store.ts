@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { createEmptyUser, User } from './auth.model';
-import { StoreConfig, Store } from '@datorama/akita';
-import { AkitaOnInit } from '../../../../../akita/index';
+import { StoreConfig, Store, StoreOnInit } from '@datorama/akita';
 export const initialState: User = createEmptyUser();
 
 @Injectable({
@@ -10,12 +9,17 @@ export const initialState: User = createEmptyUser();
 @StoreConfig({
   name: 'auth'
 })
-export class AuthStore extends Store<User> implements AkitaOnInit {
+export class AuthStore extends Store<User> implements StoreOnInit {
   constructor() {
     super(initialState);
   }
 
-  akitaOnInit() {
+  storeOnInit() {
     console.log('Hello from on init life cycle hook!');
+  }
+
+  storeOnUpdate(prevState: User, newState: User) {
+    console.log('previous state: ', prevState);
+    console.log('new state: ', newState);
   }
 }
