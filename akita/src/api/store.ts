@@ -7,7 +7,7 @@ import { isFunction, isPlainObject } from '../internal/utils';
 import { deepFreeze } from '../internal/deep-freeze';
 import { configKey, StoreConfigOptions } from './store-config';
 import { __globalState } from '../internal/global-state';
-import { getAkitaConfig } from './config';
+import { getAkitaConfig, getEnhancerManager } from './config';
 
 let __DEV__ = true;
 const isNotBrowser = typeof window === 'undefined';
@@ -160,10 +160,20 @@ export class Store<S> {
    */
   setState(newStateFn: (state: Readonly<S>) => S, _rootDispatcher = true) {
     const prevState = this._value();
+
+    let mutatedState = null;
+    getAkitaConfig().enhancers.forEach(enhancer => {
+      mutatedState = getEnhancerManager().runEnhancer(mutatedState ? mutatedState : prevState, { type: Actions.NEW_STATE, payload: { test: false } }, this.storeName, enhancer);
+    });
+
     this.storeValue = __DEV__ ? deepFreeze(newStateFn(this._value())) : newStateFn(this._value());
 
     if (prevState === this.storeValue) {
       throw new AkitaImmutabilityError(this.storeName);
+    }
+
+    if (!!mutatedState) {
+      console.log(mutatedState);
     }
 
     if (!this.store) {
