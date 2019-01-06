@@ -1,5 +1,5 @@
 import { EntityStore } from '../src/api/entity-store';
-import { EntityState, ID, MultiActive } from '../src/api/types';
+import { EntityState, ID, MultiActiveState } from '../src/api/types';
 import { QueryEntity } from '../src/api/query-entity';
 import { StoreConfig } from '../src/api/store-config';
 import { take } from 'rxjs/operators';
@@ -10,7 +10,7 @@ type Todo = {
   completed?: boolean;
 };
 
-interface TodosState extends EntityState<Todo>, MultiActive {}
+interface TodosState extends EntityState<Todo>, MultiActiveState {}
 
 @StoreConfig({
   name: 'todos'

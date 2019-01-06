@@ -3,7 +3,7 @@ import { AkitaImmutabilityError, assertActive } from '../internal/error';
 import { __globalState, Action } from '../internal/global-state';
 import { coerceArray, entityExists, isFunction, isNil, isObject, toBoolean } from '../internal/utils';
 import { isDev, Store } from './store';
-import { ActiveState, AddOptions, Entities, EntityState, HashMap, ID, IDS, MultiActive, Newable, SetActiveOptions } from './types';
+import { ActiveState, AddOptions, Entities, EntityState, HashMap, ID, IDS, Newable, SetActiveOptions } from './types';
 import { transaction } from './transaction';
 
 /**

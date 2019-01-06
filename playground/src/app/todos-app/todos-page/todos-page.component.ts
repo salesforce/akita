@@ -20,7 +20,7 @@ export class TodosPageComponent implements OnInit {
   checkAll$: Observable<boolean>;
   stateHistory: StateHistoryPlugin;
   stateHistoryEntity: EntityStateHistoryPlugin<Todo>;
-
+  active = this.todosQuery.selectActive();
   constructor(private todosQuery: TodosQuery, private todosService: TodosService) {}
 
   ngOnInit() {

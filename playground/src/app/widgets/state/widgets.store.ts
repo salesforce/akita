@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Widget } from './widget.model';
-import { EntityState, EntityStore, StoreConfig, MultiActive } from '@datorama/akita';
+import { EntityState, EntityStore, StoreConfig, MultiActiveState } from '@datorama/akita';
 
-export interface State extends EntityState<Widget>, MultiActive {
+export interface State extends EntityState<Widget>, MultiActiveState {
   name: string;
 }
 

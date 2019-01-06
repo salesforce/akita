@@ -50,6 +50,6 @@ export type AddOptions = { prepend?: boolean };
 
 export type SetActiveOptions = { prev?: boolean; next?: boolean; wrap?: boolean };
 
-export interface MultiActive<T = ID> {
+export interface MultiActiveState<T = ID> {
   active: T[];
 }
