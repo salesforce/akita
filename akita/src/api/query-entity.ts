@@ -7,7 +7,7 @@ import { EntityStore } from './entity-store';
 import { memoizeOne } from './memoize';
 import { Query } from './query';
 import { SortBy, SortByOptions } from './query-config';
-import { ActiveState, EntityState, HashMap, ID } from './types';
+import { EntityState, HashMap, ID } from './types';
 
 export interface SelectOptions<E> extends SortByOptions<E> {
   asObject?: boolean;
@@ -150,31 +150,38 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
   /**
    * Select the active entity's id.
    */
-  selectActiveId(): Observable<ActiveEntity> {
-    return this.select(state => (state as S & ActiveState<ActiveEntity>).active);
+  selectActiveId(): Observable<S['active']> {
+    return this.select(state => (state as S & { active: S['active'] }).active);
   }
 
   /**
    * Get the active id
    */
-  getActiveId(): ActiveEntity {
-    return (this.getSnapshot() as S & ActiveState<ActiveEntity>).active;
+  getActiveId(): S['active'] {
+    return this.getSnapshot().active;
   }
 
   /**
    * Select the active entity.
    */
-  selectActive<R>(): Observable<E>;
-  selectActive<R>(project: (entity: E) => R): Observable<R>;
-  selectActive<R>(project?: (entity: E) => R): Observable<R | E> {
-    return this.selectActiveId().pipe(switchMap(activeId => this.selectEntity(activeId, project)));
+  selectActive<R>(): S['active'] extends any[] ? Observable<E[]> : Observable<E>;
+  selectActive<R>(project: S['active'] extends any[] ? undefined : (entity: E) => R): Observable<R>;
+  selectActive<R>(project?: S['active'] extends any[] ? undefined : (entity: E) => R): Observable<R | E> | Observable<E[]> {
+    if (Array.isArray(this.getActive())) {
+      return this.selectActiveId().pipe(switchMap(ids => this.selectMany(ids)));
+    }
+    return this.selectActiveId().pipe(switchMap(ids => this.selectEntity(ids, project)));
   }
 
   /**
    * Get the active entity.
    */
-  getActive(): E {
-    const activeId: ActiveEntity = this.getActiveId();
+  getActive(): S['active'] extends any[] ? E[] : E;
+  getActive(): E[] | E {
+    const activeId = this.getActiveId();
+    if (Array.isArray(activeId)) {
+      return activeId.map(id => this.getSnapshot().entities[id]);
+    }
     return toBoolean(activeId) ? this.getEntity(activeId) : undefined;
   }
 
@@ -223,7 +230,11 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
    * Returns whether entity store has an active entity.
    */
   hasActive(): boolean {
-    return this.getSnapshot().active != null;
+    const active = this.getSnapshot().active;
+    if (Array.isArray(active)) {
+      return active.length > 0;
+    }
+    return active != null;
   }
 
   isEmpty() {

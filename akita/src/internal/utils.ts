@@ -1,7 +1,6 @@
 import { Observable } from 'rxjs';
 import { ActiveState, EntityState, HashMap, ID } from '../api/types';
 
-/** Wraps the provided value in an array, unless the provided _value is an array. */
 export function coerceArray<T>(value: T | T[]): T[] {
   return Array.isArray(value) ? value : [value];
 }
@@ -65,10 +64,23 @@ export function isDefined(val) {
 }
 
 /**
- * Check if the active entity exist
+ * Remove active upon deletion if not exist
  */
 export function resetActive<E>(state: EntityState<E>) {
-  return isActiveState(state) && entityExists((state as ActiveState).active, state.entities) === false;
+  return isActiveState(state) && entityExists(state.active, state.entities) === false;
+}
+
+/**
+ * Remove active upon deletion if not exist
+ */
+export function getActives(currentActivesIds: ID[], newIds: ID[]) {
+  const filtered = currentActivesIds.filter(id => newIds.indexOf(id) > -1);
+  /** Return the same reference if nothing has changed */
+  if (filtered.length === currentActivesIds.length) {
+    return currentActivesIds;
+  }
+
+  return filtered;
 }
 
 /**

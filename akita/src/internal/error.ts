@@ -37,6 +37,12 @@ export class AkitaUpdateIdKeyError extends AkitaError {
   }
 }
 
+export class AkitaMultiActiveError extends AkitaError {
+  constructor(error) {
+    super(error);
+  }
+}
+
 export function assertEntityExists(id: ID, entities) {
   if (!entityExists(id, entities)) {
     throw new AkitaEntityNotExistsError(id);
