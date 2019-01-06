@@ -239,7 +239,6 @@ export class EntityStore<S extends EntityState<E>, E, ActiveEntity = ID> extends
   /**
    *
    * Update the active entity.
-   * Note: This will not work with multiple actives
    *
    * @example
    * this.store.updateActive({ completed: true });
