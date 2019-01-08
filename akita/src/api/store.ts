@@ -79,7 +79,7 @@ export class Store<S> {
       payload: { store: this }
     });
     isDev() && assertDecorator(this.storeName, this.constructor.name);
-    if (getAkitaConfig().resettable) {
+    if (this.isRessetable()) {
       this._initialState = initialState;
     }
   }
@@ -123,9 +123,6 @@ export class Store<S> {
     return this.constructor[configKey];
   }
 
-  /**
-   * Get the store name
-   */
   get storeName() {
     return this.options.storeName || (this.config && this.config['storeName']);
   }
@@ -174,7 +171,7 @@ export class Store<S> {
    * Resets the store to it's initial state and set the store to a pristine state.
    */
   reset() {
-    if (getAkitaConfig().resettable) {
+    if (this.isRessetable()) {
       __globalState.setAction({ type: 'Reset Store' });
       this.setState(() => Object.assign({}, this._initialState));
       this.setPristine();
@@ -244,6 +241,10 @@ export class Store<S> {
       __globalState.currentT = [];
       __globalState.skipTransactionMsg = false;
     });
+  }
+
+  private isRessetable() {
+    return this.config.resettable || getAkitaConfig().resettable;
   }
 
   /**
