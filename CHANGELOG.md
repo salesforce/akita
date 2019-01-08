@@ -1,3 +1,10 @@
+## [1.23.4](https://github.com/datorama/akita/compare/v1.23.3...v1.23.4) (2019-01-08)
+
+
+### Bug Fixes
+
+* **entity-store:** add strict null type for set active ([fb5908f](https://github.com/datorama/akita/commit/fb5908f)), closes [#146](https://github.com/datorama/akita/issues/146)
+
 ## [1.23.3](https://github.com/datorama/akita/compare/v1.23.2...v1.23.3) (2018-12-22)
 
 
