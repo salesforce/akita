@@ -1,3 +1,10 @@
+# [1.24.0](https://github.com/datorama/akita/compare/v1.23.4...v1.24.0) (2019-01-08)
+
+
+### Features
+
+* **store:** allow reset per store and not only global ([ede538f](https://github.com/datorama/akita/commit/ede538f))
+
 ## [1.23.4](https://github.com/datorama/akita/compare/v1.23.3...v1.23.4) (2019-01-08)
 
 
