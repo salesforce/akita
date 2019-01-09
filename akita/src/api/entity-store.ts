@@ -265,7 +265,7 @@ export class EntityStore<S extends EntityState<E>, E, ActiveEntity = ID> extends
   /**
    * Set the given entity as active.
    */
-  setActive(idOrOptions: ActiveEntity | SetActiveOptions) {
+  setActive(idOrOptions: ActiveEntity | SetActiveOptions | null) {
     let activeId: ActiveEntity;
 
     if (isObject(idOrOptions)) {

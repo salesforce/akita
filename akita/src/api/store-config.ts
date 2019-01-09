@@ -1,5 +1,6 @@
 export type StoreConfigOptions = {
   name: string;
+  resettable?: boolean;
   idKey?: string;
 };
 
