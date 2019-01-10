@@ -1,9 +1,9 @@
 import { Todo } from './todo.model';
 import { VISIBILITY_FILTER } from '../filter/filter.model';
 import { Injectable } from '@angular/core';
-import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
+import { EntityState, EntityStore, StoreConfig, ActiveState } from '@datorama/akita';
 
-export interface State extends EntityState<Todo> {
+export interface State extends EntityState<Todo>, ActiveState {
   ui: {
     filter: VISIBILITY_FILTER;
   };

@@ -30,4 +30,16 @@ export class WidgetsService {
   updateName(name: string) {
     this.widgetsStore.updateRoot({ name });
   }
+
+  addActive(id: ID) {
+    this.widgetsStore.addActive(id);
+  }
+
+  removeActive(id: ID) {
+    this.widgetsStore.removeActive(id);
+  }
+
+  toggleActive(id: ID) {
+    this.widgetsStore.toggleActive(id);
+  }
 }

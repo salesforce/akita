@@ -4,10 +4,10 @@ export enum VISIBILITY_FILTER {
   SHOW_ALL = 'SHOW_ALL'
 }
 
-export type TodoFilter = {
+export interface TodoFilter {
   label: string;
   value: VISIBILITY_FILTER;
-};
+}
 
 export const initialFilters: TodoFilter[] = [
   { label: 'All', value: VISIBILITY_FILTER.SHOW_ALL },

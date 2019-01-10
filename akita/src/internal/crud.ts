@@ -1,6 +1,6 @@
 import { Entities, EntityState, HashMap, ID, Newable, AddOptions } from '../api/types';
 import { AkitaUpdateIdKeyError, assertEntityExists, assertEntityState } from './error';
-import { entityExists, isFunction, isPlainObject, resetActive } from './utils';
+import { entityExists, isFunction, isPlainObject, resetActive, getActives } from './utils';
 
 export class CRUD {
   _set<S, E>(state: S, entities: E[] | HashMap<E> | Entities<E>, entityClass: Newable<E> | undefined, idKey): S {
@@ -29,8 +29,12 @@ export class CRUD {
       loading: false
     };
 
-    if (resetActive(newState)) {
-      newState.active = null;
+    if (Array.isArray((state as S & { active: any }).active)) {
+      newState.active = getActives((state as S & { active: any }).active, newState.ids);
+    } else {
+      if (resetActive(newState)) {
+        newState.active = null;
+      }
     }
 
     return newState;
@@ -149,14 +153,19 @@ export class CRUD {
       const { [id]: entity, ...rest } = acc;
       return rest;
     }, state.entities);
+
     const newState = {
       ...(state as any),
       entities: removed,
       ids: state.ids.filter(current => ids.indexOf(current) === -1)
     };
 
-    if (resetActive(newState)) {
-      newState.active = null;
+    if (Array.isArray(state.active)) {
+      newState.active = getActives(state.active, newState.ids);
+    } else {
+      if (resetActive(newState)) {
+        newState.active = null;
+      }
     }
 
     return newState;
