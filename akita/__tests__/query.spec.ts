@@ -58,6 +58,6 @@ describe('With Class', () => {
   });
 
   it('should get the value', () => {
-    expect(query.getSnapshot()).toEqual(userStore._value());
+    expect(query.getValue()).toEqual(userStore._value());
   });
 });

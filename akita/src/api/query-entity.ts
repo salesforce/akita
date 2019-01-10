@@ -84,7 +84,7 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
   getAll(options: { asObject: false; filterBy?: SelectOptions<E>['filterBy']; limitTo?: number; sortBy?: SortBy<E>; sortByOrder?: Order }): E[];
   getAll(): E[];
   getAll(options: SelectOptions<E> = { asObject: false, filterBy: undefined, limitTo: undefined }): E[] | HashMap<E> {
-    const state = this.getSnapshot();
+    const state = this.getValue();
 
     if (options.asObject) {
       return toMap(state.ids, state.entities, options, true);
@@ -144,7 +144,7 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
    * this.store.getEntity(1);
    */
   getEntity(id: ActiveEntity): E {
-    return this.getSnapshot().entities[id as any];
+    return this.getValue().entities[id as any];
   }
 
   /**
@@ -158,7 +158,7 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
    * Get the active id
    */
   getActiveId(): ActiveEntity {
-    return (this.getSnapshot() as S & ActiveState<ActiveEntity>).active;
+    return (this.getValue() as S & ActiveState<ActiveEntity>).active;
   }
 
   /**
@@ -198,7 +198,7 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
     if (isFunction(predicate)) {
       return this.getAll().filter(predicate).length;
     }
-    return this.getSnapshot().ids.length;
+    return this.getValue().ids.length;
   }
 
   /**
@@ -223,11 +223,11 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
    * Returns whether entity store has an active entity.
    */
   hasActive(): boolean {
-    return this.getSnapshot().active != null;
+    return this.getValue().active != null;
   }
 
   isEmpty() {
-    return this.getSnapshot().ids.length === 0;
+    return this.getValue().ids.length === 0;
   }
 
   private _byId(id: ActiveEntity): Observable<E> {

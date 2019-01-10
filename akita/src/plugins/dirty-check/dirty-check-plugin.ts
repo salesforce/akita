@@ -56,7 +56,7 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
       if (this.isEntityBased(this._entityId)) {
         currentValue = params.updateFn(this.head, (this.getQuery() as QueryEntity<StoreState, Entity>).getEntity(this._entityId));
       } else {
-        currentValue = params.updateFn(this.head, (this.getQuery() as Query<StoreState>).getSnapshot());
+        currentValue = params.updateFn(this.head, (this.getQuery() as Query<StoreState>).getValue());
       }
     }
     /** If we are watching specific props compare them, if not compare the entire store */
@@ -94,7 +94,7 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
 
   isPathDirty(path: string) {
     const head = this.getHead();
-    const current = (this.getQuery() as Query<StoreState>).getSnapshot();
+    const current = (this.getQuery() as Query<StoreState>).getValue();
     const currentPathValue = getNestedPath(current, path);
     const headPathValue = getNestedPath(head, path);
 

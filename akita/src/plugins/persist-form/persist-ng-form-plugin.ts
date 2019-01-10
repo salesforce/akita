@@ -71,7 +71,7 @@ export class PersistNgFormPlugin<T = any> extends AkitaPlugin {
     }
     this.form.patchValue(value, { emitEvent: this.params.emitEvent });
 
-    const storeValue = this.isKeyBased ? setValue(this.getQuery().getSnapshot(), `${this.getStore().storeName}.${this.factoryFnOrPath}`, value) : { [this.params.formKey]: value };
+    const storeValue = this.isKeyBased ? setValue(this.getQuery().getValue(), `${this.getStore().storeName}.${this.factoryFnOrPath}`, value) : { [this.params.formKey]: value };
     this.updateStore(storeValue);
   }
 
@@ -102,21 +102,21 @@ export class PersistNgFormPlugin<T = any> extends AkitaPlugin {
 
     if (this.isKeyBased) {
       if (this.isRootKeys) {
-        this.initialValue = this.resolveInitialValue(this.form.value, this.getQuery().getSnapshot());
+        this.initialValue = this.resolveInitialValue(this.form.value, this.getQuery().getValue());
         this.form.patchValue(this.initialValue, { emitEvent: this.params.emitEvent });
       } else {
         path = `${this.getStore().storeName}.${this.factoryFnOrPath}`;
-        const root = getValue(this.getQuery().getSnapshot(), path);
+        const root = getValue(this.getQuery().getValue(), path);
         this.initialValue = this.resolveInitialValue(root, root);
         this.form.patchValue(this.initialValue, { emitEvent: this.params.emitEvent });
       }
     } else {
-      if (!(this.getQuery().getSnapshot() as AkitaFormProp<T>)[this.params.formKey]) {
+      if (!(this.getQuery().getValue() as AkitaFormProp<T>)[this.params.formKey]) {
         __globalState.setAction({ type: '@PersistNgFormPlugin activate' });
         this.updateStore({ [this.params.formKey]: (this as any).factoryFnOrPath() });
       }
 
-      const value = this.getQuery().getSnapshot()[this.params.formKey];
+      const value = this.getQuery().getValue()[this.params.formKey];
       this.form.patchValue(value);
     }
 
@@ -132,7 +132,7 @@ export class PersistNgFormPlugin<T = any> extends AkitaPlugin {
       } else {
         newState = () => ({ [this.params.formKey]: value });
       }
-      this.updateStore(newState(this.getQuery().getSnapshot()));
+      this.updateStore(newState(this.getQuery().getValue()));
     });
   }
 

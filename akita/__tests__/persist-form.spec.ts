@@ -63,17 +63,17 @@ describe('PersistForm', () => {
 
     jest.runAllTimers();
 
-    expect(query.getSnapshot().akitaForm).toEqual(patch);
-    expect(query.getSnapshot()[customFormKey]).toEqual(patch);
+    expect(query.getValue().akitaForm).toEqual(patch);
+    expect(query.getValue()[customFormKey]).toEqual(patch);
   });
 
   it('should reset the form', () => {
     persistForm.reset();
-    expect(query.getSnapshot().akitaForm).toEqual(createStory());
+    expect(query.getValue().akitaForm).toEqual(createStory());
     expect(formGroupA.value).toEqual(createStory());
 
     persistFormWithCustomKey.reset();
-    expect(query.getSnapshot()[customFormKey]).toEqual(createStory());
+    expect(query.getValue()[customFormKey]).toEqual(createStory());
     expect(formGroupB.value).toEqual(createStory());
   });
 });
@@ -96,16 +96,16 @@ describe('PersistForm - key based', () => {
     formGroup.patchValue(patch);
     jest.runAllTimers();
 
-    expect(query.getSnapshot().config).toEqual(patch);
+    expect(query.getValue().config).toEqual(patch);
   });
 
   it('should reset the form', () => {
     persistForm.reset();
     jest.runAllTimers();
-    expect(query.getSnapshot().config).toEqual({ time: '', isAdmin: false });
+    expect(query.getValue().config).toEqual({ time: '', isAdmin: false });
     persistForm.reset({ isAdmin: false, time: 'changed' });
     jest.runAllTimers();
-    expect(query.getSnapshot().config).toEqual({ time: 'changed', isAdmin: false });
+    expect(query.getValue().config).toEqual({ time: 'changed', isAdmin: false });
   });
 });
 
@@ -143,18 +143,18 @@ describe('PersistForm - root key', () => {
     formGroup.patchValue(patch);
     jest.runAllTimers();
 
-    expect(query.getSnapshot().someBoolean).toEqual(patch.someBoolean);
+    expect(query.getValue().someBoolean).toEqual(patch.someBoolean);
     // it doesn't need to effect other props
-    expect(query.getSnapshot().other).toEqual('Akita');
+    expect(query.getValue().other).toEqual('Akita');
   });
 
   it('should reset the form', () => {
     persistForm.reset();
     jest.runAllTimers();
-    expect(query.getSnapshot().someBoolean).toEqual(true);
+    expect(query.getValue().someBoolean).toEqual(true);
     persistForm.reset({ someBoolean: false });
     jest.runAllTimers();
-    expect(query.getSnapshot().someBoolean).toEqual(false);
+    expect(query.getValue().someBoolean).toEqual(false);
   });
 });
 

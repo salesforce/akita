@@ -49,7 +49,7 @@ export abstract class AkitaPlugin<E = any, S = any> {
       return (this.getQuery() as QueryEntity<S, E>).getEntity(entityId);
     }
 
-    return this.getQuery().getSnapshot();
+    return this.getQuery().getValue();
   }
 
   /** This method is responsible for updating the store or one entity; it can be the whole store or one entity. */
