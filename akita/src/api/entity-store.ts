@@ -311,8 +311,3 @@ export const getInitialEntitiesState = () =>
     loading: true,
     error: null
   } as EntityState);
-
-export const getInitialActiveState = () =>
-  ({
-    active: null
-  } as ActiveState);

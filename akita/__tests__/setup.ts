@@ -1,4 +1,4 @@
-import { EntityStore, getInitialActiveState } from '../src/api/entity-store';
+import { EntityStore } from '../src/api/entity-store';
 import { ActiveState, EntityState, ID } from '../src/api/types';
 import { StoreConfig } from '../src/api/store-config';
 import { QueryEntity } from '../src/api/query-entity';
@@ -21,7 +21,7 @@ export interface State extends EntityState<Todo>, ActiveState {
 }
 
 export const initialState: State = {
-  ...getInitialActiveState(),
+  active: null,
   metadata: { name: 'metadata' }
 };
 
