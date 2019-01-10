@@ -51,7 +51,7 @@ describe('DirtyCheck', () => {
         expect(spy).toHaveBeenLastCalledWith(false);
       });
 
-      it('should mark as dirty when the store value doesn\'t equal to head', () => {
+      it("should mark as dirty when the store value doesn't equal to head", () => {
         widgetsStore.add(createWidget());
         expect(spy).toHaveBeenLastCalledWith(true);
       });
@@ -234,7 +234,6 @@ describe('DirtyCheck', () => {
 
           isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
           expect(isPathDirty).toBeTruthy();
-
         });
       });
     });
@@ -344,7 +343,7 @@ describe('DirtyCheckEntity', () => {
       widgetsStore.add([createWidget(), createWidget(), createWidget()]);
       collection.setHead();
       const spy = jest.fn();
-      collection.isSomeDirty$.subscribe(spy);
+      collection.someDirty$.subscribe(spy);
       let isDirty = collection.someDirty();
       expect(isDirty).toBe(false);
       expect(spy).toHaveBeenLastCalledWith(false);
