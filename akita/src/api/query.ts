@@ -48,9 +48,17 @@ export class Query<S> {
 
   /**
    * Get the raw value of the store.
+   * @deprecated use the `value()` method
    */
   getSnapshot(): S {
     return this.store._value();
+  }
+
+  /**
+   * Get the raw value of the store.
+   */
+  value() {
+    return this.getSnapshot();
   }
 
   /**
