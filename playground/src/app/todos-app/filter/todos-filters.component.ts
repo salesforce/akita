@@ -1,9 +1,8 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { TodoFilter, VISIBILITY_FILTER } from './filter.model';
 import { FormControl } from '@angular/forms';
-import { TakeUntilDestroy, untilDestroyed } from 'ngx-take-until-destroy';
+import { untilDestroyed } from 'ngx-take-until-destroy';
 
-@TakeUntilDestroy()
 @Component({
   selector: 'app-todos-filters',
   template: `
@@ -25,8 +24,10 @@ export class TodosFiltersComponent implements OnInit, OnDestroy {
       this.control.patchValue(filter, { emitEvent: false });
     }
   }
-  @Input() filters: TodoFilter[];
-  @Output() update = new EventEmitter<VISIBILITY_FILTER>();
+  @Input()
+  filters: TodoFilter[];
+  @Output()
+  update = new EventEmitter<VISIBILITY_FILTER>();
 
   control: FormControl;
 

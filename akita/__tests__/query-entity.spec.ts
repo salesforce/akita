@@ -213,6 +213,11 @@ describe('Entities Query', () => {
       store.setActive(null);
       expect(query.hasActive()).toBeFalsy();
     });
+
+    it('should NOT have active entity after unset undefined', () => {
+      store.setActive(undefined);
+      expect(query.hasActive()).toBeFalsy();
+    });
   });
 
   describe('selectCount', () => {
@@ -280,6 +285,26 @@ describe('Entities Query', () => {
     it('should NOT have entity', () => {
       expect(query.hasEntity(5)).toBeFalsy();
     });
+
+    describe('multi', () => {
+      it('should return true if all entities in the store', () => {
+        const factory = ct();
+        store.add(factory());
+        store.add(factory());
+        store.add(factory());
+
+        expect(query.hasEntity([0, 1, 2])).toBeTruthy();
+      });
+
+      it('should return false if NOT all entities in the store', () => {
+        const factory = ct();
+        store.add(factory());
+        store.add(factory());
+        store.add(factory());
+
+        expect(query.hasEntity([0, 1, 23])).toBeFalsy();
+      });
+    });
   });
 });
 
@@ -333,6 +358,33 @@ describe('getAll', () => {
     expect(isObject(result)).toBeTruthy();
     expect(Object.keys(result).length).toEqual(1);
     expect(result[1].title).toEqual('aaa');
+  });
+
+  it('should support filter by function with index', () => {
+    const result = queryTodos.getAll({
+      filterBy: (entity, index) => index % 2 === 0
+    });
+    expect(Array.isArray(result)).toBeTruthy();
+    expect(result.length).toEqual(1);
+    expect(result[0].title).toEqual('aaa');
+  });
+
+  it('should support filter by multi functions', () => {
+    const result = queryTodos.getAll({
+      filterBy: [(entity, index) => index % 2 === 0, entity => entity.completed === false]
+    });
+    expect(Array.isArray(result)).toBeTruthy();
+    expect(result.length).toEqual(1);
+
+    const result2 = queryTodos.getAll({
+      filterBy: [(entity, index) => index % 2 === 0, entity => entity.completed === true]
+    });
+    expect(result2.length).toEqual(0);
+
+    const result3 = queryTodos.getAll({
+      filterBy: [entity => entity.completed === false]
+    });
+    expect(result3.length).toEqual(2);
   });
 
   it('should support limitTo', () => {

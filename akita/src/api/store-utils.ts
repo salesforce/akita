@@ -1,4 +1,6 @@
 import { isNumber } from '../internal/utils';
+import { __stores__ } from './store';
+import { applyTransaction } from './transaction';
 
 /**
  * @example
@@ -36,5 +38,38 @@ export function guid() {
     const r = (Math.random() * 16) | 0,
       v = c == 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
+  });
+}
+
+export interface ResetStoresParams {
+  /**
+   *  By default the whole state is resetted, use this param to exclude stores that you don't want to reset.
+   */
+  exclude: string[];
+}
+
+/**
+ *
+ * @param options
+ */
+export function resetStores(options?: Partial<ResetStoresParams>) {
+  const defaults: ResetStoresParams = {
+    exclude: []
+  };
+
+  options = Object.assign({}, defaults, options);
+  const stores = Object.keys(__stores__);
+
+  applyTransaction(() => {
+    for (const store of stores) {
+      const s = __stores__[store];
+      if (!options.exclude) {
+        s.reset();
+      } else {
+        if (options.exclude.indexOf(s.storeName) === -1) {
+          s.reset();
+        }
+      }
+    }
   });
 }

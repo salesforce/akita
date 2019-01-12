@@ -1,9 +1,9 @@
-import { Entities, EntityState, HashMap, ID, Newable } from '../api/types';
+import { Entities, EntityState, HashMap, ID, Newable, AddOptions } from '../api/types';
 import { AkitaUpdateIdKeyError, assertEntityExists, assertEntityState } from './error';
 import { entityExists, isFunction, isPlainObject, resetActive } from './utils';
 
 export class CRUD {
-  _set<S, E>(state: S, entities: E[] | HashMap<E> | Entities<E>, entityClass: Newable<E>, idKey): S {
+  _set<S, E>(state: S, entities: E[] | HashMap<E> | Entities<E>, entityClass: Newable<E> | undefined, idKey): S {
     let ids, normalized;
 
     if ((entities as Entities<E>).ids && (entities as Entities<E>).entities) {
@@ -46,7 +46,7 @@ export class CRUD {
     };
   }
 
-  _add<S extends EntityState, E>(state: S, entities: E[], idKey): S {
+  _add<S extends EntityState, E>(state: S, entities: E[], idKey, options: AddOptions = {}): S {
     let addedEntities = {};
     let addedIds = [];
 
@@ -56,7 +56,8 @@ export class CRUD {
 
       if (!entityExists(entityId, state.entities)) {
         addedEntities[entityId] = entity;
-        addedIds.push(entityId);
+        if (options.prepend) addedIds.unshift(entityId);
+        else addedIds.push(entityId);
       }
     }
 
@@ -66,7 +67,7 @@ export class CRUD {
         ...state.entities,
         ...addedEntities
       },
-      ids: [...state.ids, ...addedIds]
+      ids: options.prepend ? [...addedIds, ...state.ids] : [...state.ids, ...addedIds]
     };
   }
 
@@ -102,7 +103,21 @@ export class CRUD {
       if (isPlainObject(oldEntity)) {
         newEntity = merged;
       } else {
-        newEntity = new oldEntity.constructor(merged);
+        /**
+         * In case that new state is class of it's own, there's
+         * a possibility that it will be different than the old
+         * class.
+         * For example, Old state is an instance of animal class
+         * and new state is instance of person class.
+         * To avoid run over new person class with the old animal
+         * class we check if the new state is a class of it's own.
+         * If so, use it. Otherwise, use the old state class
+         */
+        if (isPlainObject(newState)) {
+          newEntity = new oldEntity.constructor(merged);
+        } else {
+          newEntity = new (newState as any).constructor(merged);
+        }
       }
 
       updatedEntities[idToUpdate] = newEntity;

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Todo } from '../state/todo.model';
-import { ID } from '../../../../../akita/src';
+import { ID } from '@datorama/akita';
 
 @Component({
   selector: 'app-todos',
@@ -17,7 +17,10 @@ import { ID } from '../../../../../akita/src';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodosComponent {
-  @Input() todos: Todo[];
-  @Output() complete = new EventEmitter<Todo>();
-  @Output() delete = new EventEmitter<ID>();
+  @Input()
+  todos: Todo[];
+  @Output()
+  complete = new EventEmitter<Todo>();
+  @Output()
+  delete = new EventEmitter<ID>();
 }

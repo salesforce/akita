@@ -22,7 +22,10 @@ export type PersistFormParams = {
   debounceTime?: number;
   formKey?: string;
   emitEvent?: boolean;
+  arrControlFactory?: ArrayControlFactory;
 };
+
+export type ArrayControlFactory = (value: any) => any; // Todo: Return  AbstractControl interface
 
 export class PersistNgFormPlugin<T = any> extends AkitaPlugin {
   formChanges: Subscription;
@@ -34,7 +37,7 @@ export class PersistNgFormPlugin<T = any> extends AkitaPlugin {
 
   constructor(protected query: Query<any>, private factoryFnOrPath?: Function | string, private params: PersistFormParams = {}) {
     super(query);
-    this.params = { ...{ debounceTime: 300, formKey: 'akitaForm', emitEvent: false }, ...params };
+    this.params = { ...{ debounceTime: 300, formKey: 'akitaForm', emitEvent: false, arrControlFactory: v => this.builder.control(v) }, ...params };
     this.isRootKeys = toBoolean(factoryFnOrPath) === false;
     this.isKeyBased = isString(factoryFnOrPath) || this.isRootKeys;
   }
@@ -59,11 +62,9 @@ export class PersistNgFormPlugin<T = any> extends AkitaPlugin {
         const value = this.initialValue[stateKey];
         if (Array.isArray(value) && this.builder) {
           const formArray = this.form.controls[stateKey];
-          while (formArray.length !== 0) {
-            formArray.removeAt(0);
-          }
+          this.cleanArray(formArray);
           value.forEach((v, i) => {
-            this.form.get(stateKey).insert(i, this.builder.control(v));
+            this.form.get(stateKey).insert(i, (this.params.arrControlFactory as Function)(v));
           });
         }
       });
@@ -74,13 +75,21 @@ export class PersistNgFormPlugin<T = any> extends AkitaPlugin {
     this.updateStore(storeValue);
   }
 
+  private cleanArray(control) {
+    while (control.length !== 0) {
+      control.removeAt(0);
+    }
+  }
+
   private resolveInitialValue(formValue, root) {
     if (!formValue) return;
     return Object.keys(formValue).reduce((acc, stateKey) => {
       const value = root[stateKey];
       if (Array.isArray(value) && this.builder) {
+        const factory = this.params.arrControlFactory;
+        this.cleanArray(this.form.get(stateKey));
         value.forEach((v, i) => {
-          this.form.get(stateKey).insert(i, this.builder.control(v));
+          this.form.get(stateKey).insert(i, (factory as Function)(v));
         });
       }
       acc[stateKey] = root[stateKey];

@@ -4,7 +4,7 @@ import { CartItem } from './cart.model';
 import { ProductsQuery } from '../../products/state';
 import { combineLatest } from 'rxjs';
 import { map, publishReplay, refCount } from 'rxjs/operators';
-import { QueryEntity } from '../../../../../akita/src';
+import { QueryEntity } from '@datorama/akita';
 
 @Injectable({
   providedIn: 'root'

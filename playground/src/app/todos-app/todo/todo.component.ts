@@ -1,19 +1,21 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Todo } from '../state/todo.model';
 import { FormControl } from '@angular/forms';
-import { TakeUntilDestroy, untilDestroyed } from 'ngx-take-until-destroy';
-import { ID } from '../../../../../akita/src';
+import { untilDestroyed } from 'ngx-take-until-destroy';
+import { ID } from '@datorama/akita';
 
-@TakeUntilDestroy()
 @Component({
   selector: 'app-todo',
   templateUrl: './todo.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TodoComponent implements OnInit, OnDestroy {
-  @Input() todo: Todo;
-  @Output() complete = new EventEmitter<Todo>();
-  @Output() delete = new EventEmitter<ID>();
+  @Input()
+  todo: Todo;
+  @Output()
+  complete = new EventEmitter<Todo>();
+  @Output()
+  delete = new EventEmitter<ID>();
 
   control: FormControl;
 

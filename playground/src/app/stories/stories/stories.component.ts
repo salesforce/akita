@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { createStory, StoriesQuery, StoriesService, Story } from '../state';
-import { PersistNgFormPlugin } from '../../../../../akita/src';
+import { PersistNgFormPlugin } from '@datorama/akita';
 
 @Component({
   selector: 'app-stories',

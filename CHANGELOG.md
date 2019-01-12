@@ -1,3 +1,213 @@
+# [1.24.0](https://github.com/datorama/akita/compare/v1.23.4...v1.24.0) (2019-01-08)
+
+
+### Features
+
+* **store:** allow reset per store and not only global ([ede538f](https://github.com/datorama/akita/commit/ede538f))
+
+## [1.23.4](https://github.com/datorama/akita/compare/v1.23.3...v1.23.4) (2019-01-08)
+
+
+### Bug Fixes
+
+* **entity-store:** add strict null type for set active ([fb5908f](https://github.com/datorama/akita/commit/fb5908f)), closes [#146](https://github.com/datorama/akita/issues/146)
+
+## [1.23.3](https://github.com/datorama/akita/compare/v1.23.2...v1.23.3) (2018-12-22)
+
+
+### Bug Fixes
+
+* **query-entity:** get all should support sorting ([b9efeb7](https://github.com/datorama/akita/commit/b9efeb7))
+
+## [1.23.2](https://github.com/datorama/akita/compare/v1.23.1...v1.23.2) (2018-12-19)
+
+
+### Bug Fixes
+
+* **persist-form-plugin:** should support form array with groups ([68d8e9a](https://github.com/datorama/akita/commit/68d8e9a))
+
+## [1.23.1](https://github.com/datorama/akita/compare/v1.23.0...v1.23.1) (2018-12-07)
+
+
+### Bug Fixes
+
+* **devtools:** deleted stores should be reflected in devtools ([c0382f2](https://github.com/datorama/akita/commit/c0382f2)), closes [#136](https://github.com/datorama/akita/issues/136)
+
+# [1.23.0](https://github.com/datorama/akita/compare/v1.22.1...v1.23.0) (2018-12-04)
+
+
+### Features
+
+* **store:** allow dynamic store name ([57a5577](https://github.com/datorama/akita/commit/57a5577))
+
+## [1.22.1](https://github.com/datorama/akita/compare/v1.22.0...v1.22.1) (2018-11-26)
+
+
+### Bug Fixes
+
+* **store:** support ssr ([f871066](https://github.com/datorama/akita/commit/f871066)), closes [#131](https://github.com/datorama/akita/issues/131)
+
+# [1.22.0](https://github.com/datorama/akita/compare/v1.21.0...v1.22.0) (2018-11-24)
+
+
+### Bug Fixes
+
+* **entity-store:** add method should not add if all entities exist ([cfebaac](https://github.com/datorama/akita/commit/cfebaac)), closes [#127](https://github.com/datorama/akita/issues/127)
+* **reset-stores:** pagination and state history should clean the state ([0a6c1b3](https://github.com/datorama/akita/commit/0a6c1b3)), closes [#129](https://github.com/datorama/akita/issues/129)
+
+
+### Features
+
+* **active-entity:** add support to set the next and prev entity ([d102ef6](https://github.com/datorama/akita/commit/d102ef6))
+* **query-entity:** filterby support array of functions ([4f8f9cd](https://github.com/datorama/akita/commit/4f8f9cd))
+
+# [1.21.0](https://github.com/datorama/akita/compare/v1.20.0...v1.21.0) (2018-11-18)
+
+
+### Features
+
+* **query-entity:** provide index in filter function ([#118](https://github.com/datorama/akita/issues/118)) ([b12f451](https://github.com/datorama/akita/commit/b12f451))
+
+# [1.20.0](https://github.com/datorama/akita/compare/v1.19.1...v1.20.0) (2018-11-17)
+
+
+### Features
+
+* **entity-store:** add upsert method ([659b4d1](https://github.com/datorama/akita/commit/659b4d1))
+
+## [1.19.1](https://github.com/datorama/akita/compare/v1.19.0...v1.19.1) (2018-11-14)
+
+
+### Bug Fixes
+
+* **hmr:** add support for hmr ([180c8c3](https://github.com/datorama/akita/commit/180c8c3)), closes [#108](https://github.com/datorama/akita/issues/108)
+* **store:** make ngOnDestroy method public ([de24ad3](https://github.com/datorama/akita/commit/de24ad3))
+
+# [1.19.0](https://github.com/datorama/akita/compare/v1.18.0...v1.19.0) (2018-11-11)
+
+
+### Features
+
+* **active-entity:** add the ability to explicitly set the active type ([1a6365d](https://github.com/datorama/akita/commit/1a6365d)), closes [#112](https://github.com/datorama/akita/issues/112)
+
+# [1.18.0](https://github.com/datorama/akita/compare/v1.17.0...v1.18.0) (2018-11-10)
+
+
+### Features
+
+* **schematics:** add prompts ([99be7ab](https://github.com/datorama/akita/commit/99be7ab))
+
+# [1.17.0](https://github.com/datorama/akita/compare/v1.16.0...v1.17.0) (2018-11-04)
+
+
+### Features
+
+* **akita:** fixed global action name, removed unused imports ([8a11ed1](https://github.com/datorama/akita/commit/8a11ed1))
+* **akita:** reset single store, resetStore reset all stores ([0175cef](https://github.com/datorama/akita/commit/0175cef))
+* **akita:** resetStores func ([43601af](https://github.com/datorama/akita/commit/43601af))
+* **akita:** resetStores func ([cec89c9](https://github.com/datorama/akita/commit/cec89c9))
+* **akita:** resetStores func ([df5e39d](https://github.com/datorama/akita/commit/df5e39d))
+
+# [1.16.0](https://github.com/datorama/akita/compare/v1.15.1...v1.16.0) (2018-11-04)
+
+
+### Bug Fixes
+
+* **dirty-check:** remove type ([ca9e3d3](https://github.com/datorama/akita/commit/ca9e3d3))
+
+
+### Features
+
+* **dirty-check:** add the ability to subscribe to reset event ([9266b0e](https://github.com/datorama/akita/commit/9266b0e))
+
+## [1.15.1](https://github.com/datorama/akita/compare/v1.15.0...v1.15.1) (2018-11-03)
+
+
+### Bug Fixes
+
+* **schematics:** upgrade libs version ([70468b0](https://github.com/datorama/akita/commit/70468b0))
+
+# [1.15.0](https://github.com/datorama/akita/compare/v1.14.0...v1.15.0) (2018-11-03)
+
+
+### Features
+
+* **akita:** upgrade to ng7 and ts3 ([17a7a95](https://github.com/datorama/akita/commit/17a7a95))
+
+# [1.14.0](https://github.com/datorama/akita/compare/v1.13.1...v1.14.0) (2018-10-31)
+
+
+### Bug Fixes
+
+* **entity store:** change type and update test for add option ([5ef1776](https://github.com/datorama/akita/commit/5ef1776))
+* **entity store:** change type of AddParams and add default value ([1b2eeba](https://github.com/datorama/akita/commit/1b2eeba))
+* **entity store:** fix test issue ([736a53f](https://github.com/datorama/akita/commit/736a53f))
+* **entity store:** update test and default case for prepend add ([4d9d91f](https://github.com/datorama/akita/commit/4d9d91f))
+* **entity store:** update test for prepend add ([07822ae](https://github.com/datorama/akita/commit/07822ae))
+
+
+### Features
+
+* **entity store:** allow prepend option when adding ([2c4708d](https://github.com/datorama/akita/commit/2c4708d))
+* **entity store:** rename prepend params to options ([6da7837](https://github.com/datorama/akita/commit/6da7837))
+
+## [1.13.1](https://github.com/datorama/akita/compare/v1.13.0...v1.13.1) (2018-10-31)
+
+
+### Bug Fixes
+
+* **query-entity:** sortby should work with getall ([75ed1b7](https://github.com/datorama/akita/commit/75ed1b7)), closes [#102](https://github.com/datorama/akita/issues/102)
+
+# [1.13.0](https://github.com/datorama/akita/compare/v1.12.5...v1.13.0) (2018-10-30)
+
+
+### Features
+
+* **entity-query:** hasEntity can take an array of ids ([7404dc5](https://github.com/datorama/akita/commit/7404dc5))
+
+## [1.12.5](https://github.com/datorama/akita/compare/v1.12.4...v1.12.5) (2018-10-29)
+
+
+### Bug Fixes
+
+* **crud-update:** use new state constructor instead of the old state ([f8ae5a1](https://github.com/datorama/akita/commit/f8ae5a1))
+
+## [1.12.4](https://github.com/datorama/akita/compare/v1.12.3...v1.12.4) (2018-10-29)
+
+
+### Bug Fixes
+
+* **crud-update:** use new state constructor instead of the old state ([0bc3104](https://github.com/datorama/akita/commit/0bc3104))
+* **crud-update:** use new state constructor instead of the old state ([e177ed6](https://github.com/datorama/akita/commit/e177ed6))
+
+## [1.12.3](https://github.com/datorama/akita/compare/v1.12.2...v1.12.3) (2018-10-24)
+
+
+### Bug Fixes
+
+* **store:** use IE11 strict mode compatible deep-freeze ([8a63065](https://github.com/datorama/akita/commit/8a63065)), closes [#94](https://github.com/datorama/akita/issues/94)
+
+## [1.12.2](https://github.com/datorama/akita/compare/v1.12.1...v1.12.2) (2018-10-16)
+
+
+### Bug Fixes
+
+* **query-entity:** has active should return false when value is undefined ([ba56933](https://github.com/datorama/akita/commit/ba56933)), closes [#92](https://github.com/datorama/akita/issues/92)
+
+## [1.12.1](https://github.com/datorama/akita/compare/v1.12.0...v1.12.1) (2018-10-15)
+
+
+### Bug Fixes
+
+* **ng-add:** fix router imports ([5975689](https://github.com/datorama/akita/commit/5975689))
+
+# [1.12.0](https://github.com/datorama/akita/compare/v1.11.0...v1.12.0) (2018-10-15)
+
+
+### Features
+
+* **schematics:** add ng add command ([2703a00](https://github.com/datorama/akita/commit/2703a00))
+
 # [1.11.0](https://github.com/datorama/akita/compare/v1.10.0...v1.11.0) (2018-10-08)
 
 

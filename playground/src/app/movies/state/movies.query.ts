@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MoviesStore, State } from './movies.store';
 import { Movie } from './movie.model';
-import { ID, QueryEntity } from '../../../../../akita/src';
+import { ID, QueryEntity } from '@datorama/akita';
 import { ActorsQuery } from '../actors/state';
 import { GenresQuery } from '../genres/state';
 import { combineLatest } from 'rxjs';

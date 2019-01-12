@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { QueryEntity } from '../../../../../akita/src';
+import { QueryEntity } from '@datorama/akita';
 import { State, WidgetsStore } from './widgets.store';
 import { Widget } from './widget.model';
 

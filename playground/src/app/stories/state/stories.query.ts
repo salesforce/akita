@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { StoriesStore, State } from './stories.store';
 import { Story } from './story.model';
-import { QueryEntity } from '../../../../../akita/src';
+import { QueryEntity } from '@datorama/akita';
 
 @Injectable({
   providedIn: 'root'

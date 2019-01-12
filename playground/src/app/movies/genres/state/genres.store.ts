@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Genre } from './genre.model';
-import { EntityState, EntityStore, StoreConfig } from '../../../../../../akita/src';
+import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
 
 export interface State extends EntityState<Genre> {}
 

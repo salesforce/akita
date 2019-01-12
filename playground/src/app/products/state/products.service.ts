@@ -5,8 +5,7 @@ import { Product } from './products.model';
 import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { ProductsQuery } from './products.query';
-import { ID, noop } from '../../../../../akita/src';
-import { applyAction } from '../../../../../akita/index';
+import { ID, noop } from '@datorama/akita';
 
 @Injectable({
   providedIn: 'root'

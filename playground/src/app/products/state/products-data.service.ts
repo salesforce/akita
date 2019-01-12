@@ -3,7 +3,7 @@ import { mapTo } from 'rxjs/operators';
 import { Observable, timer } from 'rxjs';
 import { Product } from './products.model';
 import { products } from '../products.mocks';
-import { ID } from '../../../../../akita/src';
+import { ID } from '@datorama/akita';
 
 @Injectable({
   providedIn: 'root'

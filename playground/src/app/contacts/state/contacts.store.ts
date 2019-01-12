@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Contact } from './contact.model';
-import { StoreConfig } from '../../../../../akita/src/api/store-config';
-import { EntityState, EntityStore } from '../../../../../akita/src';
+import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
 
 export interface State extends EntityState<Contact> {}
 

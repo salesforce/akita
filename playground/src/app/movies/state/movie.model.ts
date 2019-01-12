@@ -1,4 +1,4 @@
-import { ID } from '../../../../../akita/src';
+import { ID } from '@datorama/akita';
 import { Genre } from '../genres/state';
 import { Actor } from '../actors/state';
 

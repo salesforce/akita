@@ -1,0 +1,10 @@
+{
+  "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "schematics": {
+    "ng-add": {
+      "description": "Akita schematic",
+      "schema": "./ng-add/schema.json",
+      "factory": "./ng-add/index#akitaNgAdd"
+    }
+  }
+}

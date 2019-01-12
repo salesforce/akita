@@ -3,7 +3,7 @@ import { MoviesQuery, MoviesService } from '../state';
 import { Observable } from 'rxjs';
 import { Movie } from '../state/movie.model';
 import { Actor, ActorsQuery } from '../actors/state';
-import { ID } from '../../../../../akita/src';
+import { ID } from '@datorama/akita';
 
 @Component({
   selector: 'app-movies',

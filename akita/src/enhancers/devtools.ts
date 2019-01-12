@@ -12,6 +12,7 @@ export type DevtoolsOptions = {
   logTrace: boolean;
   predicate: (state: any, action: any) => boolean;
 };
+let rootDispatcherSub, devtoolsSub;
 
 export type NgZoneLike = { run: any };
 
@@ -21,6 +22,9 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
   if (!(window as any).__REDUX_DEVTOOLS_EXTENSION__) {
     return;
   }
+
+  rootDispatcherSub && rootDispatcherSub.unsubscribe();
+  devtoolsSub && devtoolsSub();
 
   const isAngular = ngZoneOrOptions && ngZoneOrOptions['run'];
 
@@ -36,7 +40,13 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
   const devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__.connect(merged);
   let appState = {};
 
-  rootDispatcher.subscribe(action => {
+  rootDispatcherSub = rootDispatcher.subscribe(action => {
+    if (action.type === Actions.DELETE_STORE) {
+      const storeName = action.payload.storeName;
+      delete appState[storeName];
+      devTools.send({ type: `[${storeName}] - Delete Store` }, appState);
+    }
+
     if (action.type === Actions.NEW_STATE) {
       if (__globalState.skipAction) {
         __globalState.setSkipAction(false);
@@ -62,7 +72,7 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
     }
   });
 
-  devTools.subscribe(message => {
+  devtoolsSub = devTools.subscribe(message => {
     if (message.type === 'ACTION') {
       const [storeName] = message.payload.split('.');
 

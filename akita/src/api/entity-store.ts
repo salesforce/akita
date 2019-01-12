@@ -1,34 +1,25 @@
 import { _crud } from '../internal/crud';
 import { AkitaImmutabilityError, assertActive } from '../internal/error';
 import { Action, __globalState } from '../internal/global-state';
-import { coerceArray, entityExists, isFunction, toBoolean } from '../internal/utils';
+import { coerceArray, entityExists, isFunction, isNil, isObject, isUndefined, toBoolean } from '../internal/utils';
 import { isDev, Store } from './store';
-import { ActiveState, Entities, EntityState, HashMap, ID, Newable } from './types';
+import { ActiveState, Entities, EntityState, HashMap, ID, Newable, AddOptions, SetActiveOptions } from './types';
 
 /**
  * The Root Store that every sub store needs to inherit and
  * invoke `super` with the initial state.
  */
-export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
+export class EntityStore<S extends EntityState<E>, E, ActiveEntity = ID> extends Store<S> {
   /**
    *
    * Initiate the store with the state
    */
-  constructor(initialState = {}, private options: { idKey?: string } = {}) {
-    super({ ...getInitialEntitiesState(), ...initialState });
+  constructor(initialState = {}, options: { idKey?: string; storeName?: string } = {}) {
+    super({ ...getInitialEntitiesState(), ...initialState }, options);
   }
 
   get entities() {
     return this._value().entities;
-  }
-
-  get idKey() {
-    /** backward compatibility */
-    const newIdKey = this.config && this.config.idKey;
-    if (!newIdKey) {
-      return this.options.idKey || 'id';
-    }
-    return newIdKey;
   }
 
   /**
@@ -41,9 +32,9 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    * this.store.set([{id: 1}, {id: 2}], { entityClass: Product });
    *
    */
-  set(entities: E[] | HashMap<E> | Entities<E>, options: { entityClass?: Newable<E> } = {}) {
+  set(entities: E[] | HashMap<E> | Entities<E>, options: { entityClass?: Newable<E> | undefined } = {}) {
     isDev() && __globalState.setAction({ type: 'Set Entities' });
-    this.setState(state => _crud._set(state, entities, options.entityClass, this.idKey));
+    this.setState(state => _crud._set(state, isNil(entities) ? [] : entities, options.entityClass, this.idKey));
     this.setDirty();
   }
 
@@ -56,13 +47,24 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    */
   createOrReplace(id: ID, entity: E) {
     if (!entityExists(id, this._value().entities)) {
-      if (!entity[this.idKey]) {
-        entity[this.idKey] = id;
-      }
-      return this.add(entity);
+      this.addWhenNotExists(id, entity);
+    } else {
+      isDev() && __globalState.setAction({ type: 'Create or Replace Entity', entityId: [id] });
+      this.setState(state => _crud._replaceEntity(state, id, entity));
     }
-    isDev() && __globalState.setAction({ type: 'Upsert Entity', entityId: [id] });
-    this.setState(state => _crud._replaceEntity(state, id, entity));
+  }
+
+  /**
+   *
+   * Insert or Update
+   */
+  upsert(id: ID, entityOrFn: Partial<E> | ((entity: Readonly<E>) => Partial<E>)) {
+    if (!entityExists(id, this._value().entities)) {
+      const resolve = isFunction(entityOrFn) ? (entityOrFn as Function)({}) : entityOrFn;
+      this.addWhenNotExists(id, resolve);
+    } else {
+      this.update(id, entityOrFn as any);
+    }
   }
 
   /**
@@ -71,12 +73,18 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
    * @example
    * this.store.add([Entity, Entity]);
    * this.store.add(Entity);
+   * this.store.add(Entity, { prepend: true });
    */
-  add(entities: E[] | E) {
+  add(entities: E[] | E, options?: AddOptions) {
     const toArray = coerceArray(entities);
+
     if (toArray.length === 0) return;
+    /**  If we pass entities that already exist, we should ignore them */
+    const allExists = toArray.every(entity => this._value().ids.indexOf(entity[this.idKey]) > -1);
+    if (allExists) return;
+
     isDev() && __globalState.setAction({ type: 'Add Entity' });
-    this.setState(state => _crud._add<S, E>(state, toArray, this.idKey));
+    this.setState(state => _crud._add<S, E>(state, toArray, this.idKey, options));
   }
 
   /**
@@ -245,7 +253,7 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
     assertActive(this._value());
     isDev() && __globalState.setAction({ type: 'Update Active Entity', entityId: this._value().active });
     this.setState(state => {
-      const activeId = state.active;
+      const activeId = state.active as ID;
       const newState = isFunction(newStateFn) ? newStateFn(state.entities[activeId]) : newStateFn;
       if (newState === state) {
         throw new AkitaImmutabilityError(this.storeName);
@@ -257,15 +265,42 @@ export class EntityStore<S extends EntityState<E>, E> extends Store<S> {
   /**
    * Set the given entity as active.
    */
-  setActive(id: ID | null) {
-    if (id === this._value().active) return;
-    isDev() && __globalState.setAction({ type: 'Set Active Entity', entityId: id });
+  setActive(idOrOptions: ActiveEntity | SetActiveOptions | null) {
+    let activeId: ActiveEntity;
+
+    if (isObject(idOrOptions)) {
+      if (isNil(this._value().active)) return;
+      (idOrOptions as SetActiveOptions) = Object.assign({ wrap: true }, idOrOptions);
+      const ids = this._value().ids;
+      const currentIdIndex = ids.indexOf(this._value().active);
+      if ((idOrOptions as SetActiveOptions).prev) {
+        const isFirst = currentIdIndex === 0;
+        if (isFirst && !(idOrOptions as SetActiveOptions).wrap) return;
+        activeId = isFirst ? ids[ids.length - 1] : (ids[currentIdIndex - 1] as any);
+      } else if ((idOrOptions as SetActiveOptions).next) {
+        const isLast = ids.length === currentIdIndex + 1;
+        if (isLast && !(idOrOptions as SetActiveOptions).wrap) return;
+        activeId = isLast ? ids[0] : (ids[currentIdIndex + 1] as any);
+      }
+    } else {
+      if (idOrOptions === this._value().active) return;
+      activeId = idOrOptions as ActiveEntity;
+    }
+
+    isDev() && __globalState.setAction({ type: 'Set Active Entity', entityId: activeId });
     this.setState(state => {
       return {
         ...(state as any),
-        active: id
+        active: activeId
       };
     });
+  }
+
+  private addWhenNotExists(id: ID, entity: E) {
+    if (!entity[this.idKey]) {
+      entity[this.idKey] = id;
+    }
+    this.add(entity);
   }
 }
 
