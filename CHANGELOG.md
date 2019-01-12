@@ -1,3 +1,10 @@
+## [1.24.1](https://github.com/datorama/akita/compare/v1.24.0...v1.24.1) (2019-01-12)
+
+
+### Bug Fixes
+
+* **persist-state:** store keys for persistence have to match exactly ([1610394](https://github.com/datorama/akita/commit/1610394))
+
 # [1.24.0](https://github.com/datorama/akita/compare/v1.23.4...v1.24.0) (2019-01-08)
 
 
