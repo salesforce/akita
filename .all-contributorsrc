@@ -161,6 +161,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "twittwer",
+      "name": "Tobias Wittwer",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/8677948?v=4",
+      "profile": "https://github.com/twittwer",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }
