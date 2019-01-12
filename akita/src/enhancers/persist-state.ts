@@ -1,6 +1,6 @@
 import { AkitaError } from '../internal/error';
 import { __stores__, Actions, rootDispatcher } from '../api/store';
-import { skip } from 'rxjs/operators';
+import { skip, filter } from 'rxjs/operators';
 import { getValue, setValue } from '../internal/utils';
 import { __globalState } from '../internal/global-state';
 
@@ -87,25 +87,23 @@ export function persistState(params?: Partial<PersistStateParams>) {
     }
   }
 
-  const subscription = rootDispatcher.subscribe(action => {
-    if (action.type === Actions.NEW_STORE) {
-      let currentStoreName = action.payload.store.storeName;
+  const subscription = rootDispatcher.pipe(filter(action => action.type === Actions.NEW_STORE)).subscribe(action => {
+    let currentStoreName = action.payload.store.storeName;
 
-      if (hasExclude && exclude.includes(currentStoreName)) {
+    if (hasExclude && exclude.includes(currentStoreName)) {
+      return;
+    }
+
+    if (hasInclude) {
+      const path = includeStores[currentStoreName];
+      if (!path) {
         return;
       }
-
-      if (hasInclude) {
-        const path = includeStores[currentStoreName];
-        if (!path) {
-          return;
-        }
-        setInitial(currentStoreName, action.payload.store, path);
-        subscribe(currentStoreName, path);
-      } else {
-        setInitial(currentStoreName, action.payload.store, currentStoreName);
-        subscribe(currentStoreName, currentStoreName);
-      }
+      setInitial(currentStoreName, action.payload.store, path);
+      subscribe(currentStoreName, path);
+    } else {
+      setInitial(currentStoreName, action.payload.store, currentStoreName);
+      subscribe(currentStoreName, currentStoreName);
     }
   });
 
