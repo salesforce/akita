@@ -43,6 +43,12 @@ export function persistState(params?: Partial<PersistStateParams>) {
   const hasInclude = include.length > 0;
   const hasExclude = exclude.length > 0;
 
+  const includeStores = {};
+  include.forEach(path => {
+    const storeName = path.split('.')[0];
+    includeStores[storeName] = path;
+  });
+
   if (hasInclude && hasExclude) {
     throw new AkitaError("You can't use both include and exclude");
   }
@@ -82,19 +88,17 @@ export function persistState(params?: Partial<PersistStateParams>) {
     if (action.type === Actions.NEW_STORE) {
       let currentStoreName = action.payload.store.storeName;
 
-      if (hasExclude && exclude.indexOf(currentStoreName) > -1 === true) {
+      if (hasExclude && exclude.includes(currentStoreName)) {
         return;
       }
 
       if (hasInclude) {
-        const path = include.find(name => name.indexOf(currentStoreName) > -1);
+        const path = includeStores[currentStoreName];
         if (!path) {
           return;
-        } else {
-          currentStoreName = path.split('.')[0];
-          setInitial(currentStoreName, action.payload.store, path);
-          subscribe(currentStoreName, path);
         }
+        setInitial(currentStoreName, action.payload.store, path);
+        subscribe(currentStoreName, path);
       } else {
         setInitial(currentStoreName, action.payload.store, currentStoreName);
         subscribe(currentStoreName, currentStoreName);
