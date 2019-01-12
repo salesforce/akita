@@ -42,15 +42,18 @@ export function persistState(params?: Partial<PersistStateParams>) {
 
   const hasInclude = include.length > 0;
   const hasExclude = exclude.length > 0;
-
-  const includeStores = {};
-  include.forEach(path => {
-    const storeName = path.split('.')[0];
-    includeStores[storeName] = path;
-  });
+  let includeStores;
 
   if (hasInclude && hasExclude) {
     throw new AkitaError("You can't use both include and exclude");
+  }
+
+  if (hasInclude) {
+    includeStores = include.reduce((acc, path) => {
+      const storeName = path.split('.')[0];
+      acc[storeName] = path;
+      return acc;
+    }, {});
   }
 
   const storageState = deserialize(storage.getItem(key) || '{}');
