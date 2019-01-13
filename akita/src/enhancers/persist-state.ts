@@ -1,6 +1,6 @@
 import { AkitaError } from '../internal/error';
 import { __stores__, Actions, rootDispatcher } from '../api/store';
-import { skip } from 'rxjs/operators';
+import { skip, filter } from 'rxjs/operators';
 import { getValue, setValue } from '../internal/utils';
 import { __globalState } from '../internal/global-state';
 
@@ -42,9 +42,18 @@ export function persistState(params?: Partial<PersistStateParams>) {
 
   const hasInclude = include.length > 0;
   const hasExclude = exclude.length > 0;
+  let includeStores;
 
   if (hasInclude && hasExclude) {
     throw new AkitaError("You can't use both include and exclude");
+  }
+
+  if (hasInclude) {
+    includeStores = include.reduce((acc, path) => {
+      const storeName = path.split('.')[0];
+      acc[storeName] = path;
+      return acc;
+    }, {});
   }
 
   const storageState = deserialize(storage.getItem(key) || '{}');
@@ -78,27 +87,23 @@ export function persistState(params?: Partial<PersistStateParams>) {
     }
   }
 
-  const subscription = rootDispatcher.subscribe(action => {
-    if (action.type === Actions.NEW_STORE) {
-      let currentStoreName = action.payload.store.storeName;
+  const subscription = rootDispatcher.pipe(filter(action => action.type === Actions.NEW_STORE)).subscribe(action => {
+    let currentStoreName = action.payload.store.storeName;
 
-      if (hasExclude && exclude.indexOf(currentStoreName) > -1 === true) {
+    if (hasExclude && exclude.includes(currentStoreName)) {
+      return;
+    }
+
+    if (hasInclude) {
+      const path = includeStores[currentStoreName];
+      if (!path) {
         return;
       }
-
-      if (hasInclude) {
-        const path = include.find(name => name.indexOf(currentStoreName) > -1);
-        if (!path) {
-          return;
-        } else {
-          currentStoreName = path.split('.')[0];
-          setInitial(currentStoreName, action.payload.store, path);
-          subscribe(currentStoreName, path);
-        }
-      } else {
-        setInitial(currentStoreName, action.payload.store, currentStoreName);
-        subscribe(currentStoreName, currentStoreName);
-      }
+      setInitial(currentStoreName, action.payload.store, path);
+      subscribe(currentStoreName, path);
+    } else {
+      setInitial(currentStoreName, action.payload.store, currentStoreName);
+      subscribe(currentStoreName, currentStoreName);
     }
   });
 
