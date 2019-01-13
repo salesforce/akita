@@ -78,8 +78,6 @@ export function persistState(params?: Partial<PersistStateParams>) {
     }, {});
   }
 
-  const storageState = deserialize(storage.getItem(key) || '{}');
-
   let stores = {};
   let acc = {};
   let subscription: { subscribe: Function; unsubscribe: Function };
