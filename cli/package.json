@@ -21,7 +21,7 @@
     "inquirer-directory": "^2.1.0",
     "npm-run": "^5.0.1",
     "pkg-dir": "^2.0.0",
-    "plop": "1.9.1",
+    "plop": "^2.2.0",
     "pluralize": "^7.0.0",
     "shelljs": "^0.7.8"
   },

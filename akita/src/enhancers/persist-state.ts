@@ -1,10 +1,10 @@
 import { AkitaError } from '../internal/error';
 import { __stores__, Actions, rootDispatcher } from '../api/store';
-import { skip } from 'rxjs/operators';
-import { getValue, isFunction, setValue } from '../internal/utils';
+import { skip, filter } from 'rxjs/operators';
+import { getValue, setValue, isFunction } from '../internal/utils';
 import { __globalState } from '../internal/global-state';
 import { from, isObservable, of } from 'rxjs';
-import { MaybeAsync } from '../api/types';
+import { MaybeAsync, HashMap } from '../api/types';
 
 const notBs = typeof localStorage === 'undefined';
 
@@ -16,11 +16,11 @@ export interface PersistStateStorage {
   clear(): void;
 }
 
-function isPromise(v) {
+function isPromise(v: any) {
   return v && isFunction(v.then);
 }
 
-function resolve(asyncOrValue) {
+function resolve(asyncOrValue: any) {
   if (isPromise(asyncOrValue) || isObservable(asyncOrValue)) {
     return from(asyncOrValue);
   }
@@ -64,25 +64,37 @@ export function persistState(params?: Partial<PersistStateParams>) {
 
   const hasInclude = include.length > 0;
   const hasExclude = exclude.length > 0;
+  let includeStores: HashMap<string>;
 
   if (hasInclude && hasExclude) {
     throw new AkitaError("You can't use both include and exclude");
   }
+
+  if (hasInclude) {
+    includeStores = include.reduce((acc, path) => {
+      const storeName = path.split('.')[0];
+      acc[storeName] = path;
+      return acc;
+    }, {});
+  }
+
+  const storageState = deserialize(storage.getItem(key) || '{}');
+
   let stores = {};
   let acc = {};
-  let subscription;
+  let subscription: { subscribe: Function; unsubscribe: Function };
 
   const value = storage.getItem(key);
   const buffer = [];
 
-  function _save(v) {
+  function _save(v: any) {
     resolve(v).subscribe(() => {
       const next = buffer.shift();
       next && _save(next);
     });
   }
 
-  resolve(value).subscribe(v => {
+  resolve(value).subscribe((v: any) => {
     const storageState = deserialize(v || '{}');
 
     function save() {
@@ -112,26 +124,23 @@ export function persistState(params?: Partial<PersistStateParams>) {
       }
     }
 
-    subscription = rootDispatcher.subscribe(action => {
-      if (action.type === Actions.NEW_STORE) {
-        let currentStoreName = action.payload.store.storeName;
+    subscription = rootDispatcher.pipe(filter(({ type }) => type === Actions.NEW_STORE)).subscribe(action => {
+      let currentStoreName = action.payload.store.storeName;
 
-        if (hasExclude && exclude.indexOf(currentStoreName) > -1 === true) {
+      if (hasExclude && exclude.includes(currentStoreName)) {
+        return;
+      }
+
+      if (hasInclude) {
+        const path = includeStores[currentStoreName];
+        if (!path) {
           return;
         }
-        if (hasInclude) {
-          const path = include.find(name => name.indexOf(currentStoreName) > -1);
-          if (!path) {
-            return;
-          } else {
-            currentStoreName = path.split('.')[0];
-            setInitial(currentStoreName, action.payload.store, path);
-            subscribe(currentStoreName, path);
-          }
-        } else {
-          setInitial(currentStoreName, action.payload.store, currentStoreName);
-          subscribe(currentStoreName, currentStoreName);
-        }
+        setInitial(currentStoreName, action.payload.store, path);
+        subscribe(currentStoreName, path);
+      } else {
+        setInitial(currentStoreName, action.payload.store, currentStoreName);
+        subscribe(currentStoreName, currentStoreName);
       }
     });
   });
