@@ -287,8 +287,12 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
 
         const { range, pagesControls } = this.config;
 
-        if (!this.pagination.total) {
-          response.total = response.perPage * response.lastPage;
+        if (isNaN(this.pagination.total)) {
+          if (response.lastPage === 1) {
+            response.total = response.data ? response.data.length : 0;
+          } else {
+            response.total = response.perPage * response.lastPage;
+          }
           this.pagination.total = response.total;
         }
 
