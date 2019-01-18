@@ -1,3 +1,10 @@
+## [1.24.2](https://github.com/datorama/akita/compare/v1.24.1...v1.24.2) (2019-01-18)
+
+
+### Bug Fixes
+
+* **paginator-plugin:** total should support zero ([295c0c9](https://github.com/datorama/akita/commit/295c0c9))
+
 ## [1.24.1](https://github.com/datorama/akita/compare/v1.24.0...v1.24.1) (2019-01-12)
 
 
