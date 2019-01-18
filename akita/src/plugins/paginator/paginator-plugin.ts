@@ -290,11 +290,10 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
         if (isNaN(parseInt(this.pagination.total))) {
           if (response.lastPage === 1) {
             response.total = response.data ? response.data.length : 0;
-            this.pagination.total = response.total;
           } else {
             response.total = response.perPage * response.lastPage;
-            this.pagination.total = response.total;
           }
+          this.pagination.total = response.total;
         }
 
         if (range) {
