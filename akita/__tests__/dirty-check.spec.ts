@@ -51,7 +51,7 @@ describe('DirtyCheck', () => {
         expect(spy).toHaveBeenLastCalledWith(false);
       });
 
-      it('should mark as dirty when the store value doesn\'t equal to head', () => {
+      it("should mark as dirty when the store value doesn't equal to head", () => {
         widgetsStore.add(createWidget());
         expect(spy).toHaveBeenLastCalledWith(true);
       });
@@ -234,7 +234,6 @@ describe('DirtyCheck', () => {
 
           isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
           expect(isPathDirty).toBeTruthy();
-
         });
       });
     });
@@ -267,25 +266,41 @@ describe('DirtyCheck', () => {
       expect(widgetsStore.entities[2]).toBeDefined();
       expect(widgetsStore._value().name).toBe('akita');
     });
+  });
+  describe('Watch entities with deepEqual', () => {
+    const widgetsStore = new WidgetsStore({ name: 'akita' });
+    const widgetsQuery = new WidgetsQuery(widgetsStore);
+    const dirtyCheck = new DirtyCheckPlugin(widgetsQuery, { watchProperty: 'entities', comparator: (a, b) => !deepEqual(a, b) }).setHead();
+    const spy = jest.fn();
+    dirtyCheck.isDirty$.pipe(skip(1)).subscribe(spy);
+    it(`should watch 'ids' property if 'entities' is watched`, () => {
+      const watching = !['entities', 'ids'].some(key => !(dirtyCheck.params.watchProperty as any[]).includes(key));
+      expect(watching).toBe(true);
+    });
 
-    describe('Watch entities', () => {
-      const dirtyCheck = new DirtyCheckPlugin(widgetsQuery, { watchProperty: 'entities' }).setHead();
-      it(`should watch 'ids' property if 'entities' is watched`, () => {
-        const watching = !['entities', 'ids'].some(key => !(dirtyCheck.params.watchProperty as any[]).includes(key));
-        expect(watching).toBe(true);
-      });
-
-      it('should reset to original entities after store changes', () => {
-        dirtyCheck.setHead();
-        /** do some manipulation */
-        widgetsStore.add([createWidget(), createWidget(), createWidget()]);
-        widgetsStore.remove(1);
-        widgetsStore.updateRoot({ name: 'Akita' });
-        widgetsStore.update(2, { title: 'kazaz widget' });
-        dirtyCheck.reset();
-        expect(widgetsStore.entities).toEqual({ '1': { id: 1, title: 'Widget 1' }, '2': { id: 2, title: 'Widget 2' } });
-        expect(widgetsStore._value().name).toEqual('Akita');
-      });
+    it('should work as expected', () => {
+      _id = 0;
+      widgetsStore.add([createWidget(), createWidget()]);
+      dirtyCheck.setHead();
+      /** do some manipulation */
+      widgetsStore.update(2, { title: 'kazaz widget' });
+      expect(spy).toHaveBeenCalledWith(true);
+      widgetsStore.update(2, { title: 'Widget 2' });
+      expect(spy).toHaveBeenCalledWith(false);
+      widgetsStore.remove(1);
+      expect(spy).toHaveBeenCalledWith(true);
+      dirtyCheck.reset();
+      expect(spy).toHaveBeenCalledWith(false);
+      spy.mockClear();
+      widgetsStore.updateRoot({ anotherProp: '12345' });
+      expect(spy).not.toHaveBeenCalled();
+      widgetsStore.updateRoot({ name: 'store' });
+      expect(spy).not.toHaveBeenCalled();
+      dirtyCheck.reset();
+      expect(spy).not.toHaveBeenCalled();
+      expect(widgetsStore.entities).toEqual({ '1': { id: 1, title: 'Widget 1' }, '2': { id: 2, title: 'Widget 2' } });
+      expect(widgetsStore._value().name).toEqual('store');
+      expect(widgetsStore._value().anotherProp).toEqual('12345');
     });
   });
 });
@@ -344,7 +359,7 @@ describe('DirtyCheckEntity', () => {
       widgetsStore.add([createWidget(), createWidget(), createWidget()]);
       collection.setHead();
       const spy = jest.fn();
-      collection.isSomeDirty$.subscribe(spy);
+      collection.someDirty$.subscribe(spy);
       let isDirty = collection.someDirty();
       expect(isDirty).toBe(false);
       expect(spy).toHaveBeenLastCalledWith(false);
@@ -541,3 +556,12 @@ describe('DirtyCheckEntity', () => {
     });
   });
 });
+
+function deepEqual(x, y) {
+  return x && y && typeof x === 'object' && typeof y === 'object'
+    ? Object.keys(x).length === Object.keys(y).length &&
+        Object.keys(x).reduce(function(isEqual, key) {
+          return isEqual && deepEqual(x[key], y[key]);
+        }, true)
+    : x === y;
+}
