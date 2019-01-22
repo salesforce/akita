@@ -303,6 +303,36 @@ describe('DirtyCheck', () => {
       expect(widgetsStore._value().anotherProp).toEqual('12345');
     });
   });
+
+  describe('Watch 2 props with deepEqual', () => {
+    const widgetsStore = new WidgetsStore({ prop1: 'akita', prop2: 'bla', prop3: `I'm out` });
+    const widgetsQuery = new WidgetsQuery(widgetsStore);
+    const dirtyCheck = new DirtyCheckPlugin(widgetsQuery, { watchProperty: ['prop1', 'prop2'], comparator: (a, b) => !deepEqual(a, b) }).setHead();
+    const spy = jest.fn();
+    dirtyCheck.isDirty$.pipe(skip(1)).subscribe(spy);
+
+    it('should work as expected', () => {
+      _id = 0;
+      dirtyCheck.setHead();
+      widgetsStore.add([createWidget(), createWidget()]);
+      expect(spy).not.toHaveBeenCalled();
+      widgetsStore.updateRoot({ prop3: '12345' });
+      expect(spy).not.toHaveBeenCalled();
+      /** do some manipulation */
+      widgetsStore.update(2, { title: 'kazaz widget' });
+      expect(spy).not.toHaveBeenCalled();
+      widgetsStore.updateRoot({ prop1: 'change' });
+      expect(spy).toHaveBeenCalledWith(true);
+      widgetsStore.updateRoot({ prop1: 'akita' });
+      expect(spy).toHaveBeenCalledWith(false);
+      widgetsStore.updateRoot({ prop1: 'change', prop2: 'change', prop3: 'change' });
+      expect(spy).toHaveBeenCalledWith(true);
+      dirtyCheck.reset();
+      expect(spy).toHaveBeenCalledWith(false);
+      expect(widgetsStore._value().prop3).toEqual('change');
+      expect(widgetsStore.entities).toEqual({ '1': { id: 1, title: 'Widget 1' }, '2': { id: 2, title: 'kazaz widget' } });
+    });
+  });
 });
 
 describe('DirtyCheckEntity', () => {
