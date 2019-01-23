@@ -1,3 +1,10 @@
+## [1.24.3](https://github.com/datorama/akita/compare/v1.24.2...v1.24.3) (2019-01-23)
+
+
+### Bug Fixes
+
+* **dirty-check-plugin:** fix watch property reset and dirty state ([8388420](https://github.com/datorama/akita/commit/8388420))
+
 ## [1.24.2](https://github.com/datorama/akita/compare/v1.24.1...v1.24.2) (2019-01-18)
 
 
