@@ -7,6 +7,8 @@ import { EntityParam } from '../entity-collection-plugin';
 import { __globalState } from '../../internal/global-state';
 import { Query } from '../../api/query';
 
+type Head<StoreState = any, Entity = any> = StoreState | Partial<StoreState> | Entity;
+
 export type DirtyCheckComparator<Entity> = (head: Entity, current: Entity) => boolean;
 
 export type DirtyCheckParams<StoreState = any> = {
@@ -28,7 +30,7 @@ export type DirtyCheckResetParams<StoreState = any> = {
 };
 
 export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugin<Entity, StoreState> {
-  private head: StoreState | Partial<StoreState> | Entity;
+  private head: Head<StoreState, Entity>;
   private dirty = new BehaviorSubject(false);
   private subscription: Subscription;
   private active = false;
@@ -41,8 +43,8 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
     super(query);
     this.params = { ...dirtyCheckDefaultParams, ...params };
     if (this.params.watchProperty) {
-      let watchProp = coerceArray(this.params.watchProperty);
-      if ((watchProp as any).includes('entities') && !(watchProp as any).includes('ids') && query instanceof QueryEntity) {
+      let watchProp = coerceArray(this.params.watchProperty) as any[];
+      if (query instanceof QueryEntity && watchProp.includes('entities') && !watchProp.includes('ids')) {
         watchProp.push('ids');
       }
       this.params.watchProperty = watchProp;
@@ -58,23 +60,9 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
         currentValue = params.updateFn(this.head, (this.getQuery() as Query<StoreState>).getSnapshot());
       }
     }
-    /** If we are watching specific props compare them, if not compare the entire store */
-    const update = this.params.watchProperty ? this.compareProp(currentValue) : this._getHead() !== currentValue;
-    if (update) {
-      __globalState.setCustomAction({ type: `@DirtyCheck - Revert` });
-      if (this.params.watchProperty) {
-        /** Take only the watched properties from the head and update the store with them */
-        currentValue = (this.params.watchProperty as (keyof StoreState)[]).reduce(
-          (acc, propKey) => {
-            acc[propKey] = currentValue[propKey as string];
-            return acc;
-          },
-          {} as any
-        );
-      }
-      this.updateStore(currentValue, this._entityId);
-      this._reset.next();
-    }
+    __globalState.setCustomAction({ type: `@DirtyCheck - Revert` });
+    this.updateStore(currentValue, this._entityId);
+    this._reset.next();
   }
 
   setHead() {
@@ -99,6 +87,7 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
   destroy() {
     this.head = null;
     this.subscription && this.subscription.unsubscribe();
+    this._reset && this._reset.complete();
   }
 
   isPathDirty(path: string) {
@@ -147,23 +136,21 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
     this.dirty.next(isDirty);
   }
 
-  private _getHead(): Partial<StoreState> | StoreState {
-    let head: StoreState | Partial<StoreState> = this.getSource(this._entityId) as StoreState;
+  private _getHead(): Head<StoreState, Entity> {
+    let head: Head<StoreState, Entity> = this.getSource(this._entityId);
     if (this.params.watchProperty) {
-      head = (this.params.watchProperty as (keyof StoreState)[]).reduce(
-        (_head, prop) => {
-          _head[prop] = (head as Partial<StoreState>)[prop];
-          return _head;
-        },
-        {} as Partial<StoreState>
-      );
+      head = this.getWatchedValues(head as StoreState);
     }
     return head;
   }
 
-  private compareProp(currentState: Partial<StoreState>): boolean {
-    const head = this._getHead();
-
-    return (this.params.watchProperty as (keyof StoreState)[]).some(propKey => currentState[propKey] !== head[propKey]);
+  private getWatchedValues(source: StoreState): Partial<StoreState> {
+    return (this.params.watchProperty as (keyof StoreState)[]).reduce(
+      (watched, prop) => {
+        watched[prop] = source[prop];
+        return watched;
+      },
+      {} as Partial<StoreState>
+    );
   }
 }
