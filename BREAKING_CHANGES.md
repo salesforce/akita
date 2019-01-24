@@ -45,3 +45,4 @@ export class WidgetsStore extends EntityStore<WidgetsState, Widget> {
 
 #### Features
 - Add support for multiple active entities 🎉
+- `filterNil` operator strongly typed
