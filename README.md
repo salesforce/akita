@@ -21,7 +21,7 @@ Akita encourages simplicity. It saves you the hassle of creating boilerplate cod
 - 🚀 See it in action on [Stackblitz](https://stackblitz.com/edit/akita-todos-app)
 - 😎 Use the [CLI](https://github.com/datorama/akita/tree/master/cli)
 - 👉 Checkout the [sample application](http://akita.surge.sh/)
-- 📖 Read the blog [posts](https://netbasal.gitbook.io/akita/entity-store/blog-posts)
+- 📖 Read the blog [posts](https://netbasal.gitbook.io/akita/general/blog-posts)
 - 🍄 Join Akita's [Gitter](https://gitter.im/akita-state-management/Lobby#) room
 ## Contributors 
 
