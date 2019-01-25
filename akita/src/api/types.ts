@@ -38,7 +38,6 @@ export interface ActiveState<T = ID> {
   active: T | null | T[];
 }
 
-/** Entity id interface */
 export type ID = number | string;
 
 export type IDS = ID | ID[];

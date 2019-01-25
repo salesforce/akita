@@ -1,5 +1,5 @@
 import { combineLatest, Observable, of } from 'rxjs';
-import { auditTime, map, switchMap, withLatestFrom, tap } from 'rxjs/operators';
+import { auditTime, map, switchMap, withLatestFrom, distinctUntilChanged } from 'rxjs/operators';
 import { compareValues, Order } from '../internal/sort';
 import { entityExists, isFunction, isUndefined, toBoolean } from '../internal/utils';
 import { EntityStore } from './entity-store';
@@ -17,14 +17,14 @@ export interface SelectOptions<E> extends SortByOptions<E> {
 /**
  *  An abstraction for querying the entities from the store
  */
-export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Query<S> {
-  protected store: EntityStore<S, E, ActiveEntity>;
+export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<S> {
+  protected store: EntityStore<S, E, EntityID>;
   private memoized;
 
   /** Use only for internal plugins like Pagination - don't use this property **/
   __store__;
 
-  constructor(store: EntityStore<S, E, ActiveEntity>) {
+  constructor(store: EntityStore<S, E, EntityID>) {
     super(store);
     this.__store__ = store;
   }
@@ -100,7 +100,7 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
    * @example
    * this.store.selectMany([1,2]);
    */
-  selectMany(ids: ActiveEntity[], options: { filterUndefined?: boolean } = {}): Observable<E[]> {
+  selectMany(ids: EntityID[], options: { filterUndefined?: boolean } = {}): Observable<E[]> {
     if (!ids || !ids.length) return of([]);
 
     const filterUndefined = isUndefined(options.filterUndefined) ? true : options.filterUndefined;
@@ -122,9 +122,9 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
    * this.pagesStore.selectEntity(1, entity => entity.config.date)
    *
    */
-  selectEntity<R>(id: ActiveEntity): Observable<E>;
-  selectEntity<R>(id: ActiveEntity, project: (entity: E) => R): Observable<R>;
-  selectEntity<R>(id: ActiveEntity, project?: (entity: E) => R): Observable<R | E> {
+  selectEntity<R>(id: EntityID): Observable<E>;
+  selectEntity<R>(id: EntityID, project: (entity: E) => R): Observable<R>;
+  selectEntity<R>(id: EntityID, project?: (entity: E) => R): Observable<R | E> {
     if (!project) {
       return this._byId(id);
     }
@@ -144,7 +144,7 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
    * @example
    * this.store.getEntity(1);
    */
-  getEntity(id: ActiveEntity): E {
+  getEntity(id: EntityID): E {
     return this.getValue().entities[id as any];
   }
 
@@ -209,13 +209,33 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
     return this.getValue().ids.length;
   }
 
+  selectLast<R>(): Observable<E>;
+  selectLast<R>(project: (entity: E) => R): Observable<R>;
+  selectLast<R>(project?: (entity: E) => R): Observable<R | E> {
+    return this.selectAt(ids => ids[ids.length - 1], project);
+  }
+
+  selectFirst<R>(): Observable<E>;
+  selectFirst<R>(project: (entity: E) => R): Observable<R>;
+  selectFirst<R>(project?: (entity: E) => R): Observable<R | E> {
+    return this.selectAt(ids => ids[0], project);
+  }
+
+  selectAt<R>(mapFn: (ids: EntityID[]) => EntityID, project?: (entity: E) => R) {
+    return this.select(state => state.ids as any[]).pipe(
+      map(mapFn),
+      distinctUntilChanged(),
+      switchMap((id: EntityID) => this.selectEntity(id, project))
+    );
+  }
+
   /**
    * Returns whether entity exists.
    */
-  hasEntity(id: ActiveEntity): boolean;
-  hasEntity(id: ActiveEntity[]): boolean;
+  hasEntity(id: EntityID): boolean;
+  hasEntity(id: EntityID[]): boolean;
   hasEntity(project: (entity: E) => boolean): boolean;
-  hasEntity(projectOrIds: ActiveEntity | ActiveEntity[] | ((entity: E) => boolean)): boolean {
+  hasEntity(projectOrIds: EntityID | EntityID[] | ((entity: E) => boolean)): boolean {
     if (isFunction(projectOrIds)) {
       return this.getAll().some(projectOrIds);
     }
@@ -242,7 +262,7 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
     return this.getValue().ids.length === 0;
   }
 
-  private _byId(id: ActiveEntity): Observable<E> {
+  private _byId(id: EntityID): Observable<E> {
     return this.select(state => this.getEntity(id));
   }
 

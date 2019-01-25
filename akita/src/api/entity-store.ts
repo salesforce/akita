@@ -10,7 +10,7 @@ import { transaction } from './transaction';
  * The Root Store that every sub store needs to inherit and
  * invoke `super` with the initial state.
  */
-export class EntityStore<S extends EntityState<E>, E, ActiveEntity = ID> extends Store<S> {
+export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Store<S> {
   /**
    *
    * Initiate the store with the state
@@ -261,11 +261,11 @@ export class EntityStore<S extends EntityState<E>, E, ActiveEntity = ID> extends
    * Set the given entity as active.
    */
   setActive(idOrOptions: S['active'] extends any[] ? S['active'] : (SetActiveOptions | S['active']));
-  setActive(idOrOptions: ActiveEntity | SetActiveOptions | null) {
+  setActive(idOrOptions: EntityID | SetActiveOptions | null) {
     if (Array.isArray(idOrOptions)) {
       this._setActive(idOrOptions);
     } else {
-      let activeId: ActiveEntity;
+      let activeId: EntityID;
       if (isObject(idOrOptions)) {
         if (isNil(this._value().active)) return;
         (idOrOptions as SetActiveOptions) = Object.assign({ wrap: true }, idOrOptions);
@@ -282,7 +282,7 @@ export class EntityStore<S extends EntityState<E>, E, ActiveEntity = ID> extends
         }
       } else {
         if (idOrOptions === this._value().active) return;
-        activeId = idOrOptions as ActiveEntity;
+        activeId = idOrOptions as EntityID;
       }
 
       this._setActive(activeId);
