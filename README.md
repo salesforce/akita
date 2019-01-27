@@ -5,6 +5,7 @@ Whether it be Angular, React, Vue, Web Components or plain old vanilla JS, Akita
 
 <hr />
 
+[![Downloads](https://img.shields.io/npm/dt/@datorama/akita.svg?style=flat-square)]()
 [![Build Status](https://img.shields.io/travis/datorama/akita.svg?style=flat-square)](https://travis-ci.org/datorama/akita)
 [![All Contributors](https://img.shields.io/badge/all_contributors-19-orange.svg?style=flat-square)](#contributors)
 [![commitizen](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square)]()

@@ -135,7 +135,6 @@
       "@semantic-release/changelog",
       {
         "path": "@semantic-release/npm",
-        "npmPublish": false,
         "pkgRoot": "dist"
       },
       "@semantic-release/git"
