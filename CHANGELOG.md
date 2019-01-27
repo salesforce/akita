@@ -1,3 +1,27 @@
+# [2.0.0](https://github.com/datorama/akita/compare/v1.24.3...v2.0.0) (2019-01-27)
+
+
+### Code Refactoring
+
+* **entity-dirty-check:** remove deprecated isSomeDirty ([03de8d6](https://github.com/datorama/akita/commit/03de8d6))
+* **store:** remove getInitialActiveState method ([df8e2bb](https://github.com/datorama/akita/commit/df8e2bb))
+
+
+### Features
+
+* **entity-store:** add support for multi active ([12b56ea](https://github.com/datorama/akita/commit/12b56ea))
+* **filternil:** strongly typed ([642993a](https://github.com/datorama/akita/commit/642993a))
+* **query-entity:** add selectFirst and selectLast selectors ([a8bf3a4](https://github.com/datorama/akita/commit/a8bf3a4))
+* **schematics:** update to akita v2 ([eae35a1](https://github.com/datorama/akita/commit/eae35a1))
+* **typscript:** upgrade to v3.2 ([ba2bb55](https://github.com/datorama/akita/commit/ba2bb55))
+
+
+### BREAKING CHANGES
+
+* **entity-dirty-check:** remove deprecated isSomeDirty and isSomeDirty$ methods. Use someDirty and
+someDirty$ instead
+* **store:** The getInitialActiveState doesnt exist anymore. Add the active property when needed
+
 ## [1.24.3](https://github.com/datorama/akita/compare/v1.24.2...v1.24.3) (2019-01-23)
 
 
