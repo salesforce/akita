@@ -571,7 +571,7 @@ describe('Check subscriptions calls', () => {
     todosStore.set(createTodos(3));
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy).toHaveBeenCalledWith(createTodos(3));
-    expect(queryTodos.getSnapshot().ids).toEqual([0, 1, 2]);
+    expect(queryTodos.getValue().ids).toEqual([0, 1, 2]);
   });
 
   it('should call three times - initial and after set + add', () => {
@@ -580,11 +580,11 @@ describe('Check subscriptions calls', () => {
     todosStore.set(createTodos(3));
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy).toHaveBeenCalledWith(createTodos(3));
-    expect(queryTodos.getSnapshot().ids).toEqual([0, 1, 2]);
+    expect(queryTodos.getValue().ids).toEqual([0, 1, 2]);
     todosStore.add({ id: 3, title: '3', completed: false });
     expect(spy).toHaveBeenCalledTimes(3);
     expect(queryTodos.getEntity(3)).toBeDefined();
-    expect(queryTodos.getSnapshot().ids).toEqual([0, 1, 2, 3]);
+    expect(queryTodos.getValue().ids).toEqual([0, 1, 2, 3]);
   });
 
   it('should call three times - initial and after set + update', () => {
@@ -593,7 +593,7 @@ describe('Check subscriptions calls', () => {
     todosStore.set(createTodos(3));
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy).toHaveBeenCalledWith(createTodos(3));
-    expect(queryTodos.getSnapshot().ids).toEqual([0, 1, 2]);
+    expect(queryTodos.getValue().ids).toEqual([0, 1, 2]);
     todosStore.update(1, { completed: true });
     expect(spy).toHaveBeenCalledTimes(3);
     expect(queryTodos.getEntity(1).completed).toEqual(true);
@@ -605,11 +605,11 @@ describe('Check subscriptions calls', () => {
     todosStore.set(createTodos(3));
     expect(spy).toHaveBeenCalledTimes(2);
     expect(spy).toHaveBeenCalledWith(createTodos(3));
-    expect(queryTodos.getSnapshot().ids).toEqual([0, 1, 2]);
+    expect(queryTodos.getValue().ids).toEqual([0, 1, 2]);
     todosStore.remove(1);
     expect(spy).toHaveBeenCalledTimes(3);
     expect(queryTodos.getEntity(1)).toEqual(undefined);
-    expect(queryTodos.getSnapshot().ids).toEqual([0, 2]);
+    expect(queryTodos.getValue().ids).toEqual([0, 2]);
   });
 });
 

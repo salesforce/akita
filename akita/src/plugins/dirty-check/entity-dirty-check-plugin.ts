@@ -1,11 +1,5 @@
 import { HashMap, ID, IDS } from '../../api/types';
-import {
-  DirtyCheckComparator,
-  dirtyCheckDefaultParams,
-  DirtyCheckPlugin,
-  DirtyCheckResetParams,
-  getNestedPath
-} from './dirty-check-plugin';
+import { DirtyCheckComparator, dirtyCheckDefaultParams, DirtyCheckPlugin, DirtyCheckResetParams, getNestedPath } from './dirty-check-plugin';
 import { QueryEntity } from '../../api/query-entity';
 import { EntityCollectionPlugin } from '../entity-collection-plugin';
 import { map, skip } from 'rxjs/operators';
@@ -17,13 +11,7 @@ export type DirtyCheckCollectionParams<E> = {
 };
 
 export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = DirtyCheckPlugin<E, any>> extends EntityCollectionPlugin<E, P> {
-  /**
-   * @deprecated Use someDirty$ instead
-   */
-  isSomeDirty$: Observable<boolean> = this.query.select(state => state.entities).pipe(map((entities: any) => this.checkSomeDirty(entities)));
-
-  someDirty$ = this.isSomeDirty$;
-  someDirty = this.isSomeDirty;
+  someDirty$: Observable<boolean> = this.query.select(state => state.entities).pipe(map((entities: any) => this.checkSomeDirty(entities)));
 
   constructor(protected query: QueryEntity<any, E>, private readonly params: DirtyCheckCollectionParams<E> = {}) {
     super(query, params.entityIds);
@@ -66,10 +54,7 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
     return false;
   }
 
-  /**
-   * @deprecated Use someDirty() instead
-   */
-  isSomeDirty(): boolean {
+  someDirty(): boolean {
     const entities = this.query.getAll({ asObject: true });
     return this.checkSomeDirty(entities);
   }

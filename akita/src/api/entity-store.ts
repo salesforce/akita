@@ -1,15 +1,16 @@
 import { _crud } from '../internal/crud';
 import { AkitaImmutabilityError, assertActive } from '../internal/error';
-import { Action, __globalState } from '../internal/global-state';
-import { coerceArray, entityExists, isFunction, isNil, isObject, isUndefined, toBoolean } from '../internal/utils';
+import { __globalState, Action } from '../internal/global-state';
+import { coerceArray, entityExists, isFunction, isNil, isObject, toBoolean } from '../internal/utils';
 import { isDev, Store } from './store';
-import { ActiveState, Entities, EntityState, HashMap, ID, Newable, AddOptions, SetActiveOptions } from './types';
+import { AddOptions, Entities, EntityState, HashMap, ID, IDS, Newable, SetActiveOptions } from './types';
+import { transaction } from './transaction';
 
 /**
  * The Root Store that every sub store needs to inherit and
  * invoke `super` with the initial state.
  */
-export class EntityStore<S extends EntityState<E>, E, ActiveEntity = ID> extends Store<S> {
+export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Store<S> {
   /**
    *
    * Initiate the store with the state
@@ -240,6 +241,7 @@ export class EntityStore<S extends EntityState<E>, E, ActiveEntity = ID> extends
    * Update the active entity.
    *
    * @example
+   * this.store.updateActive({ completed: true });
    * this.store.updateActive(active => {
    *   return {
    *     config: {
@@ -250,50 +252,105 @@ export class EntityStore<S extends EntityState<E>, E, ActiveEntity = ID> extends
    * })
    */
   updateActive(newStateFn: ((entity: Readonly<E>) => Partial<E>) | Partial<E>) {
-    assertActive(this._value());
-    isDev() && __globalState.setAction({ type: 'Update Active Entity', entityId: this._value().active });
-    this.setState(state => {
-      const activeId = state.active as ID;
-      const newState = isFunction(newStateFn) ? newStateFn(state.entities[activeId]) : newStateFn;
-      if (newState === state) {
-        throw new AkitaImmutabilityError(this.storeName);
-      }
-      return _crud._update(state, [activeId], newState, this.idKey);
-    });
+    isDev() && assertActive(this._value());
+    const ids: ID[] = coerceArray(this._value().active);
+    this.update(ids, newStateFn as any);
   }
 
   /**
    * Set the given entity as active.
    */
-  setActive(idOrOptions: ActiveEntity | SetActiveOptions | null) {
-    let activeId: ActiveEntity;
-
-    if (isObject(idOrOptions)) {
-      if (isNil(this._value().active)) return;
-      (idOrOptions as SetActiveOptions) = Object.assign({ wrap: true }, idOrOptions);
-      const ids = this._value().ids;
-      const currentIdIndex = ids.indexOf(this._value().active);
-      if ((idOrOptions as SetActiveOptions).prev) {
-        const isFirst = currentIdIndex === 0;
-        if (isFirst && !(idOrOptions as SetActiveOptions).wrap) return;
-        activeId = isFirst ? ids[ids.length - 1] : (ids[currentIdIndex - 1] as any);
-      } else if ((idOrOptions as SetActiveOptions).next) {
-        const isLast = ids.length === currentIdIndex + 1;
-        if (isLast && !(idOrOptions as SetActiveOptions).wrap) return;
-        activeId = isLast ? ids[0] : (ids[currentIdIndex + 1] as any);
-      }
+  setActive(idOrOptions: S['active'] extends any[] ? S['active'] : (SetActiveOptions | S['active']));
+  setActive(idOrOptions: EntityID | SetActiveOptions | null) {
+    if (Array.isArray(idOrOptions)) {
+      this._setActive(idOrOptions);
     } else {
-      if (idOrOptions === this._value().active) return;
-      activeId = idOrOptions as ActiveEntity;
-    }
+      let activeId: EntityID;
+      if (isObject(idOrOptions)) {
+        if (isNil(this._value().active)) return;
+        (idOrOptions as SetActiveOptions) = Object.assign({ wrap: true }, idOrOptions);
+        const ids = this._value().ids;
+        const currentIdIndex = ids.indexOf(this._value().active);
+        if ((idOrOptions as SetActiveOptions).prev) {
+          const isFirst = currentIdIndex === 0;
+          if (isFirst && !(idOrOptions as SetActiveOptions).wrap) return;
+          activeId = isFirst ? ids[ids.length - 1] : (ids[currentIdIndex - 1] as any);
+        } else if ((idOrOptions as SetActiveOptions).next) {
+          const isLast = ids.length === currentIdIndex + 1;
+          if (isLast && !(idOrOptions as SetActiveOptions).wrap) return;
+          activeId = isLast ? ids[0] : (ids[currentIdIndex + 1] as any);
+        }
+      } else {
+        if (idOrOptions === this._value().active) return;
+        activeId = idOrOptions as EntityID;
+      }
 
-    isDev() && __globalState.setAction({ type: 'Set Active Entity', entityId: activeId });
+      this._setActive(activeId);
+    }
+  }
+
+  /**
+   * Add active entities
+   *
+   * @example
+   * store.addActive(2);
+   * store.addActive([3, 4, 5]);
+   */
+  addActive<T = IDS>(ids: T) {
+    const toArray = coerceArray(ids);
+    const everyExist = toArray.every(id => this._value().active.indexOf(id) > -1);
+    if (everyExist) return;
+
+    this.setState(state => {
+      isDev() && __globalState.setAction({ type: 'Add Active', entityId: ids });
+      /** Protect against case that one of the items in the array exist */
+      const uniques = Array.from(new Set([...(state.active as any[]), ...toArray]));
+      return {
+        ...(state as any),
+        active: uniques
+      };
+    });
+  }
+
+  /**
+   * Remove active entities
+   *
+   * @example
+   * store.removeActive(2);
+   * store.removeActive([3, 4, 5]);
+   */
+  removeActive<T = IDS>(ids: T) {
+    const toArray = coerceArray(ids);
+    const someExist = toArray.some(id => this._value().active.indexOf(id) > -1);
+    if (!someExist) return;
+    isDev() && __globalState.setAction({ type: 'Remove Active', entityId: toArray });
     this.setState(state => {
       return {
         ...(state as any),
-        active: activeId
+        active: state.active.filter(currentId => toArray.indexOf(currentId) === -1)
       };
     });
+  }
+
+  /**
+   * Toggle active entities
+   *
+   * @example
+   * store.toggle(2);
+   * store.toggle([3, 4, 5]);
+   */
+  @transaction()
+  toggleActive<T = IDS>(ids: T) {
+    const toArray = coerceArray(ids);
+    const active = this._value().active;
+    for (const id of toArray) {
+      if (active.indexOf(id) > -1) {
+        this.removeActive(ids);
+      } else {
+        this.addActive(ids);
+      }
+    }
+    isDev() && __globalState.setCustomAction({ type: 'Toggle Active', entityId: ids }, true);
   }
 
   private addWhenNotExists(id: ID, entity: E) {
@@ -301,6 +358,16 @@ export class EntityStore<S extends EntityState<E>, E, ActiveEntity = ID> extends
       entity[this.idKey] = id;
     }
     this.add(entity);
+  }
+
+  private _setActive(ids) {
+    isDev() && __globalState.setAction({ type: 'Set Active Entity', entityId: ids });
+    this.setState(state => {
+      return {
+        ...(state as any),
+        active: ids
+      };
+    });
   }
 }
 
@@ -311,8 +378,3 @@ export const getInitialEntitiesState = () =>
     loading: true,
     error: null
   } as EntityState);
-
-export const getInitialActiveState = () =>
-  ({
-    active: null
-  } as ActiveState);

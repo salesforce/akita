@@ -12,6 +12,7 @@ export class WidgetsComponent implements OnInit, OnDestroy {
   collection: DirtyCheckPlugin<Widget>;
   widgetsSpecific: EntityDirtyCheckPlugin<Widget>;
   widgets$: Observable<Widget[]>;
+  activeWidgets$: Observable<Widget[]>;
   dashoboardName$: Observable<string>;
 
   constructor(private widgetsQuery: WidgetsQuery, private widgetService: WidgetsService, private element: ElementRef) {}
@@ -23,6 +24,7 @@ export class WidgetsComponent implements OnInit, OnDestroy {
     }
     this.dashoboardName$ = this.widgetsQuery.select(state => state.name);
     this.widgets$ = this.widgetsQuery.selectAll();
+    this.activeWidgets$ = this.widgetsQuery.selectActive();
     this.collection = new DirtyCheckPlugin(this.widgetsQuery, { watchProperty: 'entities' }).setHead();
     this.widgetsSpecific = new EntityDirtyCheckPlugin(this.widgetsQuery).setHead();
   }
@@ -56,5 +58,17 @@ export class WidgetsComponent implements OnInit, OnDestroy {
     resetId();
     this.collection.destroy();
     this.widgetsSpecific.destroy();
+  }
+
+  addActive(id: ID) {
+    this.widgetService.addActive(id);
+  }
+
+  removeActive(id: ID) {
+    this.widgetService.removeActive(id);
+  }
+
+  toggleActive(id: ID) {
+    this.widgetService.toggleActive(id);
   }
 }

@@ -35,10 +35,9 @@ export interface Entities<E> {
  * Interface for stores that needs an active indication
  */
 export interface ActiveState<T = ID> {
-  active: T | null;
+  active: T | null | T[];
 }
 
-/** Entity id interface */
 export type ID = number | string;
 
 export type IDS = ID | ID[];
@@ -49,3 +48,7 @@ export type Newable<T> = { new (...args: any[]): T };
 export type AddOptions = { prepend?: boolean };
 
 export type SetActiveOptions = { prev?: boolean; next?: boolean; wrap?: boolean };
+
+export interface MultiActiveState<T = ID> {
+  active: T[];
+}

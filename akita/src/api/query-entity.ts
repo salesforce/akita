@@ -1,13 +1,12 @@
-import { combineLatest, Observable } from 'rxjs';
-import { auditTime, map, switchMap, withLatestFrom } from 'rxjs/operators';
-
+import { combineLatest, Observable, of } from 'rxjs';
+import { auditTime, map, switchMap, withLatestFrom, distinctUntilChanged } from 'rxjs/operators';
 import { compareValues, Order } from '../internal/sort';
 import { entityExists, isFunction, isUndefined, toBoolean } from '../internal/utils';
 import { EntityStore } from './entity-store';
 import { memoizeOne } from './memoize';
 import { Query } from './query';
 import { SortBy, SortByOptions } from './query-config';
-import { ActiveState, EntityState, HashMap, ID } from './types';
+import { EntityState, HashMap, ID } from './types';
 
 export interface SelectOptions<E> extends SortByOptions<E> {
   asObject?: boolean;
@@ -18,14 +17,14 @@ export interface SelectOptions<E> extends SortByOptions<E> {
 /**
  *  An abstraction for querying the entities from the store
  */
-export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Query<S> {
-  protected store: EntityStore<S, E, ActiveEntity>;
+export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<S> {
+  protected store: EntityStore<S, E, EntityID>;
   private memoized;
 
   /** Use only for internal plugins like Pagination - don't use this property **/
   __store__;
 
-  constructor(store: EntityStore<S, E, ActiveEntity>) {
+  constructor(store: EntityStore<S, E, EntityID>) {
     super(store);
     this.__store__ = store;
   }
@@ -84,7 +83,7 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
   getAll(options: { asObject: false; filterBy?: SelectOptions<E>['filterBy']; limitTo?: number; sortBy?: SortBy<E>; sortByOrder?: Order }): E[];
   getAll(): E[];
   getAll(options: SelectOptions<E> = { asObject: false, filterBy: undefined, limitTo: undefined }): E[] | HashMap<E> {
-    const state = this.getSnapshot();
+    const state = this.getValue();
 
     if (options.asObject) {
       return toMap(state.ids, state.entities, options, true);
@@ -101,7 +100,9 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
    * @example
    * this.store.selectMany([1,2]);
    */
-  selectMany(ids: ActiveEntity[], options: { filterUndefined?: boolean } = {}): Observable<E[]> {
+  selectMany(ids: EntityID[], options: { filterUndefined?: boolean } = {}): Observable<E[]> {
+    if (!ids || !ids.length) return of([]);
+
     const filterUndefined = isUndefined(options.filterUndefined) ? true : options.filterUndefined;
     const entities = ids.map(id => this.selectEntity(id));
 
@@ -121,14 +122,14 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
    * this.pagesStore.selectEntity(1, entity => entity.config.date)
    *
    */
-  selectEntity<R>(id: ActiveEntity): Observable<E>;
-  selectEntity<R>(id: ActiveEntity, project: (entity: E) => R): Observable<R>;
-  selectEntity<R>(id: ActiveEntity, project?: (entity: E) => R): Observable<R | E> {
+  selectEntity<R>(id: EntityID): Observable<E>;
+  selectEntity<R>(id: EntityID, project: (entity: E) => R): Observable<R>;
+  selectEntity<R>(id: EntityID, project?: (entity: E) => R): Observable<R | E> {
     if (!project) {
       return this._byId(id);
     }
 
-    return this.select(state => {
+    return this.select(() => {
       if (this.hasEntity(id)) {
         return project(this.getEntity(id));
       }
@@ -143,38 +144,45 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
    * @example
    * this.store.getEntity(1);
    */
-  getEntity(id: ActiveEntity): E {
-    return this.getSnapshot().entities[id as any];
+  getEntity(id: EntityID): E {
+    return this.getValue().entities[id as any];
   }
 
   /**
    * Select the active entity's id.
    */
-  selectActiveId(): Observable<ActiveEntity> {
-    return this.select(state => (state as S & ActiveState<ActiveEntity>).active);
+  selectActiveId(): Observable<S['active']> {
+    return this.select(state => (state as S & { active: S['active'] }).active);
   }
 
   /**
    * Get the active id
    */
-  getActiveId(): ActiveEntity {
-    return (this.getSnapshot() as S & ActiveState<ActiveEntity>).active;
+  getActiveId(): S['active'] {
+    return this.getValue().active;
   }
 
   /**
    * Select the active entity.
    */
-  selectActive<R>(): Observable<E>;
-  selectActive<R>(project: (entity: E) => R): Observable<R>;
-  selectActive<R>(project?: (entity: E) => R): Observable<R | E> {
-    return this.selectActiveId().pipe(switchMap(activeId => this.selectEntity(activeId, project)));
+  selectActive<R>(): S['active'] extends any[] ? Observable<E[]> : Observable<E>;
+  selectActive<R>(project: S['active'] extends any[] ? undefined : (entity: E) => R): Observable<R>;
+  selectActive<R>(project?: S['active'] extends any[] ? undefined : (entity: E) => R): Observable<R | E> | Observable<E[]> {
+    if (Array.isArray(this.getActive())) {
+      return this.selectActiveId().pipe(switchMap(ids => this.selectMany(ids)));
+    }
+    return this.selectActiveId().pipe(switchMap(ids => this.selectEntity(ids, project)));
   }
 
   /**
    * Get the active entity.
    */
-  getActive(): E {
-    const activeId: ActiveEntity = this.getActiveId();
+  getActive(): S['active'] extends any[] ? E[] : E;
+  getActive(): E[] | E {
+    const activeId = this.getActiveId();
+    if (Array.isArray(activeId)) {
+      return activeId.map(id => this.getValue().entities[id]);
+    }
     return toBoolean(activeId) ? this.getEntity(activeId) : undefined;
   }
 
@@ -198,16 +206,36 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
     if (isFunction(predicate)) {
       return this.getAll().filter(predicate).length;
     }
-    return this.getSnapshot().ids.length;
+    return this.getValue().ids.length;
+  }
+
+  selectLast<R>(): Observable<E>;
+  selectLast<R>(project: (entity: E) => R): Observable<R>;
+  selectLast<R>(project?: (entity: E) => R): Observable<R | E> {
+    return this.selectAt(ids => ids[ids.length - 1], project);
+  }
+
+  selectFirst<R>(): Observable<E>;
+  selectFirst<R>(project: (entity: E) => R): Observable<R>;
+  selectFirst<R>(project?: (entity: E) => R): Observable<R | E> {
+    return this.selectAt(ids => ids[0], project);
+  }
+
+  selectAt<R>(mapFn: (ids: EntityID[]) => EntityID, project?: (entity: E) => R) {
+    return this.select(state => state.ids as any[]).pipe(
+      map(mapFn),
+      distinctUntilChanged(),
+      switchMap((id: EntityID) => this.selectEntity(id, project))
+    );
   }
 
   /**
    * Returns whether entity exists.
    */
-  hasEntity(id: ActiveEntity): boolean;
-  hasEntity(id: ActiveEntity[]): boolean;
+  hasEntity(id: EntityID): boolean;
+  hasEntity(id: EntityID[]): boolean;
   hasEntity(project: (entity: E) => boolean): boolean;
-  hasEntity(projectOrIds: ActiveEntity | ActiveEntity[] | ((entity: E) => boolean)): boolean {
+  hasEntity(projectOrIds: EntityID | EntityID[] | ((entity: E) => boolean)): boolean {
     if (isFunction(projectOrIds)) {
       return this.getAll().some(projectOrIds);
     }
@@ -223,14 +251,18 @@ export class QueryEntity<S extends EntityState, E, ActiveEntity = ID> extends Qu
    * Returns whether entity store has an active entity.
    */
   hasActive(): boolean {
-    return this.getSnapshot().active != null;
+    const active = this.getValue().active;
+    if (Array.isArray(active)) {
+      return active.length > 0;
+    }
+    return active != null;
   }
 
   isEmpty() {
-    return this.getSnapshot().ids.length === 0;
+    return this.getValue().ids.length === 0;
   }
 
-  private _byId(id: ActiveEntity): Observable<E> {
+  private _byId(id: EntityID): Observable<E> {
     return this.select(state => this.getEntity(id));
   }
 

@@ -42,14 +42,22 @@ export class Query<S> {
   /**
    * Select the store's error state.
    */
-  selectError() {
-    return this.select(state => (state as S & { error: any }).error);
+  selectError<E = any>(): Observable<E> {
+    return this.select(state => (state as S & { error: E }).error);
+  }
+
+  /**
+   * Get the raw value of the store.
+   * @deprecated use `getValue()` method
+   */
+  getSnapshot(): S {
+    return this.store._value();
   }
 
   /**
    * Get the raw value of the store.
    */
-  getSnapshot(): S {
+  getValue(): S {
     return this.store._value();
   }
 
