@@ -1,7 +1,7 @@
 import { combineLatest, Observable, of } from 'rxjs';
 import { auditTime, map, switchMap, withLatestFrom, distinctUntilChanged } from 'rxjs/operators';
 import { compareValues, Order } from '../internal/sort';
-import { entityExists, isFunction, isUndefined, toBoolean } from '../internal/utils';
+import { entityExists, isDefined, isFunction, isUndefined, toBoolean } from '../internal/utils';
 import { EntityStore } from './entity-store';
 import { memoizeOne } from './memoize';
 import { Query } from './query';
@@ -250,12 +250,15 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
   /**
    * Returns whether entity store has an active entity.
    */
-  hasActive(): boolean {
+  hasActive(id?: EntityID): boolean {
     const active = this.getValue().active;
     if (Array.isArray(active)) {
+      if (isDefined(id)) {
+        return active.includes(id);
+      }
       return active.length > 0;
     }
-    return active != null;
+    return isDefined(active);
   }
 
   isEmpty() {

@@ -39,6 +39,12 @@ describe('Multi active', () => {
     expect(store._value().active).toEqual([1, 2, 3]);
   });
 
+  it('should check whether hasActive', () => {
+    expect(query.hasActive(2)).toBe(true);
+    expect(query.hasActive(23)).toBe(false);
+    expect(query.hasActive()).toBe(true);
+  });
+
   it('should add ids', () => {
     store.addActive([4, 5]);
     expect(store._value().active).toEqual([1, 2, 3, 4, 5]);

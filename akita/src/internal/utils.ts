@@ -60,7 +60,7 @@ export function isNumber(value) {
 }
 
 export function isDefined(val) {
-  return val !== null && typeof val !== 'undefined';
+  return val !== null && val !== undefined;
 }
 
 /**
