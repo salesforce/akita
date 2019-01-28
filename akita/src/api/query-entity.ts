@@ -99,19 +99,16 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    *
    * @example
    * this.store.selectMany([1,2]);
+   * this.store.selectMany([1,2], entity => entity.title);
    */
-  selectMany(ids: EntityID[], options: { filterUndefined?: boolean } = {}): Observable<E[]> {
+  selectMany<R>(ids: EntityID[]): Observable<E[]>;
+  selectMany<R>(ids: EntityID[], project: (entity: E) => R): Observable<R[]>;
+  selectMany<R>(ids: EntityID[], project?: (entity: E) => R): Observable<E[] | R[]> {
     if (!ids || !ids.length) return of([]);
 
-    const filterUndefined = isUndefined(options.filterUndefined) ? true : options.filterUndefined;
-    const entities = ids.map(id => this.selectEntity(id));
+    const entities = ids.map(id => this.selectEntity(id, project));
 
-    return combineLatest(entities).pipe(
-      map(entities => {
-        return filterUndefined ? entities.filter(val => !isUndefined(val)) : entities;
-      }),
-      auditTime(0)
-    );
+    return combineLatest(entities).pipe(auditTime(0));
   }
 
   /**
@@ -166,10 +163,10 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    * Select the active entity.
    */
   selectActive<R>(): S['active'] extends any[] ? Observable<E[]> : Observable<E>;
-  selectActive<R>(project: S['active'] extends any[] ? undefined : (entity: E) => R): Observable<R>;
-  selectActive<R>(project?: S['active'] extends any[] ? undefined : (entity: E) => R): Observable<R | E> | Observable<E[]> {
+  selectActive<R>(project?: (entity: E) => R): S['active'] extends any[] ? Observable<R[]> : Observable<R>;
+  selectActive<R>(project?: (entity: E) => R): Observable<R | E> | Observable<E[] | R[]> {
     if (Array.isArray(this.getActive())) {
-      return this.selectActiveId().pipe(switchMap(ids => this.selectMany(ids)));
+      return this.selectActiveId().pipe(switchMap(ids => this.selectMany(ids, project)));
     }
     return this.selectActiveId().pipe(switchMap(ids => this.selectEntity(ids, project)));
   }

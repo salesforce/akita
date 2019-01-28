@@ -7,6 +7,7 @@
 
 #### Miscellaneous
 - Deprecate `getSnapshot()` in favor of `getValue()`.
+- Remove redudant `options` param from `selectMulti`,
 - When using the `active` functionality always add the initial `active` state. For single:
 
 ```ts

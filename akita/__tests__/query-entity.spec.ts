@@ -526,7 +526,7 @@ describe('Many', () => {
       expect(spy).toHaveBeenCalledWith(createTodos(2));
     });
 
-    it('should not fire when different entity change', () => {
+    it('should not fire when a different entity change', () => {
       todosStore.add(createTodos(3));
       queryTodos.selectMany([0, 1]).subscribe(spy);
       jest.runAllTimers();
@@ -537,20 +537,19 @@ describe('Many', () => {
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('should not return entity that does not exists', () => {
+    it('should work with function projection', () => {
       todosStore.add(createTodos(3));
-      queryTodos.selectMany([0, 1, 743]).subscribe(spy);
-      jest.runAllTimers();
-      expect(spy).toHaveBeenCalledWith(createTodos(2));
-      todosStore.update([0, 1], { completed: true });
-      expect(spy).toHaveBeenCalledTimes(1);
-    });
-
-    it('should select many - allow undefined', () => {
-      queryTodos.selectMany([0, 1], { filterUndefined: false }).subscribe(spy);
+      queryTodos.selectMany([0, 1], entity => entity.title).subscribe(spy);
       jest.runAllTimers();
       expect(spy).toHaveBeenCalledTimes(1);
-      expect(spy).toHaveBeenCalledWith([undefined, undefined]);
+      expect(spy).toHaveBeenCalledWith(['Todo 0', 'Todo 1']);
+      todosStore.update(2, { completed: true });
+      jest.runAllTimers();
+      expect(spy).toHaveBeenCalledTimes(1);
+      todosStore.update(1, { title: 'new title' });
+      jest.runAllTimers();
+      expect(spy).toHaveBeenCalledTimes(2);
+      expect(spy).toHaveBeenCalledWith(['Todo 0', 'new title']);
     });
   });
 });
