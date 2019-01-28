@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/datorama/akita/compare/v2.0.0...v2.0.1) (2019-01-28)
+
+
+### Bug Fixes
+
+* **query-entity:** hasActive should accept id for multi ([c2604a0](https://github.com/datorama/akita/commit/c2604a0))
+
 # [2.0.0](https://github.com/datorama/akita/compare/v1.24.3...v2.0.0) (2019-01-27)
 
 
