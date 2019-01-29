@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/datorama/akita/compare/v2.0.3...v2.1.0) (2019-01-29)
+
+
+### Features
+
+* **history-plugin:** allow custom comparator ([7ff2682](https://github.com/datorama/akita/commit/7ff2682))
+
 ## [2.0.3](https://github.com/datorama/akita/compare/v2.0.2...v2.0.3) (2019-01-29)
 
 
