@@ -6,6 +6,7 @@ import { EntityParam } from '../entity-collection-plugin';
 
 export interface StateHistoryParams {
   maxAge?: number;
+  comparator?: (prevState, currentState) => boolean;
 }
 
 export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
@@ -27,6 +28,7 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
       resetFn: () => this.clear()
     });
     params.maxAge = toBoolean(params.maxAge) ? params.maxAge : 10;
+    params.comparator = (prev, current) => true;
     this.activate();
   }
 
@@ -47,7 +49,12 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
           this.skip = false;
           return;
         }
-        if (!this.skipUpdate) {
+        /**
+         *  comparator: (prev, current) => isEqual(prev, current) === false
+         */
+        const shouldUpdate = this.params.comparator(past, present);
+
+        if (!this.skipUpdate && shouldUpdate) {
           if (this.history.past.length === this.params.maxAge) {
             this.history.past = this.history.past.slice(1);
           }
