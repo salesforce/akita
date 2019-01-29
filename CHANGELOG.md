@@ -1,3 +1,10 @@
+## [2.1.1](https://github.com/datorama/akita/compare/v2.1.0...v2.1.1) (2019-01-29)
+
+
+### Bug Fixes
+
+* **history-plugin:** fix the condition ([50e6979](https://github.com/datorama/akita/commit/50e6979))
+
 # [2.1.0](https://github.com/datorama/akita/compare/v2.0.3...v2.1.0) (2019-01-29)
 
 
