@@ -28,7 +28,7 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
       resetFn: () => this.clear()
     });
     params.maxAge = toBoolean(params.maxAge) ? params.maxAge : 10;
-    params.comparator = (prev, current) => true;
+    params.comparator = params.comparator || ((prev, current) => true);
     this.activate();
   }
 
