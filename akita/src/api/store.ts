@@ -244,7 +244,7 @@ export class Store<S> {
   }
 
   private isRessetable() {
-    return this.config.resettable || getAkitaConfig().resettable;
+    return (this.config && this.config.resettable) || getAkitaConfig().resettable;
   }
 
   /**
