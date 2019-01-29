@@ -1,3 +1,10 @@
+## [2.0.3](https://github.com/datorama/akita/compare/v2.0.2...v2.0.3) (2019-01-29)
+
+
+### Bug Fixes
+
+* **store:** check that config exist ([5ed262f](https://github.com/datorama/akita/commit/5ed262f)), closes [#162](https://github.com/datorama/akita/issues/162)
+
 ## [2.0.2](https://github.com/datorama/akita/compare/v2.0.1...v2.0.2) (2019-01-28)
 
 
