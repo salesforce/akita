@@ -176,7 +176,7 @@ export class Store<S> {
       this.setState(() => Object.assign({}, this._initialState));
       this.setPristine();
     } else {
-      throw new AkitaError(`You need to enable the reset functionality`);
+      isDev() && console.warn(`You need to enable the reset functionality`);
     }
   }
 
@@ -244,7 +244,11 @@ export class Store<S> {
   }
 
   private isRessetable() {
-    return (this.config && this.config.resettable) || getAkitaConfig().resettable;
+    const localReset = this.config && this.config.resettable;
+    if (localReset === false) {
+      return false;
+    }
+    return localReset || getAkitaConfig().resettable;
   }
 
   /**
