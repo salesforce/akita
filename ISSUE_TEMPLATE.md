@@ -25,10 +25,9 @@ ISSUES MISSING IMPORTANT INFORMATION MAY BE CLOSED WITHOUT INVESTIGATION.
 
 
 ## Minimal reproduction of the problem with instructions
-<!--
 For bug reports please provide the *STEPS TO REPRODUCE* and if possible a *MINIMAL DEMO* of the problem via
-https://stackblitz.com or similar (you can use this template as a starting point: https://stackblitz.com/fork/angular-gitter).
--->
+https://stackblitz.com or similar (you can use this template as a starting point: https://stackblitz.com/github/rlminqqq).
+
 
 ## What is the motivation / use case for changing the behavior?
 <!-- Describe the motivation or the concrete use case. -->
