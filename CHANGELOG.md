@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/datorama/akita/compare/v2.1.2...v2.2.0) (2019-02-13)
+
+
+### Features
+
+* **lib:** deprecate apis for v3 ([f93cee8](https://github.com/datorama/akita/commit/f93cee8))
+
 ## [2.1.2](https://github.com/datorama/akita/compare/v2.1.1...v2.1.2) (2019-02-08)
 
 
