@@ -45,6 +45,8 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    * @example
    * this.store.createOrReplace(3, Entity);
    *
+   * @deprecated in Akita v3 - use upsert
+   *
    */
   createOrReplace(id: ID, entity: E) {
     if (!entityExists(id, this._value().entities)) {

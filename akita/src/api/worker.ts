@@ -52,6 +52,8 @@ function createWorker() {
  *
  *   of(mockTodos).pipe(mapInWorker<Todo>(createTodo))
  *   .subscribe(res => console.log(res));
+ *
+ * @deprecated in Akita v3
  */
 export function mapInWorker<T>(factoryFn: Function) {
   return function(source): Observable<T[]> {

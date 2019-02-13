@@ -11,6 +11,7 @@ import { isObject } from '../internal/utils';
  * const resultArray = push(originalArray, 'f', 'g');
  * // -> originalArray ['a', 'b', 'c', 'd', 'e']
  * // -> resultArray ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+ * @deprecated in Akita v3
  */
 export function push<T>(array: T[], ...elementN: T[]): T[] {
   return [...array, ...elementN];
@@ -24,6 +25,7 @@ export function push<T>(array: T[], ...elementN: T[]): T[] {
  * const resultArray = remove(originalArray, 2);
  * // -> originalArray ['a', 'b', 'c', 'd', 'e']
  * // -> resultArray ['a', 'b', 'd', 'e']
+ * @deprecated in Akita v3
  */
 export function remove<T>(array: T[], index: number): T[] {
   return index >= 0 ? [...array.slice(0, index), ...array.slice(index + 1)] : [...array];
@@ -38,6 +40,7 @@ export function remove<T>(array: T[], index: number): T[] {
  * const resultArray = pop(originalArray);
  * // -> originalArray ['a', 'b', 'c', 'd', 'e']
  * // -> resultArray ['a', 'b', 'c', 'd']
+ * @deprecated in Akita v3
  */
 export function pop<T>(array: T[]): T[] {
   return array.slice(0, -1);
@@ -51,6 +54,7 @@ export function pop<T>(array: T[]): T[] {
  * const resultArray = unshift(originalArray, 'f', 'g');
  * // -> originalArray ['a', 'b', 'c', 'd', 'e']
  * // -> resultArray ['f', 'g', 'a', 'b', 'c', 'd', 'e']
+ * @deprecated in Akita v3
  */
 export function unshift<T>(array: T[], ...elementN: T[]): T[] {
   return [...elementN, ...array];
@@ -78,6 +82,7 @@ export function unshift<T>(array: T[], ...elementN: T[]): T[] {
  * const resultArray = sort(stringArray, (a, b) => a.toLowerCase() < b.toLowerCase());
  * // -> stringArray ['Blue', 'Humpback', 'Beluga']
  * // -> resultArray ['Humpback', 'Blue', 'Beluga']
+ * @deprecated in Akita v3
  */
 export function sort<T>(array: T[], compareFunction?: (a: T, b: T) => number): T[] {
   return [...array].sort(compareFunction);
@@ -92,6 +97,7 @@ export function sort<T>(array: T[], compareFunction?: (a: T, b: T) => number): T
  * const resultArray = reverse(originalArray);
  * // -> originalArray ['a', 'b', 'c', 'd', 'e']
  * // -> resultArray ['e', 'd', 'c', 'b', 'a']
+ * @deprecated in Akita v3
  */
 export function reverse<T>(array: T[]): T[] {
   return [...array].reverse();
@@ -105,6 +111,7 @@ export function reverse<T>(array: T[]): T[] {
  * const resultArray = swap(originalArray, 1, 4);
  * // -> originalArray ['a', 'b', 'c', 'd', 'e']
  * // -> resultArray ['a', 'e', 'c', 'd', 'b']
+ * @deprecated in Akita v3
  */
 export function swap<T>(array: T[], firstIndex: number, secondIndex: number): T[] {
   const results = array.slice();
@@ -126,6 +133,7 @@ export function swap<T>(array: T[], firstIndex: number, secondIndex: number): T[
  * const originalArray = [{title: 1}, {title: 2}];
  * const resultArray = update(originalArray, originalArray[0], {title: 3});
  * // -> resultArray  [{title: 3}, {title: 2}];
+ * @deprecated in Akita v3
  */
 export function update<T>(array: T[], indexOrItem: number | object, updated: T): T[] {
   return array.map((current, idx) => {
@@ -192,11 +200,17 @@ export function update<T>(array: T[], indexOrItem: number | object, updated: T):
  * const resultArray = splice(originalArray, originalArray.length - 2, 2, 'lorem', 'ipsum');
  * // -> originalArray ['a', 'b', 'c', 'd', 'e']
  * // -> resultArray ['a', 'b', 'c', 'lorem', 'ipsum']
+ * @deprecated in Akita v3
  */
 export function splice<T>(array: T[], start = array.length, deleteCount = array.length - start, ...elementN: T[]): T[] {
   return [...array.slice(0, start), ...elementN, ...array.slice(start + (deleteCount < 0 ? 0 : deleteCount))];
 }
 
+/**
+ *
+ * @deprecated in Akita v3
+ *
+ */
 export function toggle<T>(arr: T[], item: T) {
   return arr.indexOf(item) > -1 ? arr.filter(current => item !== current) : push(arr, item);
 }
