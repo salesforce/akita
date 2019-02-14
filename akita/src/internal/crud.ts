@@ -33,7 +33,7 @@ export class CRUD {
       newState.active = getActives((state as S & { active: any }).active, newState.ids);
     } else {
       if (resetActive(newState)) {
-        newState.active = null;
+        newState.active = resetActiveValue((state as S & { active: any }).active);
       }
     }
 
@@ -164,7 +164,7 @@ export class CRUD {
       newState.active = getActives(state.active, newState.ids);
     } else {
       if (resetActive(newState)) {
-        newState.active = null;
+        newState.active = resetActiveValue(state.active);
       }
     }
 
@@ -176,7 +176,7 @@ export class CRUD {
       ...(state as any),
       entities: {},
       ids: [],
-      active: null
+      active: resetActiveValue(state.active)
     };
 
     return newState;
@@ -195,3 +195,7 @@ export class CRUD {
 }
 
 export const _crud = new CRUD();
+
+function resetActiveValue(active) {
+  return Array.isArray(active) ? [] : null;
+}
