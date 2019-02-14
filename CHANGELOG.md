@@ -1,3 +1,10 @@
+## [2.2.1](https://github.com/datorama/akita/compare/v2.2.0...v2.2.1) (2019-02-14)
+
+
+### Bug Fixes
+
+* **multi-active:** should reset to empty array instead of null ([6aa56f0](https://github.com/datorama/akita/commit/6aa56f0))
+
 # [2.2.0](https://github.com/datorama/akita/compare/v2.1.2...v2.2.0) (2019-02-13)
 
 
