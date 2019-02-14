@@ -7,6 +7,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "declaration": true,
+    "esModuleInterop": true,
     "lib": [
       "dom",
       "es2015",
