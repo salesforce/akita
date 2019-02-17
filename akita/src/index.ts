@@ -28,3 +28,13 @@ export * from './plugins/dirty-check/entity-dirty-check-plugin';
 export * from './api/operators';
 export * from './api/store-utils';
 export { __globalState } from './internal/global-state';
+
+// new
+export * from './setEntities';
+export * from './toEntitiesIds';
+export * from './toEntitiesObject';
+export * from './hasEntity';
+export * from './activeState';
+export * from './isEmpty';
+export * from './coerceArray';
+export * from './updateEntities';

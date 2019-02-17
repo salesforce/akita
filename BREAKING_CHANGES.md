@@ -1,5 +1,13 @@
 # Breaking Changes
 
+## 3.0.0
+- set() - remove support for HashMap<Entity>
+- set() - remove options param, i.e entityClass
+- createOrReplace - remove
+- updateAll - remove
+- updateRoot - remove
+- setState is internal. maybe _setState
+
 ## 2.0.0
 - Update typescript to v3.2.
 - Remove the `getInitialActiveState()` function.
@@ -7,7 +15,7 @@
 
 #### Miscellaneous
 - Deprecate `getSnapshot()` in favor of `getValue()`.
-- Remove redudant `options` param from `selectMulti`,
+- Remove redundant `options` param from `selectMulti`,
 - When using the `active` functionality always add the initial `active` state. For single:
 
 ```ts

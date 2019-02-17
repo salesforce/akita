@@ -1,9 +1,9 @@
-import { HashMap, ID } from './types';
+import { Constructor, HashMap, ID, UpdateStateCallback } from './types';
 import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { AkitaError, AkitaImmutabilityError, assertDecorator } from '../internal/error';
 import { commit, isTransactionInProcess } from '../internal/transaction.internal';
-import { isFunction, isPlainObject } from '../internal/utils';
+import { DEFAULT_ID_KEY, isFunction, isPlainObject } from '../internal/utils';
 import { deepFreeze } from '../internal/deep-freeze';
 import { configKey, StoreConfigOptions } from './store-config';
 import { __globalState } from '../internal/global-state';
@@ -131,7 +131,7 @@ export class Store<S> {
     /** backward compatibility */
     const newIdKey = this.config && this.config.idKey;
     if (!newIdKey) {
-      return this.options.idKey || 'id';
+      return this.options.idKey || DEFAULT_ID_KEY;
     }
     return newIdKey;
   }
@@ -144,13 +144,15 @@ export class Store<S> {
    * `setState()` is the only way to update a store; It receives a callback function,
    * which gets the current state, and returns a new immutable state,
    * which will be the new value of the store.
+   *
+   * @internal
    */
   setState(newStateFn: (state: Readonly<S>) => S, _rootDispatcher = true) {
     const prevState = this._value();
     this.storeValue = __DEV__ ? deepFreeze(newStateFn(this._value())) : newStateFn(this._value());
 
     if (prevState === this.storeValue) {
-      throw new AkitaImmutabilityError(this.storeName);
+      return;
     }
 
     if (!this.store) {
@@ -181,35 +183,31 @@ export class Store<S> {
   }
 
   /**
-   * This method is a shortcut for `setState()`.
-   * It can be useful when you want to pass the whole state object instead of merging a partial state.
    *
    * @example
-   * this.store.update(newState)
+   *
+   * this.store.update(state => {
+   *   return {...}
+   * })
    */
-  update(newState: (state: Readonly<S>) => Partial<S>);
-  update(newState: Partial<S>);
-  update(id: ID | ID[] | null, newState: Partial<S>);
-  update(newStateOrId: Partial<S> | ID | ID[] | null | ((state: Readonly<S>) => Partial<S>), newState?: Partial<S>) {
-    __globalState.setAction({ type: 'Update Store' });
+  update(stateCallback: UpdateStateCallback<S>);
+  /**
+   *  this.store.update({ token: token })
+   */
+  update(state: Partial<S>);
+  update(stateOrCallback: Partial<S> | UpdateStateCallback<S>) {
     this.setState(state => {
-      let value = isFunction(newStateOrId) ? newStateOrId(state) : newStateOrId;
-      let merged = Object.assign({}, state, value);
+      const newState = isFunction(stateOrCallback) ? stateOrCallback(state) : stateOrCallback;
+      const merged = { ...state, ...newState };
       return isPlainObject(state) ? merged : new (state as any).constructor(merged);
     });
     this.setDirty();
   }
 
-  /**
-   * Sets the store to a pristine state.
-   */
   setPristine() {
     this._isPristine = true;
   }
 
-  /**
-   * Sets the store to a dirty state, indicating that it is not pristine.
-   */
   setDirty() {
     this._isPristine = false;
   }

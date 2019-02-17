@@ -10,19 +10,23 @@ export function isObject(value: any) {
   return Object.prototype.toString.call(value) === '[object Object]';
 }
 
-export function isPlainObject(value) {
-  return toBoolean(value) && value.constructor.name === 'Object';
+export function isPlainObject(value: any): value is object {
+  return isDefined(value) && value.constructor.name === 'Object';
 }
 
-export function isFunction(value): value is Function {
+export function isFunction(value: any): value is Function {
   return typeof value === 'function';
+}
+
+export function isArray<T>(value: any): value is T[] {
+  return Array.isArray(value);
 }
 
 export function toBoolean(value: any): boolean {
   return value != null && `${value}` !== 'false';
 }
 
-export function isUndefined(value) {
+export function isUndefined(value: any): value is undefined {
   return value === undefined;
 }
 
@@ -51,11 +55,11 @@ export function isObservable(value) {
   return toBoolean(value) && isFunction(value.subscribe);
 }
 
-export function isString(val: string | any): val is string {
-  return typeof val === 'string';
+export function isString(value: any): value is string {
+  return typeof value === 'string';
 }
 
-export function isNumber(value) {
+export function isNumber(value: any): value is number {
   return typeof value === 'number';
 }
 
@@ -84,6 +88,8 @@ export function getActives(currentActivesIds: ID[], newIds: ID[]) {
 }
 
 /**
+ *
+ * remove
  * Check if the store supports active entity
  */
 export function isActiveState<E>(state: EntityState<E>) {
@@ -130,3 +136,5 @@ export const getValue = (obj: any, prop: string) => {
     .join('.');
   return removeStoreName.split('.').reduce((acc: any, part: string) => acc && acc[part], obj);
 };
+
+export const DEFAULT_ID_KEY = 'id';

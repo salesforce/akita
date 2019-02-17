@@ -1,10 +1,13 @@
 import { _crud } from '../internal/crud';
 import { AkitaImmutabilityError, assertActive } from '../internal/error';
 import { __globalState, Action } from '../internal/global-state';
-import { coerceArray, entityExists, isFunction, isNil, isObject, toBoolean } from '../internal/utils';
+import { isFunction, isNil, isObject, isPlainObject, isUndefined, toBoolean } from '../internal/utils';
 import { isDev, Store } from './store';
-import { AddOptions, Entities, EntityState, HashMap, ID, IDS, Newable, SetActiveOptions } from './types';
-import { transaction } from './transaction';
+import { Entities, EntityState, ID, IDS, SetActiveOptions, UpdateEntityPredicate, UpdateStateCallback } from './types';
+import { applyTransaction, transaction } from './transaction';
+import { setEntities } from '../setEntities';
+import { coerceArray, hasEntity, isEmpty, updateEntities } from '@datorama/akita';
+import { addEntities, AddEntitiesOptions } from '../addEntities';
 
 /**
  * The Root Store that every sub store needs to inherit and
@@ -19,183 +22,121 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     super({ ...getInitialEntitiesState(), ...initialState }, options);
   }
 
-  get entities() {
-    return this._value().entities;
-  }
-
   /**
    *
    * Replace current collection with provided collection
    *
    * @example
+   *
    * this.store.set([Entity, Entity]);
-   * this.store.set({1: Entity, 2: Entity});
-   * this.store.set([{id: 1}, {id: 2}], { entityClass: Product });
+   * this.store.set({ids: [], entities: {}});
    *
    */
-  set(entities: E[] | HashMap<E> | Entities<E>, options: { entityClass?: Newable<E> | undefined } = {}) {
-    isDev() && __globalState.setAction({ type: 'Set Entities' });
-    this.setState(state => _crud._set(state, isNil(entities) ? [] : entities, options.entityClass, this.idKey));
+  set(entities: E[] | Entities<E>) {
+    if (isNil(entities) || isEmpty(entities)) return;
+    this.setState(state => setEntities({ state, entities, idKey: this.idKey }));
     this.setDirty();
   }
 
   /**
-   * Create or replace an entity in the store.
+   *
+   * Add or Update
    *
    * @example
-   * this.store.createOrReplace(3, Entity);
    *
-   * @deprecated in Akita v3 - use upsert
-   *
+   * store.upsert(1, { name: newName })
+   * store.upsert([1,2,3], { name: newName })
+   * store.upsert(1, entity => ({ name: newName }))
    */
-  createOrReplace(id: ID, entity: E) {
-    if (!entityExists(id, this._value().entities)) {
-      this.addWhenNotExists(id, entity);
-    } else {
-      isDev() && __globalState.setAction({ type: 'Create or Replace Entity', entityId: [id] });
-      this.setState(state => _crud._replaceEntity(state, id, entity));
-    }
-  }
+  // @transaction()
+  // upsert( ids: IDS, entityOrFn: Partial<E> | UpdateStateCallback<E> ) {
+  //   const asArray = coerceArray(ids);
+  //   for( const id of asArray ) {
+  //     if( hasEntity(this.entities, id) ) {
+  //       this.update(id, entityOrFn as Partial<E>);
+  //     } else {
+  //       const entity = isFunction(entityOrFn) ? entityOrFn({} as Readonly<E>) : entityOrFn;
+  //       if( entity.hasOwnProperty(this.idKey) === false ) {
+  //         entity[this.idKey] = id;
+  //       }
+  //       this.add(entity as E);
+  //     }
+  //   }
+  // }
 
   /**
-   *
-   * Insert or Update
-   */
-  upsert(id: ID, entityOrFn: Partial<E> | ((entity: Readonly<E>) => Partial<E>)) {
-    if (!entityExists(id, this._value().entities)) {
-      const resolve = isFunction(entityOrFn) ? (entityOrFn as Function)({}) : entityOrFn;
-      this.addWhenNotExists(id, resolve);
-    } else {
-      this.update(id, entityOrFn as any);
-    }
-  }
-
-  /**
-   * Add an entity or entities to the store.
+   * Add entities
    *
    * @example
+   *
    * this.store.add([Entity, Entity]);
    * this.store.add(Entity);
    * this.store.add(Entity, { prepend: true });
    */
-  add(entities: E[] | E, options?: AddOptions) {
-    const toArray = coerceArray(entities);
+  add(entities: E[] | E, options?: AddEntitiesOptions) {
+    const collection = coerceArray(entities);
 
-    if (toArray.length === 0) return;
-    /**  If we pass entities that already exist, we should ignore them */
-    const allExists = toArray.every(entity => this._value().ids.indexOf(entity[this.idKey]) > -1);
-    if (allExists) return;
+    if (isEmpty(collection)) return;
+    const currentIds = this.getIds;
+    const notExistEntities = collection.filter(entity => currentIds.includes(entity[this.idKey]) === false);
+    if (isEmpty(notExistEntities)) return;
 
-    isDev() && __globalState.setAction({ type: 'Add Entity' });
-    this.setState(state => _crud._add<S, E>(state, toArray, this.idKey, options));
+    this.setState(state =>
+      addEntities({
+        state,
+        entities: notExistEntities,
+        idKey: this.idKey,
+        options
+      })
+    );
   }
 
   /**
-   *
-   * Update an entity or entities in the store.
-   *
-   * @example
-   * this.store.update(3, {
-   *   name: 'New Name'
-   * });
-   *
-   *  this.store.update(3, entity => {
-   *    return {
-   *      config: {
-   *        ...entity.filter,
-   *        date
-   *      }
-   *    }
-   *  });
-   *
-   * this.store.update([1,2,3], {
-   *   name: 'New Name'
-   * });
-   *
-   * this.store.update(e => e.name === 'value', {
-   *   name: 'New Name'
-   * });
-   *
-   * this.store.update(null, {
-   *   name: 'New Name'
-   * });
-   *
+   * store.update(1, entity => ...)
+   * store.update([1, 2, 3], entity => ...)
+   * store.update(null, entity => ...)
    */
-  update(id: ID | ID[] | null, newStateFn: ((entity: Readonly<E>) => Partial<E>));
-  update(id: ID | ID[] | null, newState: Partial<E>);
-  update(id: ID | ID[] | null, newState: Partial<S>);
-  update(newState: (state: Readonly<S>) => Partial<S>);
-  update(predicate: ((entity: Readonly<E>) => boolean), newStateFn: ((entity: Readonly<E>) => Partial<E>));
-  update(predicate: ((entity: Readonly<E>) => boolean), newState: Partial<E>);
-  update(predicate: ((entity: Readonly<E>) => boolean), newState: Partial<S>);
+  update(id: IDS | null, newStateFn: UpdateStateCallback<E>);
+  /**
+   * store.update(1, { name: newName })
+   */
+  update(id: IDS | null, newState: Partial<E>);
+  /**
+   * store.update(entity => entity.price > 3, entity => ({ name: newName }))
+   */
+  update(predicate: UpdateEntityPredicate<E>, newStateFn: UpdateStateCallback<E>);
+  /**
+   * store.update(entity => entity.price > 3, { name: newName })
+   */
+  update(predicate: UpdateEntityPredicate<E>, newState: Partial<E>);
+  /** Support non-entity updates */
+  update(newState: UpdateStateCallback<S>);
   update(newState: Partial<S>);
-  update(
-    idsOrFn: ID | ID[] | null | Partial<S> | ((state: Readonly<S>) => Partial<S>) | ((entity: Readonly<E>) => boolean),
-    newStateOrFn?: ((entity: Readonly<E>) => Partial<E>) | Partial<E> | Partial<S>
-  ) {
+  update(idsOrFnOrState: IDS | null | Partial<S> | UpdateStateCallback<S> | UpdateEntityPredicate<E>, newStateOrFn?: UpdateStateCallback<E> | Partial<E> | Partial<S>) {
+    if (isUndefined(newStateOrFn)) {
+      super.update(idsOrFnOrState as Partial<S>);
+      return;
+    }
     let ids: ID[] = [];
-    const storeIds = this._value().ids;
 
-    if (isFunction(idsOrFn)) {
-      for (let i = 0, len = storeIds.length; i < len; i++) {
-        const id = storeIds[i];
-        const entity = this._value().entities[id];
-        if (entity && (idsOrFn as Function)(entity)) {
-          ids.push(id);
-        }
-      }
+    if (isFunction(idsOrFnOrState)) {
+      // We need to filter according the predicate function
+      ids = this.getIds.filter(id => (idsOrFnOrState as UpdateEntityPredicate<E>)(this.entities[id]));
     } else {
-      ids = toBoolean(idsOrFn) ? coerceArray(idsOrFn) : storeIds;
+      // If it's nil we want all of them
+      ids = isNil(idsOrFnOrState) ? this.getIds : coerceArray(idsOrFnOrState);
     }
 
-    if (ids.length === 0) return;
-    isDev() && __globalState.setAction({ type: 'Update Entity', entityId: ids });
+    if (isEmpty(ids)) return;
 
-    this.setState(state => {
-      return _crud._update(state, ids, newStateOrFn, this.idKey);
-    });
-  }
-
-  /**
-   * An alias to update all.
-   */
-  updateAll(state: Partial<E>) {
-    if (this._value().ids.length === 0) return;
-    this.update(null, state);
-  }
-
-  /**
-   * Update the root state (data which is external to the entities).
-   *
-   * @example
-   * this.store.updateRoot({
-   *   metadata: 'new metadata
-   * });
-   *
-   *  this.store.updateRoot(state => {
-   *    return {
-   *      metadata: {
-   *        ...state.metadata,
-   *        key: 'new value'
-   *      }
-   *    }
-   *  });
-   */
-  updateRoot(newStateFn: ((state: Readonly<S>) => Partial<S>) | Partial<S>, action?: Action) {
-    const newState = isFunction(newStateFn) ? newStateFn(this._value()) : newStateFn;
-
-    if (newState === this._value()) {
-      throw new AkitaImmutabilityError(this.storeName);
-    }
-
-    isDev() && __globalState.setAction(action || { type: 'Update Root' });
-
-    this.setState(state => {
-      return {
-        ...(state as any),
-        ...(newState as any)
-      };
-    });
+    this.setState(state =>
+      updateEntities({
+        idKey: this.idKey,
+        ids,
+        state,
+        newStateOrFn
+      })
+    );
   }
 
   /**
@@ -231,7 +172,6 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     }
 
     if (ids && ids.length === 0) return;
-    isDev() && __globalState.setAction({ type: 'Remove Entity', entityId: ids });
 
     this.setState(state => {
       return _crud._remove(state, ids);
@@ -253,10 +193,9 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    *   }
    * })
    */
-  updateActive(newStateFn: ((entity: Readonly<E>) => Partial<E>) | Partial<E>) {
-    isDev() && assertActive(this._value());
-    const ids: ID[] = coerceArray(this._value().active);
-    this.update(ids, newStateFn as any);
+  updateActive(newStateOrCallback: UpdateStateCallback<E> | Partial<E>) {
+    const ids = coerceArray(this.getActive());
+    this.update(ids, newStateOrCallback as Partial<E>);
   }
 
   /**
@@ -304,7 +243,6 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     if (everyExist) return;
 
     this.setState(state => {
-      isDev() && __globalState.setAction({ type: 'Add Active', entityId: ids });
       /** Protect against case that one of the items in the array exist */
       const uniques = Array.from(new Set([...(state.active as any[]), ...toArray]));
       return {
@@ -325,7 +263,6 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     const toArray = coerceArray(ids);
     const someExist = toArray.some(id => this._value().active.indexOf(id) > -1);
     if (!someExist) return;
-    isDev() && __globalState.setAction({ type: 'Remove Active', entityId: toArray });
     this.setState(state => {
       return {
         ...(state as any),
@@ -355,11 +292,16 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     isDev() && __globalState.setCustomAction({ type: 'Toggle Active', entityId: ids }, true);
   }
 
-  private addWhenNotExists(id: ID, entity: E) {
-    if (!entity[this.idKey]) {
-      entity[this.idKey] = id;
-    }
-    this.add(entity);
+  private get getIds() {
+    return this._value().ids;
+  }
+
+  private get entities() {
+    return this._value().entities;
+  }
+
+  private getActive() {
+    return this._value().active;
   }
 
   private _setActive(ids) {

@@ -71,6 +71,9 @@
   },
   "author": "Netanel Basal",
   "jest": {
+    "moduleNameMapper": {
+      "@datorama/akita": "<rootDir>/akita"
+    },
     "globals": {
       "ts-jest": {
         "diagnostics": false
@@ -139,10 +142,12 @@
       },
       "@semantic-release/git"
     ],
-    "publish": [{
-      "path": "@semantic-release/npm",
-      "pkgRoot": "dist"
-    }]
+    "publish": [
+      {
+        "path": "@semantic-release/npm",
+        "pkgRoot": "dist"
+      }
+    ]
   },
   "license": "Apache License 2.0"
 }

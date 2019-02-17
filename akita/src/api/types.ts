@@ -10,25 +10,19 @@ export interface HashMap<T> {
   [id: string]: T;
 }
 
-/**
- *  The Entity State is a predefined generic interface for a given collection
- *  with the following interface:
- *
- *  `ids`: An array of all the primary ids in the collection
- *  `entities`: A dictionary of entities in the collection indexed by the primary id
- */
 export interface EntityState<E = any, ErrorT = any> {
   entities?: HashMap<E>;
   ids?: ID[];
   loading?: boolean;
   error?: ErrorT;
-  /** This is for stores that doesn't implements the EntityState interface */
+
+  // This is for stores that doesn't implements the EntityState interface
   [key: string]: any;
 }
 
 export interface Entities<E> {
-  entities?: HashMap<E>;
-  ids?: ID[];
+  entities: HashMap<E>;
+  ids: ID[];
 }
 
 /**
@@ -42,13 +36,13 @@ export type ID = number | string;
 
 export type IDS = ID | ID[];
 
-export type Newable<T> = { new (...args: any[]): T };
-
-/** Optional config for Store.add() to prepend entity or entities to stores */
-export type AddOptions = { prepend?: boolean };
+export type Constructor<T = any> = { new (...args: any[]): T };
 
 export type SetActiveOptions = { prev?: boolean; next?: boolean; wrap?: boolean };
 
 export interface MultiActiveState<T = ID> {
   active: T[];
 }
+
+export type UpdateStateCallback<State> = (state: Readonly<State>) => Partial<State>;
+export type UpdateEntityPredicate<E> = (entity: Readonly<E>) => boolean;
