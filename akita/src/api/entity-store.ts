@@ -345,14 +345,12 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
   toggleActive<T = IDS>(ids: T) {
     const toArray = coerceArray(ids);
     const active = this._value().active;
-    for (const id of toArray) {
-      if (active.indexOf(id) > -1) {
-        this.removeActive(ids);
-      } else {
-        this.addActive(ids);
-      }
-    }
-    isDev() && __globalState.setCustomAction({ type: 'Toggle Active', entityId: ids }, true);
+    const filterExists = remove => id => active.includes(id) === remove;
+    const remove = toArray.filter(filterExists(true));
+    const add = toArray.filter(filterExists(false));
+    this.removeActive(remove);
+    this.addActive(add);
+    isDev() && __globalState.setCustomAction({ type: 'Toggle Active' }, true);
   }
 
   private addWhenNotExists(id: ID, entity: E) {
