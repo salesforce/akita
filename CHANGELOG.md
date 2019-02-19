@@ -1,3 +1,10 @@
+## [2.2.2](https://github.com/datorama/akita/compare/v2.2.1...v2.2.2) (2019-02-19)
+
+
+### Bug Fixes
+
+* **toggle-active:** should batch ids ([8c65ff4](https://github.com/datorama/akita/commit/8c65ff4))
+
 ## [2.2.1](https://github.com/datorama/akita/compare/v2.2.0...v2.2.1) (2019-02-14)
 
 
