@@ -27,8 +27,14 @@ export interface PersistStateParams {
   exclude: string[];
 }
 
-export function persistState(params?: Partial<PersistStateParams>) {
-  if (notBs) return;
+export function persistState(params?: Partial<PersistStateParams> = {}) {
+  if (notBs) {
+    if (params.storage) {
+      const localStorage = undefined;
+    } else {
+      throw new TypeError('Please provide a Storage implementation');
+    }
+  }
 
   const defaults: PersistStateParams = {
     key: 'AkitaStores',
