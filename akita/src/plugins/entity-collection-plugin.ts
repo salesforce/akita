@@ -1,7 +1,10 @@
-import { coerceArray, isFunction, isUndefined, toBoolean } from '../internal/utils';
-import { QueryEntity } from '../api/query-entity';
-import { ID, IDS } from '../api/types';
+import { isUndefined } from '../isUndefined';
+import { QueryEntity } from '../queryEntity';
+import { ID, IDS } from '../types';
 import { Observable } from 'rxjs';
+import { isFunction } from '../isFunction';
+import { toBoolean } from '../toBoolean';
+import { coerceArray } from '../coerceArray';
 
 /**
  * Each plugin that wants to add support for entities should extend this interface.

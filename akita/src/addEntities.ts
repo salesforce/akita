@@ -1,4 +1,4 @@
-import { EntityState } from '@datorama/akita';
+import { EntityState } from './index';
 
 export type AddEntitiesParams<State, Entity> = {
   state: State;

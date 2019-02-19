@@ -1,8 +1,8 @@
-import { filter, pairwise } from 'rxjs/operators';
-import { __globalState } from '../../internal/global-state';
-import { toBoolean } from '../../internal/utils';
+import { pairwise } from 'rxjs/operators';
+import { toBoolean } from '../../toBoolean';
 import { AkitaPlugin, Queries } from '../plugin';
 import { EntityParam } from '../entity-collection-plugin';
+import { logAction } from '../../actions';
 
 export interface StateHistoryParams {
   maxAge?: number;
@@ -66,11 +66,9 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
 
   undo() {
     if (this.history.past.length > 0) {
-      const { past, present, future } = this.history;
+      const { past, present } = this.history;
       const previous = past[past.length - 1];
-      const newPast = past.slice(0, past.length - 1);
-
-      this.history.past = newPast;
+      this.history.past = past.slice(0, past.length - 1);
       this.history.present = previous;
       this.history.future = [present, ...this.history.future];
       this.update();
@@ -79,7 +77,7 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
 
   redo() {
     if (this.history.future.length > 0) {
-      const { past, present, future } = this.history;
+      const { past, present } = this.history;
       const next = this.history.future[0];
       const newFuture = this.history.future.slice(1);
       this.history.past = [...past, present];
@@ -147,7 +145,7 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
 
   private update(action = 'Undo') {
     this.skipUpdate = true;
-    __globalState.setCustomAction({ type: `@StateHistory - ${action}` });
+    logAction(`@StateHistory - ${action}`);
     this.updateStore(this.history.present, this._entityId);
     this.skipUpdate = false;
   }

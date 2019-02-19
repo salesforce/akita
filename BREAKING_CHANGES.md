@@ -1,12 +1,20 @@
 # Breaking Changes
 
 ## 3.0.0
-- set() - remove support for HashMap<Entity>
 - set() - remove options param, i.e entityClass
 - createOrReplace - remove
 - updateAll - remove
 - updateRoot - remove
-- setState is internal. maybe _setState
+- setState is internal => _setState
+- remove mapWorker
+- remove array helpers
+- remove decrement and increment
+- remove selectOnce
+ - remove deprecated getSnapshot
+ - remove noop
+ - to me: change setAction in router store
+ - remove isPristine and isDirty
+ - action decorator gets string instead of object
 
 ## 2.0.0
 - Update typescript to v3.2.

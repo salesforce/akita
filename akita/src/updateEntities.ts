@@ -1,5 +1,7 @@
-import { EntityState, ID, isFunction, isPlainObject, UpdateStateCallback } from '@datorama/akita';
-import { AkitaUpdateIdKeyError } from './internal/error';
+import { EntityState, ID, UpdateStateCallback } from './types';
+import { isFunction } from './isFunction';
+import { hasEntity } from './hasEntity';
+import { isPlainObject } from './isPlainObject';
 
 export type UpdateEntitiesParams<State, Entity> = {
   state: State;
@@ -13,22 +15,31 @@ export function updateEntities<S extends EntityState<E>, E>({ state, ids, idKey,
 
   let isUpdatingIdKey = false;
   let idToUpdate: ID;
+  let idsToAdd = [];
 
   for (const id of ids) {
-    idToUpdate = id;
-
     const oldEntity = state.entities[id];
     const newState = isFunction(newStateOrFn) ? newStateOrFn(oldEntity) : newStateOrFn;
 
-    if (newState.hasOwnProperty(idKey) && newState[idKey] !== oldEntity[idKey]) {
-      if (ids.length > 1) {
-        throw new AkitaUpdateIdKeyError();
+    // if the entity doesn't exist, add it
+    if (hasEntity(state.entities, id) === false) {
+      // if the id key doesn't exist in the state, add it
+      if (newState.hasOwnProperty(idKey) === false) {
+        newState[idKey] = id;
       }
+      updatedEntities[id] = newState;
+      idsToAdd.push(id);
+      continue;
+    }
+
+    const isIdChanged = newState.hasOwnProperty(idKey) && newState[idKey] !== oldEntity[idKey];
+    let newEntity: E;
+    idToUpdate = id;
+
+    if (isIdChanged) {
       isUpdatingIdKey = true;
       idToUpdate = newState[idKey];
     }
-
-    let newEntity;
 
     const merged = {
       ...oldEntity,
@@ -60,6 +71,7 @@ export function updateEntities<S extends EntityState<E>, E>({ state, ids, idKey,
 
   let updatedIds = state.ids;
   let stateEntities = state.entities;
+
   if (isUpdatingIdKey) {
     const [id] = ids;
     const { [id]: deletedEntity, ...rest } = state.entities;
@@ -73,6 +85,6 @@ export function updateEntities<S extends EntityState<E>, E>({ state, ids, idKey,
       ...stateEntities,
       ...updatedEntities
     },
-    ids: updatedIds
+    ids: idsToAdd.length ? [...updatedIds, ...idsToAdd] : updatedIds
   };
 }

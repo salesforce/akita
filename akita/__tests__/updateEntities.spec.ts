@@ -98,9 +98,35 @@ describe('updateEntities', () => {
     it('should do nothing if non of the predicate matches', () => {
       const store = new BooksStore();
       store.add(createMockEntities());
-      spyOn(store, 'setState');
+      spyOn(store, '_setState');
       store.update(entity => entity.price === 10, { title: 'Changed' });
-      expect(store.setState).not.toHaveBeenCalled();
+      expect(store._setState).not.toHaveBeenCalled();
+      store.remove();
+    });
+
+    it('should add the entity if not exist', () => {
+      const store = new BooksStore();
+      store.add(createMockEntities());
+      store.update([1, 2, 3], { title: `Item`, price: 10 });
+      expect(store._value().ids.length).toBe(3);
+      expect(store._value().entities[1].id).toBe(1);
+      expect(store._value().entities[2].id).toBe(2);
+      expect(store._value().entities[3].id).toBe(3);
+      store.update([1, 2, 10, 11], { title: `Item`, price: 11 });
+      expect(store._value().ids.length).toBe(5);
+      expect(store._value().entities[1].price).toBe(11);
+      expect(store._value().entities[2].price).toBe(11);
+      expect(store._value().entities[3].price).toBe(10);
+      store.remove();
+    });
+
+    it('should update the id if changed', () => {
+      const store = new BooksStore();
+      store.add(createMockEntities());
+      store.update(1, { title: 'Changed', id: 13 });
+      expect(store._value().entities[13]).toBeDefined();
+      expect(store._value().entities[1]).not.toBeDefined();
+      expect(store._value().ids).toEqual([13, 2]);
       store.remove();
     });
   });

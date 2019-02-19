@@ -1,4 +1,5 @@
-import { isNumber, isString } from '../../../akita/src/internal/utils';
+import { isNumber } from '../../../akita/src/isNumber';
+import { isString } from '../../../akita/src/isString';
 
 const _hasOwnProperty = Object.prototype.hasOwnProperty;
 

@@ -15,9 +15,6 @@
       ],
       "rxjs/operators": [
         "../node_modules/rxjs/operators"
-      ],
-      "@datorama/akita": [
-        "./public_api.ts"
       ]
     },
     "lib": [

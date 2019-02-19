@@ -1,11 +1,11 @@
-import { QueryEntity } from '../../api/query-entity';
+import { QueryEntity } from '../../queryEntity';
 import { delay, map, switchMap, take } from 'rxjs/operators';
-import { BehaviorSubject, from, Observable, Subscription } from 'rxjs';
-import { isObservable, isUndefined } from '../../internal/utils';
-import { ID } from '../../api/types';
+import { BehaviorSubject, from, isObservable, Observable, Subscription } from 'rxjs';
+import { ID } from '../../types';
 import { AkitaPlugin } from '../plugin';
-import { applyTransaction } from '../../api/transaction';
-import { action, applyAction } from '../../internal/action';
+import { applyTransaction } from '../../transaction';
+import { isUndefined } from '../../isUndefined';
+import { action, logAction } from '../../actions';
 
 export interface PaginationResponse<E> {
   currentPage: number;
@@ -130,7 +130,7 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
   /**
    * Update the pagination object and add the page
    */
-  @action({ type: '@Pagination - New Page' }, true)
+  @action('@Pagination - New Page')
   update(response: PaginationResponse<E>) {
     this.pagination = response;
     this.addPage(response.data);
@@ -150,12 +150,8 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
    */
   clearCache() {
     if (!this.initial) {
-      applyAction(
-        () => {
-          this.getStore().remove();
-        },
-        { type: '@Pagination - Clear Cache' }
-      );
+      logAction('@Pagination - Clear Cache');
+      this.getStore().remove();
       this.pages = new Map();
       this.metadata = new Map();
     }

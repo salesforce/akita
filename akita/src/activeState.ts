@@ -1,4 +1,6 @@
-import { ActiveState, EntityState, hasEntity, ID, IDS, isArray, MultiActiveState } from '@datorama/akita';
+import { ActiveState, EntityState, ID, IDS, MultiActiveState } from './types';
+import { hasEntity } from './hasEntity';
+import { isArray } from './isArray';
 
 export function hasActiveState<E>(state: EntityState<E>): state is EntityState<E> & (ActiveState | MultiActiveState) {
   return state.hasOwnProperty('active');

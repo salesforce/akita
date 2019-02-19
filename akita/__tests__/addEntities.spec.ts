@@ -5,9 +5,9 @@ import { BooksStore } from './booksStore.test';
 describe('addEntities', () => {
   it('should do nothing if the collection is empty', () => {
     const store = new BooksStore();
-    spyOn(store, 'setState');
+    spyOn(store, '_setState');
     store.add([]);
-    expect(store.setState).not.toHaveBeenCalled();
+    expect(store._setState).not.toHaveBeenCalled();
   });
 
   it('should add entities', () => {
@@ -23,11 +23,11 @@ describe('addEntities', () => {
     store.add(createMockEntities());
     expect(store._value().ids).toEqual([1, 2]);
     expect(store._value().entities).toEqual(entitiesMapMock);
-    spyOn(store, 'setState');
+    spyOn(store, '_setState');
     store.add(createMockEntities());
     expect(store._value().ids).toEqual([1, 2]);
     expect(store._value().entities).toEqual(entitiesMapMock);
-    expect(store.setState).not.toHaveBeenCalled();
+    expect(store._setState).not.toHaveBeenCalled();
     store.remove();
   });
 

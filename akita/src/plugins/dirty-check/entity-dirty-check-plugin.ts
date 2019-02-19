@@ -1,6 +1,6 @@
-import { HashMap, ID, IDS } from '../../api/types';
+import { HashMap, ID, IDS } from '../../types';
 import { DirtyCheckComparator, dirtyCheckDefaultParams, DirtyCheckPlugin, DirtyCheckResetParams, getNestedPath } from './dirty-check-plugin';
-import { QueryEntity } from '../../api/query-entity';
+import { QueryEntity } from '../../queryEntity';
 import { EntityCollectionPlugin } from '../entity-collection-plugin';
 import { map, skip } from 'rxjs/operators';
 import { Observable } from 'rxjs';

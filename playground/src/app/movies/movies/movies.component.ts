@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { Movie } from '../state/movie.model';
 import { Actor, ActorsQuery } from '../actors/state';
 import { ID } from '@datorama/akita';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-movies',
@@ -21,7 +22,7 @@ export class MoviesComponent implements OnInit {
   ngOnInit() {
     this.isLoading$ = this.moviesQuery.selectLoading();
     this.movies$ = this.moviesQuery.selectMovies();
-    this.actors$ = this.actorsQuery.selectAll();
+    this.actors$ = this.actorsQuery.selectAll().pipe(tap(console.log));
     this.moviesService.getMovies();
   }
 

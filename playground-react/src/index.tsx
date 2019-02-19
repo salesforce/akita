@@ -5,7 +5,7 @@ import { LoginPageComponent } from './session/LoginPage';
 import { ProtectedRoute } from './protected-route';
 import { NavWithRouter } from './Nav';
 import Loadable from 'react-loadable';
-import { akitaDevtools } from '../../akita/src/enhancers/devtools';
+import { akitaDevtools } from '../../akita/src/devtools';
 import { persistState } from '../../akita/src';
 import { TodosPageComponent } from './todos/TodosPage';
 

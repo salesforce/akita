@@ -1,7 +1,7 @@
 import { createMockEntities } from './mocks';
-import { DEFAULT_ID_KEY, getInitialEntitiesState, setEntities } from '@datorama/akita';
 import { entitiesMapMock } from './mocks';
 import { BooksStore } from './booksStore.test';
+import { DEFAULT_ID_KEY, getInitialEntitiesState, setEntities } from '../src';
 
 describe('setEntities', () => {
   it('should support array of entities', () => {
@@ -23,18 +23,26 @@ describe('setEntities', () => {
     expect(newState.entities).toEqual(entitiesMapMock);
   });
 
+  it('should support only entities', () => {
+    const store = new BooksStore();
+    const data = { 1: { id: 1, price: 10, title: 'a' }, 2: { id: 2, price: 10, title: 'b' } };
+    store.set(data);
+    expect(store._value().ids).toEqual([1, 2]);
+    expect(store._value().entities).toEqual(data);
+  });
+
   it('should do nothing if nil', () => {
     const store = new BooksStore();
-    spyOn(store, 'setState');
+    spyOn(store, '_setState');
     store.set(null);
-    expect(store.setState).not.toHaveBeenCalled();
+    expect(store._setState).not.toHaveBeenCalled();
   });
 
   it('should do nothing if the collection is empty', () => {
     const store = new BooksStore();
-    spyOn(store, 'setState');
+    spyOn(store, '_setState');
     store.set([]);
-    expect(store.setState).not.toHaveBeenCalled();
+    expect(store._setState).not.toHaveBeenCalled();
   });
 });
 

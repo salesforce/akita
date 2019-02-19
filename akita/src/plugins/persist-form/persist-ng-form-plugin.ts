@@ -1,9 +1,12 @@
 import { AkitaPlugin } from '../plugin';
-import { Query } from '../../api/query';
+import { Query } from '../../query';
 import { Observable, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { __globalState } from '../../internal/global-state';
-import { getValue, isString, setValue, toBoolean } from '../../internal/utils';
+import { getValue } from '../../getValueByString';
+import { toBoolean } from '../../toBoolean';
+import { isString } from '../../isString';
+import { setValue } from '../../setValueByString';
+import { logAction } from '../../actions';
 
 export type FormGroupLike = {
   patchValue: Function;
@@ -112,7 +115,7 @@ export class PersistNgFormPlugin<T = any> extends AkitaPlugin {
       }
     } else {
       if (!(this.getQuery().getValue() as AkitaFormProp<T>)[this.params.formKey]) {
-        __globalState.setAction({ type: '@PersistNgFormPlugin activate' });
+        logAction('@PersistNgFormPlugin activate');
         this.updateStore({ [this.params.formKey]: (this as any).factoryFnOrPath() });
       }
 
@@ -121,7 +124,7 @@ export class PersistNgFormPlugin<T = any> extends AkitaPlugin {
     }
 
     this.formChanges = this.form.valueChanges.pipe(debounceTime(this.params.debounceTime)).subscribe(value => {
-      __globalState.setAction({ type: '@PersistForm - Update' });
+      logAction('@PersistForm - Update');
       let newState;
       if (this.isKeyBased) {
         if (this.isRootKeys) {
