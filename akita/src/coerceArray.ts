@@ -1,4 +1,4 @@
-import { isNil } from '@datorama/akita';
+import { isNil } from './isNil';
 
 export function coerceArray<T>(value: T | T[]): T[] {
   if (isNil(value)) {

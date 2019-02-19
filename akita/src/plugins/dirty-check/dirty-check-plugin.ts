@@ -1,11 +1,14 @@
 import { AkitaPlugin, Queries } from '../plugin';
-import { QueryEntity } from '../../api/query-entity';
-import { BehaviorSubject, Observable, Subject, Subscription, combineLatest } from 'rxjs';
+import { QueryEntity } from '../../queryEntity';
+import { BehaviorSubject, combineLatest, Observable, Subject, Subscription } from 'rxjs';
 import { distinctUntilChanged, map, skip } from 'rxjs/operators';
-import { coerceArray, isFunction, isUndefined, toBoolean } from '../../internal/utils';
+import { isUndefined } from '../../isUndefined';
 import { EntityParam } from '../entity-collection-plugin';
-import { __globalState } from '../../internal/global-state';
-import { Query } from '../../api/query';
+import { Query } from '../../query';
+import { coerceArray } from '../../coerceArray';
+import { isFunction } from '../../isFunction';
+import { toBoolean } from '../../toBoolean';
+import { logAction } from '../../actions';
 
 type Head<StoreState = any, Entity = any> = StoreState | Partial<StoreState> | Entity;
 
@@ -60,7 +63,7 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
         currentValue = params.updateFn(this.head, (this.getQuery() as Query<StoreState>).getValue());
       }
     }
-    __globalState.setCustomAction({ type: `@DirtyCheck - Revert` });
+    logAction(`@DirtyCheck - Revert`);
     this.updateStore(currentValue, this._entityId);
     this._reset.next();
   }

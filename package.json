@@ -71,9 +71,6 @@
   },
   "author": "Netanel Basal",
   "jest": {
-    "moduleNameMapper": {
-      "@datorama/akita": "<rootDir>/akita"
-    },
     "globals": {
       "ts-jest": {
         "diagnostics": false

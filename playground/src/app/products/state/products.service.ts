@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core';
 import { ProductsStore } from './products.store';
 import { ProductsDataService } from './products-data.service';
 import { Product } from './products.model';
-import { tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { ProductsQuery } from './products.query';
-import { ID, noop } from '@datorama/akita';
+import { action, ID, transaction } from '@datorama/akita';
+import { logAction } from '../../../../../akita/src/actions';
 
 @Injectable({
   providedIn: 'root'
@@ -17,20 +18,22 @@ export class ProductsService {
    *
    * @returns {Observable<Product[]>}
    */
-  get(): Observable<Product[]> {
-    const request = this.productsDataService.get().pipe(
-      tap(response => {
+  get(): Observable<void> {
+    return this.productsDataService.get().pipe(
+      map(response => {
+        logAction('😘😘😘😘😘😘😘😘😘😘');
         this.productsStore.set(response);
-        // applyAction(
-        //   () => {
-        //     this.productsStore.set(response);
-        //   },
-        //   { type: '[Products Service] Fetch All' }
-        // );
+        this.testTransaction();
       })
     );
+    // add cache validation when implement
+  }
 
-    return this.productsQuery.isPristine ? request : noop();
+  @transaction()
+  testTransaction() {
+    this.productsStore.setLoading(true);
+    this.productsStore.update(1, { title: 'test' });
+    this.productsStore.setLoading(false);
   }
 
   /**

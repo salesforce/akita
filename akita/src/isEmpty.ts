@@ -1,4 +1,4 @@
-import { isArray } from '@datorama/akita';
+import { isArray } from './isArray';
 
 export function isEmpty<T>(arr: T) {
   if (isArray(arr)) {

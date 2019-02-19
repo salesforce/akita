@@ -24,11 +24,10 @@ export class WidgetsService {
 
   remove(id?: ID) {
     this.widgetsStore.remove(id);
-    this.widgetsStore.setDirty();
   }
 
   updateName(name: string) {
-    this.widgetsStore.updateRoot({ name });
+    this.widgetsStore.update({ name });
   }
 
   addActive(id: ID) {

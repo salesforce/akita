@@ -1,7 +1,7 @@
-import { ID, IDS } from '../../api/types';
-import { QueryEntity } from '../../api/query-entity';
+import { ID, IDS } from '../../types';
+import { QueryEntity } from '../../queryEntity';
 import { StateHistoryPlugin, StateHistoryParams } from './state-history-plugin';
-import { toBoolean } from '../../internal/utils';
+import { toBoolean } from '../../toBoolean';
 import { skip } from 'rxjs/operators';
 import { EntityCollectionPlugin, EntityCollectionParams } from '../entity-collection-plugin';
 

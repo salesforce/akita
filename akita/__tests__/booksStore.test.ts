@@ -1,4 +1,4 @@
-import { EntityState, EntityStore, ID, StoreConfig } from '@datorama/akita';
+import { ActiveState, EntityState, EntityStore, ID, StoreConfig } from '../index';
 
 export type TestBook = {
   id: ID;
@@ -6,13 +6,13 @@ export type TestBook = {
   price: number;
 };
 
-export interface TestBooksState extends EntityState<TestBook> {
+export interface TestBooksState extends EntityState<TestBook>, ActiveState {
   filter: string;
 }
 
 @StoreConfig({ name: 'books' })
 export class BooksStore extends EntityStore<TestBooksState, TestBook> {
   constructor() {
-    super({ filter: 'ALL' });
+    super({ filter: 'ALL', active: null });
   }
 }
