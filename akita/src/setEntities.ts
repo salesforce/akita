@@ -4,9 +4,11 @@ import { toEntitiesIds } from './toEntitiesIds';
 import { isArray } from './isArray';
 import { hasActiveState, resolveActiveEntity } from './activeState';
 
+export type SetEntities<Entity> = Entity[] | Entities<Entity> | HashMap<Entity>;
+
 export type SetEntitiesParams<State, Entity> = {
   state: State;
-  entities: Entity[] | Entities<Entity> | HashMap<Entity>;
+  entities: SetEntities<Entity>;
   idKey: string;
 };
 

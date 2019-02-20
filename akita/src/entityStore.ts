@@ -1,5 +1,5 @@
 import { isEmpty } from './isEmpty';
-import { setEntities } from './setEntities';
+import { SetEntities, setEntities } from './setEntities';
 import { Store } from './store';
 import { Entities, EntityState, HashMap, ID, IDS, StateWithActive, UpdateEntityPredicate, UpdateStateCallback } from './types';
 import { getActiveEntities, SetActiveOptions } from './getActiveEntities';
@@ -50,8 +50,8 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    * this.store.set({ 1: {}, 2: {}})
    *
    */
-  set(entities: E[] | Entities<E> | HashMap<E>) {
-    if (isNil(entities) || isEmpty(entities)) return;
+  set(entities: SetEntities<E>) {
+    if (isNil(entities)) return;
 
     isDev() && setAction('Set Entities');
     this._setState(state => setEntities({ state, entities, idKey: this.idKey }));

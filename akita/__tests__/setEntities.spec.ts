@@ -37,13 +37,6 @@ describe('setEntities', () => {
     store.set(null);
     expect(store._setState).not.toHaveBeenCalled();
   });
-
-  it('should do nothing if the collection is empty', () => {
-    const store = new BooksStore();
-    spyOn(store, '_setState');
-    store.set([]);
-    expect(store._setState).not.toHaveBeenCalled();
-  });
 });
 
 describe('setEntities with Active State', () => {
