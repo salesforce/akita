@@ -19,7 +19,7 @@ export class WidgetsComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     /** check isPristine */
-    if (this.widgetsQuery.isEmpty()) {
+    if (this.widgetsQuery.hasEntity() === false) {
       this.widgetService.initWidgets();
     }
     this.dashoboardName$ = this.widgetsQuery.select(state => state.name);

@@ -11,6 +11,7 @@ import { entitiesToArray } from './entitiesToArray';
 import { entitiesToMap } from './entitiesToMap';
 import { SelectAllOptionsA, SelectAllOptionsB, SelectAllOptionsC, SelectAllOptionsD, SelectAllOptionsE } from './selectAllOverloads';
 import { isArray } from './isArray';
+import { isNil } from './isNil';
 
 /**
  *
@@ -144,9 +145,11 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
       if (!project) {
         return this.getEntity(id);
       }
-      if (this.hasEntity(id)) {
+
+      if ((id as any) in this.getValue().entities) {
         return project(this.getEntity(id));
       }
+
       return undefined;
     });
   }
@@ -287,7 +290,12 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
   hasEntity(id: EntityID): boolean;
   hasEntity(id: EntityID[]): boolean;
   hasEntity(project: (entity: E) => boolean): boolean;
-  hasEntity(projectOrIds: EntityID | EntityID[] | ((entity: E) => boolean)): boolean {
+  hasEntity(): boolean;
+  hasEntity(projectOrIds?: EntityID | EntityID[] | ((entity: E) => boolean)): boolean {
+    if (isNil(projectOrIds)) {
+      return this.getValue().ids.length > 0;
+    }
+
     if (isFunction(projectOrIds)) {
       return this.getAll().some(projectOrIds);
     }
@@ -317,16 +325,6 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
       return active.length > 0;
     }
     return isDefined(active);
-  }
-
-  /**
-   * Returns whether the store is empty (i.e not entities)
-   *
-   * this.query.isEmpty()
-   *
-   */
-  isEmpty() {
-    return this.getValue().ids.length === 0;
   }
 
   private selectAt<R>(mapFn: (ids: EntityID[]) => EntityID, project?: (entity: E) => R) {

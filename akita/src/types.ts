@@ -36,3 +36,5 @@ export type UpdateStateCallback<State> = (state: Readonly<State>) => Partial<Sta
 export type UpdateEntityPredicate<E> = (entity: Readonly<E>) => boolean;
 export type ID = number | string;
 export type IDS = ID | ID[];
+export type PreAddEntity<Entity> = (entity: Entity) => Entity;
+export type PreUpdateEntity<Entity> = (prevEntity: Entity, nextEntity: Entity) => Entity;

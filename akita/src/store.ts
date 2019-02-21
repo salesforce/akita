@@ -111,9 +111,13 @@ export class Store<S> {
 
     this._setState(state => {
       const newState = isFunction(stateOrCallback) ? stateOrCallback(state) : stateOrCallback;
-      const merged = { ...state, ...newState };
+      const merged = this.akitaPreUpdate(state, { ...state, ...newState } as S);
       return isPlainObject(state) ? merged : new (state as any).constructor(merged);
     });
+  }
+
+  akitaPreUpdate(_: Readonly<S>, nextState: Readonly<S>): S {
+    return nextState;
   }
 
   ngOnDestroy() {

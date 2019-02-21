@@ -48,9 +48,9 @@ describe('Entity Query', () => {
       store.remove(2);
       expect(spy).toHaveBeenCalledTimes(4);
       expect(spy).toHaveBeenCalledWith({ id: 1 });
-      store.update(1, { name: 'update' });
+      store.update(1, { title: 'update' });
       expect(spy).toHaveBeenCalledTimes(5);
-      expect(spy).toHaveBeenCalledWith({ id: 1, name: 'update' });
+      expect(spy).toHaveBeenCalledWith({ id: 1, title: 'update' });
       store.remove();
       expect(spy).toHaveBeenCalledTimes(6);
       expect(spy).toHaveBeenCalledWith(undefined);
@@ -76,9 +76,9 @@ describe('Entity Query', () => {
       // should not have been call if the first id doesn't change
       expect(spy).toHaveBeenCalledTimes(2);
       // should call upon update
-      store.update(1 as any, { name: 'update' });
+      store.update(1, { title: 'update' });
       expect(spy).toHaveBeenCalledTimes(3);
-      expect(spy).toHaveBeenCalledWith({ id: 1, name: 'update' });
+      expect(spy).toHaveBeenCalledWith({ id: 1, title: 'update' });
       // should call when the id changed
       store.add({ id: 5 }, { prepend: true });
       expect(spy).toHaveBeenCalledTimes(4);

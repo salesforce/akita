@@ -1,21 +1,22 @@
-import { EntityState } from './index';
+import { EntityState, PreAddEntity } from './index';
 
 export type AddEntitiesParams<State, Entity> = {
   state: State;
   entities: Entity[];
   idKey: string;
   options: AddEntitiesOptions;
+  preAddEntity: PreAddEntity<Entity>;
 };
 
 export type AddEntitiesOptions = { prepend?: boolean };
 
-export function addEntities<S extends EntityState<E>, E>({ state, entities, idKey, options = {} }: AddEntitiesParams<S, E>): S {
+export function addEntities<S extends EntityState<E>, E>({ state, entities, idKey, options = {}, preAddEntity }: AddEntitiesParams<S, E>): S {
   let newEntities = {};
   let newIds = [];
 
   for (const entity of entities) {
     const entityId = entity[idKey];
-    newEntities[entityId] = entity;
+    newEntities[entityId] = preAddEntity(entity);
     if (options.prepend) newIds.unshift(entityId);
     else newIds.push(entityId);
   }

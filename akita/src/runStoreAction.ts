@@ -3,6 +3,8 @@ import { IDS } from './types';
 import { AddEntitiesOptions } from './addEntities';
 import { EntityStore } from './entityStore';
 import { SetEntities } from './setEntities';
+import { isNil } from './isNil';
+import { AkitaError } from './errors';
 
 export enum StoreActions {
   Update,
@@ -55,6 +57,11 @@ export function runStoreAction<EntityOrState = any>(
   params: RunStoreActionSetEntities<EntityOrState> | RunStoreActionAddEntities<EntityOrState> | RunStoreActionRemoveEntities<EntityOrState> | RunStoreActionUpdateEntities<EntityOrState>
 ) {
   const store = __stores__[storeName];
+
+  if (isNil(store)) {
+    throw new AkitaError(`${storeName} doesn't exist`);
+  }
+
   switch (action) {
     case StoreActions.SetEntities: {
       const { payload } = params as RunStoreActionSetEntities;

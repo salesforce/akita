@@ -15,6 +15,7 @@
  - to me: change setAction in router store
  - remove isPristine and isDirty
  - action decorator gets string instead of object
+ - isEmpty => hasEntity()
 
 ## 2.0.0
 - Update typescript to v3.2.

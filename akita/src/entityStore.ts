@@ -1,7 +1,7 @@
 import { isEmpty } from './isEmpty';
 import { SetEntities, setEntities } from './setEntities';
 import { Store } from './store';
-import { Entities, EntityState, HashMap, ID, IDS, StateWithActive, UpdateEntityPredicate, UpdateStateCallback } from './types';
+import { EntityState, ID, IDS, StateWithActive, UpdateEntityPredicate, UpdateStateCallback } from './types';
 import { getActiveEntities, SetActiveOptions } from './getActiveEntities';
 import { addEntities, AddEntitiesOptions } from './addEntities';
 import { coerceArray } from './coerceArray';
@@ -78,6 +78,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     this._setState(state =>
       addEntities({
         state,
+        preAddEntity: this.akitaPreAddEntity,
         entities: notExistEntities,
         idKey: this.idKey,
         options
@@ -133,6 +134,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
       updateEntities({
         idKey: this.idKey,
         ids,
+        preUpdateEntity: this.akitaPreUpdateEntity,
         state,
         newStateOrFn
       })
@@ -281,6 +283,14 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     const add = toArray.filter(filterExists(false));
     this.removeActive(remove);
     this.addActive(add);
+  }
+
+  akitaPreUpdateEntity(_: Readonly<E>, nextEntity: Readonly<E>): E {
+    return nextEntity;
+  }
+
+  akitaPreAddEntity(newEntity: Readonly<E>): E {
+    return newEntity;
   }
 
   private get ids() {

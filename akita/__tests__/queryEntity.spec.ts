@@ -285,6 +285,17 @@ describe('Entities Query', () => {
       expect(query.hasEntity(5)).toBeFalsy();
     });
 
+    it('should return false when store is empty', () => {
+      store.remove();
+      expect(query.hasEntity()).toBeFalsy();
+    });
+
+    it('should return false when store is not empty', () => {
+      let todo = cot();
+      store.add(todo);
+      expect(query.hasEntity()).toBeTruthy();
+    });
+
     describe('multi', () => {
       it('should return true if all entities in the store', () => {
         const factory = ct();

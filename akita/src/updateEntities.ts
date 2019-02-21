@@ -1,4 +1,4 @@
-import { EntityState, ID, UpdateStateCallback } from './types';
+import { EntityState, ID, PreUpdateEntity, UpdateStateCallback } from './types';
 import { isFunction } from './isFunction';
 import { hasEntity } from './hasEntity';
 import { isPlainObject } from './isPlainObject';
@@ -8,9 +8,10 @@ export type UpdateEntitiesParams<State, Entity> = {
   ids: ID[];
   idKey: string;
   newStateOrFn: UpdateStateCallback<Entity> | Partial<Entity> | Partial<State>;
+  preUpdateEntity: PreUpdateEntity<Entity>;
 };
 
-export function updateEntities<S extends EntityState<E>, E>({ state, ids, idKey, newStateOrFn }: UpdateEntitiesParams<S, E>) {
+export function updateEntities<S extends EntityState<E>, E>({ state, ids, idKey, newStateOrFn, preUpdateEntity }: UpdateEntitiesParams<S, E>) {
   const updatedEntities = {};
 
   let isUpdatingIdKey = false;
@@ -66,7 +67,7 @@ export function updateEntities<S extends EntityState<E>, E>({ state, ids, idKey,
       }
     }
 
-    updatedEntities[idToUpdate] = newEntity;
+    updatedEntities[idToUpdate] = preUpdateEntity(oldEntity, newEntity);
   }
 
   let updatedIds = state.ids;
