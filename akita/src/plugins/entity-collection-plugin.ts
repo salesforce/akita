@@ -10,9 +10,9 @@ export type EntityParam = ID;
 
 export type EntityCollectionParams = ID | ID[];
 
-export type RebaseActions<P = any> = { beforeRemove?: Function; beforeAdd?: Function; afterAdd?: (plugin: P) => any };
+export type RebaseAction<P = any> = (plugin: P) => any;
 
-const defaultActions: RebaseActions = { beforeRemove: plugin => plugin.destroy() };
+export type RebaseActions<P = any> = { beforeRemove?: RebaseAction; beforeAdd?: RebaseAction; afterAdd?: RebaseAction };
 
 export abstract class EntityCollectionPlugin<E, P> {
   protected entities = new Map<ID, P>();
@@ -37,6 +37,7 @@ export abstract class EntityCollectionPlugin<E, P> {
    * Remove the entity plugin instance.
    */
   protected removeEntity(id: ID) {
+    this.destroy(id);
     return this.entities.delete(id);
   }
 
@@ -68,7 +69,7 @@ export abstract class EntityCollectionPlugin<E, P> {
    *
    * this.query.select(state => state.ids).pipe(skip(1)).subscribe(ids => this.activate(ids));
    */
-  protected rebase(ids: ID[], actions: RebaseActions<P> = defaultActions) {
+  protected rebase(ids: ID[], actions: RebaseActions<P> = {}) {
     /**
      *
      * If the user passes `entityIds` & we have new ids check if we need to add/remove instances.

@@ -2,7 +2,7 @@ import { ID, IDS } from '../../api/types';
 import { DirtyCheckComparator, dirtyCheckDefaultParams, DirtyCheckPlugin, DirtyCheckResetParams, getNestedPath } from './dirty-check-plugin';
 import { QueryEntity } from '../../api/query-entity';
 import { EntityCollectionPlugin } from '../entity-collection-plugin';
-import { map, skip } from 'rxjs/operators';
+import { auditTime, map, skip } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 export type DirtyCheckCollectionParams<E> = {
@@ -11,10 +11,10 @@ export type DirtyCheckCollectionParams<E> = {
 };
 
 export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = DirtyCheckPlugin<E, any>> extends EntityCollectionPlugin<E, P> {
-  someDirty$: Observable<boolean> = this.query
-    .select(state => state.entities)
-    /* TODO auditTime ? better solution ? */
-    .pipe(map((entities: any) => this.checkSomeDirty()));
+  someDirty$: Observable<boolean> = this.query.select(state => state.entities).pipe(
+    auditTime(0),
+    map(() => this.checkSomeDirty())
+  );
 
   constructor(protected query: QueryEntity<any, E>, private readonly params: DirtyCheckCollectionParams<E> = {}) {
     super(query, params.entityIds);
@@ -23,7 +23,7 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
     this.selectIds()
       .pipe(skip(1))
       .subscribe(ids => {
-        super.rebase(ids, { afterAdd: plugin => plugin.setHead(), beforeRemove: plugin => plugin.destroy() });
+        super.rebase(ids, { afterAdd: plugin => plugin.setHead() });
       });
   }
 

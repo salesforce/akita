@@ -385,30 +385,40 @@ describe('DirtyCheckEntity', () => {
     });
 
     it('should return true if some of the entities are dirty', () => {
+      jest.useFakeTimers();
       widgetsStore.remove();
       widgetsStore.add([createWidget(), createWidget(), createWidget()]);
       collection.setHead();
-      const spy = jest.fn();
-      collection.someDirty$.subscribe(spy);
+      let expectedResult = false;
       let isDirty = collection.someDirty();
-      expect(isDirty).toBe(false);
-      expect(spy).toHaveBeenLastCalledWith(false);
+      const subscription = collection.someDirty$.subscribe(res => {
+        isDirty = collection.someDirty();
+        expect(isDirty).toBe(expectedResult);
+        expect(res).toBe(expectedResult);
+      });
+      expect(isDirty).toBe(expectedResult);
+      jest.runAllTimers();
       widgetsStore.update(5, { title: 'Changed' });
+      expectedResult = true;
       isDirty = collection.someDirty();
-      expect(isDirty).toBe(true);
-      expect(spy).toHaveBeenLastCalledWith(true);
+      expect(isDirty).toBe(expectedResult);
+      jest.runAllTimers();
       widgetsStore.update(4, { title: 'Changed' });
+      expectedResult = true;
       isDirty = collection.someDirty();
-      expect(isDirty).toBe(true);
-      expect(spy).toHaveBeenLastCalledWith(true);
+      expect(isDirty).toBe(expectedResult);
+      jest.runAllTimers();
       widgetsStore.update(4, { title: 'Widget 4' });
+      expectedResult = true;
       isDirty = collection.someDirty();
-      expect(isDirty).toBe(true);
-      expect(spy).toHaveBeenLastCalledWith(true);
+      expect(isDirty).toBe(expectedResult);
+      jest.runAllTimers();
       widgetsStore.update(5, { title: 'Widget 5' });
+      expectedResult = false;
       isDirty = collection.someDirty();
-      expect(isDirty).toBe(false);
-      expect(spy).toHaveBeenLastCalledWith(false);
+      expect(isDirty).toBe(expectedResult);
+      jest.runAllTimers();
+      subscription.unsubscribe();
     });
 
     it('should return isDirty as observable by default', () => {
@@ -541,40 +551,52 @@ describe('DirtyCheckEntity', () => {
     });
 
     it('should return true if some of the entities are dirty', () => {
+      jest.useFakeTimers();
       widgetsStore.remove();
       _id = 3;
       widgetsStore.add([createWidget(), createWidget(), createWidget()]);
       collection = new EntityDirtyCheckPlugin(widgetsQuery, { entityIds: [4, 6] });
       collection.setHead();
-      const spy = jest.fn();
-      collection.someDirty$.subscribe(spy);
+      let expectedResult = false;
       let isDirty = collection.someDirty();
-      expect(isDirty).toBe(false);
-      expect(spy).toHaveBeenLastCalledWith(false);
+      const subscription = collection.someDirty$.subscribe(res => {
+        isDirty = collection.someDirty();
+        expect(isDirty).toBe(expectedResult);
+        expect(res).toBe(expectedResult);
+      });
+      expect(isDirty).toBe(expectedResult);
+      jest.runAllTimers();
       widgetsStore.update(5, { title: 'Changed' });
+      expectedResult = false;
       isDirty = collection.someDirty();
-      expect(isDirty).toBe(false);
-      expect(spy).toHaveBeenLastCalledWith(false);
+      expect(isDirty).toBe(expectedResult);
+      jest.runAllTimers();
       widgetsStore.update(6, { title: 'Changed' });
+      expectedResult = true;
       isDirty = collection.someDirty();
-      expect(isDirty).toBe(true);
-      expect(spy).toHaveBeenLastCalledWith(true);
+      expect(isDirty).toBe(expectedResult);
+      jest.runAllTimers();
       widgetsStore.update(4, { title: 'Changed' });
+      expectedResult = true;
       isDirty = collection.someDirty();
-      expect(isDirty).toBe(true);
-      expect(spy).toHaveBeenLastCalledWith(true);
+      expect(isDirty).toBe(expectedResult);
+      jest.runAllTimers();
       widgetsStore.update(4, { title: 'Widget 4' });
+      expectedResult = true;
       isDirty = collection.someDirty();
-      expect(isDirty).toBe(true);
-      expect(spy).toHaveBeenLastCalledWith(true);
+      expect(isDirty).toBe(expectedResult);
+      jest.runAllTimers();
       widgetsStore.update(5, { title: 'Widget 5' });
+      expectedResult = true;
       isDirty = collection.someDirty();
-      expect(isDirty).toBe(true);
-      expect(spy).toHaveBeenLastCalledWith(true);
+      expect(isDirty).toBe(expectedResult);
+      jest.runAllTimers();
       widgetsStore.update(6, { title: 'Widget 6' });
+      expectedResult = false;
       isDirty = collection.someDirty();
-      expect(isDirty).toBe(false);
-      expect(spy).toHaveBeenLastCalledWith(false);
+      expect(isDirty).toBe(expectedResult);
+      jest.runAllTimers();
+      subscription.unsubscribe();
     });
 
     it('should return false for hasHead()', () => {
