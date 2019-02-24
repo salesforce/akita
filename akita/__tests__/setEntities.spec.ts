@@ -72,9 +72,9 @@ describe('setEntities with Active Multi', () => {
   });
 
   it('should remove active when NOT exist', () => {
-    const data = createMockEntities();
+    const data = createMockEntities(10, 12);
     const entityState = { entities: entitiesMapMock, ids: [1], active: [1, 2] };
     const newState = setEntities({ state: entityState, idKey: DEFAULT_ID_KEY, entities: data });
-    expect(newState.active).toEqual([1]);
+    expect(newState.active).toEqual([]);
   });
 });

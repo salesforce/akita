@@ -1,4 +1,4 @@
-import { Entities, EntityState, HashMap, ID } from './types';
+import { Entities, EntityState, HashMap, ID, ActiveState, MultiActiveState } from './types';
 import { toEntitiesObject } from './toEntitiesObject';
 import { toEntitiesIds } from './toEntitiesIds';
 import { isArray } from './isArray';
@@ -40,7 +40,7 @@ export function setEntities<S extends EntityState<E>, E>({ state, entities, idKe
   };
 
   if (hasActiveState(state)) {
-    newState.active = resolveActiveEntity(state);
+    newState.active = resolveActiveEntity(newState as S & { active: any });
   }
 
   return newState;

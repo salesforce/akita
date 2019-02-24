@@ -5,6 +5,7 @@
 - createOrReplace - remove
 - updateAll - remove
 - updateRoot - remove
+- remove upsert
 - setState is internal => _setState
 - remove mapWorker
 - remove array helpers
