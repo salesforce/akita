@@ -1,4 +1,4 @@
-import { HashMap, ID, IDS } from '../../api/types';
+import { ID, IDS } from '../../api/types';
 import { DirtyCheckComparator, dirtyCheckDefaultParams, DirtyCheckPlugin, DirtyCheckResetParams, getNestedPath } from './dirty-check-plugin';
 import { QueryEntity } from '../../api/query-entity';
 import { EntityCollectionPlugin } from '../entity-collection-plugin';
@@ -11,7 +11,10 @@ export type DirtyCheckCollectionParams<E> = {
 };
 
 export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = DirtyCheckPlugin<E, any>> extends EntityCollectionPlugin<E, P> {
-  someDirty$: Observable<boolean> = this.query.select(state => state.entities).pipe(map((entities: any) => this.checkSomeDirty(entities)));
+  someDirty$: Observable<boolean> = this.query
+    .select(state => state.entities)
+    /* TODO auditTime ? better solution ? */
+    .pipe(map((entities: any) => this.checkSomeDirty()));
 
   constructor(protected query: QueryEntity<any, E>, private readonly params: DirtyCheckCollectionParams<E> = {}) {
     super(query, params.entityIds);
@@ -20,7 +23,7 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
     this.selectIds()
       .pipe(skip(1))
       .subscribe(ids => {
-        this.rebase(ids, { afterAdd: plugin => plugin.setHead() });
+        super.rebase(ids, { afterAdd: plugin => plugin.setHead(), beforeRemove: plugin => plugin.destroy() });
       });
   }
 
@@ -55,8 +58,7 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
   }
 
   someDirty(): boolean {
-    const entities = this.query.getAll({ asObject: true });
-    return this.checkSomeDirty(entities);
+    return this.checkSomeDirty();
   }
 
   isPathDirty(id: ID, path: string) {
@@ -80,11 +82,10 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
     return new DirtyCheckPlugin(this.query, this.params, id) as P;
   }
 
-  private checkSomeDirty(entities: HashMap<E>): boolean {
+  private checkSomeDirty(): boolean {
     const entitiesIds = this.resolvedIds();
     for (const id of entitiesIds) {
-      const dirty = this.params.comparator((this.getEntity(id) as any).getHead(), entities[id]);
-      if (dirty) {
+      if (this.getEntity(id).isDirty()) {
         return true;
       }
     }
