@@ -631,13 +631,14 @@ describe('DirtyCheckEntity', () => {
       widgetsStore.update(7, { title: 'Changed 2' });
       expectedResult = true;
       jest.runAllTimers();
+      //TODO This entity isn't tracked so this should trigger an update
       collection.setHead(8);
       expectedResult = true;
       jest.runAllTimers();
       collection.setHead(7);
       expectedResult = false;
       jest.runAllTimers();
-      expect(spy).toBeCalledTimes(6);
+      expect(spy).toBeCalledTimes(7);
       subscription.forEach(s => s.unsubscribe());
     });
 

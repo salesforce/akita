@@ -2,7 +2,7 @@ import { ID, IDS } from '../../api/types';
 import { DirtyCheckComparator, dirtyCheckDefaultParams, DirtyCheckPlugin, DirtyCheckResetParams, getNestedPath } from './dirty-check-plugin';
 import { QueryEntity } from '../../api/query-entity';
 import { EntityCollectionPlugin } from '../entity-collection-plugin';
-import { auditTime, map, skip } from 'rxjs/operators';
+import { auditTime, map, skip, tap } from 'rxjs/operators';
 import { merge, Observable, Subject } from 'rxjs';
 import { coerceArray } from '../..';
 
@@ -12,13 +12,17 @@ export type DirtyCheckCollectionParams<E> = {
 };
 
 export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = DirtyCheckPlugin<E, any>> extends EntityCollectionPlugin<E, P> {
-  private _someDirty = new Subject();
-  someDirty$: Observable<boolean> = merge(this.query.select(state => state.entities), this._someDirty.asObservable()).pipe(
+  // private _isSomeDirty = false;
+  private _someDirtyTrigger = new Subject();
+  someDirty$: Observable<boolean> = merge(this.query.select(state => state.entities), this._someDirtyTrigger.asObservable()).pipe(
     auditTime(0),
+    // tap(() => this._isSomeDirty = this.checkSomeDirty()),
+    // map(() => this._isSomeDirty)
     map(() => this.checkSomeDirty())
   );
 
   constructor(protected query: QueryEntity<any, E>, private readonly params: DirtyCheckCollectionParams<E> = {}) {
+    // TODO why not use entityIds as array from the start? we keep using coerceArray
     super(query, params.entityIds);
     this.params = { ...dirtyCheckDefaultParams, ...params };
     // TODO lazy activate?
@@ -31,15 +35,20 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
   }
 
   setHead(ids?: IDS) {
-    let ids2 = ids;
-    if (this.params.entityIds && ids2) {
-      ids2 = coerceArray(ids2) as ID[];
-      if (!coerceArray(this.params.entityIds).some(id => ids2.indexOf(id) > -1)) {
-        return this;
-      }
-    }
-    this.forEachId(ids2, e => e.setHead());
-    this._someDirty.next();
+    // TODO should this be executed if the plugin isn't dirty?
+    // if (this._isSomeDirty) {
+    //   let ids2 = ids;
+    // TODO if ids are passed, check that at least one is matching the tracked ids
+    // if (this.params.entityIds && ids2) {
+    //   ids2 = coerceArray(ids2);
+    //   if (!coerceArray(this.params.entityIds).some(id => (ids2 as ID[]).indexOf(id) > -1)) {
+    //     return this;
+    //   }
+    // }
+    this.forEachId(ids, e => e.setHead());
+    this._someDirtyTrigger.next();
+    // }
+
     return this;
   }
 
@@ -69,6 +78,7 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
   }
 
   someDirty(): boolean {
+    // return this._isSomeDirty;
     return this.checkSomeDirty();
   }
 
@@ -89,7 +99,7 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
     this.forEachId(ids, e => e.destroy());
     /** complete only when the plugin destroys */
     if (!ids) {
-      this._someDirty.complete();
+      this._someDirtyTrigger.complete();
     }
   }
 
