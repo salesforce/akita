@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
  */
 export type EntityParam = ID;
 
-export type EntityCollectionParams = ID | ID[];
+export type EntityCollectionParams = IDS;
 
 export type RebaseAction<P = any> = (plugin: P) => any;
 

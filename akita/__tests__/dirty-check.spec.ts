@@ -550,7 +550,7 @@ describe('DirtyCheckEntity', () => {
       expect(spy).toHaveBeenLastCalledWith(true);
     });
 
-    it('should return true if some of the entities are dirty', () => {
+    it('someDirty should return true if some of the entities are dirty', () => {
       jest.useFakeTimers();
       widgetsStore.remove();
       _id = 3;
@@ -559,11 +559,15 @@ describe('DirtyCheckEntity', () => {
       collection.setHead();
       let expectedResult = false;
       let isDirty = collection.someDirty();
-      const subscription = collection.someDirty$.subscribe(res => {
-        isDirty = collection.someDirty();
-        expect(isDirty).toBe(expectedResult);
-        expect(res).toBe(expectedResult);
-      });
+      const spy = jest.fn();
+      const subscription = [
+        collection.someDirty$.subscribe(res => {
+          isDirty = collection.someDirty();
+          expect(isDirty).toBe(expectedResult);
+          expect(res).toBe(expectedResult);
+        }),
+        collection.someDirty$.subscribe(spy)
+      ];
       expect(isDirty).toBe(expectedResult);
       jest.runAllTimers();
       widgetsStore.update(5, { title: 'Changed' });
@@ -596,7 +600,45 @@ describe('DirtyCheckEntity', () => {
       isDirty = collection.someDirty();
       expect(isDirty).toBe(expectedResult);
       jest.runAllTimers();
-      subscription.unsubscribe();
+      expect(spy).toBeCalledTimes(7);
+      subscription.forEach(s => s.unsubscribe());
+    });
+
+    it('someDirty should return false when calling set head', () => {
+      jest.useFakeTimers();
+      widgetsStore.remove();
+      _id = 6;
+      widgetsStore.add([createWidget(), createWidget(), createWidget()]);
+      collection = new EntityDirtyCheckPlugin(widgetsQuery, { entityIds: 7 });
+      const spy = jest.fn();
+      let expectedResult = false;
+      const subscription = [
+        collection.someDirty$.subscribe(res => {
+          expect(res).toBe(expectedResult);
+        }),
+        collection.someDirty$.subscribe(spy)
+      ];
+      jest.runAllTimers();
+      collection.setHead();
+      expectedResult = false;
+      jest.runAllTimers();
+      widgetsStore.update(7, { title: 'Changed' });
+      expectedResult = true;
+      jest.runAllTimers();
+      collection.setHead();
+      expectedResult = false;
+      jest.runAllTimers();
+      widgetsStore.update(7, { title: 'Changed 2' });
+      expectedResult = true;
+      jest.runAllTimers();
+      collection.setHead(8);
+      expectedResult = true;
+      jest.runAllTimers();
+      collection.setHead(7);
+      expectedResult = false;
+      jest.runAllTimers();
+      expect(spy).toBeCalledTimes(6);
+      subscription.forEach(s => s.unsubscribe());
     });
 
     it('should return false for hasHead()', () => {
