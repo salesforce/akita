@@ -1,3 +1,11 @@
+## [2.2.3](https://github.com/datorama/akita/compare/v2.2.2...v2.2.3) (2019-02-25)
+
+
+### Bug Fixes
+
+* **entitiy-dirty-check-plugin:** fix some dirty ([2d45059](https://github.com/datorama/akita/commit/2d45059))
+* **entity-dirt-check-plugin:** some dirty ([61ad123](https://github.com/datorama/akita/commit/61ad123))
+
 ## [2.2.2](https://github.com/datorama/akita/compare/v2.2.1...v2.2.2) (2019-02-19)
 
 
