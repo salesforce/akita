@@ -1,3 +1,10 @@
+## [2.2.4](https://github.com/datorama/akita/compare/v2.2.3...v2.2.4) (2019-02-26)
+
+
+### Bug Fixes
+
+* **entity-dirty-check-plugin:** update on set head ([88ed98d](https://github.com/datorama/akita/commit/88ed98d))
+
 ## [2.2.3](https://github.com/datorama/akita/compare/v2.2.2...v2.2.3) (2019-02-25)
 
 
