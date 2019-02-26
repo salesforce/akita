@@ -3,15 +3,16 @@ import { DirtyCheckComparator, dirtyCheckDefaultParams, DirtyCheckPlugin, DirtyC
 import { QueryEntity } from '../../api/query-entity';
 import { EntityCollectionPlugin } from '../entity-collection-plugin';
 import { auditTime, map, skip } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { merge, Observable, Subject } from 'rxjs';
 
 export type DirtyCheckCollectionParams<E> = {
   comparator?: DirtyCheckComparator<E>;
-  entityIds?: ID | ID[];
+  entityIds?: IDS;
 };
 
 export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = DirtyCheckPlugin<E, any>> extends EntityCollectionPlugin<E, P> {
-  someDirty$: Observable<boolean> = this.query.select(state => state.entities).pipe(
+  private _someDirtyTrigger = new Subject();
+  someDirty$: Observable<boolean> = merge(this.query.select(state => state.entities), this._someDirtyTrigger.asObservable()).pipe(
     auditTime(0),
     map(() => this.checkSomeDirty())
   );
@@ -29,6 +30,8 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
 
   setHead(ids?: IDS) {
     this.forEachId(ids, e => e.setHead());
+    this._someDirtyTrigger.next();
+
     return this;
   }
 
@@ -76,6 +79,10 @@ export class EntityDirtyCheckPlugin<E, P extends DirtyCheckPlugin<E, any> = Dirt
 
   destroy(ids?: IDS) {
     this.forEachId(ids, e => e.destroy());
+    /** complete only when the plugin destroys */
+    if (!ids || this.entities.size === 0) {
+      this._someDirtyTrigger.complete();
+    }
   }
 
   protected instantiatePlugin(id: ID): P {
