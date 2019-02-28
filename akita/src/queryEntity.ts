@@ -12,6 +12,8 @@ import { entitiesToMap } from './entitiesToMap';
 import { SelectAllOptionsA, SelectAllOptionsB, SelectAllOptionsC, SelectAllOptionsD, SelectAllOptionsE } from './selectAllOverloads';
 import { isArray } from './isArray';
 import { isNil } from './isNil';
+import { isString } from './isString';
+import { isUndefined } from './isUndefined';
 
 /**
  *
@@ -136,21 +138,29 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    *
    * this.query.selectEntity(1)
    * this.query.selectEntity(1, entity => entity.config.date)
+   * this.query.selectEntity(1, 'comments')
    *
    */
   selectEntity<R>(id: EntityID): Observable<E>;
+  selectEntity<K extends keyof E>(id: EntityID, project?: K): Observable<E[K]>;
   selectEntity<R>(id: EntityID, project: (entity: E) => R): Observable<R>;
-  selectEntity<R>(id: EntityID, project?: (entity: E) => R): Observable<R | E> {
+  selectEntity<R>(id: EntityID, project?: ((entity: E) => R) | keyof E): Observable<R | E> {
     return this.select(() => {
+      const entity = this.getEntity(id);
+
+      if (isUndefined(entity)) {
+        return undefined;
+      }
+
       if (!project) {
-        return this.getEntity(id);
+        return entity;
       }
 
-      if ((id as any) in this.getValue().entities) {
-        return project(this.getEntity(id));
+      if (isString(project)) {
+        return entity[project as string];
       }
 
-      return undefined;
+      return (project as Function)(entity);
     });
   }
 
