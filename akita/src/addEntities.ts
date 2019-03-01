@@ -10,6 +10,7 @@ export type AddEntitiesParams<State, Entity> = {
 
 export type AddEntitiesOptions = { prepend?: boolean };
 
+// @internal
 export function addEntities<S extends EntityState<E>, E>({ state, entities, idKey, options = {}, preAddEntity }: AddEntitiesParams<S, E>): S {
   let newEntities = {};
   let newIds = [];

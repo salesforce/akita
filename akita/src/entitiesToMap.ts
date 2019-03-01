@@ -2,6 +2,7 @@ import { EntityState } from './types';
 import { isNil } from './isNil';
 import { coerceArray } from './coerceArray';
 
+// @internal
 export function entitiesToMap<S extends EntityState<E>, E>(state: S, options) {
   const map = {};
   const { filterBy, limitTo } = options;

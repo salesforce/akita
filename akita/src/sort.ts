@@ -3,6 +3,7 @@ export enum Order {
   DESC = 'desc'
 }
 
+// @internal
 export function compareValues(key, order: Order = Order.ASC) {
   return function(a, b) {
     if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {

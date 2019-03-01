@@ -3,7 +3,10 @@
  *
  * @example
  *
- * id: guid()
+ * {
+ *   id: guid()
+ * }
+ *
  */
 export function guid() {
   return 'xxxxxx4xyx'.replace(/[xy]/g, c => {

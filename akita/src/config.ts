@@ -13,6 +13,7 @@ export function akitaConfig(config: AkitaConfig) {
   CONFIG = { ...CONFIG, ...config };
 }
 
+// @internal
 export function getAkitaConfig() {
   return CONFIG;
 }

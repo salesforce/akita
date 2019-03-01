@@ -5,4 +5,5 @@ const __self = typeof self !== 'undefined' && typeof WorkerGlobalScope !== 'unde
 const __global = typeof global !== 'undefined' && global;
 const _root: any = __window || __global || __self;
 
+// @internal
 export { _root as root };

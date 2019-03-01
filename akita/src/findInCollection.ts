@@ -7,6 +7,7 @@ import { isArray } from './isArray';
 import { isFunction } from './isFunction';
 import { isEmpty } from './isEmpty';
 
+// @internal
 export function find<T>(collection: T[], idsOrPredicate: IDS | ItemPredicate, idKey: string) {
   const result = [];
   if (isFunction(idsOrPredicate)) {
@@ -28,6 +29,7 @@ export function find<T>(collection: T[], idsOrPredicate: IDS | ItemPredicate, id
   return result;
 }
 
+// @internal
 export function distinctUntilArrayItemChanged<T>() {
   return distinctUntilChanged((prevCollection: T[], currentCollection: T[]) => {
     if (prevCollection === currentCollection) {
@@ -71,25 +73,26 @@ function hasChange<T>(first: T[], second: T[]) {
  *
  * @example
  *
- * selectEntity(1, 'comments').pipe(
- *   findInCollection([1, 2, 3])
- * )
- *
- * selectEntity(1, 'comments').pipe(
- *   findInCollection(10)
- * )
- *
- *
- * selectEntity(1, 'comments').pipe(
- *   findInCollection(10, '_id')
- * )
- *
  *  selectEntity(1, 'comments').pipe(
  *   findInCollection(comment => comment.text = 'text')
  * )
  */
 export function findInCollection<T>(ids: ItemPredicate<T>, idKey?: never): (source: Observable<T[]>) => Observable<T[]>;
+/**
+ * @example
+ *
+ * selectEntity(1, 'comments').pipe(
+ *   findInCollection(3)
+ * )
+ */
 export function findInCollection<T>(ids: number, idKey?: string): (source: Observable<T[]>) => Observable<T>;
+/**
+ * @example
+ *
+ * selectEntity(1, 'comments').pipe(
+ *   findInCollection([1, 2, 3])
+ * )
+ */
 export function findInCollection<T>(ids: number[], idKey?: string): (source: Observable<T[]>) => Observable<T[]>;
 export function findInCollection<T>(idsOrPredicate: number[] | number | ItemPredicate<T>, idKey?: string): (source: Observable<T[]>) => Observable<T[] | T> {
   return function(source: Observable<T[]>) {

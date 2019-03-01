@@ -1,5 +1,6 @@
 import { EntityState } from './index';
 
+// @internal
 export const getInitialEntitiesState = () =>
   ({
     entities: {},

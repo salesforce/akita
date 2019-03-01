@@ -3,6 +3,7 @@ import { isFunction } from './isFunction';
 import { compareValues } from './sort';
 import { coerceArray } from './coerceArray';
 
+// @internal
 export function entitiesToArray<E, S extends EntityState>(state: S, options: SelectOptions<E>): E[] {
   let arr = [];
   const { ids, entities } = state;

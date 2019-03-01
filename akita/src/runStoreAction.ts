@@ -46,10 +46,56 @@ interface RunStoreActionUpdate<State = any> {
   };
 }
 
+/**
+ * @example
+ *
+ * runStoreAction('books', StoreActions.Update, {
+ *   payload: {
+ *    data: { filter: 'New filter' }
+ *   }
+ * });
+ */
 export function runStoreAction<State = any>(storeName: string, action: StoreActions.Update, params: RunStoreActionUpdate<State>);
+/**
+ * @example
+ *
+ * runStoreAction('books', StoreActions.RemoveEntities, {
+ *   payload: {
+ *    entityIds: 2
+ *   }
+ * });
+ */
 export function runStoreAction<Entity = any>(storeName: string, action: StoreActions.RemoveEntities, params: RunStoreActionRemoveEntities<Entity>);
+/**
+ * @example
+ *
+ * runStoreAction('books', StoreActions.UpdateEntities, {
+ *   payload: {
+ *    data: { title: 'New title' },
+ *    entityIds: 2
+ *   }
+ * });
+ */
 export function runStoreAction<Entity = any>(storeName: string, action: StoreActions.UpdateEntities, params: RunStoreActionUpdateEntities<Entity>);
+/**
+ * @example
+ *
+ * runStoreAction('books', StoreActions.SetEntities, {
+ *   payload: {
+ *    data: [{ id: 1 }, { id: 2 }]
+ *   }
+ * });
+ */
 export function runStoreAction<Entity = any>(storeName: string, action: StoreActions.SetEntities, params: RunStoreActionSetEntities<Entity>);
+/**
+ * @example
+ *
+ * runStoreAction('books', StoreActions.AddEntities, {
+ *   payload: {
+ *    data: { id: 1 }
+ *   }
+ * });
+ */
 export function runStoreAction<Entity = any>(storeName: string, action: StoreActions.AddEntities, params: RunStoreActionAddEntities<Entity>);
 export function runStoreAction<EntityOrState = any>(
   storeName: string,

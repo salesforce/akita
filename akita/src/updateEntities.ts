@@ -11,6 +11,7 @@ export type UpdateEntitiesParams<State, Entity> = {
   preUpdateEntity: PreUpdateEntity<Entity>;
 };
 
+// @internal
 export function updateEntities<S extends EntityState<E>, E>({ state, ids, idKey, newStateOrFn, preUpdateEntity }: UpdateEntitiesParams<S, E>) {
   const updatedEntities = {};
 

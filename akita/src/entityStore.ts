@@ -285,10 +285,12 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     this.addActive(add);
   }
 
+  // @internal
   akitaPreUpdateEntity(_: Readonly<E>, nextEntity: Readonly<E>): E {
     return nextEntity;
   }
 
+  // @internal
   akitaPreAddEntity(newEntity: Readonly<E>): E {
     return newEntity;
   }

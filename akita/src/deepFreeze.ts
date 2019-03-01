@@ -1,3 +1,4 @@
+// @internal
 export function deepFreeze(o) {
   Object.freeze(o);
 

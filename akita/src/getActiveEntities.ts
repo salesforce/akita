@@ -5,6 +5,7 @@ import { isArray } from './isArray';
 
 export type SetActiveOptions = { prev?: boolean; next?: boolean; wrap?: boolean };
 
+// @internal
 export function getActiveEntities(idOrOptions: IDS | SetActiveOptions | null, ids: ID[], currentActive: IDS | null) {
   let result;
 

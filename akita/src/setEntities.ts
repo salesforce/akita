@@ -1,4 +1,4 @@
-import { Entities, EntityState, HashMap, ID, ActiveState, MultiActiveState } from './types';
+import { Entities, EntityState, HashMap, ID } from './types';
 import { toEntitiesObject } from './toEntitiesObject';
 import { toEntitiesIds } from './toEntitiesIds';
 import { isArray } from './isArray';
@@ -12,10 +12,12 @@ export type SetEntitiesParams<State, Entity> = {
   idKey: string;
 };
 
+// @internal
 export function isEntityState<Entity>(state): state is Entities<Entity> {
   return state.entities && state.ids;
 }
 
+// @internal
 export function setEntities<S extends EntityState<E>, E>({ state, entities, idKey }: SetEntitiesParams<S, E>): S {
   let newEntities: HashMap<E>;
   let newIds: ID[];
@@ -40,7 +42,7 @@ export function setEntities<S extends EntityState<E>, E>({ state, entities, idKe
   };
 
   if (hasActiveState(state)) {
-    newState.active = resolveActiveEntity(newState as S & { active: any });
+    newState.active = resolveActiveEntity(newState as any);
   }
 
   return newState;

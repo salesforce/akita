@@ -7,6 +7,7 @@ export type RemoveEntitiesParams<State, Entity> = {
   ids: ID[];
 };
 
+// @internal
 export function removeEntities<S extends EntityState<E>, E>({ state, ids }: RemoveEntitiesParams<S, E>): S {
   if (isNil(ids)) return removeAllEntities(state);
   const entities = state.entities;
@@ -31,6 +32,7 @@ export function removeEntities<S extends EntityState<E>, E>({ state, ids }: Remo
   return newState;
 }
 
+// @internal
 export function removeAllEntities<S>(state: StateWithActive<S>): S {
   return {
     ...state,

@@ -14,32 +14,73 @@ import { Actions, newStateAction, resetCustomAction, setAction } from './actions
 import { root } from './root';
 import { __DEV__, isDev } from './env';
 
+/**
+ *
+ * Store for managing any type of data
+ *
+ * @example
+ *
+ * export interface SessionState {
+ *   token: string;
+ *   userDetails: UserDetails
+ * }
+ *
+ * export function createInitialState(): SessionState {
+ *  return {
+ *    token: '',
+ *    userDetails: null
+ *  };
+ * }
+ *
+ * @StoreConfig({ name: 'session' })
+ * export class SessionStore extends Store<SessionState> {
+ *   constructor() {
+ *    super(createInitialState());
+ *   }
+ * }
+ */
 export class Store<S> {
   private store: BehaviorSubject<Readonly<S>>;
   private storeValue: S;
   private inTransaction = false;
   private _initialState: S;
 
-  constructor(initialState, private options: Partial<StoreConfigOptions> = {}) {
+  constructor( initialState, private options: Partial<StoreConfigOptions> = {} ) {
     this.onInit(initialState);
   }
 
-  setLoading(loading = false) {
-    if (loading !== (this._value() as S & { loading: boolean }).loading) {
+  /**
+   *  Set the loading state
+   *
+   *  @example
+   *
+   *  store.setLoading(true)
+   *
+   */
+  setLoading( loading = false ) {
+    if( loading !== (this._value() as S & { loading: boolean }).loading ) {
       isDev() && setAction('Set Loading');
       this._setState(state => ({ ...state, loading } as S & { loading: boolean }));
     }
   }
 
-  setError<T>(error: T) {
-    if (error !== (this._value() as S & { error: any }).error) {
+  /**
+   *  Set the error state
+   *
+   *  @example
+   *
+   *  store.setError({text: 'unable to load data' })
+   *
+   */
+  setError<T>( error: T ) {
+    if( error !== (this._value() as S & { error: any }).error ) {
       isDev() && setAction('Set Error');
       this._setState(state => ({ ...state, error } as S & { error: any }));
     }
   }
 
   // @internal
-  _select<R>(project: (store: S) => R): Observable<R> {
+  _select<R>( project: ( store: S ) => R ): Observable<R> {
     return this.store.asObservable().pipe(
       map(project),
       distinctUntilChanged()
@@ -67,16 +108,16 @@ export class Store<S> {
   }
 
   // @internal
-  _setState(newStateFn: (state: Readonly<S>) => S, _dispatchAction = true) {
+  _setState( newStateFn: ( state: Readonly<S> ) => S, _dispatchAction = true ) {
     this.storeValue = __DEV__ ? deepFreeze(newStateFn(this._value())) : newStateFn(this._value());
 
-    if (!this.store) {
+    if( !this.store ) {
       this.store = new BehaviorSubject(this.storeValue);
       rootDispatcher.next(newStateAction(this.storeName, true));
       return;
     }
 
-    if (isTransactionInProcess()) {
+    if( isTransactionInProcess() ) {
       this.handleTransaction();
       return;
     }
@@ -84,8 +125,17 @@ export class Store<S> {
     this.dispatch(this.storeValue, _dispatchAction);
   }
 
+  /**
+   *
+   * Reset the current store back to the initial value
+   *
+   * @example
+   *
+   * store.reset()
+   *
+   */
   reset() {
-    if (this.isResettable()) {
+    if( this.isResettable() ) {
       this._setState(() => Object.assign({}, this._initialState));
       isDev() && setAction('Reset Store');
     } else {
@@ -95,18 +145,23 @@ export class Store<S> {
 
   /**
    *
+   * Update the store's value
+   *
    * @example
    *
    * this.store.update(state => {
    *   return {...}
    * })
    */
-  update(stateCallback: UpdateStateCallback<S>);
+  update( stateCallback: UpdateStateCallback<S> );
   /**
+   *
+   * @example
+   *
    *  this.store.update({ token: token })
    */
-  update(state: Partial<S>);
-  update(stateOrCallback: Partial<S> | UpdateStateCallback<S>) {
+  update( state: Partial<S> );
+  update( stateOrCallback: Partial<S> | UpdateStateCallback<S> ) {
     isDev() && setAction('Update Store');
 
     this._setState(state => {
@@ -116,7 +171,8 @@ export class Store<S> {
     });
   }
 
-  akitaPreUpdate(_: Readonly<S>, nextState: Readonly<S>): S {
+  // @internal
+  akitaPreUpdate( _: Readonly<S>, nextState: Readonly<S> ): S {
     return nextState;
   }
 
@@ -124,9 +180,18 @@ export class Store<S> {
     this.destroy();
   }
 
+  /**
+   *
+   * Destroy the store
+   *
+   * @example
+   *
+   * store.destroy()
+   *
+   */
   destroy() {
-    if (root.__window === false) return;
-    if (!(window as any).hmrEnabled && this === __stores__[this.storeName]) {
+    if( root.__window === false ) return;
+    if( !(window as any).hmrEnabled && this === __stores__[this.storeName] ) {
       delete __stores__[this.storeName];
       rootDispatcher.next({
         type: Actions.DELETE_STORE,
@@ -135,7 +200,7 @@ export class Store<S> {
     }
   }
 
-  private onInit(initialState: S) {
+  private onInit( initialState: S ) {
     isDev() && setAction('@@INIT');
     __stores__[this.storeName] = this;
     this._setState(() => initialState);
@@ -143,15 +208,15 @@ export class Store<S> {
       type: Actions.NEW_STORE,
       payload: { store: this }
     });
-    if (this.isResettable()) {
+    if( this.isResettable() ) {
       this._initialState = initialState;
     }
     isDev() && assertStoreHasName(this.storeName, this.constructor.name);
   }
 
-  private dispatch(state: S, _dispatchAction = true) {
+  private dispatch( state: S, _dispatchAction = true ) {
     this.store.next(state);
-    if (_dispatchAction) {
+    if( _dispatchAction ) {
       rootDispatcher.next(newStateAction(this.storeName));
       resetCustomAction();
     }
@@ -166,14 +231,14 @@ export class Store<S> {
 
   private isResettable() {
     const localReset = this.config && this.config.resettable;
-    if (localReset === false) {
+    if( localReset === false ) {
       return false;
     }
     return localReset || getAkitaConfig().resettable;
   }
 
   private handleTransaction() {
-    if (!this.inTransaction) {
+    if( !this.inTransaction ) {
       this.watchTransaction();
       this.inTransaction = true;
     }

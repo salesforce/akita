@@ -12,7 +12,6 @@ import { isFunction } from './isFunction';
  * store.update(1, updateInCollection<Article, Comment>('comments', 1, { name: 'newName' }, '_id'))
  * store.update(1, updateInCollection<Article, Comment>('comments', item => item.completed === true, { name: 'newName' }))
  */
-
 export function updateInCollection<Entity, CollectionType = any>(key: ArrayProperties<Entity>, predicateOrIds: ItemPredicate<CollectionType>, obj: Partial<CollectionType>, idKey?: string);
 export function updateInCollection<Entity, CollectionType = any>(key: ArrayProperties<Entity>, predicateOrIds: IDS, obj: Partial<CollectionType>, idKey?: string);
 export function updateInCollection<Entity, CollectionType = any>(

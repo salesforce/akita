@@ -1,7 +1,7 @@
 import { QueryEntity } from '../queryEntity';
 import { Query } from '../query';
 import { Observable } from 'rxjs';
-import { filterNil } from '../operators';
+import { filterNil } from '../filterNil';
 import { toBoolean } from '../toBoolean';
 import { ID } from '../types';
 import { getAkitaConfig } from '../config';

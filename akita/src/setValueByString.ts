@@ -1,5 +1,8 @@
 /**
- * setValue(state, 'todos.ui', { filter: {}})
+ * @internal
+ *
+ * @example
+ * setValue(state, 'todos.ui', { filter: {} })
  */
 export function setValue(obj: any, prop: string, val: any) {
   const split = prop.split('.');
