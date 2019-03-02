@@ -1,12 +1,14 @@
 import { Store } from './store';
 import { Observable } from 'rxjs';
 import { queryConfigKey, QueryConfigOptions } from './queryConfig';
+import { isString } from './isString';
+import { isFunction } from './isFunction';
 
 export class Query<S> {
   // @internal
   __store__: Store<S>;
 
-  constructor( protected store: Store<S> ) {
+  constructor(protected store: Store<S>) {
     this.__store__ = store;
   }
 
@@ -17,12 +19,22 @@ export class Query<S> {
    *
    * this.query.select()
    * this.query.select(state => state.entities)
+   * this.query.select('token');
    */
-  select<R>( project?: ( store: S ) => R ): Observable<R>;
+  select<K extends keyof S>(key: K): Observable<S[K]>;
+  select<R>(project: (store: S) => R): Observable<R>;
   select(): Observable<S>;
-  select<R>( project?: ( store: S ) => R ): Observable<R | S> {
-    let state = project ? project : state => state;
-    return this.store._select(state);
+  select<R>(project?: ((store: S) => R) | keyof S): Observable<R | S> {
+    let mapFn;
+    if (isFunction(project)) {
+      mapFn = project;
+    } else if (isString(project)) {
+      mapFn = state => state[project];
+    } else {
+      mapFn = state => state;
+    }
+
+    return this.store._select(mapFn);
   }
 
   /**

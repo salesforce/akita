@@ -50,4 +50,12 @@ describe('With Class', () => {
   it('should get the value', () => {
     expect(query.getValue()).toEqual(userStore._value());
   });
+
+  it('should work with string', () => {
+    let result;
+    query.select('firstName').subscribe(name => {
+      result = name;
+    });
+    expect(result).toBe('Netanel');
+  });
 });
