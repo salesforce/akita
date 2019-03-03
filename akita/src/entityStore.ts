@@ -174,6 +174,9 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     if (isEmpty(ids)) return;
 
     isDev() && setAction('Remove Entities', ids);
+    if (ids === null) {
+      this.setCache(false);
+    }
     this._setState((state: StateWithActive<S>) => removeEntities({ state, ids }));
   }
 

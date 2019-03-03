@@ -81,6 +81,9 @@ export class Store<S> {
   setCache(hasCache: boolean) {
     if (hasCache !== this.cache.active.value) {
       this.cache.active.next(hasCache);
+      if (!hasCache) {
+        clearTimeout(this.cache.ttl);
+      }
     }
   }
 
