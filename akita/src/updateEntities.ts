@@ -17,22 +17,15 @@ export function updateEntities<S extends EntityState<E>, E>({ state, ids, idKey,
 
   let isUpdatingIdKey = false;
   let idToUpdate: ID;
-  let idsToAdd = [];
 
   for (const id of ids) {
-    const oldEntity = state.entities[id];
-    const newState = isFunction(newStateOrFn) ? newStateOrFn(oldEntity) : newStateOrFn;
-
-    // if the entity doesn't exist, add it
+    // if the entity doesn't exist don't do anything
     if (hasEntity(state.entities, id) === false) {
-      // if the id key doesn't exist in the state, add it
-      if (newState.hasOwnProperty(idKey) === false) {
-        newState[idKey] = id;
-      }
-      updatedEntities[id] = newState;
-      idsToAdd.push(id);
       continue;
     }
+
+    const oldEntity = state.entities[id];
+    const newState = isFunction(newStateOrFn) ? newStateOrFn(oldEntity) : newStateOrFn;
 
     const isIdChanged = newState.hasOwnProperty(idKey) && newState[idKey] !== oldEntity[idKey];
     let newEntity: E;
@@ -87,6 +80,6 @@ export function updateEntities<S extends EntityState<E>, E>({ state, ids, idKey,
       ...stateEntities,
       ...updatedEntities
     },
-    ids: idsToAdd.length ? [...updatedIds, ...idsToAdd] : updatedIds
+    ids: updatedIds
   };
 }

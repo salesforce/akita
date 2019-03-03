@@ -42,7 +42,7 @@ export function setEntities<S extends EntityState<E>, E>({ state, entities, idKe
   };
 
   if (hasActiveState(state)) {
-    newState.active = resolveActiveEntity(newState as StateWithActive<S>);
+    newState.active = resolveActiveEntity(newState as any);
   }
 
   return newState;

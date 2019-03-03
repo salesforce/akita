@@ -24,7 +24,7 @@ export class CartService {
     const item = createCartItem({
       productId
     });
-    debugger;
+
     return this.cartStore.add(item);
   }
 

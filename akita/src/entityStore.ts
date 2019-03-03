@@ -16,6 +16,7 @@ import { isUndefined } from './isUndefined';
 import { StoreConfigOptions } from './storeConfig';
 import { logAction, setAction } from './actions';
 import { isDev } from './env';
+import { hasEntity } from './hasEntity';
 
 /**
  *
@@ -140,6 +141,26 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
         newStateOrFn
       })
     );
+  }
+
+  /**
+   *
+   * Create or update
+   *
+   * @example
+   *
+   * store.upsert(1, { active: true })
+   * store.upsert([2, 3], { active: true })
+   */
+  @transaction()
+  upsert(ids: IDS, newState: Partial<E> | E) {
+    isDev() && logAction('Upsert');
+    const toArray = coerceArray(ids);
+    const predicate = isUpdate => id => hasEntity(this.entities, id) === isUpdate;
+    const updateIds = toArray.filter(predicate(true));
+    const newEntities = toArray.filter(predicate(false)).map(id => ({ ...(newState as E), [this.idKey]: id }));
+    this.update(updateIds, newState);
+    this.add(newEntities);
   }
 
   /**
