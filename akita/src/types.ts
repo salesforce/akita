@@ -1,4 +1,5 @@
 import { SortByOptions } from './queryConfig';
+import { BehaviorSubject } from 'rxjs';
 
 export interface HashMap<T> {
   [id: string]: T;
@@ -38,5 +39,10 @@ export type ID = number | string;
 export type IDS = ID | ID[];
 export type PreAddEntity<Entity> = (entity: Entity) => Entity;
 export type PreUpdateEntity<Entity> = (prevEntity: Entity, nextEntity: Entity) => Entity;
+
+export type StoreCache = {
+  active: BehaviorSubject<boolean>;
+  ttl: number;
+};
 export type ArrayProperties<T> = { [K in keyof T]: T[K] extends any[] ? K : never }[keyof T];
 export type ItemPredicate<Item = any> = (item: Item) => boolean;

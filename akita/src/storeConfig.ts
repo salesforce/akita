@@ -3,6 +3,7 @@ export type StoreConfigOptions = {
   resettable?: boolean;
   idKey?: string;
   storeName?: string;
+  cache?: { ttl: number };
 };
 
 export const configKey = 'akitaConfig';

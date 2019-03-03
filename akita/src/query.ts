@@ -70,6 +70,14 @@ export class Query<S> {
     return this.store._value();
   }
 
+  selectHasCache(): Observable<boolean> {
+    return this.store._cache().asObservable();
+  }
+
+  getHasCache(): boolean {
+    return this.store._cache().value;
+  }
+
   // @internal
   get config(): QueryConfigOptions {
     return this.constructor[queryConfigKey];

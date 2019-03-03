@@ -35,7 +35,7 @@ import { isDev } from './env';
  *
  */
 export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Store<S> {
-  constructor(initialState = {}, options: Partial<StoreConfigOptions> = {}) {
+  constructor(initialState = {}, protected options: Partial<StoreConfigOptions> = {}) {
     super({ ...getInitialEntitiesState(), ...initialState }, options);
   }
 
@@ -55,6 +55,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
 
     isDev() && setAction('Set Entities');
     this._setState(state => setEntities({ state, entities, idKey: this.idKey }));
+    this.updateCache();
   }
 
   /**
@@ -314,5 +315,14 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
         active: ids
       };
     });
+  }
+
+  private updateCache() {
+    this.setCache(true);
+    const ttlConfig = this.options.cache && this.options.cache.ttl;
+    if (ttlConfig) {
+      clearTimeout(this.cache.ttl);
+      this.cache.ttl = setTimeout(() => this.setCache(false), ttlConfig);
+    }
   }
 }
