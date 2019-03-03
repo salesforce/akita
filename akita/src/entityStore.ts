@@ -322,7 +322,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     const ttlConfig = this.options.cache && this.options.cache.ttl;
     if (ttlConfig) {
       clearTimeout(this.cache.ttl);
-      this.cache.ttl = setTimeout(() => this.setCache(false), ttlConfig);
+      this.cache.ttl = <any>setTimeout(() => this.setCache(false), ttlConfig);
     }
   }
 }

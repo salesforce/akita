@@ -65,15 +65,35 @@ export class Query<S> {
    * @example
    *
    * this.query.getValue()
+   *
    */
   getValue(): S {
     return this.store._value();
   }
 
+  /**
+   * Select the cache state
+   *
+   * @example
+   *
+   * this.query.selectHasCache().pipe(
+   *   switchMap(hasCache => {
+   *     return hasCache ? of() : http().pipe(res => store.set(res))
+   *   })
+   * )
+   */
   selectHasCache(): Observable<boolean> {
     return this.store._cache().asObservable();
   }
 
+  /**
+   * Whether we've cached data
+   *
+   * @example
+   *
+   * this.query.getHasCache()
+   *
+   */
   getHasCache(): boolean {
     return this.store._cache().value;
   }

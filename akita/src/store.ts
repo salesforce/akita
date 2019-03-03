@@ -68,10 +68,19 @@ export class Store<S> {
     }
   }
 
-  setCache(active: boolean) {
-    if (active !== this.cache.active.value) {
-      isDev() && setAction('Set Cache');
-      this.cache.active.next(active);
+  /**
+   *
+   * Set whether the data is cached
+   *
+   * @example
+   *
+   * store.setCache(true)
+   * store.setCache(false)
+   *
+   */
+  setCache(hasCache: boolean) {
+    if (hasCache !== this.cache.active.value) {
+      this.cache.active.next(hasCache);
     }
   }
 
@@ -215,6 +224,7 @@ export class Store<S> {
         type: Actions.DELETE_STORE,
         payload: { storeName: this.storeName }
       });
+      this.setCache(false);
     }
   }
 
