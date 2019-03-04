@@ -1,7 +1,22 @@
 # Breaking Changes
 
 ## 3.0.0
-https://github.com/datorama/akita/issues/175#issue-412798235
+- set() - remove options param, i.e entityClass
+- createOrReplace - remove
+- updateAll - remove
+- updateRoot - remove
+- remove upsert
+- setState is internal => _setState
+- remove mapWorker
+- remove array helpers
+- remove decrement and increment
+- remove selectOnce
+ - remove deprecated getSnapshot
+ - remove noop
+ - to me: change setAction in router store
+ - remove isPristine and isDirty
+ - action decorator gets string instead of object
+ - isEmpty => hasEntity()
 
 ## 2.0.0
 - Update typescript to v3.2.

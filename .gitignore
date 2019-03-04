@@ -45,4 +45,3 @@ playground/dist
 .DS_Store
 Thumbs.db
 cli/node_modules
-CHANGELOG.md

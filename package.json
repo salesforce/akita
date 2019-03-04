@@ -1,12 +1,12 @@
 {
   "name": "@datorama/akita",
-  "version": "3.0.0-alpha.2",
+  "version": "3.0.0-alpha.0",
   "description": "State Management Tailored-Made for JS Applications",
   "$schema": "./node_modules/ng-packagr/package.schema.json",
   "schematics": "./schematics/src/collection.json",
   "scripts": {
-    "release": "standard-version --prerelease alpha --release-as major",
-    "build": "npm run release && ng-packagr -p package.json && npm run copy:readme && npm run copy:schematics",
+    "build": "ng-packagr -p package.json && npm run copy:readme && npm run copy:schematics",
+    "postbuild": "echo 'run git tag && git push --follow-tags origin master && npm publish'",
     "test": "jest",
     "test:debug": "node --inspect-brk ./node_modules/.bin/jest --runInBand --watch",
     "test:watch": "jest --watch",
@@ -15,9 +15,7 @@
     "contributors:generate": "all-contributors generate",
     "copy:readme": "copy README.md dist",
     "copy:schematics": "copy schematics/src/* dist && copy schematics/src/**/* dist",
-    "precommit": "lint-staged",
     "commit": "git-cz",
-    "commitmsg": "commitlint -e $GIT_PARAMS",
     "demo": "cd playground && npm start"
   },
   "publishConfig": {
@@ -26,6 +24,12 @@
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -e $GIT_PARAMS"
     }
   },
   "lint-staged": {
@@ -86,35 +90,27 @@
     },
     "testRegex": "/__tests__/.*\\.spec.(ts|js)$"
   },
-  "standard-version": {
-    "skip": {
-      "changelog": true
-    }
-  },
   "devDependencies": {
-    "@angular/compiler": "7.2.0",
-    "@angular/compiler-cli": "7.2.0",
-    "@angular/core": "7.2.0",
-    "@commitlint/cli": "^6.1.3",
-    "@commitlint/config-angular": "^6.1.3",
-    "@commitlint/config-conventional": "^7.0.1",
-    "@types/jest": "24.0.4",
-    "all-contributors-cli": "^4.11.1",
-    "commitizen": "^2.9.6",
-    "copy": "^0.3.2",
-    "cross-env": "^5.1.4",
-    "cz-conventional-changelog": "^2.1.0",
-    "husky": "^0.14.3",
+    "@angular/compiler": "7.2.7",
+    "@angular/compiler-cli": "7.2.7",
+    "@angular/core": "7.2.7",
+    "@commitlint/cli": "7.5.2",
+    "@commitlint/config-angular": "7.5.0",
+    "@commitlint/config-conventional": "7.5.0",
+    "@types/jest": "24.0.9",
+    "all-contributors-cli": "6.1.2",
+    "commitizen": "3.0.7",
+    "copy": "0.3.2",
+    "husky": "1.3.1",
     "jest": "24.1.0",
     "jest-localstorage-mock": "2.4.0",
-    "lint-staged": "^7.1.3",
-    "ng-packagr": "4.4.5",
-    "prettier": "1.14.3",
-    "push-dir": "^0.4.1",
-    "rxjs": "6.3.3",
-    "standard-version": "^5.0.1",
-    "ts-jest": "23.10.5",
-    "tsickle": "^0.33.1",
+    "lint-staged": "8.1.5",
+    "ng-packagr": "4.7.1",
+    "prettier": "1.16.4",
+    "push-dir": "0.4.1",
+    "rxjs": "6.4.0",
+    "ts-jest": "24.0.0",
+    "tsickle": "0.34.3",
     "typescript": "^3.2"
   },
   "peerDependencies": {
