@@ -1,5 +1,5 @@
 import { SortByOptions } from './queryConfig';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface HashMap<T> {
   [id: string]: T;
@@ -46,3 +46,4 @@ export type StoreCache = {
 };
 export type ArrayProperties<T> = { [K in keyof T]: T[K] extends any[] ? K : never }[keyof T];
 export type ItemPredicate<Item = any> = (item: Item) => boolean;
+export type MaybeAsync<T = any> = Promise<T> | Observable<T> | T;

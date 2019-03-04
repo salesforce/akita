@@ -117,6 +117,7 @@
     "rxjs": "^6.3.3"
   },
   "dependencies": {
+    "localforage": "^1.7.3",
     "schematics-utilities": "^1.1.1"
   },
   "license": "Apache License 2.0"
