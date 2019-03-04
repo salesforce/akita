@@ -1,12 +1,12 @@
 {
   "name": "@datorama/akita",
-  "version": "2.2.4",
+  "version": "3.0.0-alpha.2",
   "description": "State Management Tailored-Made for JS Applications",
   "$schema": "./node_modules/ng-packagr/package.schema.json",
   "schematics": "./schematics/src/collection.json",
   "scripts": {
-    "release": "standard-version",
-    "build": "ng-packagr -p package.json && npm run copy:readme && npm run copy:schematics && npm run release",
+    "release": "standard-version --prerelease alpha --release-as major",
+    "build": "npm run release && ng-packagr -p package.json && npm run copy:readme && npm run copy:schematics",
     "test": "jest",
     "test:debug": "node --inspect-brk ./node_modules/.bin/jest --runInBand --watch",
     "test:watch": "jest --watch",
@@ -86,11 +86,11 @@
     },
     "testRegex": "/__tests__/.*\\.spec.(ts|js)$"
   },
-    "standard-version": {
-      "skip": {
-        "changelog": true
-      }
-    },
+  "standard-version": {
+    "skip": {
+      "changelog": true
+    }
+  },
   "devDependencies": {
     "@angular/compiler": "7.2.0",
     "@angular/compiler-cli": "7.2.0",
