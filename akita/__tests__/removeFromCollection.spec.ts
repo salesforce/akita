@@ -1,7 +1,7 @@
 import { ID, EntityState } from '../src/types';
 import { StoreConfig } from '../src/storeConfig';
 import { EntityStore } from '../src/entityStore';
-import { removeFromCollection } from '../src/removeFromCollection';
+import { arrayRemove } from '../src/arrayRemove';
 
 interface Comment {
   id: ID;
@@ -21,7 +21,7 @@ class ArticlesStore extends EntityStore<ArticlesState, Article> {}
 
 const store = new ArticlesStore();
 
-describe('addToCollection', () => {
+describe('arrayRemove', () => {
   it('should remove one', () => {
     const article: Article = {
       id: 1,
@@ -30,7 +30,7 @@ describe('addToCollection', () => {
     };
 
     store.add(article);
-    store.update(1, removeFromCollection<Article>('comments', 2));
+    store.update(1, arrayRemove<Article>('comments', 2));
     expect(store._value().entities[1].comments.length).toBe(1);
     expect(store._value().entities[1].comments[1]).toBeUndefined();
     store.remove();
@@ -44,7 +44,7 @@ describe('addToCollection', () => {
     };
 
     store.add(article);
-    store.update(1, removeFromCollection<Article>('comments', [1, 3]));
+    store.update(1, arrayRemove<Article>('comments', [1, 3]));
     expect(store._value().entities[1].comments.length).toBe(1);
     expect(store._value().entities[1].comments).toEqual([article.comments[1]]);
     store.remove();

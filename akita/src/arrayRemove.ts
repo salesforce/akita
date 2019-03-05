@@ -7,10 +7,10 @@ import { coerceArray } from './coerceArray';
  *
  * @example
  *
- * store.update(1, removeFromCollection<Article>('comments', ids))
- * store.update(1, removeFromCollection<Article>('comments', ids, '_id'))
+ * store.update(1, arrayRemove<Article>('comments', ids))
+ * store.update(1, arrayRemove<Article>('comments', ids, '_id'))
  */
-export function removeFromCollection<Entity>(key: ArrayProperties<Entity>, entityId: IDS, idKey = DEFAULT_ID_KEY) {
+export function arrayRemove<Entity>(key: ArrayProperties<Entity>, entityId: IDS, idKey = DEFAULT_ID_KEY) {
   const ids = coerceArray(entityId);
 
   return entity => {

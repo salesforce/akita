@@ -1,7 +1,7 @@
 import { ID, EntityState } from '../src/types';
 import { StoreConfig } from '../src/storeConfig';
 import { EntityStore } from '../src/entityStore';
-import { updateInCollection } from '../src/updateInCollection';
+import { arrayUpdate } from '../src/arrayUpdate';
 
 interface Comment {
   id: ID;
@@ -21,7 +21,7 @@ class ArticlesStore extends EntityStore<ArticlesState, Article> {}
 
 const store = new ArticlesStore();
 
-describe('updateInCollection', () => {
+describe('arrayUpdate', () => {
   it('should update one', () => {
     const article: Article = {
       id: 1,
@@ -31,7 +31,7 @@ describe('updateInCollection', () => {
 
     store.add(article);
 
-    store.update(1, updateInCollection<Article, Comment>('comments', 2, { text: 'updated' }));
+    store.update(1, arrayUpdate<Article, Comment>('comments', 2, { text: 'updated' }));
     expect(store._value().entities[1].comments[1].text).toBe('updated');
     store.remove();
   });
@@ -45,7 +45,7 @@ describe('updateInCollection', () => {
 
     store.add(article);
 
-    store.update(1, updateInCollection<Article, Comment>('comments', [1, 3], { text: 'updated' }));
+    store.update(1, arrayUpdate<Article, Comment>('comments', [1, 3], { text: 'updated' }));
 
     expect(store._value().entities[1].comments[0].text).toBe('updated');
     expect(store._value().entities[1].comments[1].text).toBe('comment2');
@@ -62,7 +62,7 @@ describe('updateInCollection', () => {
 
     store.add(article);
 
-    store.update(1, updateInCollection<Article, Comment>('comments', comment => comment.text === 'comment2', { text: 'updated' }));
+    store.update(1, arrayUpdate<Article, Comment>('comments', comment => comment.text === 'comment2', { text: 'updated' }));
 
     expect(store._value().entities[1].comments[0].text).toBe('comment');
     expect(store._value().entities[1].comments[1].text).toBe('updated');
@@ -79,7 +79,7 @@ describe('updateInCollection', () => {
 
     store.add(article);
 
-    store.update(1, updateInCollection<Article, Comment>('comments', 2, { text: 'updated' }, '_id'));
+    store.update(1, arrayUpdate<Article, Comment>('comments', 2, { text: 'updated' }, '_id'));
 
     expect(store._value().entities[1].comments[0].text).toBe('comment');
     expect(store._value().entities[1].comments[1].text).toBe('updated');

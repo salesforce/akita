@@ -1,7 +1,7 @@
 import { ID, EntityState } from '../src/types';
 import { StoreConfig } from '../src/storeConfig';
 import { EntityStore } from '../src/entityStore';
-import { addToCollection } from '../src/addToCollection';
+import { arrayAdd } from '../src/arrayAdd';
 
 interface Comment {
   id: ID;
@@ -21,7 +21,7 @@ class ArticlesStore extends EntityStore<ArticlesState, Article> {}
 
 const store = new ArticlesStore();
 
-describe('addToCollection', () => {
+describe('arrayAdd', () => {
   it('should add one', () => {
     const article: Article = {
       id: 1,
@@ -31,7 +31,7 @@ describe('addToCollection', () => {
 
     store.add(article);
     const comment = { id: 1, text: 'comment' };
-    store.update(1, addToCollection<Article>('comments', comment));
+    store.update(1, arrayAdd<Article>('comments', comment));
     expect(store._value().entities[1].comments.length).toBe(1);
     expect(store._value().entities[1].comments[0]).toBe(comment);
     store.remove();
@@ -46,7 +46,7 @@ describe('addToCollection', () => {
 
     store.add(article);
     const comments = [{ id: 1, text: 'comment' }, { id: 2, text: 'comment2' }];
-    store.update(1, addToCollection<Article>('comments', comments));
+    store.update(1, arrayAdd<Article>('comments', comments));
     expect(store._value().entities[1].comments.length).toBe(2);
     expect(store._value().entities[1].comments[0]).toBe(comments[0]);
     expect(store._value().entities[1].comments[1]).toBe(comments[1]);

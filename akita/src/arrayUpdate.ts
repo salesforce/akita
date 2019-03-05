@@ -8,13 +8,13 @@ import { isFunction } from './isFunction';
  *
  * @example
  *
- * store.update(1, updateInCollection<Article, Comment>('comments', 1, { name: 'newName' }))
- * store.update(1, updateInCollection<Article, Comment>('comments', 1, { name: 'newName' }, '_id'))
- * store.update(1, updateInCollection<Article, Comment>('comments', item => item.completed === true, { name: 'newName' }))
+ * store.update(1, arrayUpdate<Article, Comment>('comments', 1, { name: 'newName' }))
+ * store.update(1, arrayUpdate<Article, Comment>('comments', 1, { name: 'newName' }, '_id'))
+ * store.update(1, arrayUpdate<Article, Comment>('comments', item => item.completed === true, { name: 'newName' }))
  */
-export function updateInCollection<Entity, CollectionType = any>(key: ArrayProperties<Entity>, predicateOrIds: ItemPredicate<CollectionType>, obj: Partial<CollectionType>, idKey?: string);
-export function updateInCollection<Entity, CollectionType = any>(key: ArrayProperties<Entity>, predicateOrIds: IDS, obj: Partial<CollectionType>, idKey?: string);
-export function updateInCollection<Entity, CollectionType = any>(
+export function arrayUpdate<Entity, CollectionType = any>(key: ArrayProperties<Entity>, predicateOrIds: ItemPredicate<CollectionType>, obj: Partial<CollectionType>, idKey?: string);
+export function arrayUpdate<Entity, CollectionType = any>(key: ArrayProperties<Entity>, predicateOrIds: IDS, obj: Partial<CollectionType>, idKey?: string);
+export function arrayUpdate<Entity, CollectionType = any>(
   key: ArrayProperties<Entity>,
   predicateOrIds: IDS | ItemPredicate<CollectionType>,
   obj: Partial<CollectionType>,
