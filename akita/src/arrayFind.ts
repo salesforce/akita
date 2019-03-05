@@ -74,27 +74,27 @@ function hasChange<T>(first: T[], second: T[]) {
  * @example
  *
  *  selectEntity(1, 'comments').pipe(
- *   findInCollection(comment => comment.text = 'text')
+ *   arrayFind(comment => comment.text = 'text')
  * )
  */
-export function findInCollection<T>(ids: ItemPredicate<T>, idKey?: never): (source: Observable<T[]>) => Observable<T[]>;
+export function arrayFind<T>(ids: ItemPredicate<T>, idKey?: never): (source: Observable<T[]>) => Observable<T[]>;
 /**
  * @example
  *
  * selectEntity(1, 'comments').pipe(
- *   findInCollection(3)
+ *   arrayFind(3)
  * )
  */
-export function findInCollection<T>(ids: number, idKey?: string): (source: Observable<T[]>) => Observable<T>;
+export function arrayFind<T>(ids: number, idKey?: string): (source: Observable<T[]>) => Observable<T>;
 /**
  * @example
  *
  * selectEntity(1, 'comments').pipe(
- *   findInCollection([1, 2, 3])
+ *   arrayFind([1, 2, 3])
  * )
  */
-export function findInCollection<T>(ids: number[], idKey?: string): (source: Observable<T[]>) => Observable<T[]>;
-export function findInCollection<T>(idsOrPredicate: number[] | number | ItemPredicate<T>, idKey?: string): (source: Observable<T[]>) => Observable<T[] | T> {
+export function arrayFind<T>(ids: number[], idKey?: string): (source: Observable<T[]>) => Observable<T[]>;
+export function arrayFind<T>(idsOrPredicate: number[] | number | ItemPredicate<T>, idKey?: string): (source: Observable<T[]>) => Observable<T[] | T> {
   return function(source: Observable<T[]>) {
     return source.pipe(
       map((collection: T[] | undefined | null) => {

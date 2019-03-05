@@ -3,7 +3,7 @@ import { EntityState } from '../../dist/src/api/types';
 import { ID } from '../src/types';
 import { QueryEntity } from '../src/queryEntity';
 import { StoreConfig } from '../src/storeConfig';
-import { findInCollection } from '../src/findInCollection';
+import { arrayFind } from '../src/arrayFind';
 
 interface Comment {
   id: ID;
@@ -26,7 +26,7 @@ class ArticlesQuery extends QueryEntity<ArticlesState, Article> {}
 const store = new ArticlesStore();
 const query = new ArticlesQuery(store);
 
-describe('findInCollection', () => {
+describe('arrayFind', () => {
   it('should find one', () => {
     const spy = jest.fn();
     const article: Article = {
@@ -45,7 +45,7 @@ describe('findInCollection', () => {
 
     query
       .selectEntity(1, 'comments')
-      .pipe(findInCollection(1))
+      .pipe(arrayFind(1))
       .subscribe(v => {
         result = v;
         spy();
@@ -105,7 +105,7 @@ describe('findInCollection', () => {
 
     query
       .selectEntity(1, 'comments')
-      .pipe(findInCollection(1))
+      .pipe(arrayFind(1))
       .subscribe(v => {
         result = v;
         spy();
@@ -122,7 +122,7 @@ describe('findInCollection', () => {
 
     query
       .selectEntity(1, 'comments')
-      .pipe(findInCollection([1, 2]))
+      .pipe(arrayFind([1, 2]))
       .subscribe(v => {
         result = v;
         spy();
@@ -151,7 +151,7 @@ describe('findInCollection', () => {
 
     query
       .selectEntity(1, 'comments')
-      .pipe(findInCollection([1, 3]))
+      .pipe(arrayFind([1, 3]))
       .subscribe(v => {
         result = v;
         spy();
@@ -234,7 +234,7 @@ describe('findInCollection', () => {
 
     query
       .selectEntity(1, 'comments')
-      .pipe(findInCollection(comment => comment.text === '1'))
+      .pipe(arrayFind(comment => comment.text === '1'))
       .subscribe(v => {
         result = v;
         spy();
