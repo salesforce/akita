@@ -49,8 +49,8 @@ export class Store<S> {
     ttl: null
   };
 
-  constructor(initialState, protected options: Partial<StoreConfigOptions> = {}) {
-    this.onInit(initialState);
+  constructor(initialState: Partial<S>, protected options: Partial<StoreConfigOptions> = {}) {
+    this.onInit(initialState as S);
   }
 
   /**

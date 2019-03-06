@@ -1,8 +1,7 @@
 {
   "name": "@datorama/akita",
-  "version": "3.0.0-alpha.0",
+  "version": "3.0.0-alpha.3",
   "description": "State Management Tailored-Made for JS Applications",
-  "$schema": "./node_modules/ng-packagr/package.schema.json",
   "schematics": "./schematics/src/collection.json",
   "scripts": {
     "build": "ng-packagr -p package.json && npm run copy:readme && npm run copy:schematics",
@@ -111,13 +110,13 @@
     "rxjs": "6.4.0",
     "ts-jest": "24.0.0",
     "tsickle": "0.34.3",
-    "typescript": "^3.2"
+    "typescript": "^3.2",
+    "localforage": "^1.7.3"
   },
   "peerDependencies": {
     "rxjs": "^6.3.3"
   },
   "dependencies": {
-    "localforage": "^1.7.3",
     "schematics-utilities": "^1.1.1"
   },
   "license": "Apache License 2.0"

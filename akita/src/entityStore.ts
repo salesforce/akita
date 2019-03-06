@@ -36,7 +36,7 @@ import { hasEntity } from './hasEntity';
  *
  */
 export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Store<S> {
-  constructor(initialState = {}, protected options: Partial<StoreConfigOptions> = {}) {
+  constructor(initialState: Partial<S> = {}, protected options: Partial<StoreConfigOptions> = {}) {
     super({ ...getInitialEntitiesState(), ...initialState }, options);
   }
 

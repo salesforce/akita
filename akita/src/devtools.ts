@@ -46,6 +46,7 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
       const storeName = action.payload.storeName;
       delete appState[storeName];
       devTools.send({ type: `[${storeName}] - Delete Store` }, appState);
+      return;
     }
 
     if (action.type === Actions.NEW_STATE) {
