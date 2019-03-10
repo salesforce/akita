@@ -1,6 +1,5 @@
-import { isObject, isPlainObject } from '../src/internal/utils';
-
-class TestClass {}
+import { isPlainObject } from '../src/isPlainObject';
+import { isObject } from '../src/isObject';
 
 describe('Utils', () => {
   describe('isPlainObject', () => {

@@ -6,7 +6,7 @@ export class TodosService {
   constructor(private todosStore: TodosStore) {}
 
   updateFilter(filter: VISIBILITY_FILTER) {
-    this.todosStore.updateRoot({
+    this.todosStore.update({
       ui: {
         filter
       }

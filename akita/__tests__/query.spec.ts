@@ -1,6 +1,6 @@
-import { Store } from '../src/api/store';
-import { Query } from '../src/api/query';
-import { StoreConfig } from '../src/api/store-config';
+import { Store } from '../src/store';
+import { Query } from '../src/query';
+import { StoreConfig } from '../src/storeConfig';
 
 class User {
   firstName: string = '';
@@ -47,17 +47,15 @@ describe('With Class', () => {
     expect(spy).toHaveBeenCalledWith({ firstName: 'Netanel', lastName: 'Basal' });
   });
 
-  it('should select once', () => {
-    const spy = jest.fn();
-    query.selectOnce(state => state.firstName).subscribe(spy);
-    userStore.update({
-      firstName: 'Angular'
-    });
-
-    expect(spy).toHaveBeenCalledTimes(1);
-  });
-
   it('should get the value', () => {
     expect(query.getValue()).toEqual(userStore._value());
+  });
+
+  it('should work with string', () => {
+    let result;
+    query.select('firstName').subscribe(name => {
+      result = name;
+    });
+    expect(result).toBe('Netanel');
   });
 });

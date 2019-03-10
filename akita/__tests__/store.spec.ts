@@ -1,7 +1,6 @@
-import { AkitaImmutabilityError } from '../src/internal/error';
-import { Store } from '../src/api/store';
-import { StoreConfig } from '../src/api/store-config';
-import { Query } from '../src/api/query';
+import { Store } from '../src/store';
+import { StoreConfig } from '../src/storeConfig';
+import { Query } from '../src/query';
 
 interface State {
   theme: {
@@ -49,7 +48,7 @@ describe('Store', () => {
   it('should set a new state', () => {
     const spy = jest.fn();
     store._select(state => state.theme).subscribe(spy);
-    store.setState(state => {
+    store._setState(state => {
       return {
         ...state,
         theme: {
@@ -66,12 +65,6 @@ describe('Store', () => {
         color: 'blue'
       }
     });
-  });
-
-  it('should throw error if the state is the same', () => {
-    expect(function() {
-      store.setState(state => state);
-    }).toThrow(new AkitaImmutabilityError('themes') as any);
   });
 });
 

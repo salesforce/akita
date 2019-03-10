@@ -44,9 +44,9 @@ export class TodosService {
    *
    * @param {VISIBILITY_FILTER} filter
    */
-  @action({ type: 'Update filter' })
+  @action('Update filter')
   updateFilter(filter: VISIBILITY_FILTER) {
-    this.todosStore.updateRoot({
+    this.todosStore.update({
       ui: {
         filter
       }
@@ -85,7 +85,7 @@ export class TodosService {
   }
 
   checkAll(completed: boolean) {
-    this.todosStore.updateAll({
+    this.todosStore.update(null, {
       completed
     });
   }

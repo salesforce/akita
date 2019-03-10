@@ -1,7 +1,7 @@
-import { EntityStore } from '../src/api/entity-store';
-import { ActiveState, EntityState, ID } from '../src/api/types';
-import { StoreConfig } from '../src/api/store-config';
-import { QueryEntity } from '../src/api/query-entity';
+import { EntityStore } from '../src/entityStore';
+import { ActiveState, EntityState, ID } from '../src/types';
+import { StoreConfig } from '../src/storeConfig';
+import { QueryEntity } from '../src/queryEntity';
 
 export class Todo {
   id: ID;

@@ -1,10 +1,10 @@
-import { QueryEntity } from '../api/query-entity';
-import { Query } from '../api/query';
+import { QueryEntity } from '../queryEntity';
+import { Query } from '../query';
 import { Observable } from 'rxjs';
-import { filterNil } from '../api/operators';
-import { toBoolean } from '../internal/utils';
-import { ID } from '../api/types';
-import { getAkitaConfig } from '../api/config';
+import { filterNil } from '../filterNil';
+import { toBoolean } from '../toBoolean';
+import { ID } from '../types';
+import { getAkitaConfig } from '../config';
 
 export type Queries<E, S> = Query<S> | QueryEntity<S, E>;
 
@@ -57,7 +57,7 @@ export abstract class AkitaPlugin<E = any, S = any> {
     if (this.isEntityBased(entityId)) {
       this.getStore().update(entityId, newState);
     } else {
-      this.getStore().setState(state => ({ ...state, ...newState }));
+      this.getStore()._setState(state => ({ ...state, ...newState }));
     }
   }
 

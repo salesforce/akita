@@ -1,6 +1,8 @@
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
-import { inStorage } from './state/auth.query';
+import { inStorageAsync } from './state/auth.query';
+import { map, take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -8,12 +10,17 @@ import { inStorage } from './state/auth.query';
 export class AuthGuard {
   constructor(private router: Router) {}
 
-  canActivate(): boolean {
-    if (inStorage()) {
-      return true;
-    }
+  canActivate(): Observable<boolean> {
+    return inStorageAsync().pipe(
+      map(inStorage => {
+        if (inStorage) {
+          return true;
+        }
+        this.router.navigateByUrl('login');
 
-    this.router.navigateByUrl('login');
-    return false;
+        return false;
+      }),
+      take(1)
+    );
   }
 }
