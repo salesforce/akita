@@ -1,5 +1,5 @@
-import { DirtyCheckComparator, dirtyCheckDefaultParams, DirtyCheckPlugin, DirtyCheckResetParams, getNestedPath } from './dirty-check-plugin';
-import { EntityCollectionPlugin } from '../entity-collection-plugin';
+import { DirtyCheckComparator, dirtyCheckDefaultParams, DirtyCheckPlugin, DirtyCheckResetParams, getNestedPath } from './dirtyCheckPlugin';
+import { EntityCollectionPlugin } from '../entityCollectionPlugin';
 import { auditTime, map, skip } from 'rxjs/operators';
 import { merge, Observable, Subject } from 'rxjs';
 import { ID, IDS } from '../../types';

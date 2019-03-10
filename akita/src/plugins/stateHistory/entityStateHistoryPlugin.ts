@@ -1,9 +1,9 @@
 import { ID, IDS } from '../../types';
 import { QueryEntity } from '../../queryEntity';
-import { StateHistoryPlugin, StateHistoryParams } from './state-history-plugin';
+import { StateHistoryPlugin, StateHistoryParams } from './stateHistoryPlugin';
 import { toBoolean } from '../../toBoolean';
 import { skip } from 'rxjs/operators';
-import { EntityCollectionPlugin, EntityCollectionParams } from '../entity-collection-plugin';
+import { EntityCollectionPlugin, EntityCollectionParams } from '../entityCollectionPlugin';
 
 export interface StateHistoryEntityParams extends StateHistoryParams {
   entityIds?: EntityCollectionParams;

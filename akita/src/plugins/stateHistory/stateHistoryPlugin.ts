@@ -1,7 +1,7 @@
 import { pairwise } from 'rxjs/operators';
 import { toBoolean } from '../../toBoolean';
 import { AkitaPlugin, Queries } from '../plugin';
-import { EntityParam } from '../entity-collection-plugin';
+import { EntityParam } from '../entityCollectionPlugin';
 import { logAction } from '../../actions';
 
 export interface StateHistoryParams {

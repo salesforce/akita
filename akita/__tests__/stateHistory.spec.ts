@@ -1,6 +1,6 @@
 import { Store } from '../src/store';
 import { Query } from '../src/query';
-import { StateHistoryPlugin } from '../src/plugins/state-history/state-history-plugin';
+import { StateHistoryPlugin } from '../src/plugins/stateHistory/stateHistoryPlugin';
 import { StoreConfig } from '../src/storeConfig';
 
 interface State {

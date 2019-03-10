@@ -3,7 +3,7 @@ import { QueryEntity } from '../../queryEntity';
 import { BehaviorSubject, combineLatest, Observable, Subject, Subscription } from 'rxjs';
 import { distinctUntilChanged, map, skip } from 'rxjs/operators';
 import { isUndefined } from '../../isUndefined';
-import { EntityParam } from '../entity-collection-plugin';
+import { EntityParam } from '../entityCollectionPlugin';
 import { Query } from '../../query';
 import { coerceArray } from '../../coerceArray';
 import { isFunction } from '../../isFunction';
