@@ -23,7 +23,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     if (options.withRouter || options.router) {
       dependencies.push({
         type: NodeDependencyType.Dev,
-        version: '^1.0.0',
+        version: '^3.0.0',
         name: '@datorama/akita-ng-router-store'
       });
     }
