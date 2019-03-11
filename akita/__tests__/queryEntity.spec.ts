@@ -269,9 +269,9 @@ describe('Entities Query', () => {
     describe('with TTL', () => {
       let storeWithTtl;
       let ttlQuery;
-
+      const ttl = 100;
       beforeEach(() => {
-        storeWithTtl = new TodosStore({cache: {ttl: 100}});
+        storeWithTtl = new TodosStore({cache: {ttl}});
         ttlQuery = new QueryEntity(storeWithTtl);
       });
       describe('selectHasCache', () => {
@@ -323,6 +323,11 @@ describe('Entities Query', () => {
           expect(ttlQuery.getHasCache()).toBe(false);
           let factory = ct();
           storeWithTtl.set(factory());
+          expect(ttlQuery.getHasCache()).toBe(true);
+          jest.advanceTimersByTime(ttl/2);
+          storeWithTtl.set(factory());
+          jest.advanceTimersByTime(ttl/2);
+          // cancel he previous ttl timer
           expect(ttlQuery.getHasCache()).toBe(true);
           // ttl passed
           jest.runAllTimers();
