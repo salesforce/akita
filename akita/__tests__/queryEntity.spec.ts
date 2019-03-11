@@ -262,6 +262,151 @@ describe('Entities Query', () => {
     });
   });
 
+  describe('store cache', () => {
+    beforeEach(() => {
+      store.setHasCache(false);
+    });
+    describe('with TTL', () => {
+      let storeWithTtl;
+      let ttlQuery;
+
+      beforeEach(() => {
+        storeWithTtl = new TodosStore({cache: {ttl: 100}});
+        ttlQuery = new QueryEntity(storeWithTtl);
+      });
+      describe('selectHasCache', () => {
+        it('should work in a full flow', () => {
+          jest.useFakeTimers();
+          sub = ttlQuery.selectHasCache().subscribe(spy);
+          expect(spy).toHaveBeenCalledTimes(1);
+          expect(spy).toHaveBeenCalledWith(false);
+          let factory = ct();
+          storeWithTtl.set(factory());
+          expect(spy).toHaveBeenCalledTimes(2);
+          expect(spy).toHaveBeenCalledWith(true);
+          // ttl passed
+          jest.runAllTimers();
+          expect(spy).toHaveBeenCalledTimes(3);
+          expect(spy).toHaveBeenCalledWith(false);
+          storeWithTtl.remove();
+          expect(spy).toHaveBeenCalledTimes(3);
+          storeWithTtl.set(factory());
+          expect(spy).toHaveBeenCalledTimes(4);
+          expect(spy).toHaveBeenCalledWith(true);
+          storeWithTtl.setHasCache(false);
+          expect(spy).toHaveBeenCalledTimes(5);
+          expect(spy).toHaveBeenCalledWith(false);
+          storeWithTtl.set(factory());
+          expect(spy).toHaveBeenCalledTimes(6);
+          expect(spy).toHaveBeenCalledWith(true);
+          // ttl passed
+          jest.runAllTimers();
+          expect(spy).toHaveBeenCalledTimes(7);
+          expect(spy).toHaveBeenCalledWith(false);
+          storeWithTtl.set(factory());
+          expect(spy).toHaveBeenCalledTimes(8);
+          expect(spy).toHaveBeenCalledWith(true);
+          storeWithTtl.remove();
+          expect(spy).toHaveBeenCalledTimes(9);
+          expect(spy).toHaveBeenCalledWith(false);
+          storeWithTtl.setHasCache(true);
+          expect(spy).toHaveBeenCalledTimes(10);
+          expect(spy).toHaveBeenCalledWith(true);
+          storeWithTtl.setHasCache(true);
+          expect(spy).toHaveBeenCalledTimes(10);
+        });
+      });
+
+      describe('getHasCache', () => {
+        it('should work in a full flow', () => {
+          jest.useFakeTimers();
+          expect(ttlQuery.getHasCache()).toBe(false);
+          let factory = ct();
+          storeWithTtl.set(factory());
+          expect(ttlQuery.getHasCache()).toBe(true);
+          // ttl passed
+          jest.runAllTimers();
+          expect(ttlQuery.getHasCache()).toBe(false);
+          storeWithTtl.remove();
+          expect(ttlQuery.getHasCache()).toBe(false);
+          storeWithTtl.set(factory());
+          expect(ttlQuery.getHasCache()).toBe(true);
+          storeWithTtl.setHasCache(false);
+          expect(ttlQuery.getHasCache()).toBe(false);
+          storeWithTtl.set(factory());
+          expect(ttlQuery.getHasCache()).toBe(true);
+          // ttl passed
+          jest.runAllTimers();
+          expect(ttlQuery.getHasCache()).toBe(false);
+          storeWithTtl.set(factory());
+          expect(ttlQuery.getHasCache()).toBe(true);
+          storeWithTtl.remove();
+          expect(ttlQuery.getHasCache()).toBe(false);
+          storeWithTtl.setHasCache(true);
+          expect(ttlQuery.getHasCache()).toBe(true);
+        });
+      });
+    });
+
+    describe('without TTL', () => {
+
+      describe('selectHasCache', () => {
+        it('should work in a full flow', () => {
+          sub = query.selectHasCache().subscribe(spy);
+          expect(spy).toHaveBeenCalledTimes(1);
+          expect(spy).toHaveBeenCalledWith(false);
+          let factory = ct();
+          store.set(factory());
+          expect(spy).toHaveBeenCalledTimes(2);
+          expect(spy).toHaveBeenCalledWith(true);
+          store.remove();
+          expect(spy).toHaveBeenCalledTimes(3);
+          expect(spy).toHaveBeenCalledWith(false);
+          store.set(factory());
+          expect(spy).toHaveBeenCalledTimes(4);
+          expect(spy).toHaveBeenCalledWith(true);
+          store.setHasCache(false);
+          expect(spy).toHaveBeenCalledTimes(5);
+          expect(spy).toHaveBeenCalledWith(false);
+          store.set(factory());
+          expect(spy).toHaveBeenCalledTimes(6);
+          expect(spy).toHaveBeenCalledWith(true);
+          store.remove();
+          expect(spy).toHaveBeenCalledTimes(7);
+          expect(spy).toHaveBeenCalledWith(false);
+          store.setHasCache(true);
+          expect(spy).toHaveBeenCalledTimes(8);
+          expect(spy).toHaveBeenCalledWith(true);
+          store.setHasCache(true);
+          expect(spy).toHaveBeenCalledTimes(8);
+        });
+      });
+
+      describe('getHasCache', () => {
+        it('should work in a full flow', () => {
+          expect(query.getHasCache()).toBe(false);
+          let factory = ct();
+          store.set(factory());
+          expect(query.getHasCache()).toBe(true);
+          store.remove();
+          expect(query.getHasCache()).toBe(false);
+          store.set(factory());
+          expect(query.getHasCache()).toBe(true);
+          store.setHasCache(false);
+          expect(query.getHasCache()).toBe(false);
+          store.set(factory());
+          expect(query.getHasCache()).toBe(true);
+          store.remove();
+          expect(query.getHasCache()).toBe(false);
+          store.setHasCache(true);
+          expect(query.getHasCache()).toBe(true);
+        });
+      });
+    });
+  });
+
+
+
   describe('hasEntity', () => {
     it('should have entity', () => {
       let todo = cot();

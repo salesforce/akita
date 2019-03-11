@@ -41,9 +41,10 @@ describe('Reset store', () => {
         token: 'token'
       };
     });
-
+    spyOn(authStore, 'setHasCache');
     authStore.reset();
     expect(authStore._value()).toEqual({ id: null, firstName: '', lastName: '', token: '' });
+    expect(authStore.setHasCache).toHaveBeenCalledWith(false);
   });
 
   it('should reset store state to its initial state - EntityStore', () => {
@@ -54,7 +55,9 @@ describe('Reset store', () => {
       loading: true,
       error: null
     };
+    spyOn(todosstore, 'setHasCache');
     todosstore.reset();
     expect(todosstore._value()).toEqual(expected);
+    expect(todosstore.setHasCache).toHaveBeenCalledWith(false);
   });
 });

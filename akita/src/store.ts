@@ -4,7 +4,7 @@ import { distinctUntilChanged, map } from 'rxjs/operators';
 import { assertStoreHasName } from './errors';
 import { commit, isTransactionInProcess } from './transaction';
 import { deepFreeze } from './deepFreeze';
-import { configKey, StoreConfigOptions } from './storeConfig';
+import {configKey, StoreConfigOptions, UpdatableStoreConfigOptions} from './storeConfig';
 import { getAkitaConfig } from './config';
 import { isPlainObject } from './isPlainObject';
 import { isFunction } from './isFunction';
@@ -81,7 +81,8 @@ export class Store<S> {
   setHasCache(hasCache: boolean) {
     if (hasCache !== this.cache.active.value) {
       this.cache.active.next(hasCache);
-      if (!hasCache) {
+      const ttlConfig = this.options.cache && this.options.cache.ttl;
+      if (!hasCache && ttlConfig) {
         clearTimeout(this.cache.ttl);
       }
     }
@@ -166,7 +167,6 @@ export class Store<S> {
     if (this.isResettable()) {
       this._setState(() => Object.assign({}, this._initialState));
       this.setHasCache(false);
-      clearTimeout(this.cache.ttl);
       isDev() && setAction('Reset Store');
     } else {
       isDev() && console.warn(`You need to enable the reset functionality`);
@@ -201,6 +201,10 @@ export class Store<S> {
     });
   }
 
+  updateStoreConfig(newOptions: UpdatableStoreConfigOptions) {
+    this.options = { ...this.options, ...newOptions };
+  }
+
   // @internal
   akitaPreUpdate(_: Readonly<S>, nextState: Readonly<S>): S {
     return nextState;
@@ -228,6 +232,7 @@ export class Store<S> {
         payload: { storeName: this.storeName }
       });
       this.setHasCache(false);
+      this.cache.active.complete();
     }
   }
 

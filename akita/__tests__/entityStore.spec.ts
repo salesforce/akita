@@ -367,6 +367,88 @@ describe('EntitiesStore', () => {
       expect(store._value().active).toEqual(2);
     });
   });
+
+  describe('cache', () => {
+
+    describe('With TTL', () => {
+      const ttl = 100;
+
+      beforeEach(() => {
+        store = new TodosStore({cache: { ttl }});
+      });
+
+      it('should init with false', () => {
+        expect(store.cache.active.value).toBe(false);
+        expect(store.cache.ttl).toBe(null);
+      });
+
+      it('should work in full flow', () => {
+        jest.useFakeTimers();
+        expect(store.cache.active.value).toBe(false);
+        expect(store.cache.ttl).toBe(null);
+        const todo = new Todo({ id: 2 });
+        store.set(todo);
+        expect(setTimeout).toHaveBeenCalledTimes(1);
+        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), ttl);
+        expect(store.cache.active.value).toBe(true);
+        expect(typeof store.cache.ttl).toBe('number');
+        // ttl has passed
+        jest.runAllTimers();
+        expect(clearTimeout).toHaveBeenCalledTimes(1);
+        expect(clearTimeout).toHaveBeenCalledWith(store.cache.ttl);
+        expect(store.cache.active.value).toBe(false);
+        expect(typeof store.cache.ttl).toBe('number');
+        let previousTtl = store.cache.ttl;
+        store.set(todo);
+        expect(clearTimeout).toHaveBeenCalledTimes(2);
+        expect(clearTimeout).toHaveBeenCalledWith(previousTtl);
+        expect(store.cache.active.value).toBe(true);
+        expect(typeof store.cache.ttl).toBe('number');
+        previousTtl = store.cache.ttl;
+        store.set(todo);
+        expect(clearTimeout).toHaveBeenCalledTimes(3);
+        expect(clearTimeout).toHaveBeenCalledWith(previousTtl);
+        expect(store.cache.active.value).toBe(true);
+        expect(typeof store.cache.ttl).toBe('number');
+        previousTtl = store.cache.ttl;
+        store.remove();
+        expect(clearTimeout).toHaveBeenCalledTimes(4);
+        expect(clearTimeout).toHaveBeenCalledWith(previousTtl);
+        expect(store.cache.active.value).toBe(false);
+        expect(typeof store.cache.ttl).toBe('number');
+        spyOn(store, 'setHasCache');
+        jest.runAllTimers();
+        expect(store.setHasCache).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('Without TTL', () => {
+
+      it('should init with false', () => {
+        expect(store.cache.active.value).toBe(false);
+        expect(store.cache.ttl).toBe(null);
+      });
+
+      it('should work in full flow', () => {
+        jest.useFakeTimers();
+        const todo = new Todo({ id: 2 });
+        store.set(todo);
+        expect(setTimeout).not.toHaveBeenCalled();
+        expect(store.cache.active.value).toBe(true);
+        expect(store.cache.ttl).toBe(null);
+        jest.runAllTimers();
+        expect(store.cache.active.value).toBe(true);
+        expect(store.cache.ttl).toBe(null);
+        store.remove();
+        expect(clearTimeout).not.toHaveBeenCalled();
+        expect(store.cache.active.value).toBe(false);
+        expect(store.cache.ttl).toBe(null);
+        store.setHasCache(true);
+        expect(store.cache.active.value).toBe(true);
+        expect(store.cache.ttl).toBe(null);
+      });
+    });
+  });
 });
 
 let store2 = new TodosStoreCustomID();

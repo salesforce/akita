@@ -1,6 +1,7 @@
 import { Store } from '../src/store';
 import { StoreConfig } from '../src/storeConfig';
 import { Query } from '../src/query';
+import {TodosStore} from "./setup";
 
 interface State {
   theme: {
@@ -66,6 +67,14 @@ describe('Store', () => {
       }
     });
   });
+
+  it('should update the store config', () => {
+    const todos = new TodosStore({cache: {ttl: 100}});
+    expect(todos.options.cache.ttl).toBe(100);
+    todos.updateStoreConfig({cache: {ttl: 400}});
+    expect(todos.options.cache.ttl).toBe(400);
+  });
+
 });
 
 class User {

@@ -29,8 +29,8 @@ export const initialState: State = {
   name: 'todos'
 })
 export class TodosStore extends EntityStore<State, Todo> {
-  constructor() {
-    super(initialState);
+  constructor(options) {
+    super(initialState, options);
   }
 }
 
@@ -69,7 +69,7 @@ export function ct() {
       id,
       title: `Todo ${id}`,
       complete: false
-    };
+    } as Todo;
   };
 }
 

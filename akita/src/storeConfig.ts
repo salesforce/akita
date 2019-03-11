@@ -6,6 +6,10 @@ export type StoreConfigOptions = {
   cache?: { ttl: number };
 };
 
+export type UpdatableStoreConfigOptions = {
+  cache?: { ttl: number };
+};
+
 export const configKey = 'akitaConfig';
 
 export function StoreConfig(metadata: StoreConfigOptions) {
