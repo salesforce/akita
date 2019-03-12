@@ -325,7 +325,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    *
    *
    * export class ProductsStore EntityStore<ProductsState, Product> {
-   *  ui: EntityUIStore<ProductUI>;
+   *   ui: EntityUIStore<ProductUI>;
    *
    *   constructor() {
    *     super();
