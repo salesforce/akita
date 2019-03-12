@@ -2,6 +2,7 @@ import { Actions, currentAction, setSkipAction } from './actions';
 import { isDefined } from './isDefined';
 import { rootDispatcher } from './rootDispatcher';
 import { __stores__ } from './stores';
+import { capitalize } from './captialize';
 
 export type DevtoolsOptions = {
   /**  maximum allowed actions to be stored in the history tree */
@@ -112,8 +113,4 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
       }
     }
   });
-}
-
-function capitalize(string) {
-  return string && string.charAt(0).toUpperCase() + string.slice(1);
 }

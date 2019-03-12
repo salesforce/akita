@@ -1,7 +1,9 @@
 import { Store } from '../src/store';
 import { StoreConfig } from '../src/storeConfig';
 import { Query } from '../src/query';
-import {TodosStore} from "./setup";
+import { TodosStore } from './setup';
+import { EntityStore, ID } from '../src';
+import { Product, ProductsState, UIProduct } from '../../playground/src/app/products/state';
 
 interface State {
   theme: {
@@ -69,12 +71,11 @@ describe('Store', () => {
   });
 
   it('should update the store config', () => {
-    const todos = new TodosStore({cache: {ttl: 100}});
+    const todos = new TodosStore({ cache: { ttl: 100 } });
     expect(todos.options.cache.ttl).toBe(100);
-    todos.updateStoreConfig({cache: {ttl: 400}});
+    todos.updateStoreConfig({ cache: { ttl: 400 } });
     expect(todos.options.cache.ttl).toBe(400);
   });
-
 });
 
 class User {
@@ -135,5 +136,30 @@ describe('Loading Basic Store', () => {
     expect(value).toBeTruthy();
     testStore.setLoading(false);
     expect(value).toBeFalsy();
+  });
+});
+
+@StoreConfig({ name: 'products' })
+export class ProductsStore extends EntityStore<any, any> {
+  constructor() {
+    super();
+  }
+}
+
+const productsStore = new ProductsStore();
+
+export class ProductsStoreWithoutDeco extends EntityStore<any, any> {}
+
+const productsStore2 = new ProductsStoreWithoutDeco({}, { name: 'pr' });
+
+describe('StoreConfig', () => {
+  it('should take from decorator', () => {
+    expect(productsStore.storeName).toBe('products');
+    expect(productsStore.idKey).toBe('id');
+  });
+
+  it('should take from the constructor', () => {
+    expect(productsStore2.storeName).toBe('pr');
+    expect(productsStore2.idKey).toBe('id');
   });
 });

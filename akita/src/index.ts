@@ -1,6 +1,6 @@
 export * from './types';
-export { EntityStore } from './entityStore';
-export { QueryEntity } from './queryEntity';
+export { EntityStore, EntityUIStore } from './entityStore';
+export { QueryEntity, EntityUIQuery } from './queryEntity';
 export { Query } from './query';
 export { Store } from './store';
 export { applyTransaction, transaction, commit, endBatch, isTransactionInProcess, startBatch, TransactionManager, transactionManager } from './transaction';

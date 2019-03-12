@@ -29,6 +29,7 @@ import { isUndefined } from './isUndefined';
  *
  */
 export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<S> {
+  ui: EntityUIQuery<any>;
   protected store: EntityStore<S, E, EntityID>;
 
   // @internal
@@ -337,11 +338,39 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
     return isDefined(active);
   }
 
+  /**
+   *
+   * Create sub UI query for querying Entity's UI state
+   *
+   * @example
+   *
+   * export class ProductsQuery extends QueryEntity<ProductsState, Product, UIProduct> {
+   *   constructor(protected store: ProductsStore) {
+   *     super(store);
+   *     this.createUIQuery();
+   *   }
+   *
+   *   selectEntityLoading( id: ID ) {
+   *     return this.ui.selectEntity(id, 'isLoading');
+   *   }
+   * }
+   */
+  createUIQuery() {
+    this.ui = new EntityUIQuery(this.__store__.ui);
+  }
+
   private selectAt<R>(mapFn: (ids: EntityID[]) => EntityID, project?: (entity: E) => R) {
     return this.select(state => state.ids as any[]).pipe(
       map(mapFn),
       distinctUntilChanged(),
       switchMap((id: EntityID) => this.selectEntity(id, project))
     );
+  }
+}
+
+// @internal
+export class EntityUIQuery<UIState> extends QueryEntity<EntityState<UIState>, UIState> {
+  constructor(store) {
+    super(store);
   }
 }
