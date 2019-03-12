@@ -1,6 +1,5 @@
 import { EntityStore } from '../src/entityStore';
-import { EntityState } from '../../dist/src/api/types';
-import { ID } from '../src/types';
+import { EntityState, ID } from '../src/types';
 import { QueryEntity } from '../src/queryEntity';
 import { StoreConfig } from '../src/storeConfig';
 import { arrayFind } from '../src/arrayFind';

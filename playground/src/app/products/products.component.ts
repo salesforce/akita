@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Product, ProductsQuery, ProductsService } from './state';
+import { Product, ProductsQuery, ProductsService, ProductsStore } from './state';
 import { Observable, combineLatest } from 'rxjs';
 import { CartService } from '../cart/state';
 import { FormControl } from '@angular/forms';
@@ -17,9 +17,13 @@ export class ProductsComponent implements OnInit {
   search = new FormControl();
   sortControl = new FormControl('title');
 
-  constructor(private productsService: ProductsService,
-              private containerBasedService: ContainerBasedService,
-              private cartService: CartService, private productsQuery: ProductsQuery) {}
+  constructor(
+    private productsService: ProductsService,
+    private store: ProductsStore,
+    private containerBasedService: ContainerBasedService,
+    private cartService: CartService,
+    private productsQuery: ProductsQuery
+  ) {}
 
   ngOnInit() {
     this.productsService.get().subscribe();
@@ -28,6 +32,9 @@ export class ProductsComponent implements OnInit {
     this.products$ = combineLatest(this.search.valueChanges.pipe(startWith('')), this.sortControl.valueChanges.pipe(startWith('title'))).pipe(
       switchMap(([term, sortBy]) => this.productsQuery.getProducts(term, sortBy as keyof Product))
     );
+
+    this.productsQuery.selectEntityLoading(1).subscribe(console.log);
+    this.store.setEntityLoading(1, true);
   }
 
   /**

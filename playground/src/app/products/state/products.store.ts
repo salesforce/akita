@@ -2,15 +2,11 @@ import { Injectable } from '@angular/core';
 import { Product } from './products.model';
 import { EntityState, EntityStore, MultiActiveState, StoreConfig } from '@datorama/akita';
 
-export interface State extends EntityState<Product>, MultiActiveState {}
+export interface ProductsState extends EntityState<Product>, MultiActiveState {}
 
-@Injectable({
-  providedIn: 'root'
-})
-@StoreConfig({
-  name: 'products'
-})
-export class ProductsStore extends EntityStore<State, Product> {
+@Injectable({ providedIn: 'root' })
+@StoreConfig({ name: 'products' })
+export class ProductsStore extends EntityStore<ProductsState, Product> {
   constructor() {
     super({ active: [] });
   }

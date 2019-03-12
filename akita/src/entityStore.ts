@@ -36,6 +36,8 @@ import { hasEntity } from './hasEntity';
  *
  */
 export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Store<S> {
+  ui: EntityUIStore<any>;
+
   constructor(initialState: Partial<S> = {}, protected options: Partial<StoreConfigOptions> = {}) {
     super({ ...getInitialEntitiesState(), ...initialState }, options);
   }
@@ -310,6 +312,44 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     this.addActive(add);
   }
 
+  /**
+   *
+   * Create sub UI store for managing Entity's UI state
+   *
+   * @example
+   *
+   * export type ProductUI = {
+   *   isLoading: boolean;
+   *   isOpen: boolean
+   * }
+   *
+   *
+   * export class ProductsStore EntityStore<ProductsState, Product> {
+   *  ui: EntityUIStore<ProductUI>;
+   *
+   *   constructor() {
+   *     super();
+   *     this.createUIStore();
+   *   }
+   *
+   *  setEntityLoading( id: ID, isLoading: boolean ) {
+   *    this.ui.upsert(1, { isLoading });
+   *  }
+   * }
+   */
+  createUIStore(initialState = {}, storeConfig: Partial<StoreConfigOptions> = {}) {
+    const defaults: Partial<StoreConfigOptions> = { name: `UI/${this.storeName}` };
+    this.ui = new EntityUIStore(initialState, { ...defaults, ...storeConfig });
+  }
+
+  // @internal
+  destroy() {
+    super.destroy();
+    if (this.ui instanceof EntityStore) {
+      this.ui.destroy();
+    }
+  }
+
   // @internal
   akitaPreUpdateEntity(_: Readonly<E>, nextEntity: Readonly<E>): E {
     return nextEntity;
@@ -350,5 +390,12 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
       }
       this.cache.ttl = <any>setTimeout(() => this.setHasCache(false), ttlConfig);
     }
+  }
+}
+
+// @internal
+export class EntityUIStore<UIState> extends EntityStore<EntityState<UIState>, UIState> {
+  constructor(initialState = {}, storeConfig: Partial<StoreConfigOptions> = {}) {
+    super(initialState, storeConfig);
   }
 }

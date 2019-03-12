@@ -4,7 +4,7 @@ import { distinctUntilChanged, map } from 'rxjs/operators';
 import { assertStoreHasName } from './errors';
 import { commit, isTransactionInProcess } from './transaction';
 import { deepFreeze } from './deepFreeze';
-import {configKey, StoreConfigOptions, UpdatableStoreConfigOptions} from './storeConfig';
+import { configKey, StoreConfigOptions, UpdatableStoreConfigOptions } from './storeConfig';
 import { getAkitaConfig } from './config';
 import { isPlainObject } from './isPlainObject';
 import { isFunction } from './isFunction';
@@ -13,6 +13,7 @@ import { __stores__ } from './stores';
 import { Actions, newStateAction, resetCustomAction, setAction } from './actions';
 import { root } from './root';
 import { __DEV__, isDev } from './env';
+import { DEFAULT_ID_KEY } from './defaultIDKey';
 
 /**
  *
@@ -128,12 +129,12 @@ export class Store<S> {
 
   // @internal
   get storeName() {
-    return this.options.storeName || this.config.storeName;
+    return this.config.storeName || this.options.storeName || this.options.name;
   }
 
   // @internal
   get idKey() {
-    return this.options.idKey || this.config.idKey;
+    return this.config.idKey || this.options.idKey || DEFAULT_ID_KEY;
   }
 
   // @internal
