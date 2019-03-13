@@ -36,7 +36,7 @@ import { hasEntity } from './hasEntity';
  *
  */
 export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Store<S> {
-  ui: EntityUIStore<any>;
+  ui: EntityUIStore<any, any>;
 
   constructor(initialState: Partial<S> = {}, protected options: Partial<StoreConfigOptions> = {}) {
     super({ ...getInitialEntitiesState(), ...initialState }, options);
@@ -331,18 +331,16 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    *   isOpen: boolean
    * }
    *
+   * interface ProductsUIState extends EntityState<ProductUI> {}
    *
    * export class ProductsStore EntityStore<ProductsState, Product> {
-   *   ui: EntityUIStore<ProductUI>;
+   *   ui: EntityUIStore<ProductsUIState, ProductUI>;
    *
    *   constructor() {
    *     super();
    *     this.createUIStore();
    *   }
    *
-   *  setEntityLoading( id: ID, isLoading: boolean ) {
-   *    this.ui.upsert(1, { isLoading });
-   *  }
    * }
    */
   createUIStore(initialState = {}, storeConfig: Partial<StoreConfigOptions> = {}) {
@@ -402,7 +400,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
 }
 
 // @internal
-export class EntityUIStore<UIState> extends EntityStore<EntityState<UIState>, UIState> {
+export class EntityUIStore<UIState, EntityUI> extends EntityStore<UIState, EntityUI> {
   constructor(initialState = {}, storeConfig: Partial<StoreConfigOptions> = {}) {
     super(initialState, storeConfig);
   }

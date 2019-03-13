@@ -12,10 +12,13 @@ interface ArticleUI {
 }
 
 interface ArticlesState extends EntityState<Article> {}
+interface ArticlesUIState extends EntityState<ArticleUI> {
+  rootProp: string;
+}
 
 @StoreConfig({ name: 'articles' })
 class ArticlesStore extends EntityStore<ArticlesState, Article> {
-  ui: EntityUIStore<ArticleUI>;
+  ui: EntityUIStore<ArticlesUIState, ArticleUI>;
 
   constructor() {
     super();
@@ -24,7 +27,7 @@ class ArticlesStore extends EntityStore<ArticlesState, Article> {
 }
 
 class ArticlesQuery extends QueryEntity<ArticlesState, Article> {
-  ui: EntityUIQuery<ArticleUI>;
+  ui: EntityUIQuery<ArticlesUIState, ArticleUI>;
 
   constructor(store) {
     super(store);

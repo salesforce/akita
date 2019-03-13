@@ -29,7 +29,7 @@ import { isUndefined } from './isUndefined';
  *
  */
 export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<S> {
-  ui: EntityUIQuery<any>;
+  ui: EntityUIQuery<any, any>;
   protected store: EntityStore<S, E, EntityID>;
 
   // @internal
@@ -344,17 +344,15 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    *
    * @example
    *
+   *
    * export class ProductsQuery extends QueryEntity<ProductsState, Product> {
-   *   ui: EntityUIQuery<ProductUI>;
+   *   ui: EntityUIQuery<ProductsUIState, ProductUI>;
    *
    *   constructor(protected store: ProductsStore) {
    *     super(store);
    *     this.createUIQuery();
    *   }
    *
-   *   selectEntityLoading( id: ID ) {
-   *     return this.ui.selectEntity(id, 'isLoading');
-   *   }
    * }
    */
   createUIQuery() {
@@ -371,7 +369,7 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
 }
 
 // @internal
-export class EntityUIQuery<UIState> extends QueryEntity<EntityState<UIState>, UIState> {
+export class EntityUIQuery<UIState, EntityUI> extends QueryEntity<UIState, EntityUI> {
   constructor(store) {
     super(store);
   }
