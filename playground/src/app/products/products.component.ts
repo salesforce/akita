@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Product, ProductsQuery, ProductsService, ProductsStore } from './state';
-import { Observable, combineLatest } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { CartService } from '../cart/state';
 import { FormControl } from '@angular/forms';
 import { startWith, switchMap } from 'rxjs/operators';
 import { ContainerBasedQuery, ContainerBasedService, ContainerBasedStore } from '../state';
+import { Product } from './state/products.model';
+import { ProductsService } from './state/products.service';
+import { ProductsQuery } from './state/products.query';
 
 @Component({
   selector: 'app-products',
@@ -17,13 +19,7 @@ export class ProductsComponent implements OnInit {
   search = new FormControl();
   sortControl = new FormControl('title');
 
-  constructor(
-    private productsService: ProductsService,
-    private store: ProductsStore,
-    private containerBasedService: ContainerBasedService,
-    private cartService: CartService,
-    private productsQuery: ProductsQuery
-  ) {}
+  constructor(private productsService: ProductsService, private containerBasedService: ContainerBasedService, private cartService: CartService, private productsQuery: ProductsQuery) {}
 
   ngOnInit() {
     this.productsService.get().subscribe();
@@ -32,23 +28,12 @@ export class ProductsComponent implements OnInit {
     this.products$ = combineLatest(this.search.valueChanges.pipe(startWith('')), this.sortControl.valueChanges.pipe(startWith('title'))).pipe(
       switchMap(([term, sortBy]) => this.productsQuery.getProducts(term, sortBy as keyof Product))
     );
-
-    this.productsQuery.selectEntityLoading(1).subscribe(console.log);
-    this.store.setEntityLoading(1, true);
   }
 
-  /**
-   *
-   * @param {ID} id
-   */
   addProductToCart({ id }: Product) {
     this.cartService.addProductToCart(id);
   }
 
-  /**
-   *
-   * @param {ID} id
-   */
   subtract({ id }: Product) {
     this.cartService.subtract(id);
   }

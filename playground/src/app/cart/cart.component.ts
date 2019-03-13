@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CartItem, CartQuery, CartService } from './state';
-import { Product } from '../products/state';
+import { Product } from '../products/state/products.model';
 
 @Component({
   selector: 'app-cart',

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { Product } from '../state';
+import { Product } from '../state/products.model';
 
 @Component({
   selector: 'app-product',

@@ -1,10 +1,17 @@
 import { ID } from '@datorama/akita';
-import { Genre } from '../genres/state';
-import { Actor } from '../actors/state';
+import { Actor } from '../actors/state/actor.model';
+import { Genre } from '../genres/state/genre.model';
 
 export type Movie = {
   id: ID;
   title: string;
-  genres: (ID | Genre)[];
-  actors: (ID | Actor)[];
+  genres: ID[];
+  actors: ID[];
 };
+
+export interface FullMovie {
+  id: ID;
+  title: string;
+  genres: Genre[];
+  actors: Actor[];
+}

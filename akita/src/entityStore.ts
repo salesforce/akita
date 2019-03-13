@@ -56,7 +56,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
   set(entities: SetEntities<E>) {
     if (isNil(entities)) return;
 
-    isDev() && setAction('Set Entities');
+    isDev() && setAction('Set Entity');
     this._setState(state => setEntities({ state, entities, idKey: this.idKey }));
     this.updateCache();
   }
@@ -78,7 +78,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     const notExistEntities = collection.filter(entity => currentIds.includes(entity[this.idKey]) === false);
     if (isEmpty(notExistEntities)) return;
 
-    isDev() && setAction('Add Entities');
+    isDev() && setAction('Add Entity');
     this._setState(state =>
       addEntities({
         state,
@@ -133,7 +133,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
 
     if (isEmpty(ids)) return;
 
-    isDev() && setAction('Update Entities', ids);
+    isDev() && setAction('Update Entity', ids);
     this._setState(state =>
       updateEntities({
         idKey: this.idKey,
@@ -153,16 +153,24 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    *
    * store.upsert(1, { active: true })
    * store.upsert([2, 3], { active: true })
+   * store.upsert([2, 3], entity => ({ isOpen: !entity.isOpen}))
+   *
    */
   @transaction()
-  upsert(ids: IDS, newState: Partial<E> | E) {
-    isDev() && logAction('Upsert');
+  upsert(ids: IDS, newState: Partial<E> | E | UpdateStateCallback<E>) {
     const toArray = coerceArray(ids);
     const predicate = isUpdate => id => hasEntity(this.entities, id) === isUpdate;
+
     const updateIds = toArray.filter(predicate(true));
-    const newEntities = toArray.filter(predicate(false)).map(id => ({ ...(newState as E), [this.idKey]: id }));
-    this.update(updateIds, newState);
+    const newEntities = toArray.filter(predicate(false)).map(id => {
+      let entity = isFunction(newState) ? newState({} as E) : newState;
+      return { ...(entity as E), [this.idKey]: id };
+    });
+
+    // it can be any of the three types
+    this.update(updateIds as any, newState as any);
     this.add(newEntities);
+    isDev() && logAction('Upsert Entity', ids);
   }
 
   /**
@@ -196,7 +204,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
 
     if (isEmpty(ids)) return;
 
-    isDev() && setAction('Remove Entities', ids);
+    isDev() && setAction('Remove Entity', ids);
     this._setState((state: StateWithActive<S>) => removeEntities({ state, ids }));
     if (ids === null) {
       this.setHasCache(false);
@@ -303,13 +311,13 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    */
   @transaction()
   toggleActive<T = IDS>(ids: T) {
-    isDev() && logAction('Toggle Active');
     const toArray = coerceArray(ids);
     const filterExists = remove => id => this.active.includes(id) === remove;
     const remove = toArray.filter(filterExists(true));
     const add = toArray.filter(filterExists(false));
     this.removeActive(remove);
     this.addActive(add);
+    isDev() && logAction('Toggle Active');
   }
 
   /**

@@ -2,8 +2,7 @@ import { Store } from '../src/store';
 import { StoreConfig } from '../src/storeConfig';
 import { Query } from '../src/query';
 import { TodosStore } from './setup';
-import { EntityStore, ID } from '../src';
-import { Product, ProductsState, UIProduct } from '../../playground/src/app/products/state';
+import { EntityStore } from '../src';
 
 interface State {
   theme: {

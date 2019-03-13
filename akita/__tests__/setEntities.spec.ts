@@ -39,7 +39,7 @@ describe('setEntities', () => {
   });
 });
 
-describe('setEntities with Active State', () => {
+describe('setEntities with Active MoviesState', () => {
   it('should reset the active when not exist', () => {
     const data = createMockEntities();
     const entityState = { ...getInitialEntitiesState(), active: 5 };

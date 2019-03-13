@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { CartStore } from './cart.store';
-import { Product } from '../../products/state';
 import { CartQuery } from './cart.query';
 import { createCartItem } from './cart.model';
 import { ID, toBoolean } from '@datorama/akita';
+import { Product } from '../../products/state/products.model';
 
 @Injectable({
   providedIn: 'root'
@@ -11,10 +11,6 @@ import { ID, toBoolean } from '@datorama/akita';
 export class CartService {
   constructor(private cartStore: CartStore, private cartQuery: CartQuery) {}
 
-  /**
-   *
-   * @param {Product["id"]} productId
-   */
   addProductToCart(productId: Product['id']) {
     const findItem = this.cartQuery.getEntity(productId);
     if (toBoolean(findItem)) {
@@ -28,10 +24,6 @@ export class CartService {
     return this.cartStore.add(item);
   }
 
-  /**
-   *
-   * @param {Product["id"]} productId
-   */
   subtract(productId: Product['id']) {
     const findItem = this.cartQuery.getEntity(productId);
     if (toBoolean(findItem)) {
@@ -43,10 +35,6 @@ export class CartService {
     }
   }
 
-  /**
-   *
-   * @param {ID} productId
-   */
   remove(productId: ID) {
     this.cartStore.remove(productId);
   }

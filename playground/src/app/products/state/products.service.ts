@@ -1,48 +1,32 @@
 import { Injectable } from '@angular/core';
 import { ProductsStore } from './products.store';
-import { ProductsDataService } from './products-data.service';
-import { Product } from './products.model';
-import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { map, mapTo } from 'rxjs/operators';
+import { Observable, of, timer } from 'rxjs';
 import { ProductsQuery } from './products.query';
-import { action, ID, transaction } from '@datorama/akita';
-import { logAction } from '../../../../../akita/src/actions';
+import { ID } from '@datorama/akita';
+import { products } from '../products.mocks';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductsService {
-  constructor(private productsStore: ProductsStore, private productsQuery: ProductsQuery, private productsDataService: ProductsDataService) {}
+  constructor(private productsStore: ProductsStore, private productsQuery: ProductsQuery) {}
 
-  /**
-   *
-   * @returns {Observable<Product[]>}
-   */
   get(): Observable<void> {
-    return this.productsDataService.get().pipe(
-      map(response => {
-        logAction('😘😘😘😘😘😘😘😘😘😘');
-        this.productsStore.set(response);
-        this.testTransaction();
-      })
+    const request = timer(500).pipe(
+      mapTo(products),
+      map(response => this.productsStore.set(response))
     );
-    // add cache validation when implement
+
+    return this.productsQuery.getHasCache() ? of() : request;
   }
 
-  @transaction()
-  testTransaction() {
-    this.productsStore.setLoading(true);
-    this.productsStore.update(1, { title: 'test' });
-    this.productsStore.setLoading(false);
-  }
-
-  /**
-   *
-   * @param {ID} id
-   */
   getProduct(id: ID) {
-    this.productsDataService.getProduct(id).subscribe(product => {
-      this.productsStore.add(product);
-    });
+    const product = products.find(product => product.id === +id);
+
+    return timer(500).pipe(
+      mapTo(product),
+      map(() => this.productsStore.add(product))
+    );
   }
 }

@@ -15,7 +15,7 @@
     </thead>
 
     <tbody>
-      <tr *ngFor="let movie of movies$ | async">
+      <tr *ngFor="let movie of movies$ | async" (click)="markAsOpen(movie.id)" [ngStyle]="(isOpen(movie.id) | async) && { background: 'hotpink' }">
         <td>{{movie.title}}</td>
         <td><span *ngFor="let actor of movie.actors">{{actor.name}}</span></td>
         <td><span *ngFor="let genre of movie.genres">{{genre.name}}</span></td>
