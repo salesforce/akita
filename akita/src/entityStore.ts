@@ -249,7 +249,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
       return;
     }
 
-    isDev() && setAction('Set Active', idOrOptions);
+    isDev() && setAction('Set Active', active);
     this._setActive(active);
   }
 
