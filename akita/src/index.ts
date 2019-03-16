@@ -55,3 +55,4 @@ export { SelectAllOptionsA, SelectAllOptionsB, SelectAllOptionsC, SelectAllOptio
 export { rootDispatcher } from './rootDispatcher';
 export { __stores__ } from './stores';
 export { isDev, enableAkitaProdMode, __DEV__ } from './env';
+export { runStoreAction, StoreActions } from './runStoreAction';
