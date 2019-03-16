@@ -168,7 +168,7 @@ export class Store<S> {
     if (this.isResettable()) {
       this._setState(() => Object.assign({}, this._initialState));
       this.setHasCache(false);
-      isDev() && setAction('Reset Store');
+      isDev() && setAction('Reset');
     } else {
       isDev() && console.warn(`You need to enable the reset functionality`);
     }
@@ -193,7 +193,7 @@ export class Store<S> {
    */
   update(state: Partial<S>);
   update(stateOrCallback: Partial<S> | UpdateStateCallback<S>) {
-    isDev() && setAction('Update Store');
+    isDev() && setAction('Update');
 
     this._setState(state => {
       const newState = isFunction(stateOrCallback) ? stateOrCallback(state) : stateOrCallback;
