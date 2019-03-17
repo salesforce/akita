@@ -8,8 +8,7 @@ import { getValue } from './getValueByString';
 import { Actions, setAction } from './actions';
 import { setValue } from './setValueByString';
 import { rootDispatcher } from './rootDispatcher';
-
-const notBs = typeof localStorage === 'undefined';
+import { isNotBrowser } from './root';
 
 export interface PersistStateStorage {
   getItem(key: string): MaybeAsync;
@@ -53,7 +52,7 @@ export interface PersistStateParams {
 }
 
 export function persistState(params?: Partial<PersistStateParams>) {
-  if (notBs) return;
+  if (isNotBrowser) return;
 
   const defaults: PersistStateParams = {
     key: 'AkitaStores',

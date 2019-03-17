@@ -11,7 +11,7 @@ import { isFunction } from './isFunction';
 import { rootDispatcher } from './rootDispatcher';
 import { __stores__ } from './stores';
 import { Actions, newStateAction, resetCustomAction, setAction } from './actions';
-import { root } from './root';
+import { isNotBrowser } from './root';
 import { __DEV__, isDev } from './env';
 import { DEFAULT_ID_KEY } from './defaultIDKey';
 
@@ -225,7 +225,7 @@ export class Store<S> {
    *
    */
   destroy() {
-    if (root.__window === false) return;
+    if (isNotBrowser) return;
     if (!(window as any).hmrEnabled && this === __stores__[this.storeName]) {
       delete __stores__[this.storeName];
       rootDispatcher.next({
