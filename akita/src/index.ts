@@ -55,4 +55,9 @@ export { SelectAllOptionsA, SelectAllOptionsB, SelectAllOptionsC, SelectAllOptio
 export { rootDispatcher } from './rootDispatcher';
 export { __stores__ } from './stores';
 export { isDev, enableAkitaProdMode, __DEV__ } from './env';
+export { isNotBrowser } from './root';
 export { runStoreAction, StoreActions } from './runStoreAction';
+export { arrayUpdate } from './arrayUpdate';
+export { arrayAdd } from './arrayAdd';
+export { arrayFind, distinctUntilArrayItemChanged, find } from './arrayFind';
+export { arrayRemove } from './arrayRemove';
