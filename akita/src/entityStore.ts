@@ -17,6 +17,7 @@ import { StoreConfigOptions } from './storeConfig';
 import { logAction, setAction } from './actions';
 import { isDev } from './env';
 import { hasEntity } from './hasEntity';
+import { BehaviorSubject } from 'rxjs';
 
 /**
  *
@@ -37,9 +38,15 @@ import { hasEntity } from './hasEntity';
  */
 export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Store<S> {
   ui: EntityUIStore<any, any>;
+  private updatedEntityIds = new BehaviorSubject<ID[]>([]);
 
   constructor(initialState: Partial<S> = {}, protected options: Partial<StoreConfigOptions> = {}) {
     super({ ...getInitialEntitiesState(), ...initialState }, options);
+  }
+
+  // @internal
+  get updatedEntityIds$() {
+    return this.updatedEntityIds.asObservable();
   }
 
   /**
@@ -143,6 +150,8 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
         newStateOrFn
       })
     );
+
+    this.updatedEntityIds.next(ids);
   }
 
   /**
@@ -354,6 +363,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     if (this.ui instanceof EntityStore) {
       this.ui.destroy();
     }
+    this.updatedEntityIds.complete();
   }
 
   // @internal

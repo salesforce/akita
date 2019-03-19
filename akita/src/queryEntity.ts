@@ -289,6 +289,19 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
   }
 
   /**
+   *
+   * Select the updated entities ids
+   *
+   *  @example
+   *
+   *  this.query.selectUpdatedEntityIds()
+   *
+   */
+  selectUpdatedEntityIds() {
+    return this.store.updatedEntityIds$;
+  }
+
+  /**
    * Returns whether entity exists
    *
    * @example
