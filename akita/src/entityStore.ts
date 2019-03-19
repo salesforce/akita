@@ -18,6 +18,7 @@ import { logAction, setAction } from './actions';
 import { isDev } from './env';
 import { hasEntity } from './hasEntity';
 import { BehaviorSubject } from 'rxjs';
+import { assertEntityIdKey } from './assertEntityIdKey';
 
 /**
  *
@@ -63,7 +64,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
   set(entities: SetEntities<E>) {
     if (isNil(entities)) return;
 
-    isDev() && setAction('Set Entity');
+    isDev() && assertEntityIdKey(entities[0], this.idKey) && setAction('Set Entity');
     this._setState(state => setEntities({ state, entities, idKey: this.idKey }));
     this.updateCache();
   }
@@ -85,7 +86,8 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     const notExistEntities = collection.filter(entity => currentIds.includes(entity[this.idKey]) === false);
     if (isEmpty(notExistEntities)) return;
 
-    isDev() && setAction('Add Entity');
+    isDev() && assertEntityIdKey(entities[0], this.idKey) && setAction('Add Entity');
+
     this._setState(state =>
       addEntities({
         state,
