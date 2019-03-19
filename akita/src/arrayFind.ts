@@ -2,7 +2,7 @@ import { IDS, ItemPredicate } from './types';
 import { coerceArray } from './coerceArray';
 import { DEFAULT_ID_KEY } from './defaultIDKey';
 import { distinctUntilChanged, map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { MonoTypeOperatorFunction, Observable } from 'rxjs';
 import { isArray } from './isArray';
 import { isFunction } from './isFunction';
 import { isEmpty } from './isEmpty';
@@ -30,7 +30,7 @@ export function find<T>(collection: T[], idsOrPredicate: IDS | ItemPredicate, id
 }
 
 // @internal
-export function distinctUntilArrayItemChanged<T>() {
+export function distinctUntilArrayItemChanged<T>(): MonoTypeOperatorFunction<T[]> {
   return distinctUntilChanged((prevCollection: T[], currentCollection: T[]) => {
     if (prevCollection === currentCollection) {
       return true;
