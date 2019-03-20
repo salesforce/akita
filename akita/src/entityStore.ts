@@ -17,7 +17,7 @@ import { StoreConfigOptions } from './storeConfig';
 import { logAction, setAction } from './actions';
 import { isDev } from './env';
 import { hasEntity } from './hasEntity';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { assertEntityIdKey } from './assertEntityIdKey';
 
 /**
@@ -46,7 +46,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
   }
 
   // @internal
-  get updatedEntityIds$() {
+  get updatedEntityIds$(): Observable<ID[]> {
     return this.updatedEntityIds.asObservable();
   }
 
