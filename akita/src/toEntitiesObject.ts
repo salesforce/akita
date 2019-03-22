@@ -1,11 +1,11 @@
-import { DEFAULT_ID_KEY } from './defaultIDKey';
-
 // @internal
-export function toEntitiesObject<E>(entities: E[], idKey = DEFAULT_ID_KEY) {
+import { PreAddEntity } from './types';
+
+export function toEntitiesObject<E>(entities: E[], idKey: string, preAddEntity: PreAddEntity<E>) {
   const acc = {};
 
   for (const entity of entities) {
-    acc[entity[idKey]] = entity;
+    acc[entity[idKey]] = preAddEntity(entity);
   }
 
   return acc;

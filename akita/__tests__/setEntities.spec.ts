@@ -3,11 +3,15 @@ import { entitiesMapMock } from './mocks';
 import { BooksStore } from './booksStore.test';
 import { DEFAULT_ID_KEY, getInitialEntitiesState, setEntities } from '../src';
 
+function preAddEntity(e) {
+  return e;
+}
+
 describe('setEntities', () => {
   it('should support array of entities', () => {
     const data = createMockEntities();
     const entityState = getInitialEntitiesState();
-    const newState = setEntities({ state: entityState, idKey: DEFAULT_ID_KEY, entities: data });
+    const newState = setEntities({ state: entityState, idKey: DEFAULT_ID_KEY, entities: data, preAddEntity });
     expect(newState.ids.length).toBe(2);
     expect(newState.entities).toEqual(entitiesMapMock);
   });
@@ -18,7 +22,7 @@ describe('setEntities', () => {
       ids: [1, 2]
     };
     const entityState = getInitialEntitiesState();
-    const newState = setEntities({ state: entityState, entities: data, idKey: DEFAULT_ID_KEY });
+    const newState = setEntities({ state: entityState, entities: data, idKey: DEFAULT_ID_KEY, preAddEntity });
     expect(newState.ids.length).toBe(2);
     expect(newState.entities).toEqual(entitiesMapMock);
   });
@@ -43,14 +47,14 @@ describe('setEntities with Active MoviesState', () => {
   it('should reset the active when not exist', () => {
     const data = createMockEntities();
     const entityState = { ...getInitialEntitiesState(), active: 5 };
-    const newState = setEntities({ state: entityState, idKey: DEFAULT_ID_KEY, entities: data });
+    const newState = setEntities({ state: entityState, idKey: DEFAULT_ID_KEY, entities: data, preAddEntity });
     expect(newState.active).toBe(null);
   });
 
   it('should NOT reset active when exist', () => {
     const data = createMockEntities();
     const entityState = { entities: entitiesMapMock, active: 1 };
-    const newState = setEntities({ state: entityState, idKey: DEFAULT_ID_KEY, entities: data });
+    const newState = setEntities({ state: entityState, idKey: DEFAULT_ID_KEY, entities: data, preAddEntity });
     expect(newState.active).toBe(1);
   });
 });
@@ -59,7 +63,7 @@ describe('setEntities with Active Multi', () => {
   it('should reset the active to empty array when not exist', () => {
     const data = createMockEntities();
     const entityState = { ...getInitialEntitiesState(), active: [3, 4] };
-    const newState = setEntities({ state: entityState, idKey: DEFAULT_ID_KEY, entities: data });
+    const newState = setEntities({ state: entityState, idKey: DEFAULT_ID_KEY, entities: data, preAddEntity });
     expect(newState.active).toEqual([]);
   });
 
@@ -67,14 +71,14 @@ describe('setEntities with Active Multi', () => {
     const data = createMockEntities();
     const ids = [1, 2];
     const entityState = { entities: entitiesMapMock, ids, active: ids };
-    const newState = setEntities({ state: entityState, idKey: DEFAULT_ID_KEY, entities: data });
+    const newState = setEntities({ state: entityState, idKey: DEFAULT_ID_KEY, entities: data, preAddEntity });
     expect(newState.active).toBe(ids);
   });
 
   it('should remove active when NOT exist', () => {
     const data = createMockEntities(10, 12);
     const entityState = { entities: entitiesMapMock, ids: [1], active: [1, 2] };
-    const newState = setEntities({ state: entityState, idKey: DEFAULT_ID_KEY, entities: data });
+    const newState = setEntities({ state: entityState, idKey: DEFAULT_ID_KEY, entities: data, preAddEntity });
     expect(newState.active).toEqual([]);
   });
 });

@@ -65,7 +65,17 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     if (isNil(entities)) return;
 
     isDev() && assertEntityIdKey(entities[0], this.idKey) && setAction('Set Entity');
-    this._setState(state => setEntities({ state, entities, idKey: this.idKey }));
+
+    const isNativePreAdd = this.akitaPreAddEntity === EntityStore.prototype.akitaPreAddEntity;
+    this._setState(state =>
+      setEntities({
+        state,
+        entities,
+        idKey: this.idKey,
+        preAddEntity: this.akitaPreAddEntity,
+        isNativePreAdd
+      })
+    );
     this.updateCache();
   }
 

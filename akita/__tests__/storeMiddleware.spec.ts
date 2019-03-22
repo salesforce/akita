@@ -1,5 +1,9 @@
 import { BooksStore } from './booksStore.test';
 import { createMockEntities } from './mocks';
+import { EntityStore, StoreConfig } from '../src';
+
+@StoreConfig({ name: 'test' })
+class TestStore extends EntityStore<any, any> {}
 
 describe('Middleware', () => {
   describe('akitaPreAddEntity', () => {
@@ -17,6 +21,9 @@ describe('Middleware', () => {
       const store = new BooksStore();
       store.add(createMockEntities());
 
+      expect(store._value().entities[1].price).toBe(20);
+      store.remove();
+      store.set(createMockEntities());
       expect(store._value().entities[1].price).toBe(20);
     });
   });

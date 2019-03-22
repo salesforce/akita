@@ -24,16 +24,3 @@ export function createMockEntities(start = 0, end = 2): TestBook[] {
     };
   });
 }
-
-/**
- * Start initial entity state with two entities
- */
-export function createMockInitialEntityState() {
-  const entities = createMockEntities();
-  return {
-    loading: false,
-    error: null,
-    entities: toEntitiesObject(entities),
-    ids: toEntitiesIds(entities)
-  };
-}
