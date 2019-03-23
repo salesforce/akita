@@ -43,7 +43,7 @@ export function setEntities<S extends EntityState<E>, E>({ state, entities, idKe
   } else {
     // it's an object
     newEntities = isNativePreAdd ? entities : applyMiddleware(entities, preAddEntity);
-    newIds = Object.keys(newEntities).map(Number);
+    newIds = Object.keys(newEntities).map(id => (isNaN(id as any) ? id : Number(id)));
   }
 
   const newState = {
