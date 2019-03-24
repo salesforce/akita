@@ -12,11 +12,6 @@ function addPackageJsonDependencies(options: Schema): Rule {
         type: NodeDependencyType.Default,
         version: '^3.0.0',
         name: '@datorama/akita'
-      },
-      {
-        type: NodeDependencyType.Dev,
-        version: '^2.0.0',
-        name: 'akita-schematics'
       }
     ];
 
@@ -118,7 +113,7 @@ function setSchematicsAsDefault(): Rule {
   return (host: Tree, context: SchematicContext) => {
     const exec = require('child_process').exec;
 
-    exec('ng config cli.defaultCollection akita-schematics', () => {
+    exec('ng config cli.defaultCollection @datorama/akita', () => {
       context.logger.log('info', `✅️ Setting Akita schematics as default`);
     });
     return host;

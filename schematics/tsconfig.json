@@ -28,6 +28,7 @@
     "src/**/*"
   ],
   "exclude": [
-    "src/*/files/**/*"
+    "src/ng-g/**/files/*",
+    "*.spec.ts"
   ]
 }

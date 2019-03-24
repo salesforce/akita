@@ -1,8 +1,8 @@
 {
   "name": "@datorama/akita",
-  "version": "3.1.4",
+  "version": "3.1.8",
   "description": "State Management Tailored-Made for JS Applications",
-  "schematics": "./schematics/src/collection.json",
+  "schematics": "./schematics/collection.json",
   "scripts": {
     "build": "ng-packagr -p package.json && npm run copy:readme && npm run copy:schematics",
     "postbuild": "echo 'run git tag && git push --follow-tags origin master && npm publish'",
@@ -13,7 +13,7 @@
     "contributors:add": "all-contributors add",
     "contributors:generate": "all-contributors generate",
     "copy:readme": "copy README.md dist",
-    "copy:schematics": "copy schematics/src/* dist && copy schematics/src/**/* dist",
+    "copy:schematics": "cp -r schematics/src/ dist/schematics",
     "commit": "git-cz",
     "demo": "cd playground && npm start"
   },
@@ -104,14 +104,14 @@
     "jest": "24.1.0",
     "jest-localstorage-mock": "2.4.0",
     "lint-staged": "8.1.5",
+    "localforage": "^1.7.3",
     "ng-packagr": "4.7.1",
     "prettier": "1.16.4",
     "push-dir": "0.4.1",
     "rxjs": "6.4.0",
     "ts-jest": "24.0.0",
     "tsickle": "0.34.3",
-    "typescript": "^3.2",
-    "localforage": "^1.7.3"
+    "typescript": "^3.2"
   },
   "peerDependencies": {
     "rxjs": "^6.3.3"
