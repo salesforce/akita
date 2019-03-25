@@ -8,13 +8,15 @@ export interface MovieUI {
 
 export interface MoviesState extends EntityState<Movie> {}
 
+export interface MoviesUIState extends EntityState<MovieUI> {}
+
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: 'movies' })
 export class MoviesStore extends EntityStore<MoviesState, Movie> {
-  ui: EntityUIStore<MovieUI>;
+  ui: EntityUIStore<MoviesUIState, MovieUI>;
 
   constructor() {
     super();
-    this.createUIStore();
+    this.createUIStore().setInitialEntityState<MoviesUIState>(_ => ({ isOpen: true }));
   }
 }

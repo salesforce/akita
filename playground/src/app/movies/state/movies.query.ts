@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { MoviesStore, MoviesState, MovieUI } from './movies.store';
+import { MoviesStore, MoviesState, MovieUI, MoviesUIState } from './movies.store';
 import { Movie } from './movie.model';
 import { EntityUIQuery, ID, QueryEntity } from '@datorama/akita';
 import { combineLatest } from 'rxjs';
@@ -11,7 +11,7 @@ import { GenresQuery } from '../genres/state/genres.query';
   providedIn: 'root'
 })
 export class MoviesQuery extends QueryEntity<MoviesState, Movie> {
-  ui: EntityUIQuery<MovieUI>;
+  ui: EntityUIQuery<MoviesUIState, MovieUI>;
 
   constructor(protected store: MoviesStore, private actorsQuery: ActorsQuery, private genresQuery: GenresQuery) {
     super(store);

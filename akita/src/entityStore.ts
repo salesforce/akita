@@ -76,7 +76,12 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
         isNativePreAdd
       })
     );
+
     this.updateCache();
+
+    if (this.hasUIStore() && isFunction(this.ui._akitaCreateEntityFn)) {
+      this.handleUICreation();
+    }
   }
 
   /**
@@ -107,6 +112,10 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
         options
       })
     );
+
+    if (this.hasUIStore() && isFunction(this.ui._akitaCreateEntityFn)) {
+      this.handleUICreation(notExistEntities.map(entity => entity[this.idKey]));
+    }
   }
 
   /**
@@ -230,6 +239,8 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     if (ids === null) {
       this.setHasCache(false);
     }
+
+    this.handleUIRemove(ids);
   }
 
   /**
@@ -367,6 +378,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
   createUIStore(initialState = {}, storeConfig: Partial<StoreConfigOptions> = {}) {
     const defaults: Partial<StoreConfigOptions> = { name: `UI/${this.storeName}` };
     this.ui = new EntityUIStore(initialState, { ...defaults, ...storeConfig });
+    return this.ui;
   }
 
   // @internal
@@ -419,11 +431,51 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
       this.cache.ttl = <any>setTimeout(() => this.setHasCache(false), ttlConfig);
     }
   }
+
+  private handleUICreation(addedIds?: ID[]) {
+    const ids = addedIds || this.ids;
+
+    const uiEntities = ids.map(id => ({
+      [this.idKey]: this.entities[id][this.idKey],
+      ...this.ui._akitaCreateEntityFn(this.entities[id])
+    }));
+
+    addedIds ? this.ui.add(uiEntities) : this.ui.set(uiEntities);
+  }
+
+  private handleUIRemove(ids: ID[]) {
+    if (this.hasUIStore()) {
+      this.ui.remove(ids);
+    }
+  }
+
+  private hasUIStore() {
+    return this.ui instanceof EntityUIStore;
+  }
 }
 
 // @internal
 export class EntityUIStore<UIState, EntityUI> extends EntityStore<UIState, EntityUI> {
+  _akitaCreateEntityFn: (entity: any) => any;
+
   constructor(initialState = {}, storeConfig: Partial<StoreConfigOptions> = {}) {
     super(initialState, storeConfig);
+  }
+
+  /**
+   *
+   * Set the initial UI entity state. This function will determine the entity's
+   * initial state when we call `set()` or `add()`.
+   *
+   * @example
+   *
+   * constructor() {
+   *   super();
+   *   this.createUIStore().setInitialEntityState(entity => ({ isLoading: false, isOpen: true }));
+   * }
+   *
+   */
+  setInitialEntityState<EntityUI = any, Entity = any>(createFn: (entity: Entity) => EntityUI) {
+    this._akitaCreateEntityFn = createFn;
   }
 }
