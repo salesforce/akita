@@ -82,10 +82,6 @@ export class Store<S> {
   setHasCache(hasCache: boolean) {
     if (hasCache !== this.cache.active.value) {
       this.cache.active.next(hasCache);
-      const ttlConfig = this.options.cache && this.options.cache.ttl;
-      if (!hasCache && ttlConfig) {
-        clearTimeout(this.cache.ttl);
-      }
     }
   }
 
@@ -135,6 +131,11 @@ export class Store<S> {
   // @internal
   get idKey() {
     return this.config.idKey || this.options.idKey || DEFAULT_ID_KEY;
+  }
+
+  // @internal
+  get cacheConfig() {
+    return this.config.cache || this.options.cache;
   }
 
   // @internal
