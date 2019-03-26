@@ -58,9 +58,13 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
         return;
       }
 
+      const store = __stores__[action.payload.name];
+      if (!store) {
+        return;
+      }
       appState = {
         ...appState,
-        [action.payload.name]: __stores__[action.payload.name]._value()
+        [action.payload.name]: store._value()
       };
 
       const storeName = capitalize(action.payload.name);
