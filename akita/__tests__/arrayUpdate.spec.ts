@@ -25,7 +25,7 @@ describe('arrayUpdate', () => {
   it('should update one', () => {
     const article: Article = {
       id: 1,
-      title: '',
+      title: 'title',
       comments: [{ id: 1, text: 'comment' }, { id: 2, text: 'comment2' }]
     };
 
@@ -33,6 +33,8 @@ describe('arrayUpdate', () => {
 
     store.update(1, arrayUpdate<Article, Comment>('comments', 2, { text: 'updated' }));
     expect(store._value().entities[1].comments[1].text).toBe('updated');
+    expect(store._value().entities[1].id).toBe(1);
+    expect(store._value().entities[1].title).toBe('title');
     store.remove();
   });
 
