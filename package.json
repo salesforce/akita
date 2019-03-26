@@ -1,6 +1,6 @@
 {
   "name": "@datorama/akita",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "description": "State Management Tailored-Made for JS Applications",
   "schematics": "./schematics/collection.json",
   "scripts": {
@@ -111,7 +111,7 @@
     "rxjs": "6.4.0",
     "ts-jest": "24.0.0",
     "tsickle": "0.34.3",
-    "typescript": "^3.2"
+    "typescript": "3.2"
   },
   "peerDependencies": {
     "rxjs": "^6.3.3"
