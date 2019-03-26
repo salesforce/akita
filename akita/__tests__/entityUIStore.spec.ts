@@ -23,7 +23,7 @@ class ArticlesStore extends EntityStore<ArticlesState, Article> {
 
   constructor() {
     super();
-    this.createUIStore().setInitialEntityState(entity => ({ isLoading: false, isOpen: true }));
+    this.createUIStore().setInitialEntityState({ isLoading: false, isOpen: true });
   }
 }
 

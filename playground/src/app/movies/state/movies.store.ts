@@ -17,6 +17,6 @@ export class MoviesStore extends EntityStore<MoviesState, Movie> {
 
   constructor() {
     super();
-    this.createUIStore().setInitialEntityState<MoviesUIState>(_ => ({ isOpen: true }));
+    this.createUIStore().setInitialEntityState<MovieUI>({ isOpen: true });
   }
 }

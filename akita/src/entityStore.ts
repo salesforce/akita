@@ -1,7 +1,7 @@
 import { isEmpty } from './isEmpty';
 import { SetEntities, setEntities } from './setEntities';
 import { Store } from './store';
-import { EntityState, ID, IDS, StateWithActive, UpdateEntityPredicate, UpdateStateCallback } from './types';
+import { EntityState, EntityUICreateFn, ID, IDS, StateWithActive, UpdateEntityPredicate, UpdateStateCallback } from './types';
 import { getActiveEntities, SetActiveOptions } from './getActiveEntities';
 import { addEntities, AddEntitiesOptions } from './addEntities';
 import { coerceArray } from './coerceArray';
@@ -79,7 +79,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
 
     this.updateCache();
 
-    if (this.hasUIStore() && isFunction(this.ui._akitaCreateEntityFn)) {
+    if (this.hasInitialUIState()) {
       this.handleUICreation();
     }
   }
@@ -113,7 +113,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
       })
     );
 
-    if (this.hasUIStore() && isFunction(this.ui._akitaCreateEntityFn)) {
+    if (this.hasInitialUIState()) {
       this.handleUICreation(notExistEntities.map(entity => entity[this.idKey]));
     }
   }
@@ -434,13 +434,21 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
 
   private handleUICreation(addedIds?: ID[]) {
     const ids = addedIds || this.ids;
-
-    const uiEntities = ids.map(id => ({
-      [this.idKey]: this.entities[id][this.idKey],
-      ...this.ui._akitaCreateEntityFn(this.entities[id])
-    }));
+    const isFunc = isFunction(this.ui._akitaCreateEntityFn);
+    const uiEntities = ids.map(id => {
+      const current = this.entities[id];
+      const ui = isFunc ? this.ui._akitaCreateEntityFn(current) : this.ui._akitaCreateEntityFn;
+      return {
+        [this.idKey]: current[this.idKey],
+        ...ui
+      };
+    });
 
     addedIds ? this.ui.add(uiEntities) : this.ui.set(uiEntities);
+  }
+
+  private hasInitialUIState() {
+    return this.hasUIStore() && isUndefined(this.ui._akitaCreateEntityFn) === false;
   }
 
   private handleUIRemove(ids: ID[]) {
@@ -456,7 +464,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
 
 // @internal
 export class EntityUIStore<UIState, EntityUI> extends EntityStore<UIState, EntityUI> {
-  _akitaCreateEntityFn: (entity: any) => any;
+  _akitaCreateEntityFn: EntityUICreateFn;
 
   constructor(initialState = {}, storeConfig: Partial<StoreConfigOptions> = {}) {
     super(initialState, storeConfig);
@@ -472,10 +480,11 @@ export class EntityUIStore<UIState, EntityUI> extends EntityStore<UIState, Entit
    * constructor() {
    *   super();
    *   this.createUIStore().setInitialEntityState(entity => ({ isLoading: false, isOpen: true }));
+   *   this.createUIStore().setInitialEntityState({ isLoading: false, isOpen: true });
    * }
    *
    */
-  setInitialEntityState<EntityUI = any, Entity = any>(createFn: (entity: Entity) => EntityUI) {
+  setInitialEntityState<EntityUI = any, Entity = any>(createFn: EntityUICreateFn<EntityUI, Entity>) {
     this._akitaCreateEntityFn = createFn;
   }
 }

@@ -47,3 +47,4 @@ export type StoreCache = {
 export type ArrayProperties<T> = { [K in keyof T]: T[K] extends any[] ? K : never }[keyof T];
 export type ItemPredicate<Item = any> = (item: Item) => boolean;
 export type MaybeAsync<T = any> = Promise<T> | Observable<T> | T;
+export type EntityUICreateFn<EntityUI = any, Entity = any> = EntityUI | ((entity: Entity) => EntityUI);
