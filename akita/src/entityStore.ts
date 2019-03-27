@@ -1,7 +1,7 @@
 import { isEmpty } from './isEmpty';
 import { SetEntities, setEntities } from './setEntities';
 import { Store } from './store';
-import { EntityState, EntityUICreateFn, ID, IDS, StateWithActive, UpdateEntityPredicate, UpdateStateCallback } from './types';
+import { Constructor, EntityState, EntityUICreateFn, ID, IDS, StateWithActive, UpdateEntityPredicate, UpdateStateCallback } from './types';
 import { getActiveEntities, SetActiveOptions } from './getActiveEntities';
 import { addEntities, AddEntitiesOptions } from './addEntities';
 import { coerceArray } from './coerceArray';
@@ -187,14 +187,18 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    *
    */
   @transaction()
-  upsert(ids: IDS, newState: Partial<E> | E | UpdateStateCallback<E>) {
+  upsert(ids: IDS, newState: Partial<E> | E | UpdateStateCallback<E>, options: { baseClass?: Constructor } = {}) {
     const toArray = coerceArray(ids);
     const predicate = isUpdate => id => hasEntity(this.entities, id) === isUpdate;
-
+    const isClassBased = isFunction(options.baseClass);
     const updateIds = toArray.filter(predicate(true));
     const newEntities = toArray.filter(predicate(false)).map(id => {
       let entity = isFunction(newState) ? newState({} as E) : newState;
-      return { ...(entity as E), [this.idKey]: id };
+      const withId = { ...(entity as E), [this.idKey]: id };
+      if (isClassBased) {
+        return new options.baseClass(withId);
+      }
+      return withId;
     });
 
     // it can be any of the three types
