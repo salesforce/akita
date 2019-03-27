@@ -394,31 +394,26 @@ describe('EntitiesStore', () => {
         expect(typeof store.cache.ttl).toBe('number');
         // ttl has passed
         jest.runAllTimers();
-        expect(clearTimeout).toHaveBeenCalledTimes(1);
-        expect(clearTimeout).toHaveBeenCalledWith(store.cache.ttl);
         expect(store.cache.active.value).toBe(false);
         expect(typeof store.cache.ttl).toBe('number');
         let previousTtl = store.cache.ttl;
+        store.set(todo);
+        expect(clearTimeout).toHaveBeenCalledTimes(1);
+        expect(clearTimeout).toHaveBeenCalledWith(previousTtl);
+        expect(store.cache.active.value).toBe(true);
+        expect(typeof store.cache.ttl).toBe('number');
+        previousTtl = store.cache.ttl;
         store.set(todo);
         expect(clearTimeout).toHaveBeenCalledTimes(2);
         expect(clearTimeout).toHaveBeenCalledWith(previousTtl);
         expect(store.cache.active.value).toBe(true);
         expect(typeof store.cache.ttl).toBe('number');
-        previousTtl = store.cache.ttl;
-        store.set(todo);
-        expect(clearTimeout).toHaveBeenCalledTimes(3);
-        expect(clearTimeout).toHaveBeenCalledWith(previousTtl);
-        expect(store.cache.active.value).toBe(true);
-        expect(typeof store.cache.ttl).toBe('number');
-        previousTtl = store.cache.ttl;
         store.remove();
-        expect(clearTimeout).toHaveBeenCalledTimes(4);
-        expect(clearTimeout).toHaveBeenCalledWith(previousTtl);
         expect(store.cache.active.value).toBe(false);
         expect(typeof store.cache.ttl).toBe('number');
         spyOn(store, 'setHasCache');
         jest.runAllTimers();
-        expect(store.setHasCache).not.toHaveBeenCalled();
+        expect(store.setHasCache).toHaveBeenCalledWith(false);
       });
     });
 

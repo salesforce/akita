@@ -427,7 +427,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
 
   private updateCache() {
     this.setHasCache(true);
-    const ttlConfig = this.options.cache && this.options.cache.ttl;
+    const ttlConfig = this.cacheConfig && this.cacheConfig.ttl;
     if (ttlConfig) {
       if (this.cache.ttl !== null) {
         clearTimeout(this.cache.ttl);
