@@ -19,7 +19,7 @@ Akita is a state management pattern, built on top of RxJS, which takes the idea 
 Akita encourages simplicity. It saves you the hassle of creating boilerplate code and gives powerful tools with a moderate learning curve, suitable for both experienced and inexperienced developers alike.
 
 - 🤓 Learn about it on the [docs site](https://netbasal.gitbook.io/akita/)
-- 🚀 See it in action on [Stackblitz](https://stackblitz.com/edit/akita-todos-app)
+- 🚀 See it in action on [StackBlitz](https://stackblitz.com/edit/akita-todos-app)
 - 😎 Use the [CLI](https://github.com/datorama/akita/tree/master/cli)
 - 👉 Checkout the [sample application](http://akita.surge.sh/)
 - 📖 Read the blog [posts](https://netbasal.gitbook.io/akita/general/blog-posts)
