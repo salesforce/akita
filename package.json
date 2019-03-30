@@ -1,9 +1,10 @@
 {
   "name": "@datorama/akita",
-  "version": "3.2.3",
+  "version": "3.2.4",
   "description": "State Management Tailored-Made for JS Applications",
   "schematics": "./schematics/collection.json",
   "scripts": {
+    "release": "standard-version",
     "build": "ng-packagr -p package.json && npm run copy:readme && npm run copy:schematics",
     "postbuild": "echo 'run git tag && git push --follow-tags origin master && npm publish'",
     "test": "jest",
@@ -109,6 +110,7 @@
     "prettier": "1.16.4",
     "push-dir": "0.4.1",
     "rxjs": "6.4.0",
+    "standard-version": "^5.0.2",
     "ts-jest": "24.0.0",
     "tsickle": "0.34.3",
     "typescript": "^3.2"

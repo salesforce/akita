@@ -24,7 +24,7 @@ export class MoviesService {
           entities: response.entities.movies,
           ids: response.result
         };
-        return this.moviesStore.set(movies);
+        this.moviesStore.set(movies);
       })
     );
 
