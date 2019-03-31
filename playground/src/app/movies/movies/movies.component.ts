@@ -24,6 +24,7 @@ export class MoviesComponent implements OnInit {
 
   ngOnInit() {
     this.isLoading$ = this.moviesQuery.selectLoading();
+
     this.movies$ = this.moviesQuery.selectMovies();
     this.actors$ = this.actorsQuery.selectAll();
     this.moviesService.getMovies().subscribe();

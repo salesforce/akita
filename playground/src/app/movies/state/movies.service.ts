@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import { MoviesStore } from './movies.store';
 import { ID } from '@datorama/akita';
 import { of, timer } from 'rxjs';
-import { mapTo, tap } from 'rxjs/operators';
+import { mapTo } from 'rxjs/operators';
 import { movies } from '../normalized';
 import { ActorsStore } from '../actors/state/actors.store';
 import { GenresStore } from '../genres/state/genres.store';
 import { MoviesQuery } from './movies.query';
+import { withTransaction } from '../../../../../akita/src/transaction';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class MoviesService {
   getMovies() {
     const request$ = timer(1000).pipe(
       mapTo(movies),
-      tap(response => {
+      withTransaction(response => {
         this.actorsStore.set(response.entities.actors);
         this.genresStore.set(response.entities.genres);
         const movies = {

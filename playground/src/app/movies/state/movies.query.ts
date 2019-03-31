@@ -3,9 +3,10 @@ import { MoviesState, MoviesStore, MoviesUIState, MovieUI } from './movies.store
 import { Movie } from './movie.model';
 import { EntityUIQuery, ID, QueryEntity } from '@datorama/akita';
 import { combineLatest } from 'rxjs';
-import { auditTime, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { ActorsQuery } from '../actors/state/actors.query';
 import { GenresQuery } from '../genres/state/genres.query';
+import { waitForTransaction } from '../../../../../akita/src/transaction';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,7 @@ export class MoviesQuery extends QueryEntity<MoviesState, Movie> {
 
   selectMovies() {
     return combineLatest(this.selectAll(), this.actorsQuery.selectAll({ asObject: true }), this.genresQuery.selectAll({ asObject: true })).pipe(
-      auditTime(0),
+      waitForTransaction(),
       map(([movies, actors, genres]) => {
         return movies.map(movie => {
           return {
