@@ -3,7 +3,7 @@ export { EntityStore, EntityUIStore } from './entityStore';
 export { QueryEntity, EntityUIQuery } from './queryEntity';
 export { Query } from './query';
 export { Store } from './store';
-export { applyTransaction, transaction, commit, endBatch, isTransactionInProcess, startBatch, TransactionManager, transactionManager } from './transaction';
+export { applyTransaction, transaction, commit, endBatch, isTransactionInProcess, startBatch, TransactionManager, transactionManager, waitForTransaction, withTransaction } from './transaction';
 export { filterNil } from './filterNil';
 export { DEFAULT_ID_KEY } from './defaultIDKey';
 export { action, Actions, Action, newStateAction, setAction, setSkipAction, logAction, currentAction, resetCustomAction } from './actions';

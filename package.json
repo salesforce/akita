@@ -6,7 +6,6 @@
   "scripts": {
     "release": "standard-version",
     "build": "ng-packagr -p package.json && npm run copy:readme && npm run copy:schematics",
-    "postbuild": "echo 'run git tag && git push --follow-tags origin master && npm publish'",
     "test": "jest",
     "test:debug": "node --inspect-brk ./node_modules/.bin/jest --runInBand --watch",
     "test:watch": "jest --watch",
