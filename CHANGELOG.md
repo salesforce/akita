@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.3.1"></a>
+## [3.3.1](https://github.com/datorama/akita/compare/v3.3.0...v3.3.1) (2019-03-31)
+
+
+### Bug Fixes
+
+* **transactions:** export the new operators ([1d1e671](https://github.com/datorama/akita/commit/1d1e671))
+
+
+
 <a name="3.3.0"></a>
 # [3.3.0](https://github.com/datorama/akita/compare/v3.2.5...v3.3.0) (2019-03-31)
 
