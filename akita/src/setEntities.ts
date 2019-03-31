@@ -1,6 +1,5 @@
 import { Entities, EntityState, HashMap, ID, PreAddEntity } from './types';
 import { toEntitiesObject } from './toEntitiesObject';
-import { toEntitiesIds } from './toEntitiesIds';
 import { isArray } from './isArray';
 import { hasActiveState, resolveActiveEntity } from './activeState';
 
@@ -35,8 +34,9 @@ export function setEntities<S extends EntityState<E>, E>({ state, entities, idKe
   let newIds: ID[];
 
   if (isArray(entities)) {
-    newEntities = toEntitiesObject(entities, idKey, preAddEntity);
-    newIds = toEntitiesIds(entities, idKey);
+    const resolve = toEntitiesObject(entities, idKey, preAddEntity);
+    newEntities = resolve.entities;
+    newIds = resolve.ids;
   } else if (isEntityState(entities)) {
     newEntities = isNativePreAdd ? entities.entities : applyMiddleware(entities.entities, preAddEntity);
     newIds = entities.ids;

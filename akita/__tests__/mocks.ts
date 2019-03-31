@@ -1,5 +1,4 @@
 import { TestBook } from './booksStore.test';
-import { toEntitiesIds, toEntitiesObject } from '../src';
 
 export const entitiesMapMock = {
   1: {
