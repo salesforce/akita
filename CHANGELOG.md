@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.4.0"></a>
+# [3.4.0](https://github.com/datorama/akita/compare/v3.2.5...v3.4.0) (2019-03-31)
+
+
+### Bug Fixes
+
+* **entity-id-key:** support dynamic id key from middleware ([495f272](https://github.com/datorama/akita/commit/495f272)), closes [#196](https://github.com/datorama/akita/issues/196)
+* **entity-store:** loop over the entities once ([b74ea12](https://github.com/datorama/akita/commit/b74ea12))
+
+
+### Features
+
+* **transactions:** add new transactions operators ([ce05544](https://github.com/datorama/akita/commit/ce05544))
+
+
+
 <a name="3.3.0"></a>
 # [3.3.0](https://github.com/datorama/akita/compare/v3.2.5...v3.3.0) (2019-03-31)
 
