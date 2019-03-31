@@ -16,8 +16,10 @@ export function addEntities<S extends EntityState<E>, E>({ state, entities, idKe
   let newIds = [];
 
   for (const entity of entities) {
-    const entityId = entity[idKey];
-    newEntities[entityId] = preAddEntity(entity);
+    // evaluate the middleware first to support dynamic ids
+    const current = preAddEntity(entity);
+    const entityId = current[idKey];
+    newEntities[entityId] = current;
     if (options.prepend) newIds.unshift(entityId);
     else newIds.push(entityId);
   }

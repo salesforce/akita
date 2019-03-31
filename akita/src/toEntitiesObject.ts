@@ -8,8 +8,10 @@ export function toEntitiesObject<E>(entities: E[], idKey: string, preAddEntity: 
   };
 
   for (const entity of entities) {
-    acc.entities[entity[idKey]] = preAddEntity(entity);
-    acc.ids.push(entity[idKey]);
+    // evaluate the middleware first to support dynamic ids
+    const current = preAddEntity(entity);
+    acc.entities[current[idKey]] = current;
+    acc.ids.push(current[idKey]);
   }
 
   return acc;
