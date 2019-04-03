@@ -1,4 +1,4 @@
-import { ID } from '@datorama/akita';
+import { guid, ID } from '@datorama/akita';
 
 export type Todo = {
   id: ID;
@@ -6,15 +6,9 @@ export type Todo = {
   completed: boolean;
 };
 
-/**
- * Factory function that creates todos
- * @param {ID} id
- * @param {string} title
- * @returns {Todo}
- */
-export function createTodo({ id, title }: Partial<Todo>) {
+export function createTodo(title: Todo['title']) {
   return {
-    id,
+    id: guid(),
     title,
     completed: false
   } as Todo;

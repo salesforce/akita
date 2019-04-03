@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { AuthService } from '../state/auth.service';
-import { Creds } from '../state/auth.model';
+import { AuthService, Creds } from '../state/auth.service';
 import { Router } from '@angular/router';
 
 @Component({

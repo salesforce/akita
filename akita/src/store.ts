@@ -167,9 +167,9 @@ export class Store<S> {
    */
   reset() {
     if (this.isResettable()) {
+      isDev() && setAction('Reset');
       this._setState(() => Object.assign({}, this._initialState));
       this.setHasCache(false);
-      isDev() && setAction('Reset');
     } else {
       isDev() && console.warn(`You need to enable the reset functionality`);
     }

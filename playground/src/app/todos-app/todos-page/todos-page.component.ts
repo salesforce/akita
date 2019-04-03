@@ -20,7 +20,7 @@ export class TodosPageComponent implements OnInit {
   checkAll$: Observable<boolean>;
   stateHistory: StateHistoryPlugin;
   stateHistoryEntity: EntityStateHistoryPlugin<Todo>;
-  active = this.todosQuery.selectActive();
+
   constructor(private todosQuery: TodosQuery, private todosService: TodosService) {}
 
   ngOnInit() {
@@ -28,7 +28,6 @@ export class TodosPageComponent implements OnInit {
     this.activeFilter$ = this.todosQuery.selectVisibilityFilter$;
     this.checkAll$ = this.todosQuery.checkAll$.pipe(map(numCompleted => numCompleted && numCompleted === this.todosQuery.getCount()));
     this.stateHistory = new StateHistoryPlugin(this.todosQuery);
-    // this.todosService.addBatch();
     this.stateHistoryEntity = new EntityStateHistoryPlugin<Todo>(this.todosQuery);
   }
 
@@ -48,19 +47,11 @@ export class TodosPageComponent implements OnInit {
     }
   }
 
-  /**
-   *
-   * @param {HTMLInputElement} input
-   */
   add(input: HTMLInputElement) {
     this.todosService.add(input.value);
     input.value = '';
   }
 
-  /**
-   *
-   * @param {Todo} todo
-   */
   complete(todo: Todo) {
     this.stateHistory.ignoreNext();
     this.todosService.complete(todo);
@@ -71,31 +62,15 @@ export class TodosPageComponent implements OnInit {
     this.todosService.complete(_todo);
   }
 
-  /**
-   *
-   * @param {ID} id
-   */
   delete(id: ID) {
     this.todosService.delete(id);
   }
 
-  /**
-   *
-   * @param {VISIBILITY_FILTER} filter
-   */
   changeFilter(filter: VISIBILITY_FILTER) {
     this.todosService.updateFilter(filter);
   }
 
-  /**
-   *
-   * @param {any} target
-   */
   checkAll({ target }) {
     this.todosService.checkAll(target.checked);
-  }
-
-  ngOnDestroy() {
-    this.stateHistory.destroy();
   }
 }

@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { FullMovie } from '../state/movie.model';
 import { ID } from '@datorama/akita';
-import { tap } from 'rxjs/operators';
 import { MoviesQuery } from '../state/movies.query';
 import { MoviesService } from '../state/movies.service';
 import { ActorsQuery } from '../actors/state/actors.query';

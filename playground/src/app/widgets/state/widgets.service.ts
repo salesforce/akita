@@ -3,9 +3,7 @@ import { WidgetsStore } from './widgets.store';
 import { createWidget } from './widget.model';
 import { ID } from '@datorama/akita';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class WidgetsService {
   constructor(private widgetsStore: WidgetsStore) {}
 

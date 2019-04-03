@@ -3,14 +3,14 @@ import { CartItem } from './cart.model';
 import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
 import { Product } from '../../products/state/products.model';
 
-export interface State extends EntityState<CartItem> {}
+export interface CartState extends EntityState<CartItem> {}
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({
   name: 'cart',
   idKey: 'productId'
 })
-export class CartStore extends EntityStore<State, CartItem> {
+export class CartStore extends EntityStore<CartState, CartItem> {
   constructor() {
     super();
   }

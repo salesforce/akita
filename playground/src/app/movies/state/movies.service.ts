@@ -9,9 +9,7 @@ import { GenresStore } from '../genres/state/genres.store';
 import { MoviesQuery } from './movies.query';
 import { withTransaction } from '../../../../../akita/src/transaction';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class MoviesService {
   constructor(private moviesStore: MoviesStore, private actorsStore: ActorsStore, private genresStore: GenresStore, private moviesQuery: MoviesQuery) {}
 

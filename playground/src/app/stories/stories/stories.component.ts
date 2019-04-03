@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { createStory, StoriesQuery, StoriesService, Story } from '../state';
 import { PersistNgFormPlugin } from '@datorama/akita';
+import { StoriesQuery } from '../state/stories.query';
+import { createStory, Story } from '../state/story.model';
+import { StoriesService } from '../state/stories.service';
 
 @Component({
   selector: 'app-stories',

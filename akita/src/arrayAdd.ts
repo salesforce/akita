@@ -9,7 +9,7 @@ import { AddEntitiesOptions } from './addEntities';
  *
  * const comments = [...];
  * store.update(1, arrayAdd<Article>('comments', comments))
- *store.update(1, arrayAdd<Article>('comments', comments, { prepend: true }))
+ * store.update(1, arrayAdd<Article>('comments', comments, { prepend: true }))
  *
  */
 export function arrayAdd<Entity, CollectionType = any>(key: ArrayProperties<Entity>, newEntity: CollectionType | CollectionType[], options: AddEntitiesOptions = {}) {

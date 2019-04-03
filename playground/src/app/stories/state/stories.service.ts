@@ -1,21 +1,21 @@
 import { Injectable } from '@angular/core';
 import { StoriesStore } from './stories.store';
-import { StoriesDataService } from './stories-data.service';
-import { tap } from 'rxjs/operators';
+import { mapTo, tap } from 'rxjs/operators';
+import { timer } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class StoriesService {
-  constructor(private storiesStore: StoriesStore, private storiesDataService: StoriesDataService) {}
+  constructor(private storiesStore: StoriesStore) {}
 
   add(story) {
     this.storiesStore.setLoading(true);
-    return this.storiesDataService.add(story).pipe(
-      tap(entity => {
-        this.storiesStore.setLoading(false);
-        // this.storiesStore.add(entity);
-      })
-    );
+    return timer(1000)
+      .pipe(mapTo(story))
+      .pipe(
+        tap(story => {
+          this.storiesStore.setLoading(false);
+          this.storiesStore.add(story);
+        })
+      );
   }
 }

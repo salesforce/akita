@@ -33,5 +33,5 @@ export class ProductPageComponent implements OnInit, OnDestroy {
     return this.activatedRoute.snapshot.params.id;
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy() {}
 }

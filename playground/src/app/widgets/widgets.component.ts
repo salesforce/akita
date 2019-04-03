@@ -1,8 +1,9 @@
-import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { DirtyCheckPlugin, EntityDirtyCheckPlugin, ID } from '../../../../akita/src';
-import { Widget, WidgetsQuery, WidgetsService } from './state';
-import { resetId } from './state/widget.model';
+import { resetId, Widget } from './state/widget.model';
+import { WidgetsService } from './state/widgets.service';
+import { WidgetsQuery } from './state/widgets.query';
 
 @Component({
   selector: 'app-widgets',
@@ -15,10 +16,9 @@ export class WidgetsComponent implements OnInit, OnDestroy {
   activeWidgets$: Observable<Widget[]>;
   dashoboardName$: Observable<string>;
 
-  constructor(private widgetsQuery: WidgetsQuery, private widgetService: WidgetsService, private element: ElementRef) {}
+  constructor(private widgetsQuery: WidgetsQuery, private widgetService: WidgetsService) {}
 
   ngOnInit() {
-    /** check isPristine */
     if (this.widgetsQuery.hasEntity() === false) {
       this.widgetService.initWidgets();
     }

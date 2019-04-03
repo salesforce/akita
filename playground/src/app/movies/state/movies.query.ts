@@ -8,9 +8,7 @@ import { ActorsQuery } from '../actors/state/actors.query';
 import { GenresQuery } from '../genres/state/genres.query';
 import { waitForTransaction } from '../../../../../akita/src/transaction';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class MoviesQuery extends QueryEntity<MoviesState, Movie> {
   ui: EntityUIQuery<MoviesUIState, MovieUI>;
 

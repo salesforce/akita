@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Widget } from './widget.model';
 import { EntityState, EntityStore, StoreConfig, MultiActiveState } from '@datorama/akita';
 
-export interface State extends EntityState<Widget>, MultiActiveState {
+export interface WidgetsState extends EntityState<Widget>, MultiActiveState {
   name: string;
 }
 
@@ -13,7 +13,7 @@ const initState = {
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: 'widgets' })
-export class WidgetsStore extends EntityStore<State, Widget> {
+export class WidgetsStore extends EntityStore<WidgetsState, Widget> {
   constructor() {
     super(initState);
   }

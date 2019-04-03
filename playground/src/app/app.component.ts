@@ -1,4 +1,4 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { akitaDevtools } from '../../../akita/src/devtools';
 import { environment } from '../environments/environment';
 
@@ -7,13 +7,10 @@ import { environment } from '../environments/environment';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   constructor(private ngZone: NgZone) {
     if (!environment.production) {
-      // akitaDevtools(ngZone, { actionsBlacklist: ['@@INIT'] });
       akitaDevtools(ngZone);
     }
   }
-
-  ngOnInit() {}
 }

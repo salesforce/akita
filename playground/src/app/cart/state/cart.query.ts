@@ -1,34 +1,25 @@
 import { Injectable } from '@angular/core';
-import { CartStore, State } from './cart.store';
+import { CartState, CartStore } from './cart.store';
 import { CartItem } from './cart.model';
 import { combineLatest } from 'rxjs';
-import { map, publishReplay, refCount } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 import { QueryEntity } from '@datorama/akita';
 import { ProductsQuery } from '../../products/state/products.query';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class CartQuery extends QueryEntity<State, CartItem> {
+@Injectable({ providedIn: 'root' })
+export class CartQuery extends QueryEntity<CartState, CartItem> {
   constructor(protected store: CartStore, private productsQuery: ProductsQuery) {
     super(store);
   }
 
   selectItems$ = combineLatest(this.selectAll(), this.productsQuery.selectAll({ asObject: true })).pipe(
     map(joinItems),
-    publishReplay(),
-    refCount()
+    shareReplay({ bufferSize: 1, refCount: true })
   );
 
   selectTotal$ = this.selectItems$.pipe(map(items => items.reduce((acc, item) => acc + item.total, 0)));
 }
 
-/**
- *
- * @param {any} cartItems
- * @param {any} products
- * @returns {any}
- */
 function joinItems([cartItems, products]) {
   return cartItems.map(cartItem => {
     const product = products[cartItem.productId];
