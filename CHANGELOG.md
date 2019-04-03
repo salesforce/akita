@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.4.1"></a>
+## [3.4.1](https://github.com/datorama/akita/compare/v3.4.0...v3.4.1) (2019-04-03)
+
+
+### Bug Fixes
+
+* **devtools:** call reset action ([151df7a](https://github.com/datorama/akita/commit/151df7a))
+
+
+
 <a name="3.4.0"></a>
 # [3.4.0](https://github.com/datorama/akita/compare/v3.2.5...v3.4.0) (2019-03-31)
 
