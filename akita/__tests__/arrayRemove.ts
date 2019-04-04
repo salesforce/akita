@@ -1,7 +1,7 @@
 import { ID, EntityState } from '../src/types';
 import { StoreConfig } from '../src/storeConfig';
 import { EntityStore } from '../src/entityStore';
-import { arrayAdd } from '../src/arrayAdd';
+import { arrayRemove } from '../src/arrayRemove';
 
 interface Comment {
   id: ID;
@@ -21,35 +21,32 @@ class ArticlesStore extends EntityStore<ArticlesState, Article> {}
 
 const store = new ArticlesStore();
 
-describe('arrayAdd', () => {
-  it('should add one', () => {
+describe('arrayRemove', () => {
+  it('should remove one', () => {
     const article: Article = {
       id: 1,
       title: '',
-      comments: []
+      comments: [{ id: 1, text: '' }, { id: 2, text: '' }]
     };
 
     store.add(article);
-    const comment = { id: 1, text: 'comment' };
-    store.update(1, arrayAdd<Article>('comments', comment));
+    store.update(1, arrayRemove<Article>('comments', 2));
     expect(store._value().entities[1].comments.length).toBe(1);
-    expect(store._value().entities[1].comments[0]).toBe(comment);
+    expect(store._value().entities[1].comments[1]).toBeUndefined();
     store.remove();
   });
 
-  it('should add multi', () => {
+  it('should remove multi', () => {
     const article: Article = {
       id: 1,
       title: '',
-      comments: []
+      comments: [{ id: 1, text: '' }, { id: 2, text: '' }, { id: 3, text: '' }]
     };
 
     store.add(article);
-    const comments = [{ id: 1, text: 'comment' }, { id: 2, text: 'comment2' }];
-    store.update(1, arrayAdd<Article>('comments', comments));
-    expect(store._value().entities[1].comments.length).toBe(2);
-    expect(store._value().entities[1].comments[0]).toBe(comments[0]);
-    expect(store._value().entities[1].comments[1]).toBe(comments[1]);
+    store.update(1, arrayRemove<Article>('comments', [1, 3]));
+    expect(store._value().entities[1].comments.length).toBe(1);
+    expect(store._value().entities[1].comments).toEqual([article.comments[1]]);
     store.remove();
   });
 });

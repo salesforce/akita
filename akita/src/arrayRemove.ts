@@ -1,9 +1,6 @@
-import { ArrayProperties, IDS, ItemPredicate } from './types';
+import { IDS, ArrayProperties } from './types';
 import { DEFAULT_ID_KEY } from './defaultIDKey';
 import { coerceArray } from './coerceArray';
-import { isObject } from './isObject';
-import { isFunction } from './isFunction';
-import { not } from './not';
 
 /**
  * Remove item from collection
@@ -11,36 +8,14 @@ import { not } from './not';
  * @example
  *
  * store.update(1, arrayRemove<Article>('comments', ids))
- * store.update(1, arrayRemove<Article>('comments', 'comment'))
- * store.update(1, arrayRemove<Article>('comments', comment => comment.draft === true))
  * store.update(1, arrayRemove<Article>('comments', ids, '_id'))
- *
- * store.update(state => ({
- *   names: arrayRemove(state.names, ['one', 'second'])
- * }))
  */
-export function arrayRemove<Root extends any[], Entity = Root[0]>(keyOrRoot: Root, identifier: IDS | ItemPredicate<Root[0]>, idKey?: string): Root[0][];
-export function arrayRemove<Root, Entity = any>(keyOrRoot: ArrayProperties<Root>, identifier: IDS | ItemPredicate<Entity>, idKey?: string): (state: Root) => Root;
-export function arrayRemove<Root, Entity = any>(keyOrRoot: ArrayProperties<Root> | Root, identifier: IDS | ItemPredicate<Entity>, idKey = DEFAULT_ID_KEY) {
-  let identifiers;
-  let filterFn;
+export function arrayRemove<Entity>(key: ArrayProperties<Entity>, entityId: IDS, idKey = DEFAULT_ID_KEY) {
+  const ids = coerceArray(entityId);
 
-  if (isFunction(identifier)) {
-    filterFn = not(identifier);
-  } else {
-    identifiers = coerceArray(identifier as IDS);
-    filterFn = current => {
-      return identifiers.includes(isObject(current) ? current[idKey] : current) === false;
-    };
-  }
-
-  if (Array.isArray(keyOrRoot)) {
-    return keyOrRoot.filter(filterFn);
-  }
-
-  return state => {
+  return entity => {
     return {
-      [keyOrRoot as string]: state[keyOrRoot].filter(filterFn)
+      [key]: entity[key].filter(current => ids.includes(current[idKey]) === false)
     };
   };
 }
