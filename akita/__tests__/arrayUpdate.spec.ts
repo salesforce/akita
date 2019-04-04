@@ -14,10 +14,16 @@ interface Article {
   title: string;
 }
 
-interface ArticlesState extends EntityState<Article> {}
+interface ArticlesState extends EntityState<Article> {
+  names: string[];
+}
 
 @StoreConfig({ name: 'articles' })
-class ArticlesStore extends EntityStore<ArticlesState, Article> {}
+class ArticlesStore extends EntityStore<ArticlesState, Article> {
+  constructor() {
+    super({ names: ['a', 'b', 'c'] });
+  }
+}
 
 const store = new ArticlesStore();
 
@@ -52,6 +58,10 @@ describe('arrayUpdate', () => {
     expect(store._value().entities[1].comments[0].text).toBe('updated');
     expect(store._value().entities[1].comments[1].text).toBe('comment2');
     expect(store._value().entities[1].comments[2].text).toBe('updated');
+    store.update(1, entity => ({
+      comments: arrayUpdate(entity.comments, 1, { text: 'NEW' })
+    }));
+    expect(store._value().entities[1].comments[0].text).toBe('NEW'); // id = 1
     store.remove();
   });
 
@@ -86,5 +96,19 @@ describe('arrayUpdate', () => {
     expect(store._value().entities[1].comments[0].text).toBe('comment');
     expect(store._value().entities[1].comments[1].text).toBe('updated');
     store.remove();
+  });
+
+  it('should work with non-objects', () => {
+    const updateName = arrayUpdate<ArticlesState, string>('names', 'b', 'newName');
+    store.update(updateName);
+    expect(store._value().names).toEqual(['a', 'newName', 'c']);
+    const updateNames = arrayUpdate<ArticlesState, string>('names', ['a', 'newName', 'c'], 'NEW');
+    store.update(updateNames);
+    expect(store._value().names).toEqual(['NEW', 'NEW', 'NEW']);
+
+    store.update(state => ({
+      names: arrayUpdate(state.names, 'NEW', 'NEWNEW')
+    }));
+    expect(store._value().names).toEqual(['NEWNEW', 'NEWNEW', 'NEWNEW']);
   });
 });

@@ -48,4 +48,5 @@ export type ArrayProperties<T> = { [K in keyof T]: T[K] extends any[] ? K : neve
 export type ItemPredicate<Item = any> = (item: Item) => boolean;
 export type MaybeAsync<T = any> = Promise<T> | Observable<T> | T;
 export type EntityUICreateFn<EntityUI = any, Entity = any> = EntityUI | ((entity: Entity) => EntityUI);
-export type Constructor<T = any> = new(...args: any[]) => T;
+export type Constructor<T = any> = new (...args: any[]) => T;
+export type OrArray<Type> = Type | Type[];
