@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.5.1"></a>
+## [3.5.1](https://github.com/datorama/akita/compare/v3.5.0...v3.5.1) (2019-04-04)
+
+
+### Bug Fixes
+
+* **persist-state:** merge clear all stores ([a2dd005](https://github.com/datorama/akita/commit/a2dd005))
+
+
+
+<a name="3.4.2"></a>
+## [3.4.2](https://github.com/datorama/akita/compare/v3.4.1...v3.4.2) (2019-04-03)
+
+
+### Bug Fixes
+
+* **persist-state:** clear store should allow delete all ([1e49782](https://github.com/datorama/akita/commit/1e49782)), closes [#199](https://github.com/datorama/akita/issues/199)
+
+
+
 <a name="3.5.0"></a>
 # [3.5.0](https://github.com/datorama/akita/compare/v3.4.1...v3.5.0) (2019-04-04)
 
