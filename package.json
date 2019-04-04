@@ -1,6 +1,6 @@
 {
   "name": "@datorama/akita",
-  "version": "3.4.1",
+  "version": "3.4.2",
   "description": "State Management Tailored-Made for JS Applications",
   "schematics": "./schematics/collection.json",
   "scripts": {
