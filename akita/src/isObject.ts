@@ -1,4 +1,5 @@
 // @internal
 export function isObject(value: any) {
-  return Object.prototype.toString.call(value) === '[object Object]';
+  const type = typeof value;
+  return value != null && (type == 'object' || type == 'function');
 }

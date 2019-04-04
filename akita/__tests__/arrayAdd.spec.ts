@@ -14,10 +14,16 @@ interface Article {
   title: string;
 }
 
-interface ArticlesState extends EntityState<Article> {}
+interface ArticlesState extends EntityState<Article> {
+  names: string[];
+}
 
 @StoreConfig({ name: 'articles' })
-class ArticlesStore extends EntityStore<ArticlesState, Article> {}
+class ArticlesStore extends EntityStore<ArticlesState, Article> {
+  constructor() {
+    super({ names: [] });
+  }
+}
 
 const store = new ArticlesStore();
 
@@ -46,10 +52,22 @@ describe('arrayAdd', () => {
 
     store.add(article);
     const comments = [{ id: 1, text: 'comment' }, { id: 2, text: 'comment2' }];
-    store.update(1, arrayAdd<Article>('comments', comments));
+    const updateComments = arrayAdd<Article>('comments', comments);
+    store.update(1, updateComments);
     expect(store._value().entities[1].comments.length).toBe(2);
     expect(store._value().entities[1].comments[0]).toBe(comments[0]);
     expect(store._value().entities[1].comments[1]).toBe(comments[1]);
     store.remove();
+  });
+
+  it('should work with non-objects', () => {
+    const updateNames = arrayAdd<ArticlesState, string>('names', 'Netanel');
+    store.update(updateNames);
+    expect(store._value().names).toEqual(['Netanel']);
+    store.update(state => ({
+      names: arrayAdd(state.names, 'newName')
+    }));
+
+    expect(store._value().names).toEqual(['Netanel', 'newName']);
   });
 });
