@@ -58,7 +58,7 @@ export function distinctUntilArrayItemChanged<T>(): MonoTypeOperatorFunction<T[]
   });
 }
 
-// @interanl
+// @internal
 function hasChange<T>(first: T[], second: T[]) {
   const hasChange = second.some(currentItem => {
     const oldItem = first.find(prevItem => prevItem === currentItem);
