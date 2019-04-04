@@ -9,6 +9,7 @@ import { Actions, setAction } from './actions';
 import { setValue } from './setValueByString';
 import { rootDispatcher } from './rootDispatcher';
 import { isNotBrowser } from './root';
+import { isNil } from './isNil';
 
 export interface PersistStateStorage {
   getItem(key: string): MaybeAsync;
@@ -157,7 +158,12 @@ export function persistState(params?: Partial<PersistStateParams>) {
     clear() {
       storage.clear();
     },
-    clearStore(storeName: string) {
+    clearStore(storeName?: string) {
+      if (isNil(storeName)) {
+        const value = resolve(storage.setItem(key, '{}'));
+        value.subscribe();
+        return;
+      }
       const value = storage.getItem(key);
       resolve(value).subscribe(v => {
         const storageState = deserialize(v || '{}');
