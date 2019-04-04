@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.5.0"></a>
+# [3.5.0](https://github.com/datorama/akita/compare/v3.4.1...v3.5.0) (2019-04-04)
+
+
+### Bug Fixes
+
+* **array-utils:** add support for non object keys ([e2456c1](https://github.com/datorama/akita/commit/e2456c1))
+
+
+### Features
+
+* **array-utils:** add support for non-object keys ([c434621](https://github.com/datorama/akita/commit/c434621))
+
+
+
 <a name="3.4.2"></a>
 ## [3.4.2](https://github.com/datorama/akita/compare/v3.4.1...v3.4.2) (2019-04-04)
 
