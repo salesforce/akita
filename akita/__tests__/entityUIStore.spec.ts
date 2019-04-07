@@ -100,7 +100,7 @@ describe('EntityUIState', () => {
 });
 
 @StoreConfig({ name: 'articles' })
-class Articles2Store extends EntityStore<ArticlesState, Article, ArticleUI> {
+class Articles2Store extends EntityStore<ArticlesState, Article> {
   constructor() {
     super();
     this.createUIStore({}, { storeName: 'myname' });
@@ -113,5 +113,30 @@ describe('EntityUIState - custom options', () => {
   it('should set the name', () => {
     expect((store2 as any).ui).toBeInstanceOf(EntityStore);
     expect((store2 as any).ui.storeName).toBe('myname');
+  });
+});
+
+@StoreConfig({ name: 'articles', idKey: 'uid' })
+class Articles3Store extends EntityStore<any, any> {
+  counter = 0;
+  constructor() {
+    super();
+    this.akitaPreAddEntity = this.akitaPreAddEntity.bind(this);
+    this.createUIStore().setInitialEntityState({ isOpen: false });
+  }
+
+  akitaPreAddEntity(entity) {
+    return { ...entity, uid: this.counter++ };
+  }
+}
+
+const store3 = new Articles3Store();
+
+describe('EntityUIState - support a prehook', () => {
+  it('should support work', () => {
+    store3.set([{ title: '3'}])
+    store3.add([{ title: '1' }, { title: '2' }]);
+    expect(store3.ui._value().ids).toEqual([0, 1, 2]);
+    expect(store3.ui._value().entities).toEqual({ '0': { uid: 0, isOpen: false }, '1': { uid: 1, isOpen: false }, '2': { uid: 2, isOpen: false } });
   });
 });

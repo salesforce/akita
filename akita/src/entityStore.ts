@@ -113,7 +113,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     );
 
     if (this.hasInitialUIState()) {
-      this.handleUICreation(notExistEntities.map(entity => entity[this.idKey]));
+      this.handleUICreation(true);
     }
   }
 
@@ -379,7 +379,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    * }
    */
   createUIStore(initialState = {}, storeConfig: Partial<StoreConfigOptions> = {}) {
-    const defaults: Partial<StoreConfigOptions> = { name: `UI/${this.storeName}` };
+    const defaults: Partial<StoreConfigOptions> = { name: `UI/${this.storeName}`, idKey: this.idKey };
     this.ui = new EntityUIStore(initialState, { ...defaults, ...storeConfig });
     return this.ui;
   }
@@ -435,19 +435,26 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     }
   }
 
-  private handleUICreation(addedIds?: ID[]) {
-    const ids = addedIds || this.ids;
+  private handleUICreation(add = false) {
+    const ids = this.ids;
     const isFunc = isFunction(this.ui._akitaCreateEntityFn);
-    const uiEntities = ids.map(id => {
+    let uiEntities;
+    const createFn = id => {
       const current = this.entities[id];
       const ui = isFunc ? this.ui._akitaCreateEntityFn(current) : this.ui._akitaCreateEntityFn;
       return {
         [this.idKey]: current[this.idKey],
         ...ui
       };
-    });
+    };
 
-    addedIds ? this.ui.add(uiEntities) : this.ui.set(uiEntities);
+    if (add) {
+      uiEntities = this.ids.filter(id => isUndefined(this.ui.entities[id])).map(createFn);
+    } else {
+      uiEntities = ids.map(createFn);
+    }
+
+    add ? this.ui.add(uiEntities) : this.ui.set(uiEntities);
   }
 
   private hasInitialUIState() {
