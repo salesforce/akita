@@ -148,10 +148,10 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
   /**
    * Clear the cache.
    */
-  clearCache() {
+  clearCache(options: { clearStore: boolean } = { clearStore: true }) {
     if (!this.initial) {
       logAction('@Pagination - Clear Cache');
-      this.getStore().remove();
+      options.clearStore && this.getStore().remove();
       this.pages = new Map();
       this.metadata = new Map();
     }
