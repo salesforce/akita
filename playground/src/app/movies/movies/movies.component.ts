@@ -55,4 +55,8 @@ export class MoviesComponent implements OnInit {
   markAsOpen(id: ID) {
     this.moviesService.markAsOpen(id);
   }
+
+  deleteActor(actor: Actor) {
+    this.moviesService.deleteActor(actor.id);
+  }
 }

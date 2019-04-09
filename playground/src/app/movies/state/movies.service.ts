@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { MoviesStore } from './movies.store';
-import { ID } from '@datorama/akita';
+import { ID, transaction, withTransaction, arrayRemove } from '@datorama/akita';
 import { of, timer } from 'rxjs';
 import { mapTo } from 'rxjs/operators';
 import { movies } from '../normalized';
 import { ActorsStore } from '../actors/state/actors.store';
 import { GenresStore } from '../genres/state/genres.store';
 import { MoviesQuery } from './movies.query';
-import { withTransaction } from '../../../../../akita/src/transaction';
 
 @Injectable({ providedIn: 'root' })
 export class MoviesService {
@@ -36,5 +35,11 @@ export class MoviesService {
 
   markAsOpen(id: ID) {
     this.moviesStore.ui.update(id, entity => ({ isOpen: !entity.isOpen }));
+  }
+
+  @transaction()
+  deleteActor(id: ID) {
+    this.actorsStore.remove(id);
+    this.moviesStore.update(null, entity => ({ actors: arrayRemove(entity.actors, id) }));
   }
 }

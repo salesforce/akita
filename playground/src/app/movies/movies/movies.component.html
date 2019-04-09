@@ -38,6 +38,7 @@
                  (keyup.enter)="edit(actor.id, actorName.value)">
           <i class="tiny material-icons" (click)="toggleView(actor.id, actorName)">edit</i>
         </td>
+        <td><button (click)="deleteActor(actor)">Delete</button></td>
       </tr>
     </tbody>
   </table>
