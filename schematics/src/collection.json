@@ -1,4 +1,5 @@
 {
+  "extends": ["@schematics/angular"],
   "schematics": {
     "ng-add": {
       "description": "Akita schematic",
