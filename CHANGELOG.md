@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.5.6"></a>
+## [3.5.6](https://github.com/datorama/akita/compare/v3.5.5...v3.5.6) (2019-04-13)
+
+
+### Bug Fixes
+
+* **schematics:** extend angular schematics ([0aca15a](https://github.com/datorama/akita/commit/0aca15a))
+
+
+
 <a name="3.5.5"></a>
 ## [3.5.5](https://github.com/datorama/akita/compare/v3.5.4...v3.5.5) (2019-04-08)
 
