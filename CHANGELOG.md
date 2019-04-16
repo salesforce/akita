@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.5.7"></a>
+## [3.5.7](https://github.com/datorama/akita/compare/v3.5.5...v3.5.7) (2019-04-16)
+
+
+### Bug Fixes
+
+* **schematics:** extend angular schematics ([3fe10a1](https://github.com/datorama/akita/commit/3fe10a1))
+* add platform check for NativeScript ([4930c9b](https://github.com/datorama/akita/commit/4930c9b))
+
+
+
 <a name="3.5.6"></a>
 ## [3.5.6](https://github.com/datorama/akita/compare/v3.5.5...v3.5.6) (2019-04-13)
 
