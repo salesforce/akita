@@ -4,6 +4,7 @@ export type StoreConfigOptions = {
   idKey?: string;
   storeName?: string;
   cache?: { ttl: number };
+  deepFreezeFn?: (o: any) => any;
 };
 
 export type UpdatableStoreConfigOptions = {
