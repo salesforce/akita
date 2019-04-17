@@ -134,13 +134,18 @@ export class Store<S> {
   }
 
   // @internal
+  get deepFreeze() {
+    return this.config.deepFreezeFunction || this.options.deepFreezeFunction || deepFreeze;
+  }
+
+  // @internal
   get cacheConfig() {
     return this.config.cache || this.options.cache;
   }
 
   // @internal
   _setState(newStateFn: (state: Readonly<S>) => S, _dispatchAction = true) {
-    this.storeValue = __DEV__ ? deepFreeze(newStateFn(this._value())) : newStateFn(this._value());
+    this.storeValue = __DEV__ ? this.deepFreeze(newStateFn(this._value())) : newStateFn(this._value());
 
     if (!this.store) {
       this.store = new BehaviorSubject(this.storeValue);
