@@ -25,7 +25,7 @@ class ArticlesQuery extends QueryEntity<ArticlesState, Article> {}
 const store = new ArticlesStore();
 const query = new ArticlesQuery(store);
 
-describe('arrayFind', () => {
+describe('arrayFind.spec.ts', () => {
   it('should find one', () => {
     const spy = jest.fn();
     const article: Article = {

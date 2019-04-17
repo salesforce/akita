@@ -129,7 +129,7 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
 
     const entities = ids.map(id => this.selectEntity(id, project));
 
-    return combineLatest(entities).pipe(auditTime(0));
+    return combineLatest(entities).pipe(map(v => v.filter(Boolean)), auditTime(0));
   }
 
   /**
