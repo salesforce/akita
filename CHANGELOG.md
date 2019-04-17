@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.6.0"></a>
+# [3.6.0](https://github.com/datorama/akita/compare/v3.5.7...v3.6.0) (2019-04-17)
+
+
+### Bug Fixes
+
+* **storeconfig:** changed config name ([74c1e1f](https://github.com/datorama/akita/commit/74c1e1f))
+
+
+### Features
+
+* **store,storeconfig:** config for deepFreeze function ([1d7535c](https://github.com/datorama/akita/commit/1d7535c)), closes [#124](https://github.com/datorama/akita/issues/124)
+
+
+
 <a name="3.5.7"></a>
 ## [3.5.7](https://github.com/datorama/akita/compare/v3.5.5...v3.5.7) (2019-04-16)
 
