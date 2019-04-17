@@ -135,7 +135,7 @@ export class Store<S> {
 
   // @internal
   get deepFreeze() {
-    return this.config.deepFreezeFunction || this.options.deepFreezeFunction || deepFreeze;
+    return this.config.deepFreezeFn || this.options.deepFreezeFn || deepFreeze;
   }
 
   // @internal

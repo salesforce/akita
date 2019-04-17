@@ -54,7 +54,7 @@ function deepFreezeCustom(o: ComplexState) {
 
 @StoreConfig({
   name: 'complexState2',
-  deepFreezeFunction: deepFreezeCustom
+  deepFreezeFn: deepFreezeCustom
 })
 class ComplexStoreCustom extends Store<ComplexState> {
   constructor() {
