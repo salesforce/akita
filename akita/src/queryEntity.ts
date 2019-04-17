@@ -12,8 +12,7 @@ import { entitiesToMap } from './entitiesToMap';
 import { SelectAllOptionsA, SelectAllOptionsB, SelectAllOptionsC, SelectAllOptionsD, SelectAllOptionsE } from './selectAllOverloads';
 import { isArray } from './isArray';
 import { isNil } from './isNil';
-import { isString } from './isString';
-import { isUndefined } from './isUndefined';
+import { getEntity } from './getEntity';
 
 /**
  *
@@ -146,23 +145,7 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
   selectEntity<K extends keyof E>(id: EntityID, project?: K): Observable<E[K]>;
   selectEntity<R>(id: EntityID, project: (entity: E) => R): Observable<R>;
   selectEntity<R>(id: EntityID, project?: ((entity: E) => R) | keyof E): Observable<R | E> {
-    return this.select(() => {
-      const entity = this.getEntity(id);
-
-      if (isUndefined(entity)) {
-        return undefined;
-      }
-
-      if (!project) {
-        return entity;
-      }
-
-      if (isString(project)) {
-        return entity[project as string];
-      }
-
-      return (project as Function)(entity);
-    });
+    return this.select(state => state.entities).pipe(map(getEntity(id, project)), distinctUntilChanged());
   }
 
   /**
