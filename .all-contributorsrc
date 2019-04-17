@@ -3,6 +3,7 @@
   "projectOwner": "NetanelBasal",
   "repoType": "github",
   "repoHost": "https://github.com",
+  "commitConvention": "angular",
   "files": [
     "README.md"
   ],
@@ -204,6 +205,15 @@
       "name": "Alexander Vakrilov",
       "avatar_url": "https://avatars3.githubusercontent.com/u/4092076?v=4",
       "profile": "https://www.nativescript.org/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "orangeswim",
+      "name": "Cyprian Bergonia",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1499212?v=4",
+      "profile": "https://github.com/orangeswim",
       "contributions": [
         "code"
       ]
