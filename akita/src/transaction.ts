@@ -1,8 +1,6 @@
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { logAction } from './actions';
-import { tap } from 'rxjs/internal/operators/tap';
-import { switchMap } from 'rxjs/internal/operators/switchMap';
-import { buffer, map } from 'rxjs/operators';
+import { buffer, map, tap, switchMap } from 'rxjs/operators';
 
 // @internal
 const transactionFinished = new Subject();
