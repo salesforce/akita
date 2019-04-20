@@ -238,13 +238,12 @@ describe('Paginator', () => {
 
   describe('clear cache', () => {
     it('it clear the provided page', () => {
-      paginator.clearCache(3);
       requestFunc.mockClear();
-      expect(paginator.pages.get(3)).toBeUndefined();
       paginator.setPage(3);
       expect(requestFunc).toHaveBeenCalledTimes(1);
-      paginator.setPage(3);
-      expect(requestFunc).toHaveBeenCalledTimes(1);
+      expect(paginator.hasPage(3)).toBeTruthy();
+      paginator.clearPage(3);
+      expect(paginator.hasPage(3)).toBeFalsy();
     });
     it('it should clear all', () => {
       paginator.clearCache();
