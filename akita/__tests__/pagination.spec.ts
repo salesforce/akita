@@ -236,15 +236,14 @@ describe('Paginator', () => {
     });
   });
 
-  describe('clear cache', () => {
+  describe('clear cache as default behaviour', () => {
     it('it clear the provided page', () => {
-      paginator.clearCache(3);
       requestFunc.mockClear();
-      expect(paginator.pages.get(3)).toBeUndefined();
       paginator.setPage(3);
       expect(requestFunc).toHaveBeenCalledTimes(1);
-      paginator.setPage(3);
-      expect(requestFunc).toHaveBeenCalledTimes(1);
+      expect(paginator.hasPage(3)).toBeTruthy();
+      paginator.clearPage(3);
+      expect(paginator.hasPage(3)).toBeFalsy();
     });
     it('it should clear all', () => {
       paginator.clearCache();
@@ -258,6 +257,14 @@ describe('Paginator', () => {
       expect(requestFunc).toHaveBeenCalledTimes(2);
       paginator.setPage(2);
       expect(requestFunc).toHaveBeenCalledTimes(2);
+    });
+    it('it should not clear the store when explicit stated', () => {
+      store.set(data);
+      expect(query.getAll().length).toBeGreaterThan(0);
+      let initialLength = query.getAll().length;
+      paginator.clearCache({ clearStore: false });
+      let lengthAfterCacheClear = query.getAll().length;
+      expect(initialLength).toEqual(lengthAfterCacheClear);
     });
   });
 });
@@ -290,7 +297,7 @@ describe('cacheTimeout', () => {
     )
     .subscribe();
 
-  it('should clear cache when cacheTimeout emits', () => {
+  it('should clear cache when cacheTimeout emits as default behaviour', () => {
     spyOn(paginator2, 'clearCache').and.callThrough();
     expect(query2.getAll().length).toEqual(10);
     expect(requestFunc).toHaveBeenCalledTimes(1);
@@ -300,5 +307,50 @@ describe('cacheTimeout', () => {
     expect(paginator2.hasPage(1)).toBeTruthy();
     expect(requestFunc).toHaveBeenCalledTimes(2);
     expect(paginator2.clearCache).toHaveBeenCalledTimes(1);
+  });
+});
+
+let store3 = new TodosStore();
+
+class Todos3Query extends QueryEntity<any, Todo> {
+  constructor() {
+    super(store3);
+  }
+}
+
+describe('cacheTimeout and clearStoreWithCache false', () => {
+  jest.useFakeTimers();
+  const query3 = new Todos3Query();
+  const paginator3 = new PaginatorPlugin(query3, { cacheTimeout: timer(15000), clearStoreWithCache: false });
+  const requestFunc = jest.fn();
+
+  paginator3.pageChanges
+    .pipe(
+      switchMap(page => {
+        const req = requestFunc.mockReturnValue(
+          getContacts({
+            page,
+            perPage: 10
+          })
+        );
+        return paginator3.getPage(req);
+      })
+    )
+    .subscribe();
+
+  it('it should not clear store when cacheTimeout emits', () => {
+    spyOn(paginator3, 'clearCache').and.callThrough();
+    expect(query3.getAll().length).toEqual(10);
+    expect(requestFunc).toHaveBeenCalledTimes(1);
+    jest.runAllTimers();
+    expect(paginator3.clearCache).toHaveBeenCalledTimes(1);
+    expect(query3.getAll().length).toEqual(10);
+  });
+
+  it('clearCache should clear the store when explicit stated', () => {
+    store3.set(data);
+    expect(query3.getAll().length).toBeGreaterThan(0);
+    paginator3.clearCache({ clearStore: true });
+    expect(query3.getAll().length).toEqual(0);
   });
 });
