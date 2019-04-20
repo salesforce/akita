@@ -126,20 +126,7 @@ export function withTransaction<T>(transactionFn: Function) {
 
 /**
  * @experimental
- *
- * RxJS custom operator that waits for a transaction to end before firing
- *
- * @example
- *
- *  return combineLatest(
- *     this.selectAll(),
- *     this.actorsQuery.selectAll({ asObject: true }),
- *     this.genresQuery.selectAll({ asObject: true }))
- *  .pipe(
- *     waitForTransaction(),
- *     map(([movies, actors, genres]) => { ... })
- *   );
- *
+ * @deprecated use auditTime() instead
  */
 export function waitForTransaction<T>() {
   return function(source: Observable<T>) {
