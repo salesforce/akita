@@ -23,15 +23,13 @@ export type PaginatorConfig = {
   range?: boolean;
   startWith?: number;
   cacheTimeout?: Observable<number>;
-  clearStoreWithCache?: boolean;
 };
 
 const paginatorDefaults: PaginatorConfig = {
   pagesControls: false,
   range: false,
   startWith: 1,
-  cacheTimeout: undefined,
-  clearStoreWithCache: true,
+  cacheTimeout: undefined
 };
 
 export class PaginatorPlugin<E> extends AkitaPlugin<E> {
@@ -150,14 +148,10 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
   /**
    * Clear the cache.
    */
-  clearCache(options: { clearStore?: boolean } = {}) {
+  clearCache(options: { clearStore: boolean } = { clearStore: true }) {
     if (!this.initial) {
       logAction('@Pagination - Clear Cache');
-
-      if (options.clearStore !== false && (this.config.clearStoreWithCache || options.clearStore)) {
-        this.getStore().remove();
-      }
-
+      options.clearStore && this.getStore().remove();
       this.pages = new Map();
       this.metadata = new Map();
     }
