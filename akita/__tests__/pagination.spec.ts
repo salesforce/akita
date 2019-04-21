@@ -2,7 +2,7 @@ import { Todo, TodosStore } from './setup';
 import { QueryEntity } from '../src/queryEntity';
 import { PaginationResponse, PaginatorPlugin } from '../src/plugins/paginator/paginatorPlugin';
 import { switchMap } from 'rxjs/operators';
-import { Observable, of, timer } from 'rxjs';
+import { interval, Observable, of, timer } from 'rxjs';
 
 let store = new TodosStore();
 
@@ -280,7 +280,7 @@ class Todos2Query extends QueryEntity<any, Todo> {
 describe('cacheTimeout', () => {
   jest.useFakeTimers();
   const query2 = new Todos2Query();
-  const paginator2 = new PaginatorPlugin(query2, { cacheTimeout: timer(15000) });
+  const paginator2 = new PaginatorPlugin(query2, { cacheTimeout: interval(15000) });
   const requestFunc = jest.fn();
 
   paginator2.pageChanges
@@ -301,7 +301,7 @@ describe('cacheTimeout', () => {
     spyOn(paginator2, 'clearCache').and.callThrough();
     expect(query2.getAll().length).toEqual(10);
     expect(requestFunc).toHaveBeenCalledTimes(1);
-    jest.runAllTimers();
+    jest.runOnlyPendingTimers();
     expect(paginator2.hasPage(1)).toBeFalsy();
     paginator2.setPage(1);
     expect(paginator2.hasPage(1)).toBeTruthy();
@@ -321,7 +321,7 @@ class Todos3Query extends QueryEntity<any, Todo> {
 describe('cacheTimeout and clearStoreWithCache false', () => {
   jest.useFakeTimers();
   const query3 = new Todos3Query();
-  const paginator3 = new PaginatorPlugin(query3, { cacheTimeout: timer(15000), clearStoreWithCache: false });
+  const paginator3 = new PaginatorPlugin(query3, { cacheTimeout: interval(15000), clearStoreWithCache: false });
   const requestFunc = jest.fn();
 
   paginator3.pageChanges
@@ -342,7 +342,7 @@ describe('cacheTimeout and clearStoreWithCache false', () => {
     spyOn(paginator3, 'clearCache').and.callThrough();
     expect(query3.getAll().length).toEqual(10);
     expect(requestFunc).toHaveBeenCalledTimes(1);
-    jest.runAllTimers();
+    jest.runOnlyPendingTimers();
     expect(paginator3.clearCache).toHaveBeenCalledTimes(1);
     expect(query3.getAll().length).toEqual(10);
   });
