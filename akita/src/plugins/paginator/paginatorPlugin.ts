@@ -272,6 +272,9 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
   }
 
   private getTo() {
+    if(this.isLast) {
+      return this.pagination.total;
+    }
     return this.currentPage * this.pagination.perPage;
   }
 
