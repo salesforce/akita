@@ -186,7 +186,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    *
    */
   @transaction()
-  upsert(ids: IDS, newState: Partial<E> | E | UpdateStateCallback<E>, options: { baseClass?: Constructor } = {}) {
+  upsert(ids: IDS, newState: Partial<E> | E | UpdateStateCallback<E> | E[], options: { baseClass?: Constructor } = {}) {
     const toArray = coerceArray(ids);
     const predicate = isUpdate => id => hasEntity(this.entities, id) === isUpdate;
     const isClassBased = isFunction(options.baseClass);
@@ -203,7 +203,47 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     // it can be any of the three types
     this.update(updateIds as any, newState as any);
     this.add(newEntities);
-    isDev() && logAction('Upsert Entity', ids);
+    isDev() && logAction('Upsert Entity');
+  }
+
+  /**
+   *
+   * Upsert entity collection (idKey must be present)
+   *
+   * @example
+   *
+   * store.upsertMany([ { id: 1 }, { id: 2 }]);
+   *
+   */
+  upsertMany(entities: E[], options: { baseClass?: Constructor; loading?: boolean } = {}) {
+    const addedIds = [];
+    const updatedIds = [];
+    const updatedEntities = {};
+
+    for (const entity of entities) {
+      const id = entity[this.idKey];
+      if (hasEntity(this.entities, id)) {
+        updatedEntities[id] = { ...this._value().entities[id], ...entity };
+        updatedIds.push(id);
+      } else {
+        const newEntity = options.baseClass ? new options.baseClass(entity) : entity;
+        addedIds.push(id);
+        updatedEntities[id] = newEntity;
+      }
+    }
+
+    this._setState(state => ({
+      ...state,
+      ids: addedIds.length ? [...state.ids, ...addedIds] : state.ids,
+      entities: {
+        ...state.entities,
+        ...updatedEntities
+      },
+      loading: !!options.loading
+    }));
+
+    this.updatedEntityIds.next(updatedIds);
+    isDev() && logAction('Upsert Many');
   }
 
   /**

@@ -5,6 +5,9 @@ import { EntityStore } from '../src/entityStore';
 interface Article {
   id: ID;
   title: string;
+  moreInfo?: {
+    description: string;
+  };
 }
 
 interface ArticlesState extends EntityState<Article> {}
@@ -40,5 +43,22 @@ describe('upsert', () => {
     expect(store._value().entities[1].title).toEqual('new title2');
     expect(store._value().ids.length).toBe(1);
     store.remove();
+  });
+
+  describe('UpsertMany', () => {
+    it('should support array of entities', () => {
+      const data = [{ id: 1, title: '1', moreInfo: { description: 'desc1' } }, { id: 2, title: '2', moreInfo: { description: 'desc2' } }];
+      store.set(data);
+      expect(store._value().ids.length).toBe(2);
+      const baseData: Article[] = [{ id: 1, title: '1' }, { id: 2, title: '2' }];
+
+      store.upsertMany(baseData);
+
+      expect(store._value().entities[1]).toEqual({
+        id: 1,
+        title: '1',
+        moreInfo: { description: 'desc1' }
+      });
+    });
   });
 });
