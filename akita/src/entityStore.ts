@@ -241,6 +241,8 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
       }
     }
 
+    isDev() && logAction('Upsert Many');
+
     this._setState(state => ({
       ...state,
       ids: addedIds.length ? [...state.ids, ...addedIds] : state.ids,
@@ -252,7 +254,6 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     }));
 
     this.updatedEntityIds.next(updatedIds);
-    isDev() && logAction('Upsert Many');
   }
 
   /**

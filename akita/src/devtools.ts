@@ -13,6 +13,7 @@ export type DevtoolsOptions = {
   shouldCatchErrors: boolean;
   logTrace: boolean;
   predicate: (state: any, action: any) => boolean;
+  shallow: boolean;
 };
 let rootDispatcherSub, devtoolsSub;
 
@@ -36,7 +37,7 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
     options = ngZoneOrOptions as Partial<DevtoolsOptions>;
   }
 
-  const defaultOptions: Partial<DevtoolsOptions> & { name: string } = { name: 'Akita' };
+  const defaultOptions: Partial<DevtoolsOptions> & { name: string } = { name: 'Akita', shallow: true };
   const merged = Object.assign({}, defaultOptions, options);
 
   const devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__.connect(merged);
@@ -62,6 +63,12 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
       if (!store) {
         return;
       }
+
+      if (options.shallow === false && appState[action.payload.name]) {
+        const isEqual = JSON.stringify(store._value()) === JSON.stringify(appState[action.payload.name]);
+        if (isEqual) return;
+      }
+
       appState = {
         ...appState,
         [action.payload.name]: store._value()
