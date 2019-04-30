@@ -46,7 +46,7 @@ describe('DirtyCheck', () => {
           },
           error: null,
           ids: [1],
-          loading: true
+          loading: false
         });
         expect(spy).toHaveBeenLastCalledWith(false);
       });
@@ -80,7 +80,7 @@ describe('DirtyCheck', () => {
 
           error: null,
           ids: [1, 3],
-          loading: true
+          loading: false
         });
       });
 
@@ -101,7 +101,7 @@ describe('DirtyCheck', () => {
           },
           error: null,
           ids: [1, 3],
-          loading: true
+          loading: false
         });
 
         expect(spy).toHaveBeenLastCalledWith(false);

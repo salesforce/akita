@@ -72,7 +72,7 @@ describe('persistState - Include', () => {
         },
         error: null,
         ids: [1],
-        loading: true
+        loading: false
       }
     });
   });

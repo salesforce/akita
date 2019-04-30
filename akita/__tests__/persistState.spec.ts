@@ -40,7 +40,7 @@ class AuthStore extends Store<any> {
 }
 
 describe('persistState', () => {
-  const mock = `{"cart":{"entities":{},"ids":[],"loading":true,"error":null},"products":{"entities":{},"ids":[],"loading":true,"error":null},"auth":{"id":null,"firstName":"","lastName":"","token":""},"todos":{"ui":{"filter":"SHOW_ALL"},"entities":{"0.5666823893391795":{"id":0.5666823893391795,"title":"ds","completed":true},"0.16954788680591548":{"id":0.16954788680591548,"title":"ds","completed":false}},"ids":[0.5666823893391795,0.16954788680591548],"loading":true,"error":null}}`;
+  const mock = `{"cart":{"entities":{},"ids":[],"loading":false,"error":null},"products":{"entities":{},"ids":[],"loading":false,"error":null},"auth":{"id":null,"firstName":"","lastName":"","token":""},"todos":{"ui":{"filter":"SHOW_ALL"},"entities":{"0.5666823893391795":{"id":0.5666823893391795,"title":"ds","completed":true},"0.16954788680591548":{"id":0.16954788680591548,"title":"ds","completed":false}},"ids":[0.5666823893391795,0.16954788680591548],"loading":false,"error":null}}`;
   localStorage.setItem('AkitaStores', mock);
   const storage = persistState();
 
@@ -59,7 +59,7 @@ describe('persistState', () => {
         '0.16954788680591548': { id: 0.16954788680591548, title: 'ds', completed: false }
       },
       ids: [0.5666823893391795, 0.16954788680591548],
-      loading: true,
+      loading: false,
       error: null
     });
   });
@@ -68,8 +68,8 @@ describe('persistState', () => {
     localStorage.setItem.mockClear();
     products.add([{ id: 1 }]);
     const expected = {
-      cart: { entities: {}, ids: [], loading: true, error: null },
-      products: { entities: { '1': { id: 1 } }, ids: [1], loading: true, error: null },
+      cart: { entities: {}, ids: [], loading: false, error: null },
+      products: { entities: { '1': { id: 1 } }, ids: [1], loading: false, error: null },
       auth: { id: null, firstName: '', lastName: '', token: '' },
       todos: {
         ui: { filter: 'SHOW_ALL' },
@@ -78,7 +78,7 @@ describe('persistState', () => {
           '0.16954788680591548': { id: 0.16954788680591548, title: 'ds', completed: false }
         },
         ids: [0.5666823893391795, 0.16954788680591548],
-        loading: true,
+        loading: false,
         error: null
       }
     };
@@ -98,8 +98,8 @@ describe('persistState', () => {
       };
     });
     const expected = {
-      cart: { entities: {}, ids: [], loading: true, error: null },
-      products: { entities: { '1': { id: 1 } }, ids: [1], loading: true, error: null },
+      cart: { entities: {}, ids: [], loading: false, error: null },
+      products: { entities: { '1': { id: 1 } }, ids: [1], loading: false, error: null },
       auth: { id: 1, firstName: 'Netanel', lastName: 'Basal', token: 'token' },
       todos: {
         ui: { filter: 'SHOW_ALL' },
@@ -108,7 +108,7 @@ describe('persistState', () => {
           '0.16954788680591548': { id: 0.16954788680591548, title: 'ds', completed: false }
         },
         ids: [0.5666823893391795, 0.16954788680591548],
-        loading: true,
+        loading: false,
         error: null
       }
     };
@@ -120,8 +120,8 @@ describe('persistState', () => {
   it('should clear store', () => {
     storage.clearStore('todos');
     const expected = {
-      cart: { entities: {}, ids: [], loading: true, error: null },
-      products: { entities: { '1': { id: 1 } }, ids: [1], loading: true, error: null },
+      cart: { entities: {}, ids: [], loading: false, error: null },
+      products: { entities: { '1': { id: 1 } }, ids: [1], loading: false, error: null },
       auth: { id: 1, firstName: 'Netanel', lastName: 'Basal', token: 'token' }
     };
     expect(JSON.parse(localStorage.getItem('AkitaStores'))).toEqual(expected);

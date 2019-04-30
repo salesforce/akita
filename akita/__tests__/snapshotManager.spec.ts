@@ -40,7 +40,7 @@ describe('Snapshot manager', () => {
       todos: {
         entities: { '1': { id: 1 } },
         ids: [1],
-        loading: true,
+        loading: false,
         error: null
       },
       auth: { id: 1, firstName: 'Netanel', lastName: 'Basal', token: 'token' }
@@ -53,7 +53,7 @@ describe('Snapshot manager', () => {
       todos: {
         entities: { '1': { id: 1 } },
         ids: [1],
-        loading: true,
+        loading: false,
         error: null
       }
     };

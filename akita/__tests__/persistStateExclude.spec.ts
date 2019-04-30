@@ -81,7 +81,7 @@ describe('persistState - Exclude', () => {
         },
         error: null,
         ids: [1],
-        loading: true
+        loading: false
       }
     });
   });

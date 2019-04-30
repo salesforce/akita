@@ -52,4 +52,11 @@ describe('addEntities', () => {
     }
     store.remove();
   });
+
+  it('should reset the loading back to false', () => {
+    const store = new BooksStore();
+    expect(store._value().loading).toBeTruthy();
+    store.add(createMockEntities(), { loading: false });
+    expect(store._value().loading).toBeFalsy();
+  });
 });

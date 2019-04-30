@@ -91,8 +91,10 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    * this.store.add([Entity, Entity])
    * this.store.add(Entity)
    * this.store.add(Entity, { prepend: true })
+   *
+   * this.store.add(Entity, { loading: false })
    */
-  add(entities: E[] | E, options?: AddEntitiesOptions) {
+  add(entities: E[] | E, options: AddEntitiesOptions = { loading: false }) {
     const collection = coerceArray(entities);
 
     if (isEmpty(collection)) return;
@@ -102,15 +104,18 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
 
     isDev() && setAction('Add Entity');
 
-    this._setState(state =>
-      addEntities({
-        state,
-        preAddEntity: this.akitaPreAddEntity,
-        entities: notExistEntities,
-        idKey: this.idKey,
-        options
-      })
-    );
+    this._setState(state => {
+      return {
+        ...addEntities({
+          state,
+          preAddEntity: this.akitaPreAddEntity,
+          entities: notExistEntities,
+          idKey: this.idKey,
+          options
+        }),
+        loading: options.loading
+      };
+    });
 
     if (this.hasInitialUIState()) {
       this.handleUICreation(true);
@@ -214,12 +219,16 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    *
    * store.upsertMany([ { id: 1 }, { id: 2 }]);
    *
+   * store.upsertMany([ { id: 1 }, { id: 2 }], { loading: true  });
+   * store.upsertMany([ { id: 1 }, { id: 2 }], { baseClass: Todo  });
+   *
    */
   upsertMany(entities: E[], options: { baseClass?: Constructor; loading?: boolean } = {}) {
     const addedIds = [];
     const updatedIds = [];
     const updatedEntities = {};
 
+    // Update the state directly to optimize performance
     for (const entity of entities) {
       const id = entity[this.idKey];
       if (hasEntity(this.entities, id)) {
