@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.9.0"></a>
+# [3.9.0](https://github.com/datorama/akita/compare/v3.8.2...v3.9.0) (2019-04-30)
+
+
+### Bug Fixes
+
+* **paginator:** should take the total property to calc the to field ([0ab4e20](https://github.com/datorama/akita/commit/0ab4e20)), closes [#214](https://github.com/datorama/akita/issues/214)
+
+
+### Features
+
+* **devtools:** add option to filter actions by deep compare ([e7d4a63](https://github.com/datorama/akita/commit/e7d4a63))
+* **entity-store:** add method should reset the loading back to false ([69c9e1c](https://github.com/datorama/akita/commit/69c9e1c))
+* **entity-store:** add upsert many method ([79a7752](https://github.com/datorama/akita/commit/79a7752))
+
+
+
 <a name="3.7.0"></a>
 # [3.7.0](https://github.com/datorama/akita/compare/v3.5.5...v3.7.0) (2019-04-17)
 
