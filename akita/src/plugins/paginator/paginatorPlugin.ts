@@ -31,7 +31,7 @@ const paginatorDefaults: PaginatorConfig = {
   range: false,
   startWith: 1,
   cacheTimeout: undefined,
-  clearStoreWithCache: true,
+  clearStoreWithCache: true
 };
 
 export class PaginatorPlugin<E> extends AkitaPlugin<E> {
@@ -243,13 +243,14 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
    * Get the current page if it's in cache, otherwise invoke the request
    */
   getPage(req: () => Observable<PaginationResponse<E>>) {
-    const page = this.pagination.currentPage;
+    let page = this.pagination.currentPage;
     if (this.hasPage(page)) {
       return this.selectPage(page);
     } else {
       this.setLoading(true);
       return from(req()).pipe(
         switchMap((config: PaginationResponse<E>) => {
+          page = config.currentPage;
           applyTransaction(() => {
             this.setLoading(false);
             this.update(config);
@@ -272,7 +273,7 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
   }
 
   private getTo() {
-    if(this.isLast) {
+    if (this.isLast) {
       return this.pagination.total;
     }
     return this.currentPage * this.pagination.perPage;
