@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.9.2"></a>
+## [3.9.2](https://github.com/datorama/akita/compare/v3.9.1...v3.9.2) (2019-05-01)
+
+
+### Bug Fixes
+
+* **paginator:** take current page from response ([4f05658](https://github.com/datorama/akita/commit/4f05658))
+
+
+
 <a name="3.9.0"></a>
 # [3.9.0](https://github.com/datorama/akita/compare/v3.8.2...v3.9.0) (2019-04-30)
 
