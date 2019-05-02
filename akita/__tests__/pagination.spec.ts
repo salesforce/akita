@@ -1,8 +1,8 @@
 import { Todo, TodosStore } from './setup';
 import { QueryEntity } from '../src/queryEntity';
 import { PaginationResponse, PaginatorPlugin } from '../src/plugins/paginator/paginatorPlugin';
-import { switchMap } from 'rxjs/operators';
-import { interval, Observable, of, timer } from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, interval, Observable, of, timer } from 'rxjs';
 
 let store = new TodosStore();
 
@@ -25,15 +25,17 @@ for (let i = 0; i < count; i++) {
   });
 }
 
-export function getData(params = { sortBy: 'email', perPage: 10, page: 1 }) {
-  const offset = (params.page - 1) * +params.perPage;
-  const paginatedItems = data.slice(offset, offset + +params.perPage);
+export function getData(params = { sortBy: 'email', perPage: 10, page: 1, filterEnabled: false }) {
+  const localData = params.filterEnabled ? data.slice(0, 50) : data;
+  const page = params.filterEnabled ? 1 : params.page;
+  const offset = (page - 1) * +params.perPage;
+  const paginatedItems = localData.slice(offset, offset + +params.perPage);
 
   return {
-    currentPage: params.page,
+    currentPage: page,
     perPage: +params.perPage,
-    total: data.length,
-    lastPage: Math.ceil(data.length / +params.perPage),
+    total: localData.length,
+    lastPage: Math.ceil(localData.length / +params.perPage),
     data: paginatedItems
   };
 }
@@ -352,5 +354,46 @@ describe('cacheTimeout and clearStoreWithCache false', () => {
     expect(query3.getAll().length).toBeGreaterThan(0);
     paginator3.clearCache({ clearStore: true });
     expect(query3.getAll().length).toEqual(0);
+  });
+});
+
+let store4 = new TodosStore();
+
+class Todos4Query extends QueryEntity<any, Todo> {
+  constructor() {
+    super(store4);
+  }
+}
+
+describe('Server-side pagination with filter', () => {
+  let res;
+  const requestFunc = jest.fn();
+  let filterEnabled$ = new BehaviorSubject(false);
+
+  it('should reset page to 1 when filters applied', () => {
+    combineLatest(paginator.pageChanges, filterEnabled$)
+      .pipe(
+        tap(_ => {
+          paginator.clearCache();
+        }),
+        switchMap(([page, filterEnabled]) => {
+          const req = requestFunc.mockReturnValue(
+            getContacts({
+              page,
+              perPage: 10,
+              filterEnabled: filterEnabled
+            })
+          );
+
+          return paginator.getPage(req);
+        })
+      )
+      .subscribe(v => {
+        res = v;
+      });
+
+    paginator.setPage(6);
+    filterEnabled$.next(true);
+    expect(paginator.currentPage).toEqual(1);
   });
 });
