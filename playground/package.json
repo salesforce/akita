@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --prod",
+    "postinstall": "del ./node_modules/rxjs",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -37,6 +38,7 @@
     "@types/node": "~10.12.2",
     "codelyzer": "4.5.0",
     "del": "^3.0.0",
+    "del-cli": "^1.1.0",
     "fs": "0.0.1-security",
     "husky": "^1.3.1",
     "jasmine-core": "~3.3.0",
