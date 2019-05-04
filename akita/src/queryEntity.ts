@@ -1,5 +1,5 @@
 import { combineLatest, Observable, of } from 'rxjs';
-import { auditTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
+import { auditTime, distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
 import { isDefined } from './isDefined';
 import { EntityStore } from './entityStore';
 import { Query } from './query';
@@ -13,6 +13,8 @@ import { SelectAllOptionsA, SelectAllOptionsB, SelectAllOptionsC, SelectAllOptio
 import { isArray } from './isArray';
 import { isNil } from './isNil';
 import { getEntity } from './getEntity';
+import { EntityAction, EntityActions } from './entityActions';
+import { isUndefined } from './isUndefined';
 
 /**
  *
@@ -128,7 +130,10 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
 
     const entities = ids.map(id => this.selectEntity(id, project));
 
-    return combineLatest(entities).pipe(map(v => v.filter(Boolean)), auditTime(0));
+    return combineLatest(entities).pipe(
+      map(v => v.filter(Boolean)),
+      auditTime(0)
+    );
   }
 
   /**
@@ -145,7 +150,10 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
   selectEntity<K extends keyof E>(id: EntityID, project?: K): Observable<E[K]>;
   selectEntity<R>(id: EntityID, project: (entity: E) => R): Observable<R>;
   selectEntity<R>(id: EntityID, project?: ((entity: E) => R) | keyof E): Observable<R | E> {
-    return this.select(state => state.entities).pipe(map(getEntity(id, project)), distinctUntilChanged());
+    return this.select(state => state.entities).pipe(
+      map(getEntity(id, project)),
+      distinctUntilChanged()
+    );
   }
 
   /**
@@ -272,6 +280,7 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
   }
 
   /**
+   * @deprecated use selectEntityAction
    *
    * Select the updated entities ids
    *
@@ -282,6 +291,30 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    */
   selectUpdatedEntityIds() {
     return this.store.updatedEntityIds$;
+  }
+
+  /**
+   *
+   * Listen for entity actions
+   *
+   *  @example
+   *
+   *  this.query.selectEntityAction(EntityActions.Add);
+   *  this.query.selectEntityAction(EntityActions.Update);
+   *  this.query.selectEntityAction(EntityActions.Remove);
+   *
+   *  this.query.selectEntityAction();
+   */
+  selectEntityAction(action: EntityActions): Observable<ID[]>;
+  selectEntityAction(): Observable<EntityAction>;
+  selectEntityAction(action?: EntityActions): Observable<ID[] | EntityAction> {
+    if (isUndefined(action)) {
+      return this.store.selectEntityAction$;
+    }
+    return this.store.selectEntityAction$.pipe(
+      filter(ac => ac.type === action),
+      map(action => action.ids)
+    );
   }
 
   /**
