@@ -1,4 +1,4 @@
-import { EntityState, PreAddEntity } from './index';
+import { EntityState, hasEntity, PreAddEntity } from './index';
 
 export type AddEntitiesParams<State, Entity> = {
   state: State;
@@ -11,25 +11,35 @@ export type AddEntitiesParams<State, Entity> = {
 export type AddEntitiesOptions = { prepend?: boolean; loading?: boolean };
 
 // @internal
-export function addEntities<S extends EntityState<E>, E>({ state, entities, idKey, options = {}, preAddEntity }: AddEntitiesParams<S, E>): S {
+export function addEntities<S extends EntityState<E>, E>({ state, entities, idKey, options = {}, preAddEntity }: AddEntitiesParams<S, E>) {
   let newEntities = {};
   let newIds = [];
+  let hasNewEntities = false;
 
   for (const entity of entities) {
-    // evaluate the middleware first to support dynamic ids
-    const current = preAddEntity(entity);
-    const entityId = current[idKey];
-    newEntities[entityId] = current;
-    if (options.prepend) newIds.unshift(entityId);
-    else newIds.push(entityId);
+    if (hasEntity(state.entities, entity[idKey]) === false) {
+      // evaluate the middleware first to support dynamic ids
+      const current = preAddEntity(entity);
+      const entityId = current[idKey];
+      newEntities[entityId] = current;
+      if (options.prepend) newIds.unshift(entityId);
+      else newIds.push(entityId);
+
+      hasNewEntities = true;
+    }
   }
 
-  return {
-    ...state,
-    entities: {
-      ...state.entities,
-      ...newEntities
-    },
-    ids: options.prepend ? [...newIds, ...state.ids] : [...state.ids, ...newIds]
-  };
+  return hasNewEntities
+    ? {
+        newState: {
+          ...state,
+          entities: {
+            ...state.entities,
+            ...newEntities
+          },
+          ids: options.prepend ? [...newIds, ...state.ids] : [...state.ids, ...newIds]
+        },
+        newIds
+      }
+    : null;
 }

@@ -17,7 +17,8 @@ import { StoreConfigOptions } from './storeConfig';
 import { logAction, setAction } from './actions';
 import { isDev } from './env';
 import { hasEntity } from './hasEntity';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { EntityAction, EntityActions } from './entityActions';
 
 /**
  *
@@ -39,6 +40,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Store<S> {
   ui: EntityUIStore<any, any>;
   private updatedEntityIds = new BehaviorSubject<ID[]>([]);
+  private entityActions = new Subject<EntityAction>();
 
   constructor(initialState: Partial<S> = {}, protected options: Partial<StoreConfigOptions> = {}) {
     super({ ...getInitialEntitiesState(), ...initialState }, options);
@@ -47,6 +49,11 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
   // @internal
   get updatedEntityIds$(): Observable<ID[]> {
     return this.updatedEntityIds.asObservable();
+  }
+
+  // @internal
+  get selectEntityAction$(): Observable<EntityAction> {
+    return this.entityActions.asObservable();
   }
 
   /**
@@ -81,6 +88,8 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     if (this.hasInitialUIState()) {
       this.handleUICreation();
     }
+
+    this.entityActions.next({ type: EntityActions.Set, ids: this.ids });
   }
 
   /**
@@ -98,27 +107,26 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     const collection = coerceArray(entities);
 
     if (isEmpty(collection)) return;
-    const currentIds = this.ids;
-    const notExistEntities = collection.filter(entity => currentIds.includes(entity[this.idKey]) === false);
-    if (isEmpty(notExistEntities)) return;
-
     isDev() && setAction('Add Entity');
 
-    this._setState(state => {
-      return {
-        ...addEntities({
-          state,
-          preAddEntity: this.akitaPreAddEntity,
-          entities: notExistEntities,
-          idKey: this.idKey,
-          options
-        }),
-        loading: options.loading
-      };
+    const data = addEntities({
+      state: this._value(),
+      preAddEntity: this.akitaPreAddEntity,
+      entities: collection,
+      idKey: this.idKey,
+      options
     });
 
-    if (this.hasInitialUIState()) {
-      this.handleUICreation(true);
+    if (data) {
+      this._setState(() => ({
+        ...data.newState,
+        loading: options.loading
+      }));
+      if (this.hasInitialUIState()) {
+        this.handleUICreation(true);
+      }
+
+      this.entityActions.next({ type: EntityActions.Add, ids: data.newIds });
     }
   }
 
@@ -177,6 +185,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     );
 
     this.updatedEntityIds.next(ids);
+    this.entityActions.next({ type: EntityActions.Update, ids });
   }
 
   /**
@@ -253,7 +262,9 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
       loading: !!options.loading
     }));
 
-    this.updatedEntityIds.next(updatedIds);
+    updatedIds.length && this.updatedEntityIds.next(updatedIds);
+    updatedIds.length && this.entityActions.next({ type: EntityActions.Update, ids: updatedIds });
+    addedIds.length && this.entityActions.next({ type: EntityActions.Add, ids: addedIds });
   }
 
   /**
@@ -294,6 +305,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     }
 
     this.handleUIRemove(ids);
+    this.entityActions.next({ type: EntityActions.Remove, ids });
   }
 
   /**
@@ -441,6 +453,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
       this.ui.destroy();
     }
     this.updatedEntityIds.complete();
+    this.entityActions.complete();
   }
 
   // @internal

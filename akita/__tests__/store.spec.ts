@@ -1,8 +1,6 @@
-import { Store } from '../src/store';
-import { StoreConfig } from '../src/storeConfig';
-import { Query } from '../src/query';
+import { EntityStore, Query, Store, StoreConfig } from '../src';
 import { TodosStore } from './setup';
-import { EntityStore } from '../src';
+
 
 interface State {
   theme: {
@@ -119,7 +117,7 @@ describe('With Class', () => {
 })
 class TestStore extends Store<User> {
   constructor() {
-    super({ config: {}, loading: true });
+    super({ config: {}, loading: true } as any);
   }
 }
 
