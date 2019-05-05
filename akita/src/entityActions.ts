@@ -9,5 +9,5 @@ export enum EntityActions {
 
 export interface EntityAction {
   type: EntityActions;
-  ids: ID[]
+  ids: ID[];
 }

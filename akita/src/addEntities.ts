@@ -1,4 +1,5 @@
-import { EntityState, hasEntity, PreAddEntity } from './index';
+import { EntityState, PreAddEntity } from './types';
+import { hasEntity } from './hasEntity';
 
 export type AddEntitiesParams<State, Entity> = {
   state: State;
