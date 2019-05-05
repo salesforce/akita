@@ -97,8 +97,8 @@ export function persistState(params?: Partial<PersistStateParams>) {
 
   resolve(value).subscribe((v: any) => {
     const storageState = deserialize(v || '{}');
-
-    function save() {
+    function save(storeCache) {
+      storageState['$cache'] = { ...(storageState['$cache'] || {}), ...storeCache };
       buffer.push(storage.setItem(key, serialize(Object.assign({}, storageState, acc))));
       _save(buffer.shift());
     }
@@ -109,7 +109,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
         .pipe(skip(1))
         .subscribe(data => {
           acc[storeName] = data;
-          save();
+          Promise.resolve().then(() => save({ [storeName]: __stores__[storeName]._cache().getValue()}))
         });
     }
 
@@ -119,6 +119,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
         store._setState(state => {
           return setValue(state, path, storageState[storeName]);
         });
+        __stores__[storeName].setHasCache(storageState['$cache'][storeName]);
         if (store.setDirty) {
           store.setDirty();
         }
