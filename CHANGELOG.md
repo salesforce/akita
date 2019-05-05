@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.10.0"></a>
+# [3.10.0](https://github.com/datorama/akita/compare/v3.9.2...v3.10.0) (2019-05-05)
+
+
+### Bug Fixes
+
+* **presist-state:** cache value should be persisted ([56b4b16](https://github.com/datorama/akita/commit/56b4b16))
+
+
+### Features
+
+* **entity-query:** add entity actions query ([6d9dc8d](https://github.com/datorama/akita/commit/6d9dc8d))
+
+
+
 <a name="3.9.2"></a>
 ## [3.9.2](https://github.com/datorama/akita/compare/v3.9.1...v3.9.2) (2019-05-01)
 
