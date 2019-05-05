@@ -119,7 +119,8 @@ export function persistState(params?: Partial<PersistStateParams>) {
         store._setState(state => {
           return setValue(state, path, storageState[storeName]);
         });
-        __stores__[storeName].setHasCache(storageState['$cache'][storeName]);
+        const hasCache = storageState['$cache'] ? storageState['$cache'][storeName] : false;
+        __stores__[storeName].setHasCache(hasCache);
         if (store.setDirty) {
           store.setDirty();
         }

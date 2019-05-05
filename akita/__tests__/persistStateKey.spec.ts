@@ -1,6 +1,7 @@
 import { StoreConfig } from '../src/storeConfig';
 import { EntityStore } from '../src/entityStore';
 import { persistState } from '../src/persistState';
+import { tick } from './setup';
 
 @StoreConfig({
   name: 'todos'
@@ -18,8 +19,9 @@ describe('Persist state - prop', () => {
 
   const todosStore = new TodosStore();
 
-  it('should persist only the ui key', () => {
+  it('should persist only the ui key', async () => {
     todosStore.update({ ui: { filter: 'SHOW_COMPLETED' } });
+    await tick();
     expect(JSON.parse(localStorage.getItem('AkitaStores')).todos).toEqual({ filter: 'SHOW_COMPLETED' });
   });
 });
@@ -32,7 +34,8 @@ describe('Persist state - initial', () => {
 
   const todosStore = new TodosStore();
 
-  it('should persist only the ui key', () => {
+  it('should persist only the ui key', async () => {
+    await tick();
     expect(todosStore._value().ui).toEqual({ filter: 'SHOW_COMPLETED' });
   });
 });
@@ -52,8 +55,9 @@ describe('Persist state - nested key', () => {
   persistState({ include: ['todos.a.b.c.d'], key: 'TestA' });
   const todosStore = new TodosStore();
 
-  it('should persist only the nested key', () => {
+  it('should persist only the nested key', async () => {
     todosStore.update({ a: { b: { c: { d: 'changed' } } } });
+    await tick();
     expect(JSON.parse(localStorage.getItem('TestA')).todos).toEqual('changed');
   });
 });
@@ -75,7 +79,8 @@ describe('Persist state - nested key initial', () => {
 
   const todosStore = new TodosStore();
 
-  it('should persist only the d key', () => {
+  it('should persist only the d key', async () => {
+    await tick();
     expect(todosStore._value().a.b.c.d).toEqual('changed');
     expect(todosStore._value().a.b.c.e).toEqual('hello');
     expect(todosStore._value().a.b.c.f.g).toEqual('Akita');

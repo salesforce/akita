@@ -2,6 +2,7 @@ import { timer } from 'rxjs';
 import { mapTo, tap } from 'rxjs/operators';
 import { persistState, PersistStateStorage } from '../src/persistState';
 import { Store, StoreConfig } from '../src';
+import { tick } from './setup';
 
 function random(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1) + min);
@@ -37,31 +38,33 @@ class AuthStore extends Store<any> {
 const store = new AuthStore();
 
 describe('Persist state async', () => {
-  it('should work with async', () => {
-    store.update({
-      async: true
-    });
+  it('should work with async', async () => {
+    await tick();
+
+    store.update({ async: true });
+    await tick();
     jest.runAllTimers();
-    store.update({
-      async: false
-    });
+
+    store.update({ async: false });
+    await tick();
     jest.runAllTimers();
-    store.update({
-      async: true
-    });
+
+    store.update({ async: true });
+    await tick();
     jest.runAllTimers();
-    store.update({
-      async: false
-    });
+
+    store.update({ async: false });
+    await tick();
     jest.runAllTimers();
-    store.update({
-      async: true
-    });
+
+    store.update({ async: true });
+    await tick();
     jest.runAllTimers();
-    store.update({
-      async: false
-    });
+
+    store.update({ async: false });
+    await tick();
     jest.runAllTimers();
+
     expect(JSON.parse(cache['AkitaStores']).auth.async).toBeFalsy();
   });
 });

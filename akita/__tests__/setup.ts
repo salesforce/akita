@@ -107,3 +107,5 @@ export function createWidget(id) {
     complete: false
   } as Widget;
 }
+
+export const tick = () => new Promise(process.nextTick);

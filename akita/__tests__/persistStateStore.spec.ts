@@ -1,6 +1,7 @@
 import { StoreConfig } from '../src/storeConfig';
 import { persistState } from '../src/persistState';
 import { Store } from '../src/store';
+import { tick } from './setup';
 
 @StoreConfig({
   name: 'todos'
@@ -33,7 +34,8 @@ describe('Persist state - similar store names', () => {
   const todosStore = new TodosStore();
   const todosUiStore = new TodosUiStore();
 
-  it('should persist only the exact name', () => {
+  it('should persist only the exact name', async () => {
+    await tick();
     expect(todosStore._value().todos).toEqual(['Akita']);
     expect(todosUiStore._value().filter).toEqual('SHOW_COMPLETED');
   });
