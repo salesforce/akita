@@ -1,0 +1,24 @@
+<section class="flex">
+
+  <app-filters></app-filters>
+
+  <ng-template #productsList>
+
+    <section class="flex-1">
+
+      <app-search-product></app-search-product>
+
+      <div class="products flex flex-wrap">
+        <app-base-product [product]="product" *ngFor="let product of products$ | async"
+                          class="mb-5"></app-base-product>
+      </div>
+
+    </section>
+  </ng-template>
+
+
+  <div class="flex items-center justify-center w-full" *ngIf="isLoading$ | async; else productsList">
+      <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+  </div>
+
+</section>

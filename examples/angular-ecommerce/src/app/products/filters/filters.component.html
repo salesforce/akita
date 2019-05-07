@@ -1,0 +1,50 @@
+<form [formGroup]="filters">
+
+  <section class="mb-6">
+    <h6 class="mb-2">Condition</h6>
+
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="condition" value="new" formControlName="condition" id="new">
+      <label class="form-check-label" for="new">New</label>
+    </div>
+
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="condition" value="used" formControlName="condition" id="used">
+      <label class="form-check-label" for="used">Used</label>
+    </div>
+
+  </section>
+
+
+  <section class="mb-6">
+    <h6 class="mb-2">Location</h6>
+
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="location" value="usa" formControlName="location" id="usa">
+      <label class="form-check-label" for="usa">Us Only</label>
+    </div>
+
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="location" value="europe" formControlName="location" id="europe">
+      <label class="form-check-label" for="europe">Europe</label>
+    </div>
+
+    <div class="form-check">
+      <input class="form-check-input" type="radio" name="location" value="asia" formControlName="location" id="asia">
+      <label class="form-check-label" for="asia">Asia</label>
+    </div>
+
+  </section>
+
+
+  <section class="mb-6">
+    <h6 class="mb-2">Delivery Options</h6>
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" name="deliveryOption" id="deliveryOption" formControlName="deliveryOption">
+      <label class="form-check-label" for="deliveryOption">
+        Free International Shipping
+      </label>
+    </div>
+  </section>
+
+</form>
