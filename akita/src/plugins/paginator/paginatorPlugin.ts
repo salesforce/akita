@@ -54,7 +54,7 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
    * When the user navigates to a different page and return
    * we don't want to call `clearCache` on first time.
    */
-  private initial = false;
+  private initial = true;
 
   constructor(protected query: QueryEntity<any, E>, public config: PaginatorConfig = {}) {
     super(query, {
