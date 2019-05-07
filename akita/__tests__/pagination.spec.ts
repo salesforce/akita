@@ -239,7 +239,7 @@ describe('Paginator', () => {
   });
 
   describe('clear cache as default behaviour', () => {
-    it('it clear the provided page', () => {
+    it('it should clear the provided page', () => {
       requestFunc.mockClear();
       paginator.setPage(4);
       expect(requestFunc).toHaveBeenCalledTimes(1);
@@ -248,6 +248,7 @@ describe('Paginator', () => {
       expect(paginator.hasPage(4)).toBeFalsy();
     });
     it('it should clear all', () => {
+      paginator.initial = false;
       paginator.clearCache();
       requestFunc.mockClear();
       expect(paginator.pages).toEqual(new Map());
@@ -300,6 +301,7 @@ describe('cacheTimeout', () => {
     .subscribe();
 
   it('should clear cache when cacheTimeout emits as default behaviour', () => {
+    paginator2.initial = false;
     spyOn(paginator2, 'clearCache').and.callThrough();
     expect(query2.getAll().length).toEqual(10);
     expect(requestFunc).toHaveBeenCalledTimes(1);
