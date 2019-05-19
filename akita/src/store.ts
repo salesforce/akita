@@ -13,7 +13,6 @@ import { __stores__ } from './stores';
 import { Actions, newStateAction, resetCustomAction, setAction } from './actions';
 import { isNotBrowser } from './root';
 import { __DEV__, isDev } from './env';
-import { DEFAULT_ID_KEY } from './defaultIDKey';
 
 /**
  *
@@ -126,11 +125,6 @@ export class Store<S> {
   // @internal
   get storeName() {
     return this.config.storeName || this.options.storeName || this.options.name;
-  }
-
-  // @internal
-  get idKey() {
-    return this.config.idKey || this.options.idKey || DEFAULT_ID_KEY;
   }
 
   // @internal

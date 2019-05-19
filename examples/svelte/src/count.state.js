@@ -1,13 +1,5 @@
-import { Store, Query } from '@datorama/akita';
+import { createStore, createQuery } from '../../../akita/src';
 
-class CounterStore extends Store {}
-class CounterQuery extends Query {}
-
-export const store = new CounterStore(
-  {
-    count: 0
-  },
-  { name: 'counter' }
-);
-
-export const query = new CounterQuery(store);
+export const store = createStore({ count: 0 }, { name: 'counter' });
+export const query = createQuery(store);
+export const selectCount = query.select('count');

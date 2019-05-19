@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { ID } from '@datorama/akita';
 import { {{pascalCase name}}Store } from './{{dashCase name}}.store';
 import { HttpClient } from '@angular/common/http';
+import { tap } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class {{pascalCase name}}Service {
@@ -11,15 +11,6 @@ export class {{pascalCase name}}Service {
   }
 
   get() {
-    // this.http.get().subscribe((entities: ServerResponse) => {
-      // this.{{camelCase name}}Store.set(entities);
-    // });
+    return this.http.get('').pipe(tap(entities => this.{{camelCase name}}Store.set(entities)));
   }
-
-  add() {
-    // this.http.post().subscribe((entity: ServerResponse) => {
-      // this.{{camelCase name}}Store.add(entity);
-    // });
-  }
-
 }

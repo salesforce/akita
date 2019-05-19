@@ -13,12 +13,13 @@ import { transaction } from './transaction';
 import { isNil } from './isNil';
 import { isFunction } from './isFunction';
 import { isUndefined } from './isUndefined';
-import { StoreConfigOptions } from './storeConfig';
+import { EntityStoreConfig, StoreConfigOptions } from './storeConfig';
 import { logAction, setAction } from './actions';
 import { isDev } from './env';
 import { hasEntity } from './hasEntity';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { EntityAction, EntityActions } from './entityActions';
+import { DEFAULT_ID_KEY } from './defaultIDKey';
 
 /**
  *
@@ -42,7 +43,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
   private updatedEntityIds = new BehaviorSubject<ID[]>([]);
   private entityActions = new Subject<EntityAction>();
 
-  constructor(initialState: Partial<S> = {}, protected options: Partial<StoreConfigOptions> = {}) {
+  constructor(initialState: Partial<S> = {}, protected options: Partial<EntityStoreConfig> = {}) {
     super({ ...getInitialEntitiesState(), ...initialState }, options);
   }
 
@@ -54,6 +55,11 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
   // @internal
   get selectEntityAction$(): Observable<EntityAction> {
     return this.entityActions.asObservable();
+  }
+
+  // @internal
+  get idKey() {
+    return (this.config as EntityStoreConfig).idKey || this.options.idKey || DEFAULT_ID_KEY;
   }
 
   /**
@@ -440,8 +446,8 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    *
    * }
    */
-  createUIStore(initialState = {}, storeConfig: Partial<StoreConfigOptions> = {}) {
-    const defaults: Partial<StoreConfigOptions> = { name: `UI/${this.storeName}`, idKey: this.idKey };
+  createUIStore(initialState = {}, storeConfig: Partial<EntityStoreConfig> = {}) {
+    const defaults: Partial<EntityStoreConfig> = { name: `UI/${this.storeName}`, idKey: this.idKey };
     this.ui = new EntityUIStore(initialState, { ...defaults, ...storeConfig });
     return this.ui;
   }

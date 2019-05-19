@@ -61,4 +61,5 @@ export { arrayUpdate } from './arrayUpdate';
 export { arrayAdd } from './arrayAdd';
 export { arrayFind, distinctUntilArrayItemChanged, find } from './arrayFind';
 export { arrayRemove } from './arrayRemove';
+export { createEntityQuery, createEntityStore, createQuery, createStore } from './fp';
 export * from './entityActions';
