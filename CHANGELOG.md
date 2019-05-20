@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.11.1"></a>
+## [3.11.1](https://github.com/datorama/akita/compare/v3.11.0...v3.11.1) (2019-05-20)
+
+
+### Bug Fixes
+
+* **entity-store:** revert store config to include idkey ([949237c](https://github.com/datorama/akita/commit/949237c)), closes [#221](https://github.com/datorama/akita/issues/221)
+* **fp:** add query entity options to create-entity-query function ([430f8f3](https://github.com/datorama/akita/commit/430f8f3))
+
+
+
 <a name="3.11.0"></a>
 # [3.11.0](https://github.com/datorama/akita/compare/v3.10.2...v3.11.0) (2019-05-19)
 
