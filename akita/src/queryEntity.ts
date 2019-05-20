@@ -15,6 +15,7 @@ import { isNil } from './isNil';
 import { getEntity } from './getEntity';
 import { EntityAction, EntityActions } from './entityActions';
 import { isUndefined } from './isUndefined';
+import { QueryConfigOptions } from './queryConfig';
 
 /**
  *
@@ -36,7 +37,7 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
   // @internal
   __store__;
 
-  constructor(store: EntityStore<S, E, EntityID>) {
+  constructor(store: EntityStore<S, E, EntityID>, private options: QueryConfigOptions = {}) {
     super(store);
     this.__store__ = store;
   }
@@ -110,7 +111,7 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
     if (options.asObject) {
       return entitiesToMap(this.getValue(), options);
     }
-    sortByOptions(options, this.config);
+    sortByOptions(options, this.config || this.options);
 
     return entitiesToArray(this.getValue(), options);
   }
