@@ -1,6 +1,6 @@
 import { Store } from './store';
 import { Query } from './query';
-import { EntityStoreConfig, StoreConfigOptions } from './storeConfig';
+import { StoreConfigOptions } from './storeConfig';
 import { EntityStore } from './entityStore';
 import { QueryEntity } from './queryEntity';
 
@@ -12,7 +12,7 @@ export function createQuery<State>(store: Store<State>) {
   return new Query<State>(store);
 }
 
-export function createEntityStore<State, Entity>(initialState: Partial<State>, options: Partial<EntityStoreConfig>) {
+export function createEntityStore<State, Entity>(initialState: Partial<State>, options: Partial<StoreConfigOptions>) {
   return new EntityStore<State, Entity>(initialState, options);
 }
 

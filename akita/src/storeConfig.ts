@@ -4,11 +4,8 @@ export type StoreConfigOptions = {
   storeName?: string;
   cache?: { ttl: number };
   deepFreezeFn?: (o: any) => any;
-};
-
-export interface EntityStoreConfig extends StoreConfigOptions {
   idKey?: string;
-}
+};
 
 export type UpdatableStoreConfigOptions = {
   cache?: { ttl: number };
