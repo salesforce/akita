@@ -55,23 +55,25 @@ module.exports = function(plop) {
       data.isEntityStore = storeType === 'Entity Store';
       const templateBase = template;
 
+      const extension = template === 'js' ? 'js' : 'ts';
+
       const files = [
         {
           type: 'add',
           skipIfExists: true,
-          path: buildPath('index.ts', directory, folderName),
+          path: buildPath(`index.${extension}`, directory, folderName),
           templateFile: `./templates/${templateBase}/index.tpl`
         },
         {
           type: 'add',
           skipIfExists: true,
-          path: buildPath("{{'dashCase' name}}.query.ts", directory, folderName),
+          path: buildPath(`{{'dashCase' name}}.query.${extension}`, directory, folderName),
           templateFile: `./templates/${templateBase}/${data.isEntityStore ? 'entity-query' : 'query'}.tpl`
         },
         {
           type: 'add',
           skipIfExists: true,
-          path: buildPath("{{'dashCase' name}}.store.ts", directory, folderName),
+          path: buildPath(`{{'dashCase' name}}.${extension}`, directory, folderName),
           templateFile: `./templates/${templateBase}/${data.isEntityStore ? 'entity-store' : 'store'}.tpl`
         }
       ];
@@ -80,7 +82,7 @@ module.exports = function(plop) {
         files.push({
           type: 'add',
           skipIfExists: true,
-          path: buildPath("{{'dashCase' name}}.service.ts", directory, folderName),
+          path: buildPath(`{{'dashCase' name}}.service.${extension}`, directory, folderName),
           templateFile: `./templates/${templateBase}/service.tpl`
         });
 
@@ -88,7 +90,7 @@ module.exports = function(plop) {
           files.push({
             type: 'add',
             skipIfExists: true,
-            path: buildPath("{{ 'singular' ('dashCase' name) name}}.model.ts", directory, folderName),
+            path: buildPath(`{{ 'singular' ('dashCase' name) name}}.${extension}`, directory, folderName),
             templateFile: `./templates/${templateBase}/model.tpl`
           });
         }
