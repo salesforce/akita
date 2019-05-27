@@ -138,6 +138,11 @@ export class Store<S> {
   }
 
   // @internal
+  get resettable() {
+    return this.config.resettable || this.options.resettable;
+  }
+
+  // @internal
   _setState(newStateFn: (state: Readonly<S>) => S, _dispatchAction = true) {
     this.storeValue = __DEV__ ? this.deepFreeze(newStateFn(this._value())) : newStateFn(this._value());
 
@@ -267,11 +272,10 @@ export class Store<S> {
   }
 
   private isResettable() {
-    const localReset = this.config && this.config.resettable;
-    if (localReset === false) {
+    if (this.resettable === false) {
       return false;
     }
-    return localReset || getAkitaConfig().resettable;
+    return this.resettable || getAkitaConfig().resettable;
   }
 
   private handleTransaction() {
