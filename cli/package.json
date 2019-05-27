@@ -1,6 +1,6 @@
 {
   "name": "@datorama/akita-cli",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "Akita CLI",
   "main": "index.js",
   "scripts": {
