@@ -50,6 +50,8 @@ export interface PersistStateParams {
    *  Pay attention that you can't use both include and exclude
    */
   exclude: string[];
+  preStorageUpdate(storeName: string, state: any): any;
+  preStoreUpdate(storeName: string, state: any): any;
 }
 
 export function persistState(params?: Partial<PersistStateParams>) {
@@ -61,9 +63,15 @@ export function persistState(params?: Partial<PersistStateParams>) {
     deserialize: JSON.parse,
     serialize: JSON.stringify,
     include: [],
-    exclude: []
+    exclude: [],
+    preStorageUpdate: function(storeName, state) {
+      return state;
+    },
+    preStoreUpdate: function(storeName, state) {
+      return state;
+    }
   };
-  const { storage, deserialize, serialize, include, exclude, key } = Object.assign({}, defaults, params);
+  const { storage, deserialize, serialize, include, exclude, key, preStorageUpdate, preStoreUpdate } = Object.assign({}, defaults, params);
 
   const hasInclude = include.length > 0;
   const hasExclude = exclude.length > 0;
@@ -108,16 +116,16 @@ export function persistState(params?: Partial<PersistStateParams>) {
         ._select(state => getValue(state, path))
         .pipe(skip(1))
         .subscribe(data => {
-          acc[storeName] = data;
-          Promise.resolve().then(() => save({ [storeName]: __stores__[storeName]._cache().getValue()}))
+          acc[storeName] = preStorageUpdate(storeName, data);
+          Promise.resolve().then(() => save({ [storeName]: __stores__[storeName]._cache().getValue() }));
         });
     }
 
     function setInitial(storeName, store, path) {
-      if (storageState[storeName]) {
+      if (storeName in storageState) {
         setAction('@PersistState');
         store._setState(state => {
-          return setValue(state, path, storageState[storeName]);
+          return setValue(state, path, preStoreUpdate(storeName, storageState[storeName]));
         });
         const hasCache = storageState['$cache'] ? storageState['$cache'][storeName] : false;
         __stores__[storeName].setHasCache(hasCache);
