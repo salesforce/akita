@@ -59,7 +59,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
 
   const defaults: PersistStateParams = {
     key: 'AkitaStores',
-    storage: localStorage,
+    storage: typeof localStorage === 'undefined'  ? params.storage : localStorage,
     deserialize: JSON.parse,
     serialize: JSON.stringify,
     include: [],
