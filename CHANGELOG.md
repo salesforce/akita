@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.12.1"></a>
+## [3.12.1](https://github.com/datorama/akita/compare/v3.12.0...v3.12.1) (2019-05-30)
+
+
+### Bug Fixes
+
+* **persist-state:** should support non-localstorage envs ([3b7e160](https://github.com/datorama/akita/commit/3b7e160)), closes [#226](https://github.com/datorama/akita/issues/226)
+
+
+
 <a name="3.12.0"></a>
 # [3.12.0](https://github.com/datorama/akita/compare/v3.11.2...v3.12.0) (2019-05-29)
 
