@@ -49,7 +49,7 @@ export class Store<S> {
     ttl: null
   };
 
-  constructor( initialState: Partial<S>, protected options: Partial<StoreConfigOptions> = {} ) {
+  constructor(initialState: Partial<S>, protected options: Partial<StoreConfigOptions> = {}) {
     this.onInit(initialState as S);
   }
 
@@ -61,8 +61,8 @@ export class Store<S> {
    *  store.setLoading(true)
    *
    */
-  setLoading( loading = false ) {
-    if( loading !== (this._value() as S & { loading: boolean }).loading ) {
+  setLoading(loading = false) {
+    if (loading !== (this._value() as S & { loading: boolean }).loading) {
       isDev() && setAction('Set Loading');
       this._setState(state => ({ ...state, loading } as S & { loading: boolean }));
     }
@@ -78,8 +78,8 @@ export class Store<S> {
    * store.setHasCache(false)
    *
    */
-  setHasCache( hasCache: boolean ) {
-    if( hasCache !== this.cache.active.value ) {
+  setHasCache(hasCache: boolean) {
+    if (hasCache !== this.cache.active.value) {
       this.cache.active.next(hasCache);
     }
   }
@@ -92,15 +92,15 @@ export class Store<S> {
    *  store.setError({text: 'unable to load data' })
    *
    */
-  setError<T>( error: T ) {
-    if( error !== (this._value() as S & { error: any }).error ) {
+  setError<T>(error: T) {
+    if (error !== (this._value() as S & { error: any }).error) {
       isDev() && setAction('Set Error');
       this._setState(state => ({ ...state, error } as S & { error: any }));
     }
   }
 
   // @internal
-  _select<R>( project: ( store: S ) => R ): Observable<R> {
+  _select<R>(project: (store: S) => R): Observable<R> {
     return this.store.asObservable().pipe(
       map(project),
       distinctUntilChanged()
@@ -138,16 +138,21 @@ export class Store<S> {
   }
 
   // @internal
-  _setState( newStateFn: ( state: Readonly<S> ) => S, _dispatchAction = true ) {
+  get resettable() {
+    return this.config.resettable || this.options.resettable;
+  }
+
+  // @internal
+  _setState(newStateFn: (state: Readonly<S>) => S, _dispatchAction = true) {
     this.storeValue = __DEV__ ? this.deepFreeze(newStateFn(this._value())) : newStateFn(this._value());
 
-    if( !this.store ) {
+    if (!this.store) {
       this.store = new BehaviorSubject(this.storeValue);
       rootDispatcher.next(newStateAction(this.storeName, true));
       return;
     }
 
-    if( isTransactionInProcess() ) {
+    if (isTransactionInProcess()) {
       this.handleTransaction();
       return;
     }
@@ -165,7 +170,7 @@ export class Store<S> {
    *
    */
   reset() {
-    if( this.isResettable() ) {
+    if (this.isResettable()) {
       isDev() && setAction('Reset');
       this._setState(() => Object.assign({}, this._initialState));
       this.setHasCache(false);
@@ -184,15 +189,15 @@ export class Store<S> {
    *   return {...}
    * })
    */
-  update( stateCallback: UpdateStateCallback<S> );
+  update(stateCallback: UpdateStateCallback<S>);
   /**
    *
    * @example
    *
    *  this.store.update({ token: token })
    */
-  update( state: Partial<S> );
-  update( stateOrCallback: Partial<S> | UpdateStateCallback<S> ) {
+  update(state: Partial<S>);
+  update(stateOrCallback: Partial<S> | UpdateStateCallback<S>) {
     isDev() && setAction('Update');
 
     this._setState(state => {
@@ -202,12 +207,12 @@ export class Store<S> {
     });
   }
 
-  updateStoreConfig( newOptions: UpdatableStoreConfigOptions ) {
+  updateStoreConfig(newOptions: UpdatableStoreConfigOptions) {
     this.options = { ...this.options, ...newOptions };
   }
 
   // @internal
-  akitaPreUpdate( _: Readonly<S>, nextState: Readonly<S> ): S {
+  akitaPreUpdate(_: Readonly<S>, nextState: Readonly<S>): S {
     return nextState;
   }
 
@@ -225,8 +230,8 @@ export class Store<S> {
    *
    */
   destroy() {
-    if( isNotBrowser ) return;
-    if( !(window as any).hmrEnabled && this === __stores__[this.storeName] ) {
+    if (isNotBrowser) return;
+    if (!(window as any).hmrEnabled && this === __stores__[this.storeName]) {
       delete __stores__[this.storeName];
       rootDispatcher.next({
         type: Actions.DELETE_STORE,
@@ -237,7 +242,7 @@ export class Store<S> {
     }
   }
 
-  private onInit( initialState: S ) {
+  private onInit(initialState: S) {
     isDev() && setAction('@@INIT');
     __stores__[this.storeName] = this;
     this._setState(() => initialState);
@@ -245,15 +250,15 @@ export class Store<S> {
       type: Actions.NEW_STORE,
       payload: { store: this }
     });
-    if( this.isResettable() ) {
+    if (this.isResettable()) {
       this._initialState = initialState;
     }
     isDev() && assertStoreHasName(this.storeName, this.constructor.name);
   }
 
-  private dispatch( state: S, _dispatchAction = true ) {
+  private dispatch(state: S, _dispatchAction = true) {
     this.store.next(state);
-    if( _dispatchAction ) {
+    if (_dispatchAction) {
       rootDispatcher.next(newStateAction(this.storeName));
       resetCustomAction();
     }
@@ -267,15 +272,14 @@ export class Store<S> {
   }
 
   private isResettable() {
-    const localReset = this.config && this.config.resettable;
-    if( localReset === false ) {
+    if (this.resettable === false) {
       return false;
     }
-    return localReset || getAkitaConfig().resettable;
+    return this.resettable || getAkitaConfig().resettable;
   }
 
   private handleTransaction() {
-    if( !this.inTransaction ) {
+    if (!this.inTransaction) {
       this.watchTransaction();
       this.inTransaction = true;
     }

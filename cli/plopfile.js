@@ -73,7 +73,7 @@ module.exports = function(plop) {
         {
           type: 'add',
           skipIfExists: true,
-          path: buildPath(`{{'dashCase' name}}.${extension}`, directory, folderName),
+          path: buildPath(`{{'dashCase' name}}.store.${extension}`, directory, folderName),
           templateFile: `./templates/${templateBase}/${data.isEntityStore ? 'entity-store' : 'store'}.tpl`
         }
       ];

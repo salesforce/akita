@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.12.1"></a>
+## [3.12.1](https://github.com/datorama/akita/compare/v3.12.0...v3.12.1) (2019-05-30)
+
+
+### Bug Fixes
+
+* **persist-state:** should support non-localstorage envs ([3b7e160](https://github.com/datorama/akita/commit/3b7e160)), closes [#226](https://github.com/datorama/akita/issues/226)
+
+
+
+<a name="3.12.0"></a>
+# [3.12.0](https://github.com/datorama/akita/compare/v3.11.2...v3.12.0) (2019-05-29)
+
+
+### Features
+
+* **persist-state:** add preupadte hooks ([e3a5396](https://github.com/datorama/akita/commit/e3a5396))
+
+
+
+<a name="3.11.2"></a>
+## [3.11.2](https://github.com/datorama/akita/compare/v3.11.1...v3.11.2) (2019-05-27)
+
+
+### Bug Fixes
+
+* **resettable:** allow passing resettable in the constructor ([40d6182](https://github.com/datorama/akita/commit/40d6182)), closes [#224](https://github.com/datorama/akita/issues/224)
+
+
+
 <a name="3.11.1"></a>
 ## [3.11.1](https://github.com/datorama/akita/compare/v3.11.0...v3.11.1) (2019-05-20)
 

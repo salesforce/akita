@@ -9,7 +9,17 @@ if (environment.production) {
   enableAkitaProdMode();
 }
 
-persistState({ include: ['auth.token'] });
+persistState({
+  include: ['auth.token', 'todos'],
+  preStorageUpdate: function(storeName, state) {
+    console.log(`preStorageUpdate`, storeName, state);
+    return state;
+  },
+  preStoreUpdate(storeName: string, state: any) {
+    console.log(`preStoreUpdate`, storeName, state);
+    return state;
+  }
+});
 
 platformBrowserDynamic()
   .bootstrapModule(AppModule)
