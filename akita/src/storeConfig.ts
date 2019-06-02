@@ -1,7 +1,6 @@
 export type StoreConfigOptions = {
   name: string;
   resettable?: boolean;
-  storeName?: string;
   cache?: { ttl: number };
   deepFreezeFn?: (o: any) => any;
   idKey?: string;
