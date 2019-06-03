@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.13.0"></a>
+# [3.13.0](https://github.com/datorama/akita/compare/v3.12.1...v3.13.0) (2019-06-03)
+
+
+### Bug Fixes
+
+* **store-config:** remove internal storeName from config ([8f8ceec](https://github.com/datorama/akita/commit/8f8ceec))
+
+
+### Features
+
+* **query-entity:** add predicate function to select-entity method ([ea7a1d7](https://github.com/datorama/akita/commit/ea7a1d7))
+
+
+
 <a name="3.12.1"></a>
 ## [3.12.1](https://github.com/datorama/akita/compare/v3.12.0...v3.12.1) (2019-05-30)
 
