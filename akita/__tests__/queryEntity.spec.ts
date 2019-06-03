@@ -133,6 +133,17 @@ describe('Entities Query', () => {
         expect(entity).toBe(undefined);
       });
     });
+
+    it('should select by predicate', () => {
+      let factory = ct();
+      store.add(factory());
+      store.add(factory());
+      const spy = jest.fn();
+      query.selectEntity(e => e.id === 1).subscribe(spy);
+      expect(spy).toHaveBeenCalledWith({"complete": false, "id": 1, "title": "Todo 1"});
+      store.remove(1);
+      expect(spy).toHaveBeenCalledWith(undefined);
+    });
   });
 
   describe('getEntity', () => {
@@ -271,7 +282,7 @@ describe('Entities Query', () => {
       let ttlQuery;
       const ttl = 100;
       beforeEach(() => {
-        storeWithTtl = new TodosStore({cache: {ttl}});
+        storeWithTtl = new TodosStore({ cache: { ttl } });
         ttlQuery = new QueryEntity(storeWithTtl);
       });
       describe('selectHasCache', () => {
@@ -324,9 +335,9 @@ describe('Entities Query', () => {
           let factory = ct();
           storeWithTtl.set(factory());
           expect(ttlQuery.getHasCache()).toBe(true);
-          jest.advanceTimersByTime(ttl/2);
+          jest.advanceTimersByTime(ttl / 2);
           storeWithTtl.set(factory());
-          jest.advanceTimersByTime(ttl/2);
+          jest.advanceTimersByTime(ttl / 2);
           // cancel he previous ttl timer
           expect(ttlQuery.getHasCache()).toBe(true);
           // ttl passed

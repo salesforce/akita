@@ -3,7 +3,7 @@ import { auditTime, distinctUntilChanged, filter, map, switchMap } from 'rxjs/op
 import { isDefined } from './isDefined';
 import { EntityStore } from './entityStore';
 import { Query } from './query';
-import { EntityState, HashMap, ID, SelectOptions } from './types';
+import { EntityState, HashMap, ID, ItemPredicate, SelectOptions } from './types';
 import { isFunction } from './isFunction';
 import { toBoolean } from './toBoolean';
 import { sortByOptions } from './sortByOptions';
@@ -12,7 +12,7 @@ import { entitiesToMap } from './entitiesToMap';
 import { SelectAllOptionsA, SelectAllOptionsB, SelectAllOptionsC, SelectAllOptionsD, SelectAllOptionsE } from './selectAllOverloads';
 import { isArray } from './isArray';
 import { isNil } from './isNil';
-import { getEntity } from './getEntity';
+import { findEntityByPredicate, getEntity } from './getEntity';
 import { EntityAction, EntityActions } from './entityActions';
 import { isUndefined } from './isUndefined';
 import { QueryConfigOptions } from './queryConfig';
@@ -108,7 +108,7 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
   getAll(options: SelectAllOptionsE<E>): E[];
   getAll(): E[];
   getAll(options: SelectOptions<E> = { asObject: false, filterBy: undefined, limitTo: undefined }): E[] | HashMap<E> {
-    if (options.asObject) {
+    if(options.asObject) {
       return entitiesToMap(this.getValue(), options);
     }
     sortByOptions(options, this.config || this.options);
@@ -127,7 +127,7 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
   selectMany<R>(ids: EntityID[]): Observable<E[]>;
   selectMany<R>(ids: EntityID[], project: (entity: E) => R): Observable<R[]>;
   selectMany<R>(ids: EntityID[], project?: (entity: E) => R): Observable<E[] | R[]> {
-    if (!ids || !ids.length) return of([]);
+    if(!ids || !ids.length) return of([]);
 
     const entities = ids.map(id => this.selectEntity(id, project));
 
@@ -145,12 +145,21 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    * this.query.selectEntity(1)
    * this.query.selectEntity(1, entity => entity.config.date)
    * this.query.selectEntity(1, 'comments')
+   * this.query.selectEntity(e => e.title === 'title')
    *
    */
   selectEntity<R>(id: EntityID): Observable<E>;
   selectEntity<K extends keyof E>(id: EntityID, project?: K): Observable<E[K]>;
   selectEntity<R>(id: EntityID, project: (entity: E) => R): Observable<R>;
-  selectEntity<R>(id: EntityID, project?: ((entity: E) => R) | keyof E): Observable<R | E> {
+  selectEntity<R>(predicate: ItemPredicate<E>): Observable<E>;
+  selectEntity<R>(idOrPredicate: EntityID | ItemPredicate<E>, project?: ((entity: E) => R) | keyof E): Observable<R | E> {
+    let id = idOrPredicate;
+
+    if(isFunction(idOrPredicate)) {
+      // For performance reason we expect the entity to be in the store
+      (id as any) = findEntityByPredicate(idOrPredicate, this.getValue().entities);
+    }
+
     return this.select(state => state.entities).pipe(
       map(getEntity(id, project)),
       distinctUntilChanged()
@@ -201,7 +210,7 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
   selectActive<R>(): S['active'] extends any[] ? Observable<E[]> : Observable<E>;
   selectActive<R>(project?: (entity: E) => R): S['active'] extends any[] ? Observable<R[]> : Observable<R>;
   selectActive<R>(project?: (entity: E) => R): Observable<R | E> | Observable<E[] | R[]> {
-    if (isArray(this.getActive())) {
+    if(isArray(this.getActive())) {
       return this.selectActiveId().pipe(switchMap(ids => this.selectMany(ids, project)));
     }
     return this.selectActiveId().pipe(switchMap(ids => this.selectEntity(ids, project)));
@@ -217,7 +226,7 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
   getActive(): S['active'] extends any[] ? E[] : E;
   getActive(): E[] | E {
     const activeId = this.getActiveId();
-    if (isArray(activeId)) {
+    if(isArray(activeId)) {
       return activeId.map(id => this.getValue().entities[id as any]);
     }
     return toBoolean(activeId) ? this.getEntity(activeId) : undefined;
@@ -244,7 +253,7 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    * this.query.getCount(entity => entity.completed)
    */
   getCount(predicate?: (entity: E, index: number) => boolean): number {
-    if (isFunction(predicate)) {
+    if(isFunction(predicate)) {
       return this.getAll().filter(predicate).length;
     }
     return this.getValue().ids.length;
@@ -309,7 +318,7 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
   selectEntityAction(action: EntityActions): Observable<ID[]>;
   selectEntityAction(): Observable<EntityAction>;
   selectEntityAction(action?: EntityActions): Observable<ID[] | EntityAction> {
-    if (isUndefined(action)) {
+    if(isUndefined(action)) {
       return this.store.selectEntityAction$;
     }
     return this.store.selectEntityAction$.pipe(
@@ -333,15 +342,15 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
   hasEntity(project: (entity: E) => boolean): boolean;
   hasEntity(): boolean;
   hasEntity(projectOrIds?: EntityID | EntityID[] | ((entity: E) => boolean)): boolean {
-    if (isNil(projectOrIds)) {
+    if(isNil(projectOrIds)) {
       return this.getValue().ids.length > 0;
     }
 
-    if (isFunction(projectOrIds)) {
+    if(isFunction(projectOrIds)) {
       return this.getAll().some(projectOrIds);
     }
 
-    if (isArray(projectOrIds)) {
+    if(isArray(projectOrIds)) {
       return projectOrIds.every(id => (id as any) in this.getValue().entities);
     }
 
@@ -359,8 +368,8 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    */
   hasActive(id?: EntityID): boolean {
     const active = this.getValue().active;
-    if (Array.isArray(active)) {
-      if (isDefined(id)) {
+    if(Array.isArray(active)) {
+      if(isDefined(id)) {
         return active.includes(id);
       }
       return active.length > 0;
