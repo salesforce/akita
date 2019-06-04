@@ -11,6 +11,16 @@ import { rootDispatcher } from './rootDispatcher';
 import { isNotBrowser } from './root';
 import { isNil } from './isNil';
 
+let skipStorageUpdate = false;
+
+export function setSkipStorageUpdate(skip: boolean) {
+  skipStorageUpdate = skip;
+}
+
+export function getSkipStorageUpdate() {
+  return skipStorageUpdate;
+}
+
 export interface PersistStateStorage {
   getItem(key: string): MaybeAsync;
 
@@ -24,7 +34,7 @@ function isPromise(v: any) {
 }
 
 function resolve(asyncOrValue: any) {
-  if (isPromise(asyncOrValue) || isObservable(asyncOrValue)) {
+  if(isPromise(asyncOrValue) || isObservable(asyncOrValue)) {
     return from(asyncOrValue);
   }
 
@@ -50,16 +60,20 @@ export interface PersistStateParams {
    *  Pay attention that you can't use both include and exclude
    */
   exclude: string[];
+
   preStorageUpdate(storeName: string, state: any): any;
+
   preStoreUpdate(storeName: string, state: any): any;
+
+  skipStorageUpdate: () => boolean;
 }
 
 export function persistState(params?: Partial<PersistStateParams>) {
-  if (isNotBrowser) return;
+  if(isNotBrowser) return;
 
   const defaults: PersistStateParams = {
     key: 'AkitaStores',
-    storage: typeof localStorage === 'undefined'  ? params.storage : localStorage,
+    storage: typeof localStorage === 'undefined' ? params.storage : localStorage,
     deserialize: JSON.parse,
     serialize: JSON.stringify,
     include: [],
@@ -69,19 +83,21 @@ export function persistState(params?: Partial<PersistStateParams>) {
     },
     preStoreUpdate: function(storeName, state) {
       return state;
-    }
+    },
+    skipStorageUpdate: getSkipStorageUpdate
   };
-  const { storage, deserialize, serialize, include, exclude, key, preStorageUpdate, preStoreUpdate } = Object.assign({}, defaults, params);
+
+  const { storage, deserialize, serialize, include, exclude, key, preStorageUpdate, preStoreUpdate, skipStorageUpdate } = Object.assign({}, defaults, params);
 
   const hasInclude = include.length > 0;
   const hasExclude = exclude.length > 0;
   let includeStores: HashMap<string>;
 
-  if (hasInclude && hasExclude) {
-    throw new AkitaError("You can't use both include and exclude");
+  if(hasInclude && hasExclude) {
+    throw new AkitaError('You can\'t use both include and exclude');
   }
 
-  if (hasInclude) {
+  if(hasInclude) {
     includeStores = include.reduce((acc, path) => {
       const storeName = path.split('.')[0];
       acc[storeName] = path;
@@ -105,6 +121,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
 
   resolve(value).subscribe((v: any) => {
     const storageState = deserialize(v || '{}');
+
     function save(storeCache) {
       storageState['$cache'] = { ...(storageState['$cache'] || {}), ...storeCache };
       buffer.push(storage.setItem(key, serialize(Object.assign({}, storageState, acc))));
@@ -114,7 +131,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
     function subscribe(storeName, path) {
       stores[storeName] = __stores__[storeName]
         ._select(state => getValue(state, path))
-        .pipe(skip(1))
+        .pipe(skip(1), filter(() => skipStorageUpdate() === false))
         .subscribe(data => {
           acc[storeName] = preStorageUpdate(storeName, data);
           Promise.resolve().then(() => save({ [storeName]: __stores__[storeName]._cache().getValue() }));
@@ -122,14 +139,14 @@ export function persistState(params?: Partial<PersistStateParams>) {
     }
 
     function setInitial(storeName, store, path) {
-      if (storeName in storageState) {
+      if(storeName in storageState) {
         setAction('@PersistState');
         store._setState(state => {
           return setValue(state, path, preStoreUpdate(storeName, storageState[storeName]));
         });
         const hasCache = storageState['$cache'] ? storageState['$cache'][storeName] : false;
         __stores__[storeName].setHasCache(hasCache);
-        if (store.setDirty) {
+        if(store.setDirty) {
           store.setDirty();
         }
       }
@@ -138,13 +155,13 @@ export function persistState(params?: Partial<PersistStateParams>) {
     subscription = rootDispatcher.pipe(filter(({ type }) => type === Actions.NEW_STORE)).subscribe(action => {
       let currentStoreName = action.payload.store.storeName;
 
-      if (hasExclude && exclude.includes(currentStoreName)) {
+      if(hasExclude && exclude.includes(currentStoreName)) {
         return;
       }
 
-      if (hasInclude) {
+      if(hasInclude) {
         const path = includeStores[currentStoreName];
-        if (!path) {
+        if(!path) {
           return;
         }
         setInitial(currentStoreName, action.payload.store, path);
@@ -159,7 +176,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
   return {
     destroy() {
       subscription.unsubscribe();
-      for (let i = 0, keys = Object.keys(stores); i < keys.length; i++) {
+      for(let i = 0, keys = Object.keys(stores); i < keys.length; i++) {
         const storeName = keys[i];
         stores[storeName].unsubscribe();
       }
@@ -169,7 +186,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
       storage.clear();
     },
     clearStore(storeName?: string) {
-      if (isNil(storeName)) {
+      if(isNil(storeName)) {
         const value = resolve(storage.setItem(key, '{}'));
         value.subscribe();
         return;
@@ -178,7 +195,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
       resolve(value).subscribe(v => {
         const storageState = deserialize(v || '{}');
 
-        if (storageState[storeName]) {
+        if(storageState[storeName]) {
           delete storageState[storeName];
           const value = resolve(storage.setItem(key, serialize(storageState)));
           value.subscribe();
@@ -187,3 +204,4 @@ export function persistState(params?: Partial<PersistStateParams>) {
     }
   };
 }
+

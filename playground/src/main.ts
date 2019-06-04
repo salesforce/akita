@@ -10,6 +10,7 @@ if (environment.production) {
 }
 
 persistState({
+  key: 'akitaPlayground',
   include: ['auth.token', 'todos'],
   preStorageUpdate: function(storeName, state) {
     console.log(`preStorageUpdate`, storeName, state);
