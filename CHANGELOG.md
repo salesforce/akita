@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.13.1"></a>
+## [3.13.1](https://github.com/datorama/akita/compare/v3.13.0...v3.13.1) (2019-06-04)
+
+
+### Bug Fixes
+
+* **persist-state:** allow skipping storage update ([e732050](https://github.com/datorama/akita/commit/e732050)), closes [#228](https://github.com/datorama/akita/issues/228)
+
+
+
 <a name="3.13.0"></a>
 # [3.13.0](https://github.com/datorama/akita/compare/v3.12.1...v3.13.0) (2019-06-03)
 
