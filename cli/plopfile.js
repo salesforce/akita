@@ -90,7 +90,7 @@ module.exports = function(plop) {
           files.push({
             type: 'add',
             skipIfExists: true,
-            path: buildPath(`{{ 'singular' ('dashCase' name) name}}.${extension}`, directory, folderName),
+            path: buildPath(`{{ 'singular' ('dashCase' name) name}}.model.${extension}`, directory, folderName),
             templateFile: `./templates/${templateBase}/model.tpl`
           });
         }
