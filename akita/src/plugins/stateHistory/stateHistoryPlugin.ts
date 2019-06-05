@@ -3,10 +3,17 @@ import { toBoolean } from '../../toBoolean';
 import { AkitaPlugin, Queries } from '../plugin';
 import { EntityParam } from '../entityCollectionPlugin';
 import { logAction } from '../../actions';
+import { isFunction } from '../../isFunction';
 
 export interface StateHistoryParams {
   maxAge?: number;
   comparator?: (prevState, currentState) => boolean;
+}
+
+export type History<S> = {
+  past: S[],
+  present: S | null,
+  future: S[]
 }
 
 export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
@@ -124,9 +131,24 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
     this.update('Redo');
   }
 
-  clear() {
-    this.history = {
-      past: [],
+  /**
+   * Clear the history
+   * 
+   * @param customUpdateFn Callback function for only clearing part of the history
+   * 
+   * @example
+   * 
+   * stateHistory.clear((history) => {
+   *  return {
+   *    past: history.past,
+   *    present: history.present,
+   *    future: []
+   *  };
+   * });
+   */
+  clear(customUpdateFn?: (history: History<S>) => History<S>) {
+    this.history = isFunction(customUpdateFn) ? customUpdateFn(this.history) : {
+      past:  [],
       present: null,
       future: []
     };

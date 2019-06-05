@@ -184,6 +184,34 @@ describe('StateHistory', () => {
       present: { counter: 5 },
       future: [{ counter: 4 }]
     });
+
+    stateHistory.clear((history) => {
+      return {
+        past: history.past,
+        present: history.present,
+        future: []
+      };
+    });
+
+    expect(stateHistory.history).toEqual({
+      past: [{ counter: 0 }, { counter: 2 }, { counter: 4 }],
+      present: { counter: 5 },
+      future: []
+    });
+
+    stateHistory.clear((history) => {
+      return {
+        past: [],
+        present: history.present,
+        future: history.future
+      };
+    });
+
+    expect(stateHistory.history).toEqual({
+      past: [],
+      present: { counter: 5 },
+      future: []
+    });
   });
 });
 
