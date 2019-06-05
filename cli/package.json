@@ -1,6 +1,6 @@
 {
   "name": "@datorama/akita-cli",
-  "version": "4.0.3",
+  "version": "4.0.4",
   "description": "Akita CLI",
   "main": "index.js",
   "scripts": {
@@ -9,9 +9,6 @@
   "author": "Netanel Basal",
   "bin": {
     "akita": "index.js"
-  },
-  "akitaCli": {
-    "template": "angular"
   },
   "repository": {
     "url": "https://github.com/datorama/akita"
