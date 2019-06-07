@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.14.0"></a>
+# [3.14.0](https://github.com/datorama/akita/compare/v3.13.1...v3.14.0) (2019-06-07)
+
+
+### Features
+
+* **history-plugin:** allow custom clear function ([68ba22e](https://github.com/datorama/akita/commit/68ba22e))
+
+
+
 <a name="3.13.1"></a>
 ## [3.13.1](https://github.com/datorama/akita/compare/v3.13.0...v3.13.1) (2019-06-04)
 
