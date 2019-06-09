@@ -6,6 +6,7 @@ import { AkitaPlugin } from '../plugin';
 import { applyTransaction } from '../../transaction';
 import { isUndefined } from '../../isUndefined';
 import { action, logAction } from '../../actions';
+import { isNil } from '../../isNil';
 
 export interface PaginationResponse<E> {
   currentPage: number;
@@ -263,6 +264,13 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
 
   getQuery(): QueryEntity<any, E> {
     return this.query;
+  }
+
+  refreshCurrentPage() {
+    if(isNil(this.currentPage) === false) {
+      this.clearPage(this.currentPage);
+      this.setPage(this.currentPage);
+    }
   }
 
   private getFrom() {
