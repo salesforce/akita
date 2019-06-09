@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.15.0"></a>
+# [3.15.0](https://github.com/datorama/akita/compare/v3.14.0...v3.15.0) (2019-06-09)
+
+
+### Features
+
+* **paginator-plugin:** add refresh page method ([85705e4](https://github.com/datorama/akita/commit/85705e4)), closes [#232](https://github.com/datorama/akita/issues/232)
+
+
+
 <a name="3.14.0"></a>
 # [3.14.0](https://github.com/datorama/akita/compare/v3.13.1...v3.14.0) (2019-06-07)
 
