@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.15.1"></a>
+## [3.15.1](https://github.com/datorama/akita/compare/v3.15.0...v3.15.1) (2019-06-10)
+
+
+### Bug Fixes
+
+* **devtools:** should support ssr ([9da1f9e](https://github.com/datorama/akita/commit/9da1f9e)), closes [#233](https://github.com/datorama/akita/issues/233)
+
+
+
 <a name="3.15.0"></a>
 # [3.15.0](https://github.com/datorama/akita/compare/v3.14.0...v3.15.0) (2019-06-09)
 
