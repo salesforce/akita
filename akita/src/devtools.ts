@@ -3,6 +3,7 @@ import { isDefined } from './isDefined';
 import { rootDispatcher } from './rootDispatcher';
 import { __stores__ } from './stores';
 import { capitalize } from './captialize';
+import { isNotBrowser } from './root';
 
 export type DevtoolsOptions = {
   /**  maximum allowed actions to be stored in the history tree */
@@ -22,6 +23,8 @@ export type NgZoneLike = { run: any };
 export function akitaDevtools(ngZone: NgZoneLike, options?: Partial<DevtoolsOptions>);
 export function akitaDevtools(options?: Partial<DevtoolsOptions>);
 export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOptions>, options: Partial<DevtoolsOptions> = {}) {
+  if(isNotBrowser) return;
+
   if (!(window as any).__REDUX_DEVTOOLS_EXTENSION__) {
     return;
   }
