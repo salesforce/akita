@@ -78,14 +78,14 @@ module.exports = function(plop) {
         }
       ];
 
-      if (template !== 'js') {
-        files.push({
-          type: 'add',
-          skipIfExists: true,
-          path: buildPath(`{{'dashCase' name}}.service.${extension}`, directory, folderName),
-          templateFile: `./templates/${templateBase}/service.tpl`
-        });
+      files.push({
+        type: 'add',
+        skipIfExists: true,
+        path: buildPath(`{{'dashCase' name}}.service.${extension}`, directory, folderName),
+        templateFile: `./templates/${templateBase}/service.tpl`
+      });
 
+      if (template !== 'js') {
         if (data.isEntityStore) {
           files.push({
             type: 'add',
