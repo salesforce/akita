@@ -87,6 +87,15 @@ describe('EntitiesStore', () => {
     });
   });
 
+  describe('replace', () => {
+    it('should replace entity', () => {
+      store.add(new Todo({ id: 1 }));
+      store.add(new Todo({ id: 2 }));
+      store.replace(2, { title: 'replaced' });
+      expect(store._value().entities[2]).toEqual({ id: 2, title: 'replaced'});
+    });
+  });
+
   describe('update', () => {
     it('should update entity', () => {
       store.add(new Todo({ id: 1 }));
@@ -374,7 +383,7 @@ describe('EntitiesStore', () => {
       const ttl = 100;
 
       beforeEach(() => {
-        store = new TodosStore({cache: { ttl }});
+        store = new TodosStore({ cache: { ttl } });
       });
 
       it('should init with false', () => {

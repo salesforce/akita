@@ -74,7 +74,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    *
    */
   set(entities: SetEntities<E>) {
-    if (isNil(entities)) return;
+    if(isNil(entities)) return;
 
     isDev() && setAction('Set Entity');
 
@@ -91,7 +91,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
 
     this.updateCache();
 
-    if (this.hasInitialUIState()) {
+    if(this.hasInitialUIState()) {
       this.handleUICreation();
     }
 
@@ -112,7 +112,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
   add(entities: E[] | E, options: AddEntitiesOptions = { loading: false }) {
     const collection = coerceArray(entities);
 
-    if (isEmpty(collection)) return;
+    if(isEmpty(collection)) return;
     isDev() && setAction('Add Entity');
 
     const data = addEntities({
@@ -123,12 +123,12 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
       options
     });
 
-    if (data) {
+    if(data) {
       this._setState(() => ({
         ...data.newState,
         loading: options.loading
       }));
-      if (this.hasInitialUIState()) {
+      if(this.hasInitialUIState()) {
         this.handleUICreation(true);
       }
 
@@ -163,13 +163,13 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
   update(newState: UpdateStateCallback<S>);
   update(newState: Partial<S>);
   update(idsOrFnOrState: IDS | null | Partial<S> | UpdateStateCallback<S> | UpdateEntityPredicate<E>, newStateOrFn?: UpdateStateCallback<E> | Partial<E> | Partial<S>) {
-    if (isUndefined(newStateOrFn)) {
+    if(isUndefined(newStateOrFn)) {
       super.update(idsOrFnOrState as Partial<S>);
       return;
     }
     let ids: ID[] = [];
 
-    if (isFunction(idsOrFnOrState)) {
+    if(isFunction(idsOrFnOrState)) {
       // We need to filter according the predicate function
       ids = this.ids.filter(id => (idsOrFnOrState as UpdateEntityPredicate<E>)(this.entities[id]));
     } else {
@@ -177,7 +177,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
       ids = isNil(idsOrFnOrState) ? this.ids : coerceArray(idsOrFnOrState);
     }
 
-    if (isEmpty(ids)) return;
+    if(isEmpty(ids)) return;
 
     isDev() && setAction('Update Entity', ids);
     this._setState(state =>
@@ -214,7 +214,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     const newEntities = toArray.filter(predicate(false)).map(id => {
       let entity = isFunction(newState) ? newState({} as E) : newState;
       const withId = { ...(entity as E), [this.idKey]: id };
-      if (isClassBased) {
+      if(isClassBased) {
         return new options.baseClass(withId);
       }
       return withId;
@@ -244,9 +244,9 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     const updatedEntities = {};
 
     // Update the state directly to optimize performance
-    for (const entity of entities) {
+    for(const entity of entities) {
       const id = entity[this.idKey];
-      if (hasEntity(this.entities, id)) {
+      if(hasEntity(this.entities, id)) {
         updatedEntities[id] = { ...this._value().entities[id], ...entity };
         updatedIds.push(id);
       } else {
@@ -275,6 +275,34 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
 
   /**
    *
+   * Replace one or more entities (except the id property)
+   *
+   *
+   * @example
+   *
+   * this.store.replace(5, newEntity)
+   * this.store.replace([1,2,3], newEntity)
+   */
+  replace(ids: IDS, newState: Partial<E>) {
+    const toArray = coerceArray(ids);
+    if(isEmpty(toArray)) return;
+    let replaced = {};
+    for(const id of toArray) {
+      newState[this.idKey] = id;
+      replaced[id] = newState;
+    }
+    isDev() && setAction('Replace Entity', ids);
+    this._setState((state) => ({
+      ...state,
+      entities: {
+        ...state.entities,
+        ...replaced
+      }
+    }));
+  }
+
+  /**
+   *
    * Remove one or more entities
    *
    * @example
@@ -283,30 +311,30 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    * this.store.remove([1,2,3])
    * this.store.remove()
    */
-  remove(id?: ID | ID[]);
+  remove(id?: IDS);
   /**
    * this.store.remove(entity => entity.id === 1)
    */
   remove(predicate: (entity: Readonly<E>) => boolean);
   remove(idsOrFn?: ID | ID[] | ((entity: Readonly<E>) => boolean)) {
-    if (isEmpty(this.ids)) return;
+    if(isEmpty(this.ids)) return;
 
     const idPassed = isDefined(idsOrFn);
 
     // null means remove all
     let ids: ID[] | null = [];
 
-    if (isFunction(idsOrFn)) {
+    if(isFunction(idsOrFn)) {
       ids = this.ids.filter(entityId => idsOrFn(this.entities[entityId]));
     } else {
       ids = idPassed ? coerceArray(idsOrFn) : null;
     }
 
-    if (isEmpty(ids)) return;
+    if(isEmpty(ids)) return;
 
     isDev() && setAction('Remove Entity', ids);
     this._setState((state: StateWithActive<S>) => removeEntities({ state, ids }));
-    if (ids === null) {
+    if(ids === null) {
       this.setHasCache(false);
     }
 
@@ -348,7 +376,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
   setActive(idOrOptions: EntityID | SetActiveOptions | null) {
     const active = getActiveEntities(idOrOptions, this.ids, this.active);
 
-    if (active === undefined) {
+    if(active === undefined) {
       return;
     }
 
@@ -366,9 +394,9 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    */
   addActive<T = IDS>(ids: T) {
     const toArray = coerceArray(ids);
-    if (isEmpty(toArray)) return;
+    if(isEmpty(toArray)) return;
     const everyExist = toArray.every(id => this.active.indexOf(id) > -1);
-    if (everyExist) return;
+    if(everyExist) return;
 
     isDev() && setAction('Add Active', ids);
     this._setState(state => {
@@ -391,9 +419,9 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    */
   removeActive<T = IDS>(ids: T) {
     const toArray = coerceArray(ids);
-    if (isEmpty(toArray)) return;
+    if(isEmpty(toArray)) return;
     const someExist = toArray.some(id => this.active.indexOf(id) > -1);
-    if (!someExist) return;
+    if(!someExist) return;
 
     isDev() && setAction('Remove Active', ids);
     this._setState(state => {
@@ -455,7 +483,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
   // @internal
   destroy() {
     super.destroy();
-    if (this.ui instanceof EntityStore) {
+    if(this.ui instanceof EntityStore) {
       this.ui.destroy();
     }
     this.updatedEntityIds.complete();
@@ -496,8 +524,8 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
   private updateCache() {
     this.setHasCache(true);
     const ttlConfig = this.cacheConfig && this.cacheConfig.ttl;
-    if (ttlConfig) {
-      if (this.cache.ttl !== null) {
+    if(ttlConfig) {
+      if(this.cache.ttl !== null) {
         clearTimeout(this.cache.ttl);
       }
       this.cache.ttl = <any>setTimeout(() => this.setHasCache(false), ttlConfig);
@@ -517,7 +545,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
       };
     };
 
-    if (add) {
+    if(add) {
       uiEntities = this.ids.filter(id => isUndefined(this.ui.entities[id])).map(createFn);
     } else {
       uiEntities = ids.map(createFn);
@@ -531,7 +559,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
   }
 
   private handleUIRemove(ids: ID[]) {
-    if (this.hasUIStore()) {
+    if(this.hasUIStore()) {
       this.ui.remove(ids);
     }
   }
