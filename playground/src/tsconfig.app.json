@@ -3,7 +3,12 @@
   "compilerOptions": {
     "outDir": "../out-tsc/app",
     "baseUrl": "./",
-    "module": "es2015"
+    "module": "es2015",
+    "paths": {
+      "@datorama/akita": [
+        "../../akita/index.ts"
+      ]
+    }
   },
   "exclude": [
     "test.ts",

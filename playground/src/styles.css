@@ -71,7 +71,7 @@ app-todo {
 }
 
 .cyan.lighten-2 {
-  background-color: #673AB7 !important;
+  background-color: #be835d !important;
 }
 
 .pointer {
@@ -86,4 +86,13 @@ input:not([type]).actor-input {
 
 .actor-input.view {
   pointer-events: none;
+}
+
+.logo {
+  width: 55px;
+  transform: translateY(8px);
+}
+
+.blue-text.text-lighten-2 {
+  color: #333333 !important;
 }

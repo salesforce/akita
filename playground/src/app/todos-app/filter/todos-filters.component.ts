@@ -8,8 +8,7 @@ import { untilDestroyed } from 'ngx-take-until-destroy';
   template: `
     <div class="input-field col s12">
       <select [formControl]="control" class="browser-default">
-        <option *ngFor="let filter of filters;" [ngValue]="filter.value">{{filter.label}}
-        </option>
+        <option *ngFor="let filter of filters" [ngValue]="filter.value">{{ filter.label }} </option>
       </select>
     </div>
   `,
@@ -24,8 +23,10 @@ export class TodosFiltersComponent implements OnInit, OnDestroy {
       this.control.patchValue(filter, { emitEvent: false });
     }
   }
-  @Input() filters: TodoFilter[];
-  @Output() update = new EventEmitter<VISIBILITY_FILTER>();
+  @Input()
+  filters: TodoFilter[];
+  @Output()
+  update = new EventEmitter<VISIBILITY_FILTER>();
 
   control: FormControl;
 
@@ -37,5 +38,5 @@ export class TodosFiltersComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy() {}
 }

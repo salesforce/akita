@@ -1,8 +1,8 @@
 import { Todo, TodosStore } from './setup';
-import { QueryEntity } from '../src/api/query-entity';
-import { PaginationResponse, PaginatorPlugin } from '../src/plugins/paginator/paginator-plugin';
-import { switchMap } from 'rxjs/operators';
-import { Observable, of, timer } from 'rxjs';
+import { QueryEntity } from '../src/queryEntity';
+import { PaginationResponse, PaginatorPlugin } from '../src/plugins/paginator/paginatorPlugin';
+import { switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, interval, Observable, of, timer } from 'rxjs';
 
 let store = new TodosStore();
 
@@ -25,15 +25,17 @@ for (let i = 0; i < count; i++) {
   });
 }
 
-export function getData(params = { sortBy: 'email', perPage: 10, page: 1 }) {
-  const offset = (params.page - 1) * +params.perPage;
-  const paginatedItems = data.slice(offset, offset + +params.perPage);
+export function getData(params = { sortBy: 'email', perPage: 10, page: 1, filterEnabled: false }) {
+  const localData = params.filterEnabled ? data.slice(0, 50) : data;
+  const page = params.filterEnabled ? 1 : params.page;
+  const offset = (page - 1) * +params.perPage;
+  const paginatedItems = localData.slice(offset, offset + +params.perPage);
 
   return {
-    currentPage: params.page,
+    currentPage: page,
     perPage: +params.perPage,
-    total: data.length,
-    lastPage: Math.ceil(data.length / +params.perPage),
+    total: localData.length,
+    lastPage: Math.ceil(localData.length / +params.perPage),
     data: paginatedItems
   };
 }
@@ -236,17 +238,17 @@ describe('Paginator', () => {
     });
   });
 
-  describe('clear cache', () => {
-    it('it clear the provided page', () => {
-      paginator.clearCache(3);
+  describe('clear cache as default behaviour', () => {
+    it('it should clear the provided page', () => {
       requestFunc.mockClear();
-      expect(paginator.pages.get(3)).toBeUndefined();
-      paginator.setPage(3);
+      paginator.setPage(4);
       expect(requestFunc).toHaveBeenCalledTimes(1);
-      paginator.setPage(3);
-      expect(requestFunc).toHaveBeenCalledTimes(1);
+      expect(paginator.hasPage(4)).toBeTruthy();
+      paginator.clearPage(4);
+      expect(paginator.hasPage(4)).toBeFalsy();
     });
     it('it should clear all', () => {
+      paginator.initial = false;
       paginator.clearCache();
       requestFunc.mockClear();
       expect(paginator.pages).toEqual(new Map());
@@ -258,6 +260,14 @@ describe('Paginator', () => {
       expect(requestFunc).toHaveBeenCalledTimes(2);
       paginator.setPage(2);
       expect(requestFunc).toHaveBeenCalledTimes(2);
+    });
+    it('it should not clear the store when explicit stated', () => {
+      store.set(data);
+      expect(query.getAll().length).toBeGreaterThan(0);
+      let initialLength = query.getAll().length;
+      paginator.clearCache({ clearStore: false });
+      let lengthAfterCacheClear = query.getAll().length;
+      expect(initialLength).toEqual(lengthAfterCacheClear);
     });
   });
 });
@@ -273,7 +283,7 @@ class Todos2Query extends QueryEntity<any, Todo> {
 describe('cacheTimeout', () => {
   jest.useFakeTimers();
   const query2 = new Todos2Query();
-  const paginator2 = new PaginatorPlugin(query2, { cacheTimeout: timer(15000) });
+  const paginator2 = new PaginatorPlugin(query2, { cacheTimeout: interval(15000) });
   const requestFunc = jest.fn();
 
   paginator2.pageChanges
@@ -290,15 +300,102 @@ describe('cacheTimeout', () => {
     )
     .subscribe();
 
-  it('should clear cache when cacheTimeout emits', () => {
+  it('should clear cache when cacheTimeout emits as default behaviour', () => {
+    paginator2.initial = false;
     spyOn(paginator2, 'clearCache').and.callThrough();
     expect(query2.getAll().length).toEqual(10);
     expect(requestFunc).toHaveBeenCalledTimes(1);
-    jest.runAllTimers();
+    jest.runOnlyPendingTimers();
     expect(paginator2.hasPage(1)).toBeFalsy();
     paginator2.setPage(1);
     expect(paginator2.hasPage(1)).toBeTruthy();
     expect(requestFunc).toHaveBeenCalledTimes(2);
     expect(paginator2.clearCache).toHaveBeenCalledTimes(1);
+  });
+});
+
+let store3 = new TodosStore();
+
+class Todos3Query extends QueryEntity<any, Todo> {
+  constructor() {
+    super(store3);
+  }
+}
+
+describe('cacheTimeout and clearStoreWithCache false', () => {
+  jest.useFakeTimers();
+  const query3 = new Todos3Query();
+  const paginator3 = new PaginatorPlugin(query3, { cacheTimeout: interval(15000), clearStoreWithCache: false });
+  const requestFunc = jest.fn();
+
+  paginator3.pageChanges
+    .pipe(
+      switchMap(page => {
+        const req = requestFunc.mockReturnValue(
+          getContacts({
+            page,
+            perPage: 10
+          })
+        );
+        return paginator3.getPage(req);
+      })
+    )
+    .subscribe();
+
+  it('it should not clear store when cacheTimeout emits', () => {
+    spyOn(paginator3, 'clearCache').and.callThrough();
+    expect(query3.getAll().length).toEqual(10);
+    expect(requestFunc).toHaveBeenCalledTimes(1);
+    jest.runOnlyPendingTimers();
+    expect(paginator3.clearCache).toHaveBeenCalledTimes(1);
+    expect(query3.getAll().length).toEqual(10);
+  });
+
+  it('clearCache should clear the store when explicit stated', () => {
+    store3.set(data);
+    expect(query3.getAll().length).toBeGreaterThan(0);
+    paginator3.clearCache({ clearStore: true });
+    expect(query3.getAll().length).toEqual(0);
+  });
+});
+
+let store4 = new TodosStore();
+
+class Todos4Query extends QueryEntity<any, Todo> {
+  constructor() {
+    super(store4);
+  }
+}
+
+describe('Server-side pagination with filter', () => {
+  let res;
+  const requestFunc = jest.fn();
+  let filterEnabled$ = new BehaviorSubject(false);
+
+  it('should reset page to 1 when filters applied', () => {
+    combineLatest(paginator.pageChanges, filterEnabled$)
+      .pipe(
+        tap(_ => {
+          paginator.clearCache();
+        }),
+        switchMap(([page, filterEnabled]) => {
+          const req = requestFunc.mockReturnValue(
+            getContacts({
+              page,
+              perPage: 10,
+              filterEnabled: filterEnabled
+            })
+          );
+
+          return paginator.getPage(req);
+        })
+      )
+      .subscribe(v => {
+        res = v;
+      });
+
+    paginator.setPage(6);
+    filterEnabled$.next(true);
+    expect(paginator.currentPage).toEqual(1);
   });
 });

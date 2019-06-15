@@ -3,10 +3,11 @@ import { ContactsService } from '../state/contacts.service';
 import { combineLatest } from 'rxjs';
 import { startWith, switchMap, tap } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
-import { Contact, ContactsQuery } from '../state';
 import { ActivatedRoute } from '@angular/router';
 import { CONTACTS_PAGINATOR } from '../state/contacts.pagination';
-import { PaginatorPlugin } from '../../../../../akita/src';
+import { PaginatorPlugin } from '@datorama/akita';
+import { ContactsQuery } from '../state/contacts.query';
+import { Contact } from '../state/contact.model';
 
 @Component({
   selector: 'app-contacts-page',

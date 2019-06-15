@@ -5,10 +5,6 @@ export type Story = {
   category: string;
 };
 
-/**
- * A factory function that creates Stories
- * @param params
- */
 export function createStory() {
   return {
     title: '',

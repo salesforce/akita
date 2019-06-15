@@ -1,14 +1,11 @@
 import { Injectable } from '@angular/core';
 import { WidgetsStore } from './widgets.store';
-import { WidgetsDataService } from './widgets-data.service';
 import { createWidget } from './widget.model';
-import { ID } from '../../../../../../akita/akita/src/index';
+import { ID } from '@datorama/akita';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class WidgetsService {
-  constructor(private widgetsStore: WidgetsStore, private widgetsDataService: WidgetsDataService) {}
+  constructor(private widgetsStore: WidgetsStore) {}
 
   initWidgets() {
     const widgets = [createWidget(), createWidget(), createWidget(), createWidget(), createWidget()];
@@ -25,10 +22,21 @@ export class WidgetsService {
 
   remove(id?: ID) {
     this.widgetsStore.remove(id);
-    this.widgetsStore.setDirty();
   }
 
   updateName(name: string) {
-    this.widgetsStore.updateRoot({name});
+    this.widgetsStore.update({ name });
+  }
+
+  addActive(id: ID) {
+    this.widgetsStore.addActive(id);
+  }
+
+  removeActive(id: ID) {
+    this.widgetsStore.removeActive(id);
+  }
+
+  toggleActive(id: ID) {
+    this.widgetsStore.toggleActive(id);
   }
 }

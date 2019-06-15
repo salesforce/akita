@@ -3,7 +3,8 @@ import { ActivatedRouteSnapshot, NavigationCancel, NavigationError, Router, Rout
 import { of } from 'rxjs';
 import { RouterStore } from './router.store';
 import { RouterQuery } from './router.query';
-import { __globalState, action } from '../../akita/src';
+import { action } from '../../akita/src';
+import { setSkipAction } from '../../akita/src/actions';
 
 @Injectable({
   providedIn: 'root'
@@ -17,17 +18,17 @@ export class RouterService {
 
   constructor(private routerStore: RouterStore, private routerQuery: RouterQuery, private router: Router) {}
 
-  @action({ type: 'Navigation Cancelled' })
+  @action('Navigation Cancelled')
   dispatchRouterCancel(event: NavigationCancel) {
     this.update();
   }
 
-  @action({ type: 'Navigation Error' })
+  @action('Navigation Error')
   dispatchRouterError(event: NavigationError) {
     this.update();
   }
 
-  @action({ type: 'Navigation' })
+  @action('Navigation')
   dispatchRouterNavigation() {
     this.update();
   }
@@ -40,7 +41,7 @@ export class RouterService {
 
   private update() {
     this.dispatchTriggeredByRouter = true;
-    this.routerStore.setState(state => {
+    this.routerStore._setState(state => {
       return {
         ...state,
         state: this.routerStateSnapshot,
@@ -67,10 +68,12 @@ export class RouterService {
   }
 
   private setUpStoreListener(): void {
-    this.routerQuery.select(state => state).subscribe(s => {
-      this.routerState = s;
-      this.navigateIfNeeded();
-    });
+    this.routerQuery
+      .select(state => state)
+      .subscribe(s => {
+        this.routerState = s;
+        this.navigateIfNeeded();
+      });
   }
 
   private shouldDispatchRouterNavigation(): boolean {
@@ -86,7 +89,7 @@ export class RouterService {
 
     if (this.router.url !== this.routerState.state.url) {
       this.navigationTriggeredByDispatch = true;
-      __globalState.setSkipAction();
+      setSkipAction();
       this.router.navigateByUrl(this.routerState.state.url);
     }
   }

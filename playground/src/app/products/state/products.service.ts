@@ -1,46 +1,32 @@
 import { Injectable } from '@angular/core';
 import { ProductsStore } from './products.store';
-import { ProductsDataService } from './products-data.service';
-import { Product } from './products.model';
-import { tap } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { map, mapTo } from 'rxjs/operators';
+import { Observable, of, timer } from 'rxjs';
 import { ProductsQuery } from './products.query';
-import { ID, noop } from '../../../../../akita/src';
-import { applyAction } from '../../../../../akita/index';
+import { ID } from '@datorama/akita';
+import { products } from '../products.mocks';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductsService {
-  constructor(private productsStore: ProductsStore, private productsQuery: ProductsQuery, private productsDataService: ProductsDataService) {}
+  constructor(private productsStore: ProductsStore, private productsQuery: ProductsQuery) {}
 
-  /**
-   *
-   * @returns {Observable<Product[]>}
-   */
-  get(): Observable<Product[]> {
-    const request = this.productsDataService.get().pipe(
-      tap(response => {
-        this.productsStore.set(response);
-        // applyAction(
-        //   () => {
-        //     this.productsStore.set(response);
-        //   },
-        //   { type: '[Products Service] Fetch All' }
-        // );
-      })
+  get(): Observable<void> {
+    const request = timer(500).pipe(
+      mapTo(products),
+      map(response => this.productsStore.set(response))
     );
 
-    return this.productsQuery.isPristine ? request : noop();
+    return this.productsQuery.getHasCache() ? of() : request;
   }
 
-  /**
-   *
-   * @param {ID} id
-   */
   getProduct(id: ID) {
-    this.productsDataService.getProduct(id).subscribe(product => {
-      this.productsStore.add(product);
-    });
+    const product = products.find(product => product.id === +id);
+
+    return timer(500).pipe(
+      mapTo(product),
+      map(() => this.productsStore.add(product))
+    );
   }
 }

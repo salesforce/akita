@@ -3,6 +3,7 @@
   "projectOwner": "NetanelBasal",
   "repoType": "github",
   "repoHost": "https://github.com",
+  "commitConvention": "angular",
   "files": [
     "README.md"
   ],
@@ -39,15 +40,6 @@
       "profile": "https://github.com/bh86",
       "contributions": [
         "code",
-        "ideas"
-      ]
-    },
-    {
-      "login": "bh86",
-      "name": "Ido Glikman",
-      "avatar_url": "https://avatars2.githubusercontent.com/u/78281?v=4",
-      "profile": "https://github.com/glikman",
-      "contributions": [
         "ideas"
       ]
     },
@@ -149,6 +141,108 @@
       "name": "Daniel Netzer",
       "avatar_url": "https://avatars2.githubusercontent.com/u/14941988?v=4",
       "profile": "https://github.com/DanielNetzer",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "manudss",
+      "name": "Emmanuel De Saint Steban",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1046806?v=4",
+      "profile": "https://github.com/manudss",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "twittwer",
+      "name": "Tobias Wittwer",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/8677948?v=4",
+      "profile": "https://github.com/twittwer",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "n0script",
+      "name": "Miro Krenz",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/36441932?v=4",
+      "profile": "https://github.com/n0script",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "simeyla",
+      "name": "simeyla ",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/3656278?v=4",
+      "profile": "https://github.com/simeyla",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
+    },
+    {
+      "login": "Teamop",
+      "name": "Terry",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/8519685?v=4",
+      "profile": "https://github.com/Teamop",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "vakrilov",
+      "name": "Alexander Vakrilov",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/4092076?v=4",
+      "profile": "https://www.nativescript.org/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "orangeswim",
+      "name": "Cyprian Bergonia",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1499212?v=4",
+      "profile": "https://github.com/orangeswim",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "leptoquark1",
+      "name": "David Fecke",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/13577480?v=4",
+      "profile": "http://www.eyecook.net",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "xaosaki",
+      "name": "Aleksandr Sobakar",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/28115571?v=4",
+      "profile": "http://xaosaki.ru",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "idoglikman",
+      "name": "Ido Glikman",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/37035056?v=4",
+      "profile": "https://github.com/idoglikman",
+      "contributions": [
+        "blog",
+        "code",
+        "ideas"
+      ]
+    },
+    {
+      "login": "flmariano",
+      "name": "flmariano",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/38477338?v=4",
+      "profile": "https://github.com/flmariano",
       "contributions": [
         "code"
       ]

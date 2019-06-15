@@ -123,8 +123,7 @@ function insertImport(source, fileToEdit, symbolName, fileName, isDefault = fals
         const importTextNodes = imports.filter(n => n.text === symbolName);
         // insert import if it's not there
         if (importTextNodes.length === 0) {
-            const fallbackPos = findNodes(relevantImports[0], ts.SyntaxKind.CloseBraceToken)[0].getStart() ||
-                findNodes(relevantImports[0], ts.SyntaxKind.FromKeyword)[0].getStart();
+            const fallbackPos = findNodes(relevantImports[0], ts.SyntaxKind.CloseBraceToken)[0].getStart() || findNodes(relevantImports[0], ts.SyntaxKind.FromKeyword)[0].getStart();
             return insertAfterLastOccurrence(imports, `, ${symbolName}`, fileToEdit, fallbackPos);
         }
         return new NoopChange();
@@ -140,8 +139,7 @@ function insertImport(source, fileToEdit, symbolName, fileName, isDefault = fals
     // if there are no imports or 'use strict' statement, insert import at beginning of file
     const insertAtBeginning = allImports.length === 0 && useStrict.length === 0;
     const separator = insertAtBeginning ? '' : ';\n';
-    const toInsert = `${separator}import ${open}${symbolName}${close}` +
-        ` from '${fileName}'${insertAtBeginning ? ';\n' : ''}`;
+    const toInsert = `${separator}import ${open}${symbolName}${close}` + ` from '${fileName}'${insertAtBeginning ? ';\n' : ''}`;
     return insertAfterLastOccurrence(allImports, toInsert, fileToEdit, fallbackPos, ts.SyntaxKind.StringLiteral);
 }
 exports.insertImport = insertImport;
@@ -288,9 +286,7 @@ function _angularImportsFromNode(node, _sourceFile) {
             else {
                 // This is of the form `import {a,b,c} from 'path'`
                 const namedImports = nb;
-                return namedImports.elements
-                    .map((is) => is.propertyName ? is.propertyName.text : is.name.text)
-                    .reduce((acc, curr) => {
+                return namedImports.elements.map((is) => (is.propertyName ? is.propertyName.text : is.name.text)).reduce((acc, curr) => {
                     acc[curr] = modulePath;
                     return acc;
                 }, {});
@@ -314,15 +310,13 @@ function getDecoratorMetadata(source, identifier, module) {
     }, {});
     return getSourceNodes(source)
         .filter(node => {
-        return (node.kind == ts.SyntaxKind.Decorator &&
-            node.expression.kind == ts.SyntaxKind.CallExpression);
+        return node.kind == ts.SyntaxKind.Decorator && node.expression.kind == ts.SyntaxKind.CallExpression;
     })
         .map(node => node.expression)
         .filter(expr => {
         if (expr.expression.kind == ts.SyntaxKind.Identifier) {
             const id = expr.expression;
-            return (id.getFullText(source) == identifier &&
-                angularImports[id.getFullText(source)] === module);
+            return id.getFullText(source) == identifier && angularImports[id.getFullText(source)] === module;
         }
         else if (expr.expression.kind == ts.SyntaxKind.PropertyAccessExpression) {
             // This covers foo.NgModule when importing * as foo.
@@ -337,8 +331,7 @@ function getDecoratorMetadata(source, identifier, module) {
         }
         return false;
     })
-        .filter(expr => expr.arguments[0] &&
-        expr.arguments[0].kind == ts.SyntaxKind.ObjectLiteralExpression)
+        .filter(expr => expr.arguments[0] && expr.arguments[0].kind == ts.SyntaxKind.ObjectLiteralExpression)
         .map(expr => expr.arguments[0]);
 }
 exports.getDecoratorMetadata = getDecoratorMetadata;
@@ -419,10 +412,7 @@ function addSymbolToNgModuleMetadata(source, ngModulePath, metadataField, symbol
             }
         }
         if (importPath !== null) {
-            return [
-                new InsertChange(ngModulePath, position, toInsert),
-                insertImport(source, ngModulePath, symbolName.replace(/\..*$/, ''), importPath)
-            ];
+            return [new InsertChange(ngModulePath, position, toInsert), insertImport(source, ngModulePath, symbolName.replace(/\..*$/, ''), importPath)];
         }
         else {
             return [new InsertChange(ngModulePath, position, toInsert)];
@@ -492,10 +482,7 @@ function addSymbolToNgModuleMetadata(source, ngModulePath, metadataField, symbol
         }
     }
     if (importPath !== null) {
-        return [
-            new InsertChange(ngModulePath, position, toInsert),
-            insertImport(source, ngModulePath, symbolName.replace(/\..*$/, ''), importPath)
-        ];
+        return [new InsertChange(ngModulePath, position, toInsert), insertImport(source, ngModulePath, symbolName.replace(/\..*$/, ''), importPath)];
     }
     return [new InsertChange(ngModulePath, position, toInsert)];
 }

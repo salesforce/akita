@@ -4,7 +4,6 @@ import { ContactsPageComponent } from './contacts-page/contacts-page.component';
 import { RouterModule, Routes } from '@angular/router';
 import { ContentLoaderModule } from '@netbasal/content-loader';
 import { ReactiveFormsModule } from '@angular/forms';
-import { contactsPaginatorProvider } from './state/contacts.pagination';
 
 const routes: Routes = [
   {
@@ -15,7 +14,6 @@ const routes: Routes = [
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, ContentLoaderModule, RouterModule.forChild(routes)],
-  providers: [contactsPaginatorProvider],
   declarations: [ContactsPageComponent]
 })
 export class ContactsModule {}

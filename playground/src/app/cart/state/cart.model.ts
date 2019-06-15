@@ -1,4 +1,4 @@
-import { Product } from '../../products/state';
+import { Product } from '../../products/state/products.model';
 
 export type CartItem = {
   productId: Product['id'];
@@ -6,11 +6,6 @@ export type CartItem = {
   total: number;
 };
 
-/**
- * Factory function that creates cart items
- * @param {Partial<CartItem>} params
- * @returns {CartItem}
- */
 export function createCartItem(params: Partial<CartItem>) {
   return {
     total: 0,

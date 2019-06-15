@@ -1,6 +1,6 @@
 {
   "name": "@datorama/akita-cli",
-  "version": "2.0.1",
+  "version": "5.0.0",
   "description": "Akita CLI",
   "main": "index.js",
   "scripts": {
@@ -17,13 +17,13 @@
     "access": "public"
   },
   "dependencies": {
-    "find-package-json": "^1.1.0",
-    "inquirer-directory": "^2.1.0",
-    "npm-run": "^5.0.1",
-    "pkg-dir": "^2.0.0",
-    "plop": "1.9.1",
-    "pluralize": "^7.0.0",
-    "shelljs": "^0.7.8"
+    "find-package-json": "1.2.0",
+    "inquirer-fuzzy-path": "2.0.3",
+    "npm-run": "5.0.1",
+    "pkg-dir": "2.0.0",
+    "plop": "2.3.0",
+    "pluralize": "7.0.0",
+    "shelljs": "0.8.3"
   },
   "license": "Apache License 2.0"
 }

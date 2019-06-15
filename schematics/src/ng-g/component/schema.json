@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "SchematicsAkitaComponent",
+  "title": "Akita Component Options Schema",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "format": "path",
+      "description": "The path to create the component.",
+      "visible": false
+    },
+    "feature": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": []
+}

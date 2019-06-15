@@ -5,10 +5,7 @@ cache:
 notifications:
   email: true
 node_js:
-  - '9'
-after_success:
-  - npm run build
-  - npm run travis-deploy-once "npm run semantic-release"
+  - '10'
 branches:
   except:
     - /^v\d+\.\d+\.\d+$/

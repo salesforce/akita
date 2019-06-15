@@ -1,17 +1,29 @@
 import { Injectable } from '@angular/core';
-import { createEmptyUser, User } from './auth.model';
-import { StoreConfig } from '../../../../../akita/src/api/store-config';
-import { Store } from '../../../../../akita/src';
-export const initialState: User = createEmptyUser();
+import { StoreConfig, Store, ID } from '@datorama/akita';
 
-@Injectable({
-  providedIn: 'root'
-})
+export interface AuthState {
+  id: ID;
+  firstName: string;
+  lastName: string;
+  token: string;
+}
+
+export function createInitialState(): AuthState {
+  return {
+    id: null,
+    firstName: '',
+    lastName: '',
+    token: ''
+  };
+}
+
+@Injectable({ providedIn: 'root' })
 @StoreConfig({
-  name: 'auth'
+  name: 'auth',
+  resettable: true
 })
-export class AuthStore extends Store<User> {
+export class AuthStore extends Store<AuthState> {
   constructor() {
-    super(initialState);
+    super(createInitialState());
   }
 }

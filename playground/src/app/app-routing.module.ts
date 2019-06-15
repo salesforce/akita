@@ -5,7 +5,6 @@ import { CartComponent } from './cart/cart.component';
 import { ProductPageComponent } from './product-page/product-page.component';
 import { LoginComponent } from './auth/login/login.component';
 import { AuthGuard } from './auth/auth.guard';
-import { RouteParamsComponent } from './route-params/route-params.component';
 
 const routes: Routes = [
   {
@@ -48,10 +47,6 @@ const routes: Routes = [
   {
     path: 'widgets',
     loadChildren: 'app/widgets/widgets.module#WidgetsModule'
-  },
-  {
-    path: 'test/:someParam/:other',
-    component: RouteParamsComponent
   }
 ];
 

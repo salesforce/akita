@@ -1,7 +1,9 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { CartItem, CartQuery, CartService } from './state';
-import { Product } from '../products/state';
+import { Product } from '../products/state/products.model';
+import { CartService } from './state/cart.service';
+import { CartQuery } from './state/cart.query';
+import { CartItem } from './state/cart.model';
 
 @Component({
   selector: 'app-cart',
@@ -19,10 +21,6 @@ export class CartComponent implements OnInit {
     this.total$ = this.cartQuery.selectTotal$;
   }
 
-  /**
-   *
-   * @param {ID} productId
-   */
   remove({ productId }: CartItem) {
     this.cartService.remove(productId);
   }

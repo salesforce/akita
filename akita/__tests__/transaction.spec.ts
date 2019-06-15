@@ -1,7 +1,7 @@
-import { applyTransaction, transaction } from '../src/api/transaction';
+import { applyTransaction, transaction } from '../src/transaction';
 import { Subscription } from 'rxjs';
 import { Todo, TodosStore } from './setup';
-import { QueryEntity } from '../src/api/query-entity';
+import { QueryEntity } from '../src/queryEntity';
 
 let store = new TodosStore();
 const query = new QueryEntity(store);

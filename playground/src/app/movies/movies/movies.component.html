@@ -15,7 +15,7 @@
     </thead>
 
     <tbody>
-      <tr *ngFor="let movie of movies$ | async">
+      <tr *ngFor="let movie of movies$ | async" (click)="markAsOpen(movie.id)" [ngStyle]="(isOpen(movie.id) | async) && { background: 'lightgrey' }">
         <td>{{movie.title}}</td>
         <td><span *ngFor="let actor of movie.actors">{{actor.name}}</span></td>
         <td><span *ngFor="let genre of movie.genres">{{genre.name}}</span></td>
@@ -38,6 +38,7 @@
                  (keyup.enter)="edit(actor.id, actorName.value)">
           <i class="tiny material-icons" (click)="toggleView(actor.id, actorName)">edit</i>
         </td>
+        <td><button (click)="deleteActor(actor)">Delete</button></td>
       </tr>
     </tbody>
   </table>

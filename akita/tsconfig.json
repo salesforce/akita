@@ -1,0 +1,25 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": ".",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es5",
+    "typeRoots": [
+      "../node_modules/@types"
+    ],
+    "paths": {
+      "rxjs/*": [
+        "../node_modules/rxjs"
+      ],
+      "rxjs/operators": [
+        "../node_modules/rxjs/operators"
+      ]
+    },
+    "lib": [
+      "es2017",
+      "dom"
+    ]
+  }
+}

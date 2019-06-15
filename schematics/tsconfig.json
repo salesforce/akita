@@ -21,7 +21,6 @@
     "strictNullChecks": false,
     "target": "es6",
     "types": [
-      "jasmine",
       "node"
     ]
   },
@@ -29,6 +28,7 @@
     "src/**/*"
   ],
   "exclude": [
-    "src/*/files/**/*"
+    "src/ng-g/**/files/*",
+    "*.spec.ts"
   ]
 }

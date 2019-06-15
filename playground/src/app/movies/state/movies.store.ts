@@ -1,13 +1,22 @@
 import { Injectable } from '@angular/core';
 import { Movie } from './movie.model';
-import { EntityState, EntityStore, StoreConfig } from '../../../../../akita/src';
+import { EntityState, EntityStore, EntityUIStore, StoreConfig } from '@datorama/akita';
 
-export interface State extends EntityState<Movie> {}
+export interface MovieUI {
+  isOpen: boolean;
+}
+
+export interface MoviesState extends EntityState<Movie> {}
+
+export interface MoviesUIState extends EntityState<MovieUI> {}
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: 'movies' })
-export class MoviesStore extends EntityStore<State, Movie> {
+export class MoviesStore extends EntityStore<MoviesState, Movie> {
+  ui: EntityUIStore<MoviesUIState, MovieUI>;
+
   constructor() {
     super();
+    this.createUIStore().setInitialEntityState<MovieUI>({ isOpen: true });
   }
 }

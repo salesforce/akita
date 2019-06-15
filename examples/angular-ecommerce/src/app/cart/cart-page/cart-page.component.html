@@ -1,0 +1,39 @@
+<section *ngIf="count$ | async; else empty">
+  <h3 class="mb-10">Summary</h3>
+
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>Title</th>
+      <th>Quantity</th>
+      <th>Total</th>
+      <th></th>
+    </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let item of items$ | async">
+        <td>{{item.title}}</td>
+        <td>{{item.quantity}}</td>
+        <td>{{item.total}}$</td>
+        <td><button type="button" class="btn btn-outline-danger btn-sm" (click)="remove(item.productId)">Remove</button></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="flex justify-end">
+    Total: {{total$ | async}}$
+  </div>
+
+  <div class="flex justify-end mt-10">
+    <button class="btn btn-outline-info btn-lg" (click)="checkout()">Checkout</button>
+  </div>
+
+</section>
+
+
+<ng-template #empty>
+  <div class="alert alert-info">
+    You don't have any items in your cart.
+  </div>
+</ng-template>

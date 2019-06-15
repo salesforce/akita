@@ -1,4 +1,4 @@
-import { ID } from '../../../../../akita/src';
+import { ID } from '@datorama/akita';
 
 export type Product = {
   id: ID;

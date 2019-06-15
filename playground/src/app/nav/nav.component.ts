@@ -1,23 +1,28 @@
 import { Component } from '@angular/core';
-import { CartQuery } from '../cart/state';
 import { Observable } from 'rxjs';
-import { AuthQuery, AuthService } from '../auth/state';
 import { Router } from '@angular/router';
-import { resetStores } from '../../../../akita/index';
+import { AuthService } from '../auth/state/auth.service';
+import { AuthQuery } from '../auth/state/auth.query';
+import { CartQuery } from '../cart/state/cart.query';
 
 @Component({
   selector: 'app-nav',
   template: `
     <nav>
       <div class="nav-wrapper cyan lighten-2">
-        <a class="brand-logo" routerLink="/">Akita Store</a>
+        <a class="brand-logo" routerLink="/">
+          <img src="/assets/akita.svg" class="logo" />
+        </a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-          <li><a (click)="resetStores()">Reset Stores</a></li>
-          <li *ngIf="isLoggedIn$ | async"><a (click)="logout()">Logout</a></li>
+          <li *ngIf="(isLoggedIn$ | async)"><a (click)="logout()">Logout</a></li>
           <li *ngFor="let item of navItems">
-            <a routerLinkActive="blue-text text-lighten-2" [routerLink]="item.toLowerCase()">{{item}}</a>
+            <a routerLinkActive="blue-text text-lighten-2" [routerLink]="item.toLowerCase()">{{ item }}</a>
           </li>
-          <li><a routerLinkActive="blue-text text-lighten-2" routerLink="cart">Cart <span class="new badge">{{count$ | async}}</span></a></li>
+          <li>
+            <a routerLinkActive="blue-text text-lighten-2" routerLink="cart"
+              >Cart <span class="new badge">{{ count$ | async }}</span></a
+            >
+          </li>
         </ul>
       </div>
     </nav>
@@ -39,6 +44,6 @@ export class NavComponent {
   }
 
   resetStores() {
-    resetStores();
+    this.router.navigateByUrl('login');
   }
 }

@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
-import { ActorsStore, State } from './actors.store';
+import { ActorsStore, ActorsState } from './actors.store';
 import { Actor } from './actor.model';
-import { QueryEntity } from '../../../../../../akita/src';
+import { QueryEntity } from '@datorama/akita';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class ActorsQuery extends QueryEntity<State, Actor> {
+@Injectable({ providedIn: 'root' })
+export class ActorsQuery extends QueryEntity<ActorsState, Actor> {
   constructor(protected store: ActorsStore) {
     super(store);
   }

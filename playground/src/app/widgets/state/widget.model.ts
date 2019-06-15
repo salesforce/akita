@@ -1,4 +1,4 @@
-import { ID } from '../../../../../../akita/akita/src/index';
+import { ID } from '@datorama/akita';
 
 export type Widget = {
   id: ID;
@@ -7,11 +7,7 @@ export type Widget = {
 
 let _id = 0;
 
-/**
- * A factory function that creates Widgets
- * @param params
- */
-export function createWidget(params?: Partial<Widget>) {
+export function createWidget() {
   return {
     id: ++_id,
     name: `Widget ${_id}`

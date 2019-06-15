@@ -3,7 +3,7 @@ import { timer } from 'rxjs';
 import { mapTo } from 'rxjs/operators';
 import sortBy from 'lodash.sortby';
 
-const count = 100;
+const count = 96;
 const data = [];
 
 for (let i = 0; i < count; i++) {
@@ -16,7 +16,7 @@ for (let i = 0; i < count; i++) {
 }
 
 export function getData(params = { sortBy: 'email', perPage: 10, page: 1 }) {
-  console.log('fetching from server');
+  console.log('Fetching from server');
   const offset = (params.page - 1) * +params.perPage;
   const sorted = sortBy(contacts, params.sortBy);
   const paginatedItems = sorted.slice(offset, offset + +params.perPage);
