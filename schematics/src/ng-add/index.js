@@ -24,7 +24,7 @@ function addPackageJsonDependencies(options) {
         if (options.devtools) {
             dependencies.push({
                 type: schematics_utilities_1.NodeDependencyType.Dev,
-                version: '^1.0.2',
+                version: '^3.0.2',
                 name: '@datorama/akita-ngdevtools'
             });
         }
