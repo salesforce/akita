@@ -1,5 +1,5 @@
-import { skip, filter } from 'rxjs/operators';
-import { from, isObservable, of } from 'rxjs';
+import { filter, skip } from 'rxjs/operators';
+import { from, isObservable, of, OperatorFunction } from 'rxjs';
 import { HashMap, MaybeAsync } from './types';
 import { isFunction } from './isFunction';
 import { AkitaError } from './errors';
@@ -66,6 +66,7 @@ export interface PersistStateParams {
   preStoreUpdate(storeName: string, state: any): any;
 
   skipStorageUpdate: () => boolean;
+  preStorageUpdateOperator: () => OperatorFunction<any, any>;
 }
 
 export function persistState(params?: Partial<PersistStateParams>) {
@@ -84,10 +85,11 @@ export function persistState(params?: Partial<PersistStateParams>) {
     preStoreUpdate: function(storeName, state) {
       return state;
     },
-    skipStorageUpdate: getSkipStorageUpdate
+    skipStorageUpdate: getSkipStorageUpdate,
+    preStorageUpdateOperator: () => (source) => source
   };
 
-  const { storage, deserialize, serialize, include, exclude, key, preStorageUpdate, preStoreUpdate, skipStorageUpdate } = Object.assign({}, defaults, params);
+  const { storage, deserialize, serialize, include, exclude, key, preStorageUpdate, preStorageUpdateOperator, preStoreUpdate, skipStorageUpdate } = Object.assign({}, defaults, params);
 
   const hasInclude = include.length > 0;
   const hasExclude = exclude.length > 0;
@@ -131,7 +133,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
     function subscribe(storeName, path) {
       stores[storeName] = __stores__[storeName]
         ._select(state => getValue(state, path))
-        .pipe(skip(1), filter(() => skipStorageUpdate() === false))
+        .pipe(skip(1), filter(() => skipStorageUpdate() === false), preStorageUpdateOperator())
         .subscribe(data => {
           acc[storeName] = preStorageUpdate(storeName, data);
           Promise.resolve().then(() => save({ [storeName]: __stores__[storeName]._cache().getValue() }));
