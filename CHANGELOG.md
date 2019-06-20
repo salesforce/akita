@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.17.1"></a>
+## [3.17.1](https://github.com/datorama/akita/compare/v3.17.0...v3.17.1) (2019-06-20)
+
+
+### Bug Fixes
+
+* **persist-state:** avoid redundant de/serialize ([b182303](https://github.com/datorama/akita/commit/b182303))
+
+
+
 <a name="3.17.0"></a>
 # [3.17.0](https://github.com/datorama/akita/compare/v3.16.1...v3.17.0) (2019-06-19)
 
