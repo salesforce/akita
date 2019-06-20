@@ -10,6 +10,7 @@ import { setValue } from './setValueByString';
 import { rootDispatcher } from './rootDispatcher';
 import { isNotBrowser } from './root';
 import { isNil } from './isNil';
+import { isObject } from './isObject';
 
 let skipStorageUpdate = false;
 
@@ -33,7 +34,7 @@ function isPromise(v: any) {
   return v && isFunction(v.then);
 }
 
-function resolve(asyncOrValue: any) {
+function observify(asyncOrValue: any) {
   if(isPromise(asyncOrValue) || isObservable(asyncOrValue)) {
     return from(asyncOrValue);
   }
@@ -111,22 +112,26 @@ export function persistState(params?: Partial<PersistStateParams>) {
   let acc = {};
   let subscription;
 
-  const value = storage.getItem(key);
   const buffer = [];
 
   function _save(v: any) {
-    resolve(v).subscribe(() => {
+    observify(v).subscribe(() => {
       const next = buffer.shift();
       next && _save(next);
     });
   }
 
-  resolve(value).subscribe((v: any) => {
-    const storageState = deserialize(v || '{}');
+  // when we use the local/session storage we perform the serialize, otherwise we let the passed storage implementation to do it
+  const isLocalStorage = typeof localStorage !== 'undefined' && (storage === localStorage || storage === sessionStorage);
+
+  observify(storage.getItem(key)).subscribe((value: any) => {
+    const storageState = isObject(value) ? value : deserialize(value || '{}');
 
     function save(storeCache) {
       storageState['$cache'] = { ...(storageState['$cache'] || {}), ...storeCache };
-      buffer.push(storage.setItem(key, serialize(Object.assign({}, storageState, acc))));
+      const storageValue = Object.assign({}, storageState, acc);
+
+      buffer.push(storage.setItem(key, isLocalStorage ? serialize(storageValue) : storageValue));
       _save(buffer.shift());
     }
 
@@ -189,17 +194,17 @@ export function persistState(params?: Partial<PersistStateParams>) {
     },
     clearStore(storeName?: string) {
       if(isNil(storeName)) {
-        const value = resolve(storage.setItem(key, '{}'));
+        const value = observify(storage.setItem(key, '{}'));
         value.subscribe();
         return;
       }
       const value = storage.getItem(key);
-      resolve(value).subscribe(v => {
+      observify(value).subscribe(v => {
         const storageState = deserialize(v || '{}');
 
         if(storageState[storeName]) {
           delete storageState[storeName];
-          const value = resolve(storage.setItem(key, serialize(storageState)));
+          const value = observify(storage.setItem(key, serialize(storageState)));
           value.subscribe();
         }
       });

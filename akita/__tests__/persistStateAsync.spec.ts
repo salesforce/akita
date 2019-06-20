@@ -64,7 +64,6 @@ describe('Persist state async', () => {
     store.update({ async: false });
     await tick();
     jest.runAllTimers();
-
-    expect(JSON.parse(cache['AkitaStores']).auth.async).toBeFalsy();
+    expect(cache['AkitaStores'].auth.async).toBeFalsy();
   });
 });
