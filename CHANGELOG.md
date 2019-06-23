@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="3.18.0"></a>
+# [3.18.0](https://github.com/datorama/akita/compare/v3.17.1...v3.18.0) (2019-06-23)
+
+
+### Bug Fixes
+
+* **persist-state:** should support dynamic stores deletion ([1a2eb5c](https://github.com/datorama/akita/commit/1a2eb5c))
+
+
+### Features
+
+* **stores:** expose stores on window in browser devmode ([ead8561](https://github.com/datorama/akita/commit/ead8561))
+
+
+
 <a name="3.17.1"></a>
 ## [3.17.1](https://github.com/datorama/akita/compare/v3.17.0...v3.17.1) (2019-06-20)
 
