@@ -1,13 +1,13 @@
 import { filter, skip } from 'rxjs/operators';
-import { from, isObservable, of, OperatorFunction } from 'rxjs';
+import { from, isObservable, of, OperatorFunction, Subscription } from 'rxjs';
 import { HashMap, MaybeAsync } from './types';
 import { isFunction } from './isFunction';
 import { AkitaError } from './errors';
 import { __stores__ } from './stores';
 import { getValue } from './getValueByString';
-import { Actions, setAction } from './actions';
+import { setAction } from './actions';
 import { setValue } from './setValueByString';
-import { rootDispatcher } from './rootDispatcher';
+import { $$addStore, $$deleteStore } from './dispatchers';
 import { isNotBrowser } from './root';
 import { isNil } from './isNil';
 import { isObject } from './isObject';
@@ -68,6 +68,8 @@ export interface PersistStateParams {
 
   skipStorageUpdate: () => boolean;
   preStorageUpdateOperator: () => OperatorFunction<any, any>;
+  /** Whether to persist a dynamic store upon destroy */
+  persistOnDestroy: boolean;
 }
 
 export function persistState(params?: Partial<PersistStateParams>) {
@@ -80,6 +82,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
     serialize: JSON.stringify,
     include: [],
     exclude: [],
+    persistOnDestroy: false,
     preStorageUpdate: function(storeName, state) {
       return state;
     },
@@ -90,7 +93,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
     preStorageUpdateOperator: () => (source) => source
   };
 
-  const { storage, deserialize, serialize, include, exclude, key, preStorageUpdate, preStorageUpdateOperator, preStoreUpdate, skipStorageUpdate } = Object.assign({}, defaults, params);
+  const { storage, deserialize, serialize, include, exclude, key, preStorageUpdate, persistOnDestroy, preStorageUpdateOperator, preStoreUpdate, skipStorageUpdate } = Object.assign({}, defaults, params);
 
   const hasInclude = include.length > 0;
   const hasExclude = exclude.length > 0;
@@ -108,9 +111,9 @@ export function persistState(params?: Partial<PersistStateParams>) {
     }, {});
   }
 
-  let stores = {};
+  let stores: HashMap<Subscription> = {};
   let acc = {};
-  let subscription;
+  let subscriptions: Subscription[] = [];
 
   const buffer = [];
 
@@ -138,7 +141,9 @@ export function persistState(params?: Partial<PersistStateParams>) {
     function subscribe(storeName, path) {
       stores[storeName] = __stores__[storeName]
         ._select(state => getValue(state, path))
-        .pipe(skip(1), filter(() => skipStorageUpdate() === false), preStorageUpdateOperator())
+        .pipe(skip(1),
+          filter(() => skipStorageUpdate() === false),
+          preStorageUpdateOperator())
         .subscribe(data => {
           acc[storeName] = preStorageUpdate(storeName, data);
           Promise.resolve().then(() => save({ [storeName]: __stores__[storeName]._cache().getValue() }));
@@ -159,30 +164,40 @@ export function persistState(params?: Partial<PersistStateParams>) {
       }
     }
 
-    subscription = rootDispatcher.pipe(filter(({ type }) => type === Actions.NEW_STORE)).subscribe(action => {
-      let currentStoreName = action.payload.store.storeName;
+    subscriptions.push($$deleteStore.subscribe(storeName => {
+      if(stores[storeName]) {
+        if(persistOnDestroy === false) {
+          delete storageState[storeName];
+          save(false);
+        }
+        stores[storeName].unsubscribe();
+        stores[storeName] = null;
+      }
+    }));
 
-      if(hasExclude && exclude.includes(currentStoreName)) {
+    subscriptions.push($$addStore.subscribe(storeName => {
+      if(hasExclude && exclude.includes(storeName)) {
         return;
       }
 
+      const store = __stores__[storeName];
       if(hasInclude) {
-        const path = includeStores[currentStoreName];
+        const path = includeStores[storeName];
         if(!path) {
           return;
         }
-        setInitial(currentStoreName, action.payload.store, path);
-        subscribe(currentStoreName, path);
+        setInitial(storeName, store, path);
+        subscribe(storeName, path);
       } else {
-        setInitial(currentStoreName, action.payload.store, currentStoreName);
-        subscribe(currentStoreName, currentStoreName);
+        setInitial(storeName, store, storeName);
+        subscribe(storeName, storeName);
       }
-    });
+    }));
   });
 
   return {
     destroy() {
-      subscription.unsubscribe();
+      subscriptions.forEach(s => s.unsubscribe());
       for(let i = 0, keys = Object.keys(stores); i < keys.length; i++) {
         const storeName = keys[i];
         stores[storeName].unsubscribe();

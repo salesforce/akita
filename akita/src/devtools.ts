@@ -1,6 +1,6 @@
-import { Actions, currentAction, setSkipAction } from './actions';
+import { currentAction, setSkipAction } from './actions';
 import { isDefined } from './isDefined';
-import { rootDispatcher } from './rootDispatcher';
+import { $$addStore, $$deleteStore, $$updateStore } from './dispatchers';
 import { __stores__ } from './stores';
 import { capitalize } from './captialize';
 import { isNotBrowser } from './root';
@@ -16,7 +16,7 @@ export type DevtoolsOptions = {
   predicate: (state: any, action: any) => boolean;
   shallow: boolean;
 };
-let rootDispatcherSub, devtoolsSub;
+let subs = [];
 
 export type NgZoneLike = { run: any };
 
@@ -25,16 +25,15 @@ export function akitaDevtools(options?: Partial<DevtoolsOptions>);
 export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOptions>, options: Partial<DevtoolsOptions> = {}) {
   if(isNotBrowser) return;
 
-  if (!(window as any).__REDUX_DEVTOOLS_EXTENSION__) {
+  if(!(window as any).__REDUX_DEVTOOLS_EXTENSION__) {
     return;
   }
 
-  rootDispatcherSub && rootDispatcherSub.unsubscribe();
-  devtoolsSub && devtoolsSub();
+  subs.length && subs.forEach(s => s.unsubscribe());
 
   const isAngular = ngZoneOrOptions && ngZoneOrOptions['run'];
 
-  if (!isAngular) {
+  if(!isAngular) {
     ngZoneOrOptions = ngZoneOrOptions || {};
     (ngZoneOrOptions as any).run = cb => cb();
     options = ngZoneOrOptions as Partial<DevtoolsOptions>;
@@ -46,79 +45,83 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
   const devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__.connect(merged);
   let appState = {};
 
-  rootDispatcherSub = rootDispatcher.subscribe(action => {
-    if (action.type === Actions.DELETE_STORE) {
-      const storeName = action.payload.storeName;
-      delete appState[storeName];
-      devTools.send({ type: `[${storeName}] - Delete Store` }, appState);
+  subs.push($$addStore.subscribe(storeName => {
+    appState = {
+      ...appState,
+      [storeName]: __stores__[storeName]._value()
+    };
+    devTools.send({ type: `[${capitalize(storeName)}] - @@INIT`  }, appState);
+  }));
+
+  subs.push($$deleteStore.subscribe(storeName => {
+    delete appState[storeName];
+    devTools.send({ type: `[${storeName}] - Delete Store` }, appState);
+  }));
+
+  subs.push($$updateStore.subscribe((storeName) => {
+    const { type, entityIds, skip } = currentAction;
+
+    if(skip) {
+      setSkipAction(false);
       return;
     }
 
-    if (action.type === Actions.NEW_STATE) {
-      const { type, entityIds, skip } = currentAction;
-
-      if (skip) {
-        setSkipAction(false);
-        return;
-      }
-
-      const store = __stores__[action.payload.name];
-      if (!store) {
-        return;
-      }
-
-      if (options.shallow === false && appState[action.payload.name]) {
-        const isEqual = JSON.stringify(store._value()) === JSON.stringify(appState[action.payload.name]);
-        if (isEqual) return;
-      }
-
-      appState = {
-        ...appState,
-        [action.payload.name]: store._value()
-      };
-
-      const storeName = capitalize(action.payload.name);
-      let msg = isDefined(entityIds) ? `[${storeName}] - ${type} (ids: ${entityIds})` : `[${storeName}] - ${type}`;
-
-      if (options.logTrace) {
-        console.group(msg);
-        console.trace();
-        console.groupEnd();
-      }
-
-      devTools.send({ type: msg }, appState);
+    const store = __stores__[storeName];
+    if(!store) {
+      return;
     }
-  });
 
-  devtoolsSub = devTools.subscribe(message => {
-    if (message.type === 'ACTION') {
+    if(options.shallow === false && appState[storeName]) {
+      const isEqual = JSON.stringify(store._value()) === JSON.stringify(appState[storeName]);
+      if(isEqual) return;
+    }
+
+    appState = {
+      ...appState,
+      [storeName]: store._value()
+    };
+
+    const normalize = capitalize(storeName);
+    let msg = isDefined(entityIds) ? `[${normalize}] - ${type} (ids: ${entityIds})` : `[${normalize}] - ${type}`;
+
+    if(options.logTrace) {
+      console.group(msg);
+      console.trace();
+      console.groupEnd();
+    }
+
+    devTools.send({ type: msg }, appState);
+  }));
+
+  subs.push(devTools.subscribe(message => {
+    if(message.type === 'ACTION') {
       const [storeName] = message.payload.split('.');
 
-      if (__stores__[storeName]) {
+      if(__stores__[storeName]) {
         (ngZoneOrOptions as NgZoneLike).run(() => {
           const funcCall = message.payload.replace(storeName, `this['${storeName}']`);
           try {
             new Function(`${funcCall}`).call(__stores__);
-          } catch (e) {
+          } catch(e) {
             console.warn('Unknown Method ☹️');
           }
         });
       }
     }
 
-    if (message.type === 'DISPATCH') {
+    if(message.type === 'DISPATCH') {
       const payloadType = message.payload.type;
 
-      if (payloadType === 'COMMIT') {
+      if(payloadType === 'COMMIT') {
         devTools.init(appState);
         return;
       }
 
-      if (message.state) {
+      if(message.state) {
         const rootState = JSON.parse(message.state);
-        for (let i = 0, keys = Object.keys(rootState); i < keys.length; i++) {
+        for(let i = 0, keys = Object.keys(rootState); i < keys.length; i++) {
           const storeName = keys[i];
-          if (__stores__[storeName]) {
+          if(__stores__[storeName]) {
             (ngZoneOrOptions as NgZoneLike).run(() => {
               __stores__[storeName]._setState(() => rootState[storeName], false);
             });
@@ -126,5 +129,5 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
         }
       }
     }
-  });
+  }));
 }

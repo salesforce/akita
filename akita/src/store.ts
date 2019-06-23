@@ -8,9 +8,9 @@ import { configKey, StoreConfigOptions, UpdatableStoreConfigOptions } from './st
 import { getAkitaConfig } from './config';
 import { isPlainObject } from './isPlainObject';
 import { isFunction } from './isFunction';
-import { rootDispatcher } from './rootDispatcher';
+import { dispatchAdded, dispatchDeleted, dispatchUpdate } from './dispatchers';
 import { __stores__ } from './stores';
-import { Actions, newStateAction, resetCustomAction, setAction } from './actions';
+import { resetCustomAction, setAction } from './actions';
 import { isNotBrowser } from './root';
 import { __DEV__, isDev } from './env';
 
@@ -148,7 +148,6 @@ export class Store<S> {
 
     if (!this.store) {
       this.store = new BehaviorSubject(this.storeValue);
-      rootDispatcher.next(newStateAction(this.storeName, true));
       return;
     }
 
@@ -233,23 +232,16 @@ export class Store<S> {
     if (isNotBrowser) return;
     if (!(window as any).hmrEnabled && this === __stores__[this.storeName]) {
       delete __stores__[this.storeName];
-      rootDispatcher.next({
-        type: Actions.DELETE_STORE,
-        payload: { storeName: this.storeName }
-      });
+      dispatchDeleted(this.storeName);
       this.setHasCache(false);
       this.cache.active.complete();
     }
   }
 
   private onInit(initialState: S) {
-    isDev() && setAction('@@INIT');
     __stores__[this.storeName] = this;
     this._setState(() => initialState);
-    rootDispatcher.next({
-      type: Actions.NEW_STORE,
-      payload: { store: this }
-    });
+    dispatchAdded(this.storeName);
     if (this.isResettable()) {
       this._initialState = initialState;
     }
@@ -259,7 +251,7 @@ export class Store<S> {
   private dispatch(state: S, _dispatchAction = true) {
     this.store.next(state);
     if (_dispatchAction) {
-      rootDispatcher.next(newStateAction(this.storeName));
+      dispatchUpdate(this.storeName);
       resetCustomAction();
     }
   }

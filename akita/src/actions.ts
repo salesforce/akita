@@ -1,26 +1,3 @@
-import { HashMap } from './types';
-
-export const enum Actions {
-  NEW_STORE,
-  DELETE_STORE,
-  NEW_STATE
-}
-
-export type Action = {
-  type: Actions;
-  payload: HashMap<any>;
-};
-
-export function newStateAction(storeName, initialState = false) {
-  return {
-    type: Actions.NEW_STATE,
-    payload: {
-      name: storeName,
-      initialState
-    }
-  };
-}
-
 export const currentAction = {
   type: null,
   entityIds: null,
