@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.1.1"></a>
+## [4.1.1](https://github.com/datorama/akita/compare/v4.1.0...v4.1.1) (2019-06-26)
+
+
+### Bug Fixes
+
+* **lib:** should work with ts strict type ([e4e4532](https://github.com/datorama/akita/commit/e4e4532)), closes [#241](https://github.com/datorama/akita/issues/241)
+
+
+
 <a name="4.1.0"></a>
 # [4.1.0](https://github.com/datorama/akita/compare/v4.0.0...v4.1.0) (2019-06-26)
 
