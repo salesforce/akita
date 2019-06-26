@@ -43,6 +43,21 @@ describe('arrayAdd', () => {
     store.remove();
   });
 
+  it('should add with empty initial array', () => {
+    const article: Article = {
+      id: 1,
+      title: '',
+      comments: null
+    };
+
+    store.add(article);
+    const comment = { id: 1, text: 'comment' };
+    store.update(1, arrayAdd<Article>('comments', comment));
+    expect(store._value().entities[1].comments.length).toBe(1);
+    expect(store._value().entities[1].comments[0]).toBe(comment);
+    store.remove();
+  });
+
   it('should add multi', () => {
     const article: Article = {
       id: 1,
