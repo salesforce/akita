@@ -23,7 +23,7 @@ export function arrayAdd<Root, Entity = any>(keyOrRoot: ArrayProperties<Root>, n
 export function arrayAdd<Root, Entity = any>(keyOrRoot: ArrayProperties<Root> | Root, newEntity: OrArray<Entity>, options: AddEntitiesOptions = {}) {
   const newEntities = coerceArray(newEntity);
 
-  const addFn = state => (options.prepend ? [...newEntities, ...state] : [...state, ...newEntities]);
+  const addFn = state => (options.prepend ? [...newEntities, ...(state || [])] : [...(state || []), ...newEntities]);
 
   if (isArray(keyOrRoot)) {
     return addFn(keyOrRoot);
