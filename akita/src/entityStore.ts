@@ -1,7 +1,7 @@
 import { isEmpty } from './isEmpty';
 import { SetEntities, setEntities } from './setEntities';
 import { Store } from './store';
-import { Constructor, EntityState, EntityUICreateFn, ID, IDS, StateWithActive, UpdateEntityPredicate, UpdateStateCallback } from './types';
+import { Constructor, EntityState, EntityUICreateFn, ID, IDS, OrArray, StateWithActive, UpdateEntityPredicate, UpdateStateCallback } from './types';
 import { getActiveEntities, SetActiveOptions } from './getActiveEntities';
 import { addEntities, AddEntitiesOptions } from './addEntities';
 import { coerceArray } from './coerceArray';
@@ -17,7 +17,7 @@ import { StoreConfigOptions } from './storeConfig';
 import { logAction, setAction } from './actions';
 import { isDev } from './env';
 import { hasEntity } from './hasEntity';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { EntityAction, EntityActions } from './entityActions';
 import { DEFAULT_ID_KEY } from './defaultIDKey';
 
@@ -30,7 +30,7 @@ import { DEFAULT_ID_KEY } from './defaultIDKey';
  * export interface WidgetsState extends EntityState<Widget> { }
  *
  * @StoreConfig({ name: 'widgets' })
- *  export class WidgetsStore extends EntityStore<WidgetsState, Widget> {
+ *  export class WidgetsStore extends EntityStore<WidgetsState> {
  *   constructor() {
  *     super();
  *   }
@@ -38,18 +38,12 @@ import { DEFAULT_ID_KEY } from './defaultIDKey';
  *
  *
  */
-export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Store<S> {
-  ui: EntityUIStore<any, any>;
-  private updatedEntityIds = new BehaviorSubject<ID[]>([]);
+export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends Store<S> {
+  ui: EntityUIStore<any, DEPRECATED>;
   private entityActions = new Subject<EntityAction>();
 
   constructor(initialState: Partial<S> = {}, protected options: Partial<StoreConfigOptions> = {}) {
     super({ ...getInitialEntitiesState(), ...initialState }, options);
-  }
-
-  // @internal
-  get updatedEntityIds$(): Observable<ID[]> {
-    return this.updatedEntityIds.asObservable();
   }
 
   // @internal
@@ -73,7 +67,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    * this.store.set({ 1: {}, 2: {}})
    *
    */
-  set(entities: SetEntities<E>) {
+  set(entities: SetEntities<S['entities'][0]>) {
     if(isNil(entities)) return;
 
     isDev() && setAction('Set Entity');
@@ -109,11 +103,10 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    *
    * this.store.add(Entity, { loading: false })
    */
-  add(entities: E[] | E, options: AddEntitiesOptions = { loading: false }) {
+  add(entities: OrArray<S['entities'][0]>, options: AddEntitiesOptions = { loading: false }) {
     const collection = coerceArray(entities);
 
     if(isEmpty(collection)) return;
-    isDev() && setAction('Add Entity');
 
     const data = addEntities({
       state: this._value(),
@@ -124,6 +117,8 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     });
 
     if(data) {
+      isDev() && setAction('Add Entity');
+
       this._setState(() => ({
         ...data.newState,
         loading: options.loading
@@ -146,32 +141,32 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    * store.update([1, 2, 3], entity => ...)
    * store.update(null, entity => ...)
    */
-  update(id: IDS | null, newStateFn: UpdateStateCallback<E>);
+  update(id: OrArray<S['ids'][0]> | null, newStateFn: UpdateStateCallback<S['entities'][0]>);
   /**
    * store.update(1, { name: newName })
    */
-  update(id: IDS | null, newState: Partial<E>);
+  update(id: OrArray<S['ids'][0]> | null, newState: Partial<S['entities'][0]>);
   /**
    * store.update(entity => entity.price > 3, entity => ({ name: newName }))
    */
-  update(predicate: UpdateEntityPredicate<E>, newStateFn: UpdateStateCallback<E>);
+  update(predicate: UpdateEntityPredicate<S['entities'][0]>, newStateFn: UpdateStateCallback<S['entities'][0]>);
   /**
    * store.update(entity => entity.price > 3, { name: newName })
    */
-  update(predicate: UpdateEntityPredicate<E>, newState: Partial<E>);
+  update(predicate: UpdateEntityPredicate<S['entities'][0]>, newState: Partial<S['entities'][0]>);
   /** Support non-entity updates */
   update(newState: UpdateStateCallback<S>);
   update(newState: Partial<S>);
-  update(idsOrFnOrState: IDS | null | Partial<S> | UpdateStateCallback<S> | UpdateEntityPredicate<E>, newStateOrFn?: UpdateStateCallback<E> | Partial<E> | Partial<S>) {
+  update(idsOrFnOrState: OrArray<S['ids'][0]> | null | Partial<S> | UpdateStateCallback<S> | UpdateEntityPredicate<S['entities'][0]>, newStateOrFn?: UpdateStateCallback<S['entities'][0]> | Partial<S['entities'][0]> | Partial<S>) {
     if(isUndefined(newStateOrFn)) {
       super.update(idsOrFnOrState as Partial<S>);
       return;
     }
-    let ids: ID[] = [];
+    let ids: S['ids'][0][] = [];
 
     if(isFunction(idsOrFnOrState)) {
       // We need to filter according the predicate function
-      ids = this.ids.filter(id => (idsOrFnOrState as UpdateEntityPredicate<E>)(this.entities[id]));
+      ids = this.ids.filter(id => (idsOrFnOrState as UpdateEntityPredicate<S['entities'][0]>)(this.entities[id]));
     } else {
       // If it's nil we want all of them
       ids = isNil(idsOrFnOrState) ? this.ids : coerceArray(idsOrFnOrState);
@@ -190,7 +185,6 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
       })
     );
 
-    this.updatedEntityIds.next(ids);
     this.entityActions.next({ type: EntityActions.Update, ids });
   }
 
@@ -206,14 +200,14 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    *
    */
   @transaction()
-  upsert(ids: IDS, newState: Partial<E> | E | UpdateStateCallback<E> | E[], options: { baseClass?: Constructor } = {}) {
+  upsert(ids: OrArray<S['ids'][0]>, newState: Partial<S['entities'][0]> | S['entities'][0] | UpdateStateCallback<S['entities'][0]> | S['entities'][0][], options: { baseClass?: Constructor } = {}) {
     const toArray = coerceArray(ids);
     const predicate = isUpdate => id => hasEntity(this.entities, id) === isUpdate;
     const isClassBased = isFunction(options.baseClass);
     const updateIds = toArray.filter(predicate(true));
     const newEntities = toArray.filter(predicate(false)).map(id => {
-      let entity = isFunction(newState) ? newState({} as E) : newState;
-      const withId = { ...(entity as E), [this.idKey]: id };
+      let entity = isFunction(newState) ? newState({} as S['entities'][0]) : newState;
+      const withId = { ...(entity as S['entities'][0]), [this.idKey]: id };
       if(isClassBased) {
         return new options.baseClass(withId);
       }
@@ -238,7 +232,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    * store.upsertMany([ { id: 1 }, { id: 2 }], { baseClass: Todo  });
    *
    */
-  upsertMany(entities: E[], options: { baseClass?: Constructor; loading?: boolean } = {}) {
+  upsertMany(entities: S['entities'][0][], options: { baseClass?: Constructor; loading?: boolean } = {}) {
     const addedIds = [];
     const updatedIds = [];
     const updatedEntities = {};
@@ -268,7 +262,6 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
       loading: !!options.loading
     }));
 
-    updatedIds.length && this.updatedEntityIds.next(updatedIds);
     updatedIds.length && this.entityActions.next({ type: EntityActions.Update, ids: updatedIds });
     addedIds.length && this.entityActions.next({ type: EntityActions.Add, ids: addedIds });
   }
@@ -283,7 +276,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    * this.store.replace(5, newEntity)
    * this.store.replace([1,2,3], newEntity)
    */
-  replace(ids: IDS, newState: Partial<E>) {
+  replace(ids: IDS, newState: Partial<S['entities'][0]>) {
     const toArray = coerceArray(ids);
     if(isEmpty(toArray)) return;
     let replaced = {};
@@ -311,12 +304,12 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    * this.store.remove([1,2,3])
    * this.store.remove()
    */
-  remove(id?: IDS);
+  remove(id?: OrArray<S['ids'][0]>);
   /**
    * this.store.remove(entity => entity.id === 1)
    */
-  remove(predicate: (entity: Readonly<E>) => boolean);
-  remove(idsOrFn?: ID | ID[] | ((entity: Readonly<E>) => boolean)) {
+  remove(predicate: (entity: Readonly<S['entities'][0]>) => boolean);
+  remove(idsOrFn?: OrArray<S['ids'][0]> | ((entity: Readonly<S['entities'][0]>) => boolean)) {
     if(isEmpty(this.ids)) return;
 
     const idPassed = isDefined(idsOrFn);
@@ -358,10 +351,10 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    *   }
    * })
    */
-  updateActive(newStateOrCallback: UpdateStateCallback<E> | Partial<E>) {
+  updateActive(newStateOrCallback: UpdateStateCallback<S['entities'][0]> | Partial<S['entities'][0]>) {
     const ids = coerceArray(this.active);
     isDev() && setAction('Update Active', ids);
-    this.update(ids, newStateOrCallback as Partial<E>);
+    this.update(ids, newStateOrCallback as Partial<S['entities'][0]>);
   }
 
   /**
@@ -373,7 +366,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    * store.setActive([1, 2, 3])
    */
   setActive(idOrOptions: S['active'] extends any[] ? S['active'] : (SetActiveOptions | S['active']));
-  setActive(idOrOptions: EntityID | SetActiveOptions | null) {
+  setActive(idOrOptions: S['ids'][0] | SetActiveOptions | null) {
     const active = getActiveEntities(idOrOptions, this.ids, this.active);
 
     if(active === undefined) {
@@ -392,7 +385,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    * store.addActive(2);
    * store.addActive([3, 4, 5]);
    */
-  addActive<T = IDS>(ids: T) {
+  addActive<T = OrArray<S['ids'][0]>>(ids: T) {
     const toArray = coerceArray(ids);
     if(isEmpty(toArray)) return;
     const everyExist = toArray.every(id => this.active.indexOf(id) > -1);
@@ -401,7 +394,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     isDev() && setAction('Add Active', ids);
     this._setState(state => {
       /** Protect against case that one of the items in the array exist */
-      const uniques = Array.from(new Set([...(state.active as EntityID[]), ...toArray]));
+      const uniques = Array.from(new Set([...(state.active as S['ids'][0][]), ...toArray]));
       return {
         ...state,
         active: uniques
@@ -417,7 +410,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    * store.removeActive(2)
    * store.removeActive([3, 4, 5])
    */
-  removeActive<T = IDS>(ids: T) {
+  removeActive<T = OrArray<S['ids'][0]>>(ids: T) {
     const toArray = coerceArray(ids);
     if(isEmpty(toArray)) return;
     const someExist = toArray.some(id => this.active.indexOf(id) > -1);
@@ -441,7 +434,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
    * store.toggle([3, 4, 5])
    */
   @transaction()
-  toggleActive<T = IDS>(ids: T) {
+  toggleActive<T = OrArray<S['ids'][0]>>(ids: T) {
     const toArray = coerceArray(ids);
     const filterExists = remove => id => this.active.includes(id) === remove;
     const remove = toArray.filter(filterExists(true));
@@ -486,17 +479,16 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     if(this.ui instanceof EntityStore) {
       this.ui.destroy();
     }
-    this.updatedEntityIds.complete();
     this.entityActions.complete();
   }
 
   // @internal
-  akitaPreUpdateEntity(_: Readonly<E>, nextEntity: Readonly<E>): E {
+  akitaPreUpdateEntity(_: Readonly<S['entities'][0]>, nextEntity: Readonly<S['entities'][0]>): S['entities'][0] {
     return nextEntity;
   }
 
   // @internal
-  akitaPreAddEntity(newEntity: Readonly<E>): E {
+  akitaPreAddEntity(newEntity: Readonly<S['entities'][0]>): S['entities'][0] {
     return newEntity;
   }
 
@@ -512,7 +504,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     return this._value().active;
   }
 
-  private _setActive(ids: EntityID | EntityID[]) {
+  private _setActive(ids: OrArray<S['ids'][0]>) {
     this._setState(state => {
       return {
         ...state,
@@ -558,7 +550,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
     return this.hasUIStore() && isUndefined(this.ui._akitaCreateEntityFn) === false;
   }
 
-  private handleUIRemove(ids: ID[]) {
+  private handleUIRemove(ids: S['ids'][0][]) {
     if(this.hasUIStore()) {
       this.ui.remove(ids);
     }
@@ -570,7 +562,7 @@ export class EntityStore<S extends EntityState<E>, E, EntityID = ID> extends Sto
 }
 
 // @internal
-export class EntityUIStore<UIState, EntityUI> extends EntityStore<UIState, EntityUI> {
+export class EntityUIStore<UIState, DEPRECATED = any> extends EntityStore<UIState> {
   _akitaCreateEntityFn: EntityUICreateFn;
 
   constructor(initialState = {}, storeConfig: Partial<StoreConfigOptions> = {}) {

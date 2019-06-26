@@ -5,9 +5,7 @@ function parseName(options) {
     const { name, path, dirName, feature } = options;
     const nameWithoutPath = core_1.basename(name);
     const namePath = core_1.dirname((path + '/' + name));
-    const normalizedPath = feature
-        ? core_1.normalize('/' + namePath + '/' + dirName)
-        : core_1.normalize('/' + namePath);
+    const normalizedPath = feature ? core_1.normalize('/' + namePath + '/' + dirName) : core_1.normalize('/' + namePath);
     return {
         name: nameWithoutPath,
         path: normalizedPath

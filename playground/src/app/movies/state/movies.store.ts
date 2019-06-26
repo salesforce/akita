@@ -12,8 +12,8 @@ export interface MoviesUIState extends EntityState<MovieUI> {}
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: 'movies' })
-export class MoviesStore extends EntityStore<MoviesState, Movie> {
-  ui: EntityUIStore<MoviesUIState, MovieUI>;
+export class MoviesStore extends EntityStore<MoviesState> {
+  ui: EntityUIStore<MoviesUIState>;
 
   constructor() {
     super();

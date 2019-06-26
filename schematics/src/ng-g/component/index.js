@@ -21,9 +21,8 @@ function default_1(options) {
         parsedPath.path = parsedPath.path.replace(`${options.dirName}`, `${parsedPath.name}/`);
         options.name = parsedPath.name;
         options.path = parsedPath.path;
-        options.selector =
-            options.selector || buildSelector(options, project.prefix);
-        const templateSource = schematics_1.apply(schematics_1.url("./files"), [
+        options.selector = options.selector || buildSelector(options, project.prefix);
+        const templateSource = schematics_1.apply(schematics_1.url('./files'), [
             schematics_1.template(Object.assign({}, utils_1.stringUtils, options)),
             schematics_1.move(parsedPath.path)
         ]);

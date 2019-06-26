@@ -19,7 +19,7 @@ export class TodosPageComponent implements OnInit {
   filters = initialFilters;
   checkAll$: Observable<boolean>;
   stateHistory: StateHistoryPlugin;
-  stateHistoryEntity: EntityStateHistoryPlugin<Todo>;
+  stateHistoryEntity: EntityStateHistoryPlugin;
 
   constructor(private todosQuery: TodosQuery, private todosService: TodosService) {}
 
@@ -28,7 +28,7 @@ export class TodosPageComponent implements OnInit {
     this.activeFilter$ = this.todosQuery.selectVisibilityFilter$;
     this.checkAll$ = this.todosQuery.checkAll$.pipe(map(numCompleted => numCompleted && numCompleted === this.todosQuery.getCount()));
     this.stateHistory = new StateHistoryPlugin(this.todosQuery);
-    this.stateHistoryEntity = new EntityStateHistoryPlugin<Todo>(this.todosQuery);
+    this.stateHistoryEntity = new EntityStateHistoryPlugin(this.todosQuery);
   }
 
   undo(id?) {

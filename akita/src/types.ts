@@ -5,11 +5,11 @@ export interface HashMap<T> {
   [id: string]: T;
 }
 
-export interface EntityState<E = any, ErrorT = any> {
+export interface EntityState<E = any, IDType = ID> {
   entities?: HashMap<E>;
-  ids?: ID[];
+  ids?: IDType[];
   loading?: boolean;
-  error?: ErrorT;
+  error?: any;
   [key: string]: any;
 }
 

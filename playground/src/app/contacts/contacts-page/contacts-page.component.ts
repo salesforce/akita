@@ -7,7 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 import { CONTACTS_PAGINATOR } from '../state/contacts.pagination';
 import { PaginatorPlugin } from '@datorama/akita';
 import { ContactsQuery } from '../state/contacts.query';
-import { Contact } from '../state/contact.model';
+import { ContactState } from '../state/contacts.store';
 
 @Component({
   selector: 'app-contacts-page',
@@ -22,7 +22,7 @@ export class ContactsPageComponent implements OnInit {
   constructor(
     private contactsQuery: ContactsQuery,
     private route: ActivatedRoute,
-    @Inject(CONTACTS_PAGINATOR) public paginatorRef: PaginatorPlugin<Contact>,
+    @Inject(CONTACTS_PAGINATOR) public paginatorRef: PaginatorPlugin<ContactState>,
     private contactsService: ContactsService
   ) {}
 

@@ -6,7 +6,7 @@ export interface {{ pascalCase name }}State extends EntityState<{{singular (pasc
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: '{{name}}' })
-export class {{pascalCase name}}Store extends EntityStore<{{ pascalCase name }}State, {{singular (pascalCase name)}}> {
+export class {{pascalCase name}}Store extends EntityStore<{{ pascalCase name }}State> {
 
   constructor() {
     super();

@@ -152,8 +152,7 @@
      * @return {string}
      */
     function pluralize(word, count, inclusive) {
-        var pluralized = count === 1
-            ? pluralize.singular(word) : pluralize.plural(word);
+        var pluralized = count === 1 ? pluralize.singular(word) : pluralize.plural(word);
         return (inclusive ? count + ' ' : '') + pluralized;
     }
     /**

@@ -3,7 +3,7 @@ import { auditTime, distinctUntilChanged, filter, map, switchMap } from 'rxjs/op
 import { isDefined } from './isDefined';
 import { EntityStore } from './entityStore';
 import { Query } from './query';
-import { EntityState, HashMap, ID, ItemPredicate, SelectOptions } from './types';
+import { EntityState, HashMap, ID, ItemPredicate, OrArray, SelectOptions } from './types';
 import { isFunction } from './isFunction';
 import { toBoolean } from './toBoolean';
 import { sortByOptions } from './sortByOptions';
@@ -21,7 +21,7 @@ import { QueryConfigOptions } from './queryConfig';
  *
  *  The Entity Query is similar to the general Query, with additional functionality tailored for EntityStores.
  *
- *  class WidgetsQuery extends QueryEntity<WidgetsState, Widget> {
+ *  class WidgetsQuery extends QueryEntity<WidgetsState> {
  *     constructor(protected store: WidgetsStore) {
  *       super(store);
  *     }
@@ -30,14 +30,14 @@ import { QueryConfigOptions } from './queryConfig';
  *
  *
  */
-export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<S> {
-  ui: EntityUIQuery<any, any>;
-  protected store: EntityStore<S, E, EntityID>;
+export class QueryEntity<S extends EntityState, DEPRECATED = any> extends Query<S> {
+  ui: EntityUIQuery<any, DEPRECATED>;
+  protected store: EntityStore<S>;
 
   // @internal
   __store__;
 
-  constructor(store: EntityStore<S, E, EntityID>, private options: QueryConfigOptions = {}) {
+  constructor(store: EntityStore<S>, private options: QueryConfigOptions = {}) {
     super(store);
     this.__store__ = store;
   }
@@ -65,17 +65,17 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    * })
    *
    */
-  selectAll(options: SelectAllOptionsA<E>): Observable<HashMap<E>>;
-  selectAll(options: SelectAllOptionsB<E>): Observable<E[]>;
-  selectAll(options: SelectAllOptionsC<E>): Observable<HashMap<E>>;
-  selectAll(options: SelectAllOptionsD<E>): Observable<E[]>;
-  selectAll(options: SelectAllOptionsE<E>): Observable<E[]>;
-  selectAll(): Observable<E[]>;
+  selectAll(options: SelectAllOptionsA<S['entities'][0]>): Observable<HashMap<S['entities'][0]>>;
+  selectAll(options: SelectAllOptionsB<S['entities'][0]>): Observable<S['entities'][0][]>;
+  selectAll(options: SelectAllOptionsC<S['entities'][0]>): Observable<HashMap<S['entities'][0]>>;
+  selectAll(options: SelectAllOptionsD<S['entities'][0]>): Observable<S['entities'][0][]>;
+  selectAll(options: SelectAllOptionsE<S['entities'][0]>): Observable<S['entities'][0][]>;
+  selectAll(): Observable<S['entities'][0][]>;
   selectAll(
-    options: SelectOptions<E> = {
+    options: SelectOptions<S['entities'][0]> = {
       asObject: false
     }
-  ): Observable<E[] | HashMap<E>> {
+  ): Observable<S['entities'][0][] | HashMap<S['entities'][0]>> {
     return this.select(state => state.entities).pipe(map(() => this.getAll(options)));
   }
 
@@ -101,13 +101,13 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    *   sortByOrder: Order.DESC
    * })
    */
-  getAll(options: SelectAllOptionsA<E>): HashMap<E>;
-  getAll(options: SelectAllOptionsB<E>): E[];
-  getAll(options: SelectAllOptionsC<E>): HashMap<E>;
-  getAll(options: SelectAllOptionsD<E>): E[];
-  getAll(options: SelectAllOptionsE<E>): E[];
-  getAll(): E[];
-  getAll(options: SelectOptions<E> = { asObject: false, filterBy: undefined, limitTo: undefined }): E[] | HashMap<E> {
+  getAll(options: SelectAllOptionsA<S['entities'][0]>): HashMap<S['entities'][0]>;
+  getAll(options: SelectAllOptionsB<S['entities'][0]>): S['entities'][0][];
+  getAll(options: SelectAllOptionsC<S['entities'][0]>): HashMap<S['entities'][0]>;
+  getAll(options: SelectAllOptionsD<S['entities'][0]>): S['entities'][0][];
+  getAll(options: SelectAllOptionsE<S['entities'][0]>): S['entities'][0][];
+  getAll(): S['entities'][0][];
+  getAll(options: SelectOptions<S['entities'][0]> = { asObject: false, filterBy: undefined, limitTo: undefined }): S['entities'][0][] | HashMap<S['entities'][0]> {
     if(options.asObject) {
       return entitiesToMap(this.getValue(), options);
     }
@@ -124,9 +124,9 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    * this.query.selectMany([1,2])
    * this.query.selectMany([1,2], entity => entity.title)
    */
-  selectMany<R>(ids: EntityID[]): Observable<E[]>;
-  selectMany<R>(ids: EntityID[], project: (entity: E) => R): Observable<R[]>;
-  selectMany<R>(ids: EntityID[], project?: (entity: E) => R): Observable<E[] | R[]> {
+  selectMany<R>(ids: S['ids'][0][]): Observable<S['entities'][0][]>;
+  selectMany<R>(ids: S['ids'][0][], project: (entity: S['entities'][0]) => R): Observable<R[]>;
+  selectMany<R>(ids: S['ids'][0][], project?: (entity: S['entities'][0]) => R): Observable<S['entities'][0][] | R[]> {
     if(!ids || !ids.length) return of([]);
 
     const entities = ids.map(id => this.selectEntity(id, project));
@@ -148,11 +148,11 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    * this.query.selectEntity(e => e.title === 'title')
    *
    */
-  selectEntity<R>(id: EntityID): Observable<E>;
-  selectEntity<K extends keyof E>(id: EntityID, project?: K): Observable<E[K]>;
-  selectEntity<R>(id: EntityID, project: (entity: E) => R): Observable<R>;
-  selectEntity<R>(predicate: ItemPredicate<E>): Observable<E>;
-  selectEntity<R>(idOrPredicate: EntityID | ItemPredicate<E>, project?: ((entity: E) => R) | keyof E): Observable<R | E> {
+  selectEntity<R>(id: S['ids'][0]): Observable<S['entities'][0]>;
+  selectEntity<K extends keyof S['entities'][0]>(id: S['ids'][0], project?: K): Observable<S['entities'][0][K]>;
+  selectEntity<R>(id: S['ids'][0], project: (entity: S['entities'][0]) => R): Observable<R>;
+  selectEntity<R>(predicate: ItemPredicate<S['entities'][0]>): Observable<S['entities'][0]>;
+  selectEntity<R>(idOrPredicate: S['ids'][0] | ItemPredicate<S['entities'][0]>, project?: ((entity: S['entities'][0]) => R) | keyof S['entities'][0]): Observable<R | S['entities'][0]> {
     let id = idOrPredicate;
 
     if(isFunction(idOrPredicate)) {
@@ -173,7 +173,7 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    *
    * this.query.getEntity(1);
    */
-  getEntity(id: EntityID): E {
+  getEntity(id: S['ids'][0]): S['entities'][0] {
     return this.getValue().entities[id as any];
   }
 
@@ -207,9 +207,9 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    * this.query.selectActive()
    * this.query.selectActive(entity => entity.title)
    */
-  selectActive<R>(): S['active'] extends any[] ? Observable<E[]> : Observable<E>;
-  selectActive<R>(project?: (entity: E) => R): S['active'] extends any[] ? Observable<R[]> : Observable<R>;
-  selectActive<R>(project?: (entity: E) => R): Observable<R | E> | Observable<E[] | R[]> {
+  selectActive<R>(): S['active'] extends any[] ? Observable<S['entities'][0][]> : Observable<S['entities'][0]>;
+  selectActive<R>(project?: (entity: S['entities'][0]) => R): S['active'] extends any[] ? Observable<R[]> : Observable<R>;
+  selectActive<R>(project?: (entity: S['entities'][0]) => R): Observable<R | S['entities'][0]> | Observable<S['entities'][0][] | R[]> {
     if(isArray(this.getActive())) {
       return this.selectActiveId().pipe(switchMap(ids => this.selectMany(ids, project)));
     }
@@ -223,8 +223,8 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    *
    * this.query.getActive()
    */
-  getActive(): S['active'] extends any[] ? E[] : E;
-  getActive(): E[] | E {
+  getActive(): S['active'] extends any[] ? S['entities'][0][] : S['entities'][0];
+  getActive(): OrArray<S['entities'][0]> {
     const activeId = this.getActiveId();
     if(isArray(activeId)) {
       return activeId.map(id => this.getValue().entities[id as any]);
@@ -240,7 +240,7 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    * this.query.selectCount()
    * this.query.selectCount(entity => entity.completed)
    */
-  selectCount(predicate?: (entity: E, index: number) => boolean): Observable<number> {
+  selectCount(predicate?: (entity: S['entities'][0], index: number) => boolean): Observable<number> {
     return this.select(state => state.entities).pipe(map(() => this.getCount(predicate)));
   }
 
@@ -252,7 +252,7 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    * this.query.getCount()
    * this.query.getCount(entity => entity.completed)
    */
-  getCount(predicate?: (entity: E, index: number) => boolean): number {
+  getCount(predicate?: (entity: S['entities'][0], index: number) => boolean): number {
     if(isFunction(predicate)) {
       return this.getAll().filter(predicate).length;
     }
@@ -268,9 +268,9 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    * this.query.selectLast()
    * this.query.selectLast(todo => todo.title)
    */
-  selectLast<R>(): Observable<E>;
-  selectLast<R>(project: (entity: E) => R): Observable<R>;
-  selectLast<R>(project?: (entity: E) => R): Observable<R | E> {
+  selectLast<R>(): Observable<S['entities'][0]>;
+  selectLast<R>(project: (entity: S['entities'][0]) => R): Observable<R>;
+  selectLast<R>(project?: (entity: S['entities'][0]) => R): Observable<R | S['entities'][0]> {
     return this.selectAt(ids => ids[ids.length - 1], project);
   }
 
@@ -283,24 +283,10 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    * this.query.selectFirst()
    * this.query.selectFirst(todo => todo.title)
    */
-  selectFirst<R>(): Observable<E>;
-  selectFirst<R>(project: (entity: E) => R): Observable<R>;
-  selectFirst<R>(project?: (entity: E) => R): Observable<R | E> {
+  selectFirst<R>(): Observable<S['entities'][0]>;
+  selectFirst<R>(project: (entity: S['entities'][0]) => R): Observable<R>;
+  selectFirst<R>(project?: (entity: S['entities'][0]) => R): Observable<R | S['entities'][0]> {
     return this.selectAt(ids => ids[0], project);
-  }
-
-  /**
-   * @deprecated use selectEntityAction
-   *
-   * Select the updated entities ids
-   *
-   *  @example
-   *
-   *  this.query.selectUpdatedEntityIds()
-   *
-   */
-  selectUpdatedEntityIds() {
-    return this.store.updatedEntityIds$;
   }
 
   /**
@@ -337,11 +323,11 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    * this.query.hasEntity([1, 2, 33])
    *
    */
-  hasEntity(id: EntityID): boolean;
-  hasEntity(id: EntityID[]): boolean;
-  hasEntity(project: (entity: E) => boolean): boolean;
+  hasEntity(id: S['ids'][0]): boolean;
+  hasEntity(id: S['ids'][0][]): boolean;
+  hasEntity(project: (entity: S['entities'][0]) => boolean): boolean;
   hasEntity(): boolean;
-  hasEntity(projectOrIds?: EntityID | EntityID[] | ((entity: E) => boolean)): boolean {
+  hasEntity(projectOrIds?: S['ids'][0] | S['ids'][0][] | ((entity: S['entities'][0]) => boolean)): boolean {
     if(isNil(projectOrIds)) {
       return this.getValue().ids.length > 0;
     }
@@ -366,7 +352,7 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
    * this.query.hasActive(3)
    *
    */
-  hasActive(id?: EntityID): boolean {
+  hasActive(id?: S['ids'][0]): boolean {
     const active = this.getValue().active;
     if(Array.isArray(active)) {
       if(isDefined(id)) {
@@ -398,17 +384,17 @@ export class QueryEntity<S extends EntityState, E, EntityID = ID> extends Query<
     this.ui = new EntityUIQuery(this.__store__.ui);
   }
 
-  private selectAt<R>(mapFn: (ids: EntityID[]) => EntityID, project?: (entity: E) => R) {
+  private selectAt<R>(mapFn: (ids: S['ids'][0][]) => S['ids'][0], project?: (entity: S['entities'[0]]) => R) {
     return this.select(state => state.ids as any[]).pipe(
       map(mapFn),
       distinctUntilChanged(),
-      switchMap((id: EntityID) => this.selectEntity(id, project))
+      switchMap((id: S['ids'][0]) => this.selectEntity(id, project))
     );
   }
 }
 
 // @internal
-export class EntityUIQuery<UIState, EntityUI> extends QueryEntity<UIState, EntityUI> {
+export class EntityUIQuery<UIState, DEPRECATED = any> extends QueryEntity<UIState> {
   constructor(store) {
     super(store);
   }

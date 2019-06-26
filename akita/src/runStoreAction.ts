@@ -111,30 +111,30 @@ export function runStoreAction<EntityOrState = any>(
   switch (action) {
     case StoreActions.SetEntities: {
       const { payload } = params as RunStoreActionSetEntities;
-      (store as EntityStore<any, any>).set(payload.data);
+      (store as EntityStore).set(payload.data);
       return;
     }
     case StoreActions.AddEntities: {
       const { payload } = params as RunStoreActionAddEntities;
-      (store as EntityStore<any, any>).add(payload.data, payload.params);
+      (store as EntityStore).add(payload.data, payload.params);
       return;
     }
 
     case StoreActions.UpdateEntities: {
       const { payload } = params as RunStoreActionUpdateEntities;
-      (store as EntityStore<any, any>).update(payload.entityIds, payload.data);
+      (store as EntityStore).update(payload.entityIds, payload.data);
       return;
     }
 
     case StoreActions.RemoveEntities: {
       const { payload } = params as RunStoreActionRemoveEntities;
-      (store as EntityStore<any, any>).remove(payload.entityIds);
+      (store as EntityStore).remove(payload.entityIds);
       return;
     }
 
     case StoreActions.Update: {
       const { payload } = params as RunStoreActionUpdate;
-      (store as EntityStore<any, any>).update(payload.data);
+      (store as EntityStore).update(payload.data);
       return;
     }
   }

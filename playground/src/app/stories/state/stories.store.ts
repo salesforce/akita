@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Story } from './story.model';
 import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
 
-export interface State extends EntityState<Story> {
+export interface StoriesState extends EntityState<Story> {
   loading: boolean;
   someBoolean: boolean;
   skills: string[];
@@ -13,7 +13,7 @@ export interface State extends EntityState<Story> {
   };
 }
 
-const initialState: State = {
+const initialState: StoriesState = {
   loading: false,
   someBoolean: true,
   skills: ['JS'],
@@ -26,7 +26,7 @@ const initialState: State = {
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: 'stories' })
-export class StoriesStore extends EntityStore<State, Story> {
+export class StoriesStore extends EntityStore<StoriesState> {
   constructor() {
     super(initialState);
   }

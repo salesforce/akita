@@ -13,7 +13,7 @@ const initState = {
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: 'widgets' })
-export class WidgetsStore extends EntityStore<WidgetsState, Widget> {
+export class WidgetsStore extends EntityStore<WidgetsState> {
   constructor() {
     super(initState);
   }

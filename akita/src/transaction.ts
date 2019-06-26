@@ -1,16 +1,12 @@
 import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { logAction } from './actions';
-import { buffer, map, tap, switchMap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 // @internal
 const transactionFinished = new Subject();
-// @internal
-export const transactionFinished$ = transactionFinished.asObservable();
 
 // @internal
 const transactionInProcess = new BehaviorSubject(false);
-// @internal
-export const transactionInProcess$ = transactionInProcess.asObservable();
 
 export type TransactionManager = {
   activeTransactions: number;
@@ -25,7 +21,7 @@ export const transactionManager: TransactionManager = {
 
 // @internal
 export function startBatch() {
-  if (!isTransactionInProcess()) {
+  if(!isTransactionInProcess()) {
     transactionManager.batchTransaction = new Subject();
   }
   transactionManager.activeTransactions++;
@@ -34,7 +30,7 @@ export function startBatch() {
 
 // @internal
 export function endBatch() {
-  if (--transactionManager.activeTransactions === 0) {
+  if(--transactionManager.activeTransactions === 0) {
     transactionManager.batchTransaction.next(true);
     transactionManager.batchTransaction.complete();
     transactionInProcess.next(false);
@@ -121,24 +117,5 @@ export function transaction() {
 export function withTransaction<T>(transactionFn: Function) {
   return function(source: Observable<T>): Observable<T> {
     return source.pipe(tap(value => applyTransaction(() => transactionFn(value))));
-  };
-}
-
-/**
- * @experimental
- * @deprecated use auditTime() instead
- */
-export function waitForTransaction<T>() {
-  return function(source: Observable<T>) {
-    return transactionInProcess$.pipe(
-      switchMap(transactionInProcess => {
-        return transactionInProcess
-          ? source.pipe(
-              buffer(transactionFinished$),
-              map(value => value[0])
-            )
-          : source;
-      })
-    );
   };
 }

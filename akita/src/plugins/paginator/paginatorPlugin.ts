@@ -1,7 +1,7 @@
 import { QueryEntity } from '../../queryEntity';
 import { delay, map, switchMap, take } from 'rxjs/operators';
 import { BehaviorSubject, from, isObservable, Observable, Subscription } from 'rxjs';
-import { ID } from '../../types';
+import { EntityState, ID } from '../../types';
 import { AkitaPlugin } from '../plugin';
 import { applyTransaction } from '../../transaction';
 import { isUndefined } from '../../isUndefined';
@@ -35,7 +35,7 @@ const paginatorDefaults: PaginatorConfig = {
   clearStoreWithCache: true
 };
 
-export class PaginatorPlugin<E> extends AkitaPlugin<E> {
+export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<State> {
   /** Save current filters, sorting, etc. in cache */
   metadata = new Map();
 
@@ -43,7 +43,7 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
   private pages = new Map<number, { ids: ID[] }>();
   private readonly clearCacheSubscription: Subscription;
 
-  private pagination: PaginationResponse<E> = {
+  private pagination: PaginationResponse<State['entities'][0]> = {
     currentPage: 1,
     perPage: 0,
     total: 0,
@@ -57,7 +57,7 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
    */
   private initial = true;
 
-  constructor(protected query: QueryEntity<any, E>, public config: PaginatorConfig = {}) {
+  constructor(protected query: QueryEntity<State>, public config: PaginatorConfig = {}) {
     super(query, {
       resetFn: () => {
         this.initial = false;
@@ -68,7 +68,7 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
     const { startWith, cacheTimeout } = this.config;
     this.page = new BehaviorSubject(startWith);
     if (isObservable(cacheTimeout)) {
-      this.clearCacheSubscription = cacheTimeout.subscribe(_ => this.clearCache());
+      this.clearCacheSubscription = cacheTimeout.subscribe(() => this.clearCache());
     }
   }
 
@@ -134,7 +134,7 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
    * Update the pagination object and add the page
    */
   @action('@Pagination - New Page')
-  update(response: PaginationResponse<E>) {
+  update(response: PaginationResponse<State['entities'][0]>) {
     this.pagination = response;
     this.addPage(response.data);
   }
@@ -143,7 +143,7 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
    *
    * Set the ids and add the page to store
    */
-  addPage(data: E[]) {
+  addPage(data: State['entities'][0][]) {
     this.pages.set(this.currentPage, { ids: data.map(entity => entity[this.getStore().idKey]) });
     this.getStore().add(data);
   }
@@ -243,14 +243,14 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
   /**
    * Get the current page if it's in cache, otherwise invoke the request
    */
-  getPage(req: () => Observable<PaginationResponse<E>>) {
+  getPage(req: () => Observable<PaginationResponse<State['entities'][0]>>) {
     let page = this.pagination.currentPage;
     if (this.hasPage(page)) {
       return this.selectPage(page);
     } else {
       this.setLoading(true);
       return from(req()).pipe(
-        switchMap((config: PaginationResponse<E>) => {
+        switchMap((config: PaginationResponse<State['entities'][0]>) => {
           page = config.currentPage;
           applyTransaction(() => {
             this.setLoading(false);
@@ -262,7 +262,7 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
     }
   }
 
-  getQuery(): QueryEntity<any, E> {
+  getQuery(): QueryEntity<State> {
     return this.query;
   }
 
@@ -290,11 +290,11 @@ export class PaginatorPlugin<E> extends AkitaPlugin<E> {
   /**
    * Select the page
    */
-  private selectPage(page: number): Observable<PaginationResponse<E>> {
+  private selectPage(page: number): Observable<PaginationResponse<State['entities'][0]>> {
     return this.query.selectAll({ asObject: true }).pipe(
       take(1),
       map(entities => {
-        let response: PaginationResponse<E> = {
+        let response: PaginationResponse<State['entities'][0]> = {
           ...this.pagination,
           data: this.pages.get(page).ids.map(id => entities[id])
         };

@@ -10,8 +10,8 @@ import { WidgetsQuery } from './state/widgets.query';
   templateUrl: './widgets.component.html'
 })
 export class WidgetsComponent implements OnInit, OnDestroy {
-  collection: DirtyCheckPlugin<Widget>;
-  widgetsSpecific: EntityDirtyCheckPlugin<Widget>;
+  collection: DirtyCheckPlugin;
+  widgetsSpecific: EntityDirtyCheckPlugin;
   widgets$: Observable<Widget[]>;
   activeWidgets$: Observable<Widget[]>;
   dashoboardName$: Observable<string>;

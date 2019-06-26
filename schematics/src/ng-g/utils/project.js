@@ -7,20 +7,18 @@ function getProjectPath(host, options) {
         options.project = Object.keys(workspace.projects)[0];
     }
     const project = workspace.projects[options.project];
-    if (project.root.substr(-1) === "/") {
+    if (project.root.substr(-1) === '/') {
         project.root = project.root.substr(0, project.root.length - 1);
     }
     if (options.path === undefined) {
-        const projectDirName = project.projectType === "application" ? "app" : "lib";
-        return `${project.root ? `/${project.root}` : ""}/src/${projectDirName}`;
+        const projectDirName = project.projectType === 'application' ? 'app' : 'lib';
+        return `${project.root ? `/${project.root}` : ''}/src/${projectDirName}`;
     }
     return options.path;
 }
 exports.getProjectPath = getProjectPath;
 function getProject(workspaceOrHost, projectName) {
-    const workspace = isWorkspaceSchema(workspaceOrHost)
-        ? workspaceOrHost
-        : workspace_1.getWorkspace(workspaceOrHost);
+    const workspace = isWorkspaceSchema(workspaceOrHost) ? workspaceOrHost : workspace_1.getWorkspace(workspaceOrHost);
     return workspace.projects[projectName];
 }
 exports.getProject = getProject;

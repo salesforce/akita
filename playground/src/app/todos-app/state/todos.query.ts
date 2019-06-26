@@ -7,7 +7,7 @@ import { QueryEntity } from '@datorama/akita';
 import { map } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
-export class TodosQuery extends QueryEntity<TodosState, Todo> {
+export class TodosQuery extends QueryEntity<TodosState> {
   selectVisibilityFilter$ = this.select(state => state.ui.filter);
 
   selectVisibleTodos$ = combineLatest(this.selectVisibilityFilter$, this.selectAll()).pipe(

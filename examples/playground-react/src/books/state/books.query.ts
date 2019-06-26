@@ -1,8 +1,7 @@
 import { BooksStore, BooksState, booksStore } from './books.store';
-import { Book } from './book.model';
-import { QueryEntity } from '../../../../akita/src';
+import { QueryEntity } from '../../../../../akita/src';
 
-export class BooksQuery extends QueryEntity<BooksState, Book> {
+export class BooksQuery extends QueryEntity<BooksState> {
 
   constructor(protected store: BooksStore) {
     super(store);

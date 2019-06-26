@@ -10,7 +10,7 @@ export interface CartState extends EntityState<CartItem> {}
   name: 'cart',
   idKey: 'productId'
 })
-export class CartStore extends EntityStore<CartState, CartItem> {
+export class CartStore extends EntityStore<CartState> {
   constructor() {
     super();
   }

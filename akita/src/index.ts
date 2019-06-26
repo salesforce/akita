@@ -3,7 +3,7 @@ export { EntityStore, EntityUIStore } from './entityStore';
 export { QueryEntity, EntityUIQuery } from './queryEntity';
 export { Query } from './query';
 export { Store } from './store';
-export { applyTransaction, transaction, commit, endBatch, isTransactionInProcess, startBatch, TransactionManager, transactionManager, withTransaction, waitForTransaction } from './transaction';
+export { applyTransaction, transaction, commit, endBatch, isTransactionInProcess, startBatch, TransactionManager, transactionManager, withTransaction } from './transaction';
 export { filterNil } from './filterNil';
 export { DEFAULT_ID_KEY } from './defaultIDKey';
 export { action, setAction, setSkipAction, logAction, currentAction, resetCustomAction } from './actions';
@@ -17,7 +17,7 @@ export { PaginationResponse, Paginator, PaginatorConfig, PaginatorPlugin } from 
 export { AkitaFormProp, ArrayControlFactory, FormGroupLike, PersistFormParams, PersistNgFormPlugin } from './plugins/persistForm/persistNgFormPlugin';
 export { persistState, PersistStateParams } from './persistState';
 export { akitaDevtools, DevtoolsOptions, NgZoneLike } from './devtools';
-export { EntityCollectionParams, EntityCollectionPlugin, EntityParam, RebaseActions } from './plugins/entityCollectionPlugin';
+export { EntityCollectionPlugin, RebaseActions } from './plugins/entityCollectionPlugin';
 export { StateHistoryParams, StateHistoryPlugin } from './plugins/stateHistory/stateHistoryPlugin';
 export { EntityStateHistoryPlugin, StateHistoryEntityParams } from './plugins/stateHistory/entityStateHistoryPlugin';
 export { DirtyCheckComparator, dirtyCheckDefaultParams, DirtyCheckParams, DirtyCheckPlugin, DirtyCheckResetParams, getNestedPath } from './plugins/dirtyCheck/dirtyCheckPlugin';

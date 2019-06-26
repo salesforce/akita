@@ -6,7 +6,6 @@ import { Product } from './state/products.model';
 import { ProductsService } from './state/products.service';
 import { ProductsQuery } from './state/products.query';
 import { CartService } from '../cart/state/cart.service';
-import { EntityStore, QueryEntity } from '@datorama/akita';
 
 @Component({
   selector: 'app-products',
@@ -17,8 +16,6 @@ export class ProductsComponent implements OnInit {
   loading$: Observable<boolean>;
   search = new FormControl();
   sortControl = new FormControl('title');
-  store;
-  query;
 
   constructor(private productsService: ProductsService, private cartService: CartService, private productsQuery: ProductsQuery) {}
 
@@ -29,14 +26,6 @@ export class ProductsComponent implements OnInit {
     this.products$ = combineLatest(this.search.valueChanges.pipe(startWith('')), this.sortControl.valueChanges.pipe(startWith('title'))).pipe(
       switchMap(([term, sortBy]) => this.productsQuery.getProducts(term, sortBy as keyof Product))
     );
-
-    this.store = new EntityStore({}, { name: 'dynamic' });
-    this.query = new QueryEntity(this.store);
-    this.store.add([{ id: 1 }]);
-  }
-
-  ngOnDestroy() {
-    this.store.destroy();
   }
 
   addProductToCart({ id }: Product) {

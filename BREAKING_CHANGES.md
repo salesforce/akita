@@ -1,5 +1,81 @@
 # Breaking Changes
 
+## 4.0.0
+Most of the breaking changes in this version are related to types changes.
+
+- EntityStore and QueryEntity now don't require the second generic entity type:
+```ts
+// Before
+export interface ProductsState extends EntityState<Product> {}
+
+@StoreConfig({ name: 'products' })
+export class ProductsStore extends EntityStore<ProductsState, Product> {
+  constructor() { super();
+}
+
+export class ProductsQuery extends QueryEntity<ProductsState, Product> {
+  constructor(protected store: ProductsStore) {
+    super(store);
+  }
+}
+
+// After
+export interface ProductsState extends EntityState<Product> {}
+
+@StoreConfig({ name: 'products' })
+export class ProductsStore extends EntityStore<ProductsState> {
+  constructor() { super();
+}
+
+export class ProductsQuery extends QueryEntity<ProductsState> {
+  constructor(protected store: ProductsStore) {
+    super(store);
+  }
+}
+```
+For now, we keep a deprecated generic, so it will not break any existing code, but please, don't use it anymore.
+
+- Removed the unused error state type - `EntityState<Product, StateErrorType>`.
+- Custom ID type location is changed:
+```ts
+// Before:
+export interface ProductsState extends EntityState<Product> {}
+
+@StoreConfig({ name: 'products' })
+export class ProductsStore extends EntityStore<ProductsState, Product, string> {
+  constructor() { super();
+}
+
+// After
+export interface ProductsState extends EntityState<Product, string> {}
+
+@StoreConfig({ name: 'products' })
+export class ProductsStore extends EntityStore<ProductsState> {
+  constructor() { super();
+}
+```
+- Removed deprecated `selectUpdatedEntityIds` method in favor of `selectEntityAction`.
+- Removed deprecated `waitForTransaction` method in favor of `auditTime`.
+
+### Plugins
+Entity plugins now require one generic, which is the store's type instead of the entity type.
+- `new EntityDirtyCheckPlugin<WidgetsState>`
+- `new EntityStateHistoryPlugin<WidgetsState>`
+- `new PaginatorPlugin<WidgetsState>`
+
+### Things you might have missed
+- Firebase [integration](https://netbasal.gitbook.io/akita/angular-plugins/firebase-integration).
+- In dev mode, you can now use `window.$$stores` and `window.$$queries` to obtain a reference to the stores or the queries.
+- persistState plugin performance optimization [option](https://netbasal.gitbook.io/akita/enhancers/persist-state#performance-optimization).
+- persistState plugin custom hooks [support](https://netbasal.gitbook.io/akita/enhancers/persist-state#custom-hooks).
+- Add a `replace` method to EntityStore. 
+- PaginatorPlugin add a `refreshCurrentPage` method.
+- HistoryPlugin add a custom clear function.
+- selectEntity now support predicate function - `query.selectEntity(e => e.title === 'title')`.
+- Add Entity Actions [API](https://netbasal.gitbook.io/akita/entity-store/entity-query/api#entity-actions).
+- `StoreConfig` can take a custom deep freeze function.
+
+
 ## 3.0.0
 - `EntityStore.set()` - remove `options` param, i.e `entityClass`..
 - Remove `EntityStore.createOrReplace()` in favor of `EntityStore.upsert()`.

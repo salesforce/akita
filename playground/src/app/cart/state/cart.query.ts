@@ -1,13 +1,12 @@
 import { Injectable } from '@angular/core';
 import { CartState, CartStore } from './cart.store';
-import { CartItem } from './cart.model';
 import { combineLatest } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { QueryEntity } from '@datorama/akita';
 import { ProductsQuery } from '../../products/state/products.query';
 
 @Injectable({ providedIn: 'root' })
-export class CartQuery extends QueryEntity<CartState, CartItem> {
+export class CartQuery extends QueryEntity<CartState> {
   constructor(protected store: CartStore, private productsQuery: ProductsQuery) {
     super(store);
   }

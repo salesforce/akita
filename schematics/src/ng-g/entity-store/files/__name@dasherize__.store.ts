@@ -6,7 +6,7 @@ export interface <%= classify(name) %>State extends EntityState<<%= singular(cla
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: '<%= name %>' })
-export class <%= classify(name) %>Store extends EntityStore<<%= classify(name) %>State, <%= singular(classify(name)) %>> {
+export class <%= classify(name) %>Store extends EntityStore<<%= classify(name) %>State> {
 
   constructor() {
     super();

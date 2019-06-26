@@ -1,7 +1,5 @@
 import { pairwise } from 'rxjs/operators';
-import { toBoolean } from '../../toBoolean';
 import { AkitaPlugin, Queries } from '../plugin';
-import { EntityParam } from '../entityCollectionPlugin';
 import { logAction } from '../../actions';
 import { isFunction } from '../../isFunction';
 
@@ -10,13 +8,13 @@ export interface StateHistoryParams {
   comparator?: (prevState, currentState) => boolean;
 }
 
-export type History<S> = {
-  past: S[],
-  present: S | null,
-  future: S[]
+export type History<State> = {
+  past: State[],
+  present: State | null,
+  future: State[]
 }
 
-export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
+export class StateHistoryPlugin<State = any> extends AkitaPlugin<State> {
   /** Allow skipping an update from outside */
   private skip = false;
 
@@ -30,12 +28,12 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
   private skipUpdate = false;
   private subscription;
 
-  constructor(protected query: Queries<E, S>, private params: StateHistoryParams = {}, private _entityId?: EntityParam) {
+  constructor(protected query: Queries<State>, private params: StateHistoryParams = {}, private _entityId?: any) {
     super(query, {
       resetFn: () => this.clear()
     });
-    params.maxAge = toBoolean(params.maxAge) ? params.maxAge : 10;
-    params.comparator = params.comparator || ((prev, current) => true);
+    params.maxAge = !!params.maxAge ? params.maxAge : 10;
+    params.comparator = params.comparator || (() => true);
     this.activate();
   }
 
@@ -49,10 +47,9 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
 
   activate() {
     this.history.present = this.getSource(this._entityId);
-    this.subscription = this.selectSource(this._entityId)
-      .pipe(pairwise())
+    this.subscription = (this as any).selectSource(this._entityId).pipe(pairwise())
       .subscribe(([past, present]) => {
-        if (this.skip) {
+        if(this.skip) {
           this.skip = false;
           return;
         }
@@ -61,8 +58,8 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
          */
         const shouldUpdate = this.params.comparator(past, present);
 
-        if (!this.skipUpdate && shouldUpdate) {
-          if (this.history.past.length === this.params.maxAge) {
+        if(!this.skipUpdate && shouldUpdate) {
+          if(this.history.past.length === this.params.maxAge) {
             this.history.past = this.history.past.slice(1);
           }
           this.history.past = [...this.history.past, past];
@@ -72,7 +69,7 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
   }
 
   undo() {
-    if (this.history.past.length > 0) {
+    if(this.history.past.length > 0) {
       const { past, present } = this.history;
       const previous = past[past.length - 1];
       this.history.past = past.slice(0, past.length - 1);
@@ -83,7 +80,7 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
   }
 
   redo() {
-    if (this.history.future.length > 0) {
+    if(this.history.future.length > 0) {
       const { past, present } = this.history;
       const next = this.history.future[0];
       const newFuture = this.history.future.slice(1);
@@ -95,7 +92,7 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
   }
 
   jumpToPast(index: number) {
-    if (index < 0 || index >= this.history.past.length) return;
+    if(index < 0 || index >= this.history.past.length) return;
 
     const { past, future } = this.history;
     /**
@@ -117,7 +114,7 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
   }
 
   jumpToFuture(index: number) {
-    if (index < 0 || index >= this.history.future.length) return;
+    if(index < 0 || index >= this.history.future.length) return;
 
     const { past, future } = this.history;
 
@@ -133,11 +130,11 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
 
   /**
    * Clear the history
-   * 
+   *
    * @param customUpdateFn Callback function for only clearing part of the history
-   * 
+   *
    * @example
-   * 
+   *
    * stateHistory.clear((history) => {
    *  return {
    *    past: history.past,
@@ -146,16 +143,16 @@ export class StateHistoryPlugin<E = any, S = any> extends AkitaPlugin<E, S> {
    *  };
    * });
    */
-  clear(customUpdateFn?: (history: History<S>) => History<S>) {
+  clear(customUpdateFn?: (history: History<State>) => History<State>) {
     this.history = isFunction(customUpdateFn) ? customUpdateFn(this.history) : {
-      past:  [],
+      past: [],
       present: null,
       future: []
     };
   }
 
   destroy(clearHistory = false) {
-    if (clearHistory) {
+    if(clearHistory) {
       this.clear();
     }
     this.subscription.unsubscribe();

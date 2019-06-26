@@ -3,6 +3,8 @@ import { Observable } from 'rxjs';
 import { queryConfigKey, QueryConfigOptions } from './queryConfig';
 import { isString } from './isString';
 import { isFunction } from './isFunction';
+import { isDev } from './env';
+import { __queries__ } from './stores';
 
 export class Query<S> {
   // @internal
@@ -10,6 +12,10 @@ export class Query<S> {
 
   constructor(protected store: Store<S>) {
     this.__store__ = store;
+    if(isDev()) {
+      // @internal
+      __queries__[store.storeName] = this;
+    }
   }
 
   /**
@@ -55,8 +61,8 @@ export class Query<S> {
    *
    * this.query.selectError().subscribe(error => {})
    */
-  selectError<E = any>(): Observable<E> {
-    return this.select(state => (state as S & { error: E }).error);
+  selectError<ErrorType = any>(): Observable<ErrorType> {
+    return this.select(state => (state as S & { error: ErrorType }).error);
   }
 
   /**

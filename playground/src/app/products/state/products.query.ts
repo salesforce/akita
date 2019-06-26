@@ -5,7 +5,7 @@ import { QueryConfig, QueryEntity } from '@datorama/akita';
 
 @Injectable({ providedIn: 'root' })
 @QueryConfig({ sortBy: 'price' })
-export class ProductsQuery extends QueryEntity<ProductsState, Product> {
+export class ProductsQuery extends QueryEntity<ProductsState> {
   constructor(protected store: ProductsStore) {
     super(store);
   }

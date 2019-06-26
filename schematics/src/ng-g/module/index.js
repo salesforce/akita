@@ -6,10 +6,10 @@ function default_1(options) {
     return (host, context) => {
         options.path = utils_1.getProjectPath(host, options);
         const parsedPath = utils_1.parseName(options);
-        parsedPath.path = parsedPath.path.replace("state", "");
+        parsedPath.path = parsedPath.path.replace('state', '');
         options.name = parsedPath.name;
         options.path = parsedPath.path;
-        const templateSource = schematics_1.apply(schematics_1.url("./files"), [
+        const templateSource = schematics_1.apply(schematics_1.url('./files'), [
             schematics_1.template(Object.assign({}, utils_1.stringUtils, options)),
             schematics_1.move(parsedPath.path)
         ]);

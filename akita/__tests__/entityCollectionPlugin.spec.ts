@@ -1,4 +1,4 @@
-import { AkitaPlugin, EntityCollectionParams, EntityCollectionPlugin, ID, IDS } from '../src';
+import { AkitaPlugin, EntityCollectionPlugin, ID, IDS } from '../src';
 import { skip } from 'rxjs/operators';
 import { createWidget, WidgetsQuery, WidgetsStore } from './setup';
 
@@ -13,7 +13,7 @@ class TestPlugin extends AkitaPlugin {
 }
 
 type TestPluginEntityParams = {
-  entityIds?: EntityCollectionParams;
+  entityIds?: any;
 };
 
 class TestPluginEntity<E, P extends TestPlugin = TestPlugin> extends EntityCollectionPlugin<E, P> {

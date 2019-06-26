@@ -10,9 +10,9 @@ function addPackageJsonDependencies(options) {
         const dependencies = [
             {
                 type: schematics_utilities_1.NodeDependencyType.Default,
-                version: '^3.0.0',
+                version: '^4.0.0',
                 name: '@datorama/akita'
-            },
+            }
         ];
         if (options.withRouter || options.router) {
             dependencies.push({

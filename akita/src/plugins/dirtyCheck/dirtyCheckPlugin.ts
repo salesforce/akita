@@ -3,16 +3,14 @@ import { QueryEntity } from '../../queryEntity';
 import { BehaviorSubject, combineLatest, Observable, Subject, Subscription } from 'rxjs';
 import { distinctUntilChanged, map, skip } from 'rxjs/operators';
 import { isUndefined } from '../../isUndefined';
-import { EntityParam } from '../entityCollectionPlugin';
 import { Query } from '../../query';
 import { coerceArray } from '../../coerceArray';
 import { isFunction } from '../../isFunction';
-import { toBoolean } from '../../toBoolean';
 import { logAction } from '../../actions';
 
-type Head<StoreState = any, Entity = any> = StoreState | Partial<StoreState> | Entity;
+type Head<State = any> = State | Partial<State>;
 
-export type DirtyCheckComparator<Entity> = (head: Entity, current: Entity) => boolean;
+export type DirtyCheckComparator<State> = (head: State, current: State) => boolean;
 
 export type DirtyCheckParams<StoreState = any> = {
   comparator?: DirtyCheckComparator<StoreState>;
@@ -32,8 +30,8 @@ export type DirtyCheckResetParams<StoreState = any> = {
   updateFn?: StoreState | ((head: StoreState, current: StoreState) => any);
 };
 
-export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugin<Entity, StoreState> {
-  private head: Head<StoreState, Entity>;
+export class DirtyCheckPlugin<State = any> extends AkitaPlugin<State> {
+  private head: Head<State>;
   private dirty = new BehaviorSubject(false);
   private subscription: Subscription;
   private active = false;
@@ -42,7 +40,7 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
   isDirty$: Observable<boolean> = this.dirty.asObservable().pipe(distinctUntilChanged());
   reset$ = this._reset.asObservable();
 
-  constructor(protected query: Queries<Entity, StoreState>, private params?: DirtyCheckParams, private _entityId?: EntityParam) {
+  constructor(protected query: Queries<State>, private params?: DirtyCheckParams, private _entityId?: any) {
     super(query);
     this.params = { ...dirtyCheckDefaultParams, ...params };
     if (this.params.watchProperty) {
@@ -58,9 +56,9 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
     let currentValue = this.head;
     if (isFunction(params.updateFn)) {
       if (this.isEntityBased(this._entityId)) {
-        currentValue = params.updateFn(this.head, (this.getQuery() as QueryEntity<StoreState, Entity>).getEntity(this._entityId));
+        currentValue = params.updateFn(this.head, (this.getQuery() as QueryEntity<State>).getEntity(this._entityId));
       } else {
-        currentValue = params.updateFn(this.head, (this.getQuery() as Query<StoreState>).getValue());
+        currentValue = params.updateFn(this.head, (this.getQuery() as Query<State>).getValue());
       }
     }
     logAction(`@DirtyCheck - Revert`);
@@ -80,11 +78,11 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
   }
 
   isDirty(): boolean {
-    return toBoolean(this.dirty.value);
+    return !!this.dirty.value;
   }
 
   hasHead() {
-    return toBoolean(this.getHead());
+    return !!this.getHead();
   }
 
   destroy() {
@@ -95,7 +93,7 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
 
   isPathDirty(path: string) {
     const head = this.getHead();
-    const current = (this.getQuery() as Query<StoreState>).getValue();
+    const current = (this.getQuery() as Query<State>).getValue();
     const currentPathValue = getNestedPath(current, path);
     const headPathValue = getNestedPath(head, path);
 
@@ -110,7 +108,7 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
     this.head = this._getHead();
     /** if we are tracking specific properties select only the relevant ones */
     const source = this.params.watchProperty
-      ? (this.params.watchProperty as (keyof StoreState)[]).map(prop =>
+      ? (this.params.watchProperty as (keyof State)[]).map(prop =>
           this.query.select(state => state[prop]).pipe(
             map(val => ({
               val,
@@ -139,21 +137,21 @@ export class DirtyCheckPlugin<Entity = any, StoreState = any> extends AkitaPlugi
     this.dirty.next(isDirty);
   }
 
-  private _getHead(): Head<StoreState, Entity> {
-    let head: Head<StoreState, Entity> = this.getSource(this._entityId);
+  private _getHead(): Head<State> {
+    let head: Head<State> = this.getSource(this._entityId);
     if (this.params.watchProperty) {
-      head = this.getWatchedValues(head as StoreState);
+      head = this.getWatchedValues(head as State);
     }
     return head;
   }
 
-  private getWatchedValues(source: StoreState): Partial<StoreState> {
-    return (this.params.watchProperty as (keyof StoreState)[]).reduce(
+  private getWatchedValues(source: State): Partial<State> {
+    return (this.params.watchProperty as (keyof State)[]).reduce(
       (watched, prop) => {
         watched[prop] = source[prop];
         return watched;
       },
-      {} as Partial<StoreState>
+      {} as Partial<State>
     );
   }
 }

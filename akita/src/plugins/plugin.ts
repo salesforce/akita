@@ -1,24 +1,23 @@
 import { QueryEntity } from '../queryEntity';
 import { Query } from '../query';
-import { Observable } from 'rxjs';
 import { filterNil } from '../filterNil';
 import { toBoolean } from '../toBoolean';
-import { ID } from '../types';
+import { EntityState } from '../types';
 import { getAkitaConfig } from '../config';
 
-export type Queries<E, S> = Query<S> | QueryEntity<S, E>;
+export type Queries<State> = Query<State> | QueryEntity<State>;
 
-export abstract class AkitaPlugin<E = any, S = any> {
-  protected constructor(protected query: Queries<E, S>, config?: { resetFn?: Function }) {
-    if (config && config.resetFn) {
-      if (getAkitaConfig().resettable) {
+export abstract class AkitaPlugin<State = any> {
+  protected constructor(protected query: Queries<State>, config?: { resetFn?: Function }) {
+    if(config && config.resetFn) {
+      if(getAkitaConfig().resettable) {
         this.onReset(config.resetFn);
       }
     }
   }
 
   /** This method is responsible for getting access to the query. */
-  protected getQuery(): Queries<E, S> {
+  protected getQuery() {
     return this.query;
   }
 
@@ -31,22 +30,22 @@ export abstract class AkitaPlugin<E = any, S = any> {
   public abstract destroy();
 
   /** This method is responsible tells whether the plugin is entityBased or not.  */
-  protected isEntityBased(entityId: ID) {
+  protected isEntityBased(entityId: State extends EntityState ? State['ids'][0] : undefined) {
     return toBoolean(entityId);
   }
 
   /** This method is responsible for selecting the source; it can be the whole store or one entity. */
-  protected selectSource(entityId: ID): Observable<S | E> {
-    if (this.isEntityBased(entityId)) {
-      return (this.getQuery() as QueryEntity<S, E>).selectEntity(entityId).pipe(filterNil);
+  protected selectSource(entityId: any) {
+    if(this.isEntityBased(entityId)) {
+      return (this.getQuery() as QueryEntity<State>).selectEntity(entityId).pipe(filterNil);
     }
 
-    return (this.getQuery() as Query<S>).select(state => state);
+    return (this.getQuery() as Query<State>).select(state => state);
   }
 
-  protected getSource(entityId: ID): S | E {
-    if (this.isEntityBased(entityId)) {
-      return (this.getQuery() as QueryEntity<S, E>).getEntity(entityId);
+  protected getSource(entityId: any): any {
+    if(this.isEntityBased(entityId)) {
+      return (this.getQuery() as QueryEntity<State>).getEntity(entityId);
     }
 
     return this.getQuery().getValue();
@@ -54,7 +53,7 @@ export abstract class AkitaPlugin<E = any, S = any> {
 
   /** This method is responsible for updating the store or one entity; it can be the whole store or one entity. */
   protected updateStore(newState, entityId?) {
-    if (this.isEntityBased(entityId)) {
+    if(this.isEntityBased(entityId)) {
       this.getStore().update(entityId, newState);
     } else {
       this.getStore()._setState(state => ({ ...state, ...newState }));
