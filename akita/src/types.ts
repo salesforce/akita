@@ -5,7 +5,7 @@ export interface HashMap<T> {
   [id: string]: T;
 }
 
-export interface EntityState<E = any, IDType = ID> {
+export interface EntityState<E = any, IDType = any> {
   entities?: HashMap<E>;
   ids?: IDType[];
   loading?: boolean;
@@ -50,3 +50,5 @@ export type MaybeAsync<T = any> = Promise<T> | Observable<T> | T;
 export type EntityUICreateFn<EntityUI = any, Entity = any> = EntityUI | ((entity: Entity) => EntityUI);
 export type Constructor<T = any> = new (...args: any[]) => T;
 export type OrArray<Type> = Type | Type[];
+export type getEntityType<S> = S extends EntityState<infer I> ? I : never;
+export type getIDType<S> = S extends EntityState<any, infer I> ? I : never;

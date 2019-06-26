@@ -1,7 +1,7 @@
 import { QueryEntity } from '../../queryEntity';
 import { delay, map, switchMap, take } from 'rxjs/operators';
 import { BehaviorSubject, from, isObservable, Observable, Subscription } from 'rxjs';
-import { EntityState, ID } from '../../types';
+import { EntityState, ID, getEntityType } from '../../types';
 import { AkitaPlugin } from '../plugin';
 import { applyTransaction } from '../../transaction';
 import { isUndefined } from '../../isUndefined';
@@ -43,7 +43,7 @@ export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<Stat
   private pages = new Map<number, { ids: ID[] }>();
   private readonly clearCacheSubscription: Subscription;
 
-  private pagination: PaginationResponse<State['entities'][0]> = {
+  private pagination: PaginationResponse<getEntityType<State>> = {
     currentPage: 1,
     perPage: 0,
     total: 0,
@@ -134,7 +134,7 @@ export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<Stat
    * Update the pagination object and add the page
    */
   @action('@Pagination - New Page')
-  update(response: PaginationResponse<State['entities'][0]>) {
+  update(response: PaginationResponse<getEntityType<State>>) {
     this.pagination = response;
     this.addPage(response.data);
   }
@@ -143,7 +143,7 @@ export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<Stat
    *
    * Set the ids and add the page to store
    */
-  addPage(data: State['entities'][0][]) {
+  addPage(data: getEntityType<State>[]) {
     this.pages.set(this.currentPage, { ids: data.map(entity => entity[this.getStore().idKey]) });
     this.getStore().add(data);
   }
@@ -243,14 +243,14 @@ export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<Stat
   /**
    * Get the current page if it's in cache, otherwise invoke the request
    */
-  getPage(req: () => Observable<PaginationResponse<State['entities'][0]>>) {
+  getPage(req: () => Observable<PaginationResponse<getEntityType<State>>>) {
     let page = this.pagination.currentPage;
     if (this.hasPage(page)) {
       return this.selectPage(page);
     } else {
       this.setLoading(true);
       return from(req()).pipe(
-        switchMap((config: PaginationResponse<State['entities'][0]>) => {
+        switchMap((config: PaginationResponse<getEntityType<State>>) => {
           page = config.currentPage;
           applyTransaction(() => {
             this.setLoading(false);
@@ -267,7 +267,7 @@ export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<Stat
   }
 
   refreshCurrentPage() {
-    if(isNil(this.currentPage) === false) {
+    if (isNil(this.currentPage) === false) {
       this.clearPage(this.currentPage);
       this.setPage(this.currentPage);
     }
@@ -290,11 +290,11 @@ export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<Stat
   /**
    * Select the page
    */
-  private selectPage(page: number): Observable<PaginationResponse<State['entities'][0]>> {
+  private selectPage(page: number): Observable<PaginationResponse<getEntityType<State>>> {
     return this.query.selectAll({ asObject: true }).pipe(
       take(1),
       map(entities => {
-        let response: PaginationResponse<State['entities'][0]> = {
+        let response: PaginationResponse<getEntityType<State>> = {
           ...this.pagination,
           data: this.pages.get(page).ids.map(id => entities[id])
         };

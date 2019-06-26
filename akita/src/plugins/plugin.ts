@@ -2,15 +2,14 @@ import { QueryEntity } from '../queryEntity';
 import { Query } from '../query';
 import { filterNil } from '../filterNil';
 import { toBoolean } from '../toBoolean';
-import { EntityState } from '../types';
 import { getAkitaConfig } from '../config';
 
 export type Queries<State> = Query<State> | QueryEntity<State>;
 
 export abstract class AkitaPlugin<State = any> {
   protected constructor(protected query: Queries<State>, config?: { resetFn?: Function }) {
-    if(config && config.resetFn) {
-      if(getAkitaConfig().resettable) {
+    if (config && config.resetFn) {
+      if (getAkitaConfig().resettable) {
         this.onReset(config.resetFn);
       }
     }
@@ -30,13 +29,13 @@ export abstract class AkitaPlugin<State = any> {
   public abstract destroy();
 
   /** This method is responsible tells whether the plugin is entityBased or not.  */
-  protected isEntityBased(entityId: State extends EntityState ? State['ids'][0] : undefined) {
+  protected isEntityBased(entityId: any) {
     return toBoolean(entityId);
   }
 
   /** This method is responsible for selecting the source; it can be the whole store or one entity. */
   protected selectSource(entityId: any) {
-    if(this.isEntityBased(entityId)) {
+    if (this.isEntityBased(entityId)) {
       return (this.getQuery() as QueryEntity<State>).selectEntity(entityId).pipe(filterNil);
     }
 
@@ -44,7 +43,7 @@ export abstract class AkitaPlugin<State = any> {
   }
 
   protected getSource(entityId: any): any {
-    if(this.isEntityBased(entityId)) {
+    if (this.isEntityBased(entityId)) {
       return (this.getQuery() as QueryEntity<State>).getEntity(entityId);
     }
 
@@ -53,7 +52,7 @@ export abstract class AkitaPlugin<State = any> {
 
   /** This method is responsible for updating the store or one entity; it can be the whole store or one entity. */
   protected updateStore(newState, entityId?) {
-    if(this.isEntityBased(entityId)) {
+    if (this.isEntityBased(entityId)) {
       this.getStore().update(entityId, newState);
     } else {
       this.getStore()._setState(state => ({ ...state, ...newState }));

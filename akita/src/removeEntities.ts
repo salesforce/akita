@@ -4,7 +4,7 @@ import { hasActiveState, isMultiActiveState, resolveActiveEntity } from './activ
 
 export type RemoveEntitiesParams<State, Entity> = {
   state: StateWithActive<State>;
-  ids: ID[];
+  ids: any[];
 };
 
 // @internal

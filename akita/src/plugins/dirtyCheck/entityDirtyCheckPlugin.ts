@@ -2,13 +2,13 @@ import { DirtyCheckComparator, dirtyCheckDefaultParams, DirtyCheckPlugin, DirtyC
 import { EntityCollectionPlugin } from '../entityCollectionPlugin';
 import { auditTime, map, skip } from 'rxjs/operators';
 import { merge, Observable, Subject } from 'rxjs';
-import { EntityState, OrArray } from '../../types';
+import { EntityState, OrArray, getIDType, getEntityType } from '../../types';
 import { QueryEntity } from '../../queryEntity';
 import { coerceArray } from '../../coerceArray';
 
 export type DirtyCheckCollectionParams<State extends EntityState> = {
-  comparator?: DirtyCheckComparator<State['entities'][0]>;
-  entityIds?: OrArray<State['ids'][0]>;
+  comparator?: DirtyCheckComparator<getEntityType<State>>;
+  entityIds?: OrArray<getIDType<State>>;
 };
 
 export class EntityDirtyCheckPlugin<State extends EntityState = any, P extends DirtyCheckPlugin<State> = DirtyCheckPlugin<State>> extends EntityCollectionPlugin<State, P> {
@@ -30,9 +30,9 @@ export class EntityDirtyCheckPlugin<State extends EntityState = any, P extends D
       });
   }
 
-  setHead(ids?: OrArray<State['ids'][0]>) {
+  setHead(ids?: OrArray<getIDType<State>>) {
     if (this.params.entityIds && ids) {
-      const toArray = coerceArray(ids) as State['ids'][0][];
+      const toArray = coerceArray(ids) as getIDType<State>[];
       const someAreWatched = coerceArray(this.params.entityIds).some(id => toArray.indexOf(id) > -1);
       if (someAreWatched === false) {
         return this;
@@ -43,7 +43,7 @@ export class EntityDirtyCheckPlugin<State extends EntityState = any, P extends D
     return this;
   }
 
-  hasHead(id: State['ids'][0]): boolean {
+  hasHead(id: getIDType<State>): boolean {
     if (this.entities.has(id)) {
       const entity = this.getEntity(id);
       return entity.hasHead();
@@ -52,14 +52,14 @@ export class EntityDirtyCheckPlugin<State extends EntityState = any, P extends D
     return false;
   }
 
-  reset(ids?: OrArray<State['ids'][0]>, params: DirtyCheckResetParams = {}) {
+  reset(ids?: OrArray<getIDType<State>>, params: DirtyCheckResetParams = {}) {
     this.forEachId(ids, e => e.reset(params));
   }
 
-  isDirty(id: State['ids'][0]): Observable<boolean>;
-  isDirty(id: State['ids'][0], asObservable: true): Observable<boolean>;
-  isDirty(id: State['ids'][0], asObservable: false): boolean;
-  isDirty(id: State['ids'][0], asObservable = true): Observable<boolean> | boolean {
+  isDirty(id: getIDType<State>): Observable<boolean>;
+  isDirty(id: getIDType<State>, asObservable: true): Observable<boolean>;
+  isDirty(id: getIDType<State>, asObservable: false): boolean;
+  isDirty(id: getIDType<State>, asObservable = true): Observable<boolean> | boolean {
     if (this.entities.has(id)) {
       const entity = this.getEntity(id);
       return asObservable ? entity.isDirty$ : entity.isDirty();
@@ -72,7 +72,7 @@ export class EntityDirtyCheckPlugin<State extends EntityState = any, P extends D
     return this.checkSomeDirty();
   }
 
-  isPathDirty(id: State['ids'][0], path: string) {
+  isPathDirty(id: getIDType<State>, path: string) {
     if (this.entities.has(id)) {
       const head = (this.getEntity(id) as any).getHead();
       const current = this.query.getEntity(id);
@@ -85,7 +85,7 @@ export class EntityDirtyCheckPlugin<State extends EntityState = any, P extends D
     return null;
   }
 
-  destroy(ids?: OrArray<State['ids'][0]>) {
+  destroy(ids?: OrArray<getIDType<State>>) {
     this.forEachId(ids, e => e.destroy());
     /** complete only when the plugin destroys */
     if (!ids) {
@@ -93,7 +93,7 @@ export class EntityDirtyCheckPlugin<State extends EntityState = any, P extends D
     }
   }
 
-  protected instantiatePlugin(id: State['ids'][0]): P {
+  protected instantiatePlugin(id: getIDType<State>): P {
     return new DirtyCheckPlugin(this.query, this.params, id) as P;
   }
 

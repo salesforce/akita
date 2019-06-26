@@ -5,7 +5,7 @@ import { isPlainObject } from './isPlainObject';
 
 export type UpdateEntitiesParams<State, Entity> = {
   state: State;
-  ids: ID[];
+  ids: any[];
   idKey: string;
   newStateOrFn: UpdateStateCallback<Entity> | Partial<Entity> | Partial<State>;
   preUpdateEntity: PreUpdateEntity<Entity>;

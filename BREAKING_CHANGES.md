@@ -56,6 +56,7 @@ export class ProductsStore extends EntityStore<ProductsState> {
 ```
 - Removed deprecated `selectUpdatedEntityIds` method in favor of `selectEntityAction`.
 - Removed deprecated `waitForTransaction` method in favor of `auditTime`.
+- The default entity id type changed from `ID` which was `number | string` to `any`. We now recommend to strict your type in the second `EntityState` generic parameter.
 
 ### Plugins
 Entity plugins now require one generic, which is the store's type instead of the entity type.

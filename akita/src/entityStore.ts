@@ -1,7 +1,7 @@
 import { isEmpty } from './isEmpty';
 import { SetEntities, setEntities } from './setEntities';
 import { Store } from './store';
-import { Constructor, EntityState, EntityUICreateFn, ID, IDS, OrArray, StateWithActive, UpdateEntityPredicate, UpdateStateCallback } from './types';
+import { Constructor, EntityState, EntityUICreateFn, ID, IDS, OrArray, StateWithActive, UpdateEntityPredicate, UpdateStateCallback, getEntityType, getIDType } from './types';
 import { getActiveEntities, SetActiveOptions } from './getActiveEntities';
 import { addEntities, AddEntitiesOptions } from './addEntities';
 import { coerceArray } from './coerceArray';
@@ -38,16 +38,16 @@ import { DEFAULT_ID_KEY } from './defaultIDKey';
  *
  *
  */
-export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends Store<S> {
-  ui: EntityUIStore<any, DEPRECATED>;
-  private entityActions = new Subject<EntityAction>();
+export class EntityStore<S extends EntityState = any, EntityType = getEntityType<S>, IDType = getIDType<S>> extends Store<S> {
+  ui: EntityUIStore<any, EntityType>;
+  private entityActions = new Subject<EntityAction<IDType>>();
 
   constructor(initialState: Partial<S> = {}, protected options: Partial<StoreConfigOptions> = {}) {
     super({ ...getInitialEntitiesState(), ...initialState }, options);
   }
 
   // @internal
-  get selectEntityAction$(): Observable<EntityAction> {
+  get selectEntityAction$(): Observable<EntityAction<IDType>> {
     return this.entityActions.asObservable();
   }
 
@@ -67,8 +67,8 @@ export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends 
    * this.store.set({ 1: {}, 2: {}})
    *
    */
-  set(entities: SetEntities<S['entities'][0]>) {
-    if(isNil(entities)) return;
+  set(entities: SetEntities<EntityType>) {
+    if (isNil(entities)) return;
 
     isDev() && setAction('Set Entity');
 
@@ -85,7 +85,7 @@ export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends 
 
     this.updateCache();
 
-    if(this.hasInitialUIState()) {
+    if (this.hasInitialUIState()) {
       this.handleUICreation();
     }
 
@@ -103,10 +103,10 @@ export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends 
    *
    * this.store.add(Entity, { loading: false })
    */
-  add(entities: OrArray<S['entities'][0]>, options: AddEntitiesOptions = { loading: false }) {
+  add(entities: OrArray<EntityType>, options: AddEntitiesOptions = { loading: false }) {
     const collection = coerceArray(entities);
 
-    if(isEmpty(collection)) return;
+    if (isEmpty(collection)) return;
 
     const data = addEntities({
       state: this._value(),
@@ -116,14 +116,14 @@ export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends 
       options
     });
 
-    if(data) {
+    if (data) {
       isDev() && setAction('Add Entity');
 
       this._setState(() => ({
         ...data.newState,
         loading: options.loading
       }));
-      if(this.hasInitialUIState()) {
+      if (this.hasInitialUIState()) {
         this.handleUICreation(true);
       }
 
@@ -141,38 +141,41 @@ export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends 
    * store.update([1, 2, 3], entity => ...)
    * store.update(null, entity => ...)
    */
-  update(id: OrArray<S['ids'][0]> | null, newStateFn: UpdateStateCallback<S['entities'][0]>);
+  update(id: OrArray<IDType> | null, newStateFn: UpdateStateCallback<EntityType>);
   /**
    * store.update(1, { name: newName })
    */
-  update(id: OrArray<S['ids'][0]> | null, newState: Partial<S['entities'][0]>);
+  update(id: OrArray<IDType> | null, newState: Partial<EntityType>);
   /**
    * store.update(entity => entity.price > 3, entity => ({ name: newName }))
    */
-  update(predicate: UpdateEntityPredicate<S['entities'][0]>, newStateFn: UpdateStateCallback<S['entities'][0]>);
+  update(predicate: UpdateEntityPredicate<EntityType>, newStateFn: UpdateStateCallback<EntityType>);
   /**
    * store.update(entity => entity.price > 3, { name: newName })
    */
-  update(predicate: UpdateEntityPredicate<S['entities'][0]>, newState: Partial<S['entities'][0]>);
+  update(predicate: UpdateEntityPredicate<EntityType>, newState: Partial<EntityType>);
   /** Support non-entity updates */
   update(newState: UpdateStateCallback<S>);
   update(newState: Partial<S>);
-  update(idsOrFnOrState: OrArray<S['ids'][0]> | null | Partial<S> | UpdateStateCallback<S> | UpdateEntityPredicate<S['entities'][0]>, newStateOrFn?: UpdateStateCallback<S['entities'][0]> | Partial<S['entities'][0]> | Partial<S>) {
-    if(isUndefined(newStateOrFn)) {
+  update(
+    idsOrFnOrState: OrArray<IDType> | null | Partial<S> | UpdateStateCallback<S> | UpdateEntityPredicate<EntityType>,
+    newStateOrFn?: UpdateStateCallback<EntityType> | Partial<EntityType> | Partial<S>
+  ) {
+    if (isUndefined(newStateOrFn)) {
       super.update(idsOrFnOrState as Partial<S>);
       return;
     }
-    let ids: S['ids'][0][] = [];
+    let ids: IDType[] = [];
 
-    if(isFunction(idsOrFnOrState)) {
+    if (isFunction(idsOrFnOrState)) {
       // We need to filter according the predicate function
-      ids = this.ids.filter(id => (idsOrFnOrState as UpdateEntityPredicate<S['entities'][0]>)(this.entities[id]));
+      ids = this.ids.filter(id => (idsOrFnOrState as UpdateEntityPredicate<EntityType>)(this.entities[id]));
     } else {
       // If it's nil we want all of them
-      ids = isNil(idsOrFnOrState) ? this.ids : coerceArray(idsOrFnOrState);
+      ids = isNil(idsOrFnOrState) ? this.ids : coerceArray(idsOrFnOrState as OrArray<IDType>);
     }
 
-    if(isEmpty(ids)) return;
+    if (isEmpty(ids)) return;
 
     isDev() && setAction('Update Entity', ids);
     this._setState(state =>
@@ -200,15 +203,15 @@ export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends 
    *
    */
   @transaction()
-  upsert(ids: OrArray<S['ids'][0]>, newState: Partial<S['entities'][0]> | S['entities'][0] | UpdateStateCallback<S['entities'][0]> | S['entities'][0][], options: { baseClass?: Constructor } = {}) {
+  upsert(ids: OrArray<IDType>, newState: Partial<EntityType> | EntityType | UpdateStateCallback<EntityType> | EntityType[], options: { baseClass?: Constructor } = {}) {
     const toArray = coerceArray(ids);
     const predicate = isUpdate => id => hasEntity(this.entities, id) === isUpdate;
     const isClassBased = isFunction(options.baseClass);
     const updateIds = toArray.filter(predicate(true));
     const newEntities = toArray.filter(predicate(false)).map(id => {
-      let entity = isFunction(newState) ? newState({} as S['entities'][0]) : newState;
-      const withId = { ...(entity as S['entities'][0]), [this.idKey]: id };
-      if(isClassBased) {
+      let entity = isFunction(newState) ? newState({} as EntityType) : newState;
+      const withId = { ...(entity as EntityType), [this.idKey]: id };
+      if (isClassBased) {
         return new options.baseClass(withId);
       }
       return withId;
@@ -232,15 +235,15 @@ export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends 
    * store.upsertMany([ { id: 1 }, { id: 2 }], { baseClass: Todo  });
    *
    */
-  upsertMany(entities: S['entities'][0][], options: { baseClass?: Constructor; loading?: boolean } = {}) {
+  upsertMany(entities: EntityType[], options: { baseClass?: Constructor; loading?: boolean } = {}) {
     const addedIds = [];
     const updatedIds = [];
     const updatedEntities = {};
 
     // Update the state directly to optimize performance
-    for(const entity of entities) {
+    for (const entity of entities) {
       const id = entity[this.idKey];
-      if(hasEntity(this.entities, id)) {
+      if (hasEntity(this.entities, id)) {
         updatedEntities[id] = { ...this._value().entities[id], ...entity };
         updatedIds.push(id);
       } else {
@@ -276,16 +279,16 @@ export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends 
    * this.store.replace(5, newEntity)
    * this.store.replace([1,2,3], newEntity)
    */
-  replace(ids: IDS, newState: Partial<S['entities'][0]>) {
+  replace(ids: IDS, newState: Partial<EntityType>) {
     const toArray = coerceArray(ids);
-    if(isEmpty(toArray)) return;
+    if (isEmpty(toArray)) return;
     let replaced = {};
-    for(const id of toArray) {
+    for (const id of toArray) {
       newState[this.idKey] = id;
       replaced[id] = newState;
     }
     isDev() && setAction('Replace Entity', ids);
-    this._setState((state) => ({
+    this._setState(state => ({
       ...state,
       entities: {
         ...state.entities,
@@ -304,30 +307,30 @@ export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends 
    * this.store.remove([1,2,3])
    * this.store.remove()
    */
-  remove(id?: OrArray<S['ids'][0]>);
+  remove(id?: OrArray<IDType>);
   /**
    * this.store.remove(entity => entity.id === 1)
    */
-  remove(predicate: (entity: Readonly<S['entities'][0]>) => boolean);
-  remove(idsOrFn?: OrArray<S['ids'][0]> | ((entity: Readonly<S['entities'][0]>) => boolean)) {
-    if(isEmpty(this.ids)) return;
+  remove(predicate: (entity: Readonly<EntityType>) => boolean);
+  remove(idsOrFn?: OrArray<IDType> | ((entity: Readonly<EntityType>) => boolean)) {
+    if (isEmpty(this.ids)) return;
 
     const idPassed = isDefined(idsOrFn);
 
     // null means remove all
-    let ids: ID[] | null = [];
+    let ids: IDType[] | null = [];
 
-    if(isFunction(idsOrFn)) {
+    if (isFunction(idsOrFn)) {
       ids = this.ids.filter(entityId => idsOrFn(this.entities[entityId]));
     } else {
       ids = idPassed ? coerceArray(idsOrFn) : null;
     }
 
-    if(isEmpty(ids)) return;
+    if (isEmpty(ids)) return;
 
     isDev() && setAction('Remove Entity', ids);
     this._setState((state: StateWithActive<S>) => removeEntities({ state, ids }));
-    if(ids === null) {
+    if (ids === null) {
       this.setHasCache(false);
     }
 
@@ -351,10 +354,10 @@ export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends 
    *   }
    * })
    */
-  updateActive(newStateOrCallback: UpdateStateCallback<S['entities'][0]> | Partial<S['entities'][0]>) {
+  updateActive(newStateOrCallback: UpdateStateCallback<EntityType> | Partial<EntityType>) {
     const ids = coerceArray(this.active);
     isDev() && setAction('Update Active', ids);
-    this.update(ids, newStateOrCallback as Partial<S['entities'][0]>);
+    this.update(ids, newStateOrCallback as Partial<EntityType>);
   }
 
   /**
@@ -366,10 +369,10 @@ export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends 
    * store.setActive([1, 2, 3])
    */
   setActive(idOrOptions: S['active'] extends any[] ? S['active'] : (SetActiveOptions | S['active']));
-  setActive(idOrOptions: S['ids'][0] | SetActiveOptions | null) {
+  setActive(idOrOptions: IDType | SetActiveOptions | null) {
     const active = getActiveEntities(idOrOptions, this.ids, this.active);
 
-    if(active === undefined) {
+    if (active === undefined) {
       return;
     }
 
@@ -385,16 +388,16 @@ export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends 
    * store.addActive(2);
    * store.addActive([3, 4, 5]);
    */
-  addActive<T = OrArray<S['ids'][0]>>(ids: T) {
+  addActive<T = OrArray<IDType>>(ids: T) {
     const toArray = coerceArray(ids);
-    if(isEmpty(toArray)) return;
+    if (isEmpty(toArray)) return;
     const everyExist = toArray.every(id => this.active.indexOf(id) > -1);
-    if(everyExist) return;
+    if (everyExist) return;
 
     isDev() && setAction('Add Active', ids);
     this._setState(state => {
       /** Protect against case that one of the items in the array exist */
-      const uniques = Array.from(new Set([...(state.active as S['ids'][0][]), ...toArray]));
+      const uniques = Array.from(new Set([...(state.active as IDType[]), ...toArray]));
       return {
         ...state,
         active: uniques
@@ -410,11 +413,11 @@ export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends 
    * store.removeActive(2)
    * store.removeActive([3, 4, 5])
    */
-  removeActive<T = OrArray<S['ids'][0]>>(ids: T) {
+  removeActive<T = OrArray<IDType>>(ids: T) {
     const toArray = coerceArray(ids);
-    if(isEmpty(toArray)) return;
+    if (isEmpty(toArray)) return;
     const someExist = toArray.some(id => this.active.indexOf(id) > -1);
-    if(!someExist) return;
+    if (!someExist) return;
 
     isDev() && setAction('Remove Active', ids);
     this._setState(state => {
@@ -434,7 +437,7 @@ export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends 
    * store.toggle([3, 4, 5])
    */
   @transaction()
-  toggleActive<T = OrArray<S['ids'][0]>>(ids: T) {
+  toggleActive<T = OrArray<IDType>>(ids: T) {
     const toArray = coerceArray(ids);
     const filterExists = remove => id => this.active.includes(id) === remove;
     const remove = toArray.filter(filterExists(true));
@@ -476,19 +479,19 @@ export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends 
   // @internal
   destroy() {
     super.destroy();
-    if(this.ui instanceof EntityStore) {
+    if (this.ui instanceof EntityStore) {
       this.ui.destroy();
     }
     this.entityActions.complete();
   }
 
   // @internal
-  akitaPreUpdateEntity(_: Readonly<S['entities'][0]>, nextEntity: Readonly<S['entities'][0]>): S['entities'][0] {
+  akitaPreUpdateEntity(_: Readonly<EntityType>, nextEntity: Readonly<EntityType>): EntityType {
     return nextEntity;
   }
 
   // @internal
-  akitaPreAddEntity(newEntity: Readonly<S['entities'][0]>): S['entities'][0] {
+  akitaPreAddEntity(newEntity: Readonly<EntityType>): EntityType {
     return newEntity;
   }
 
@@ -504,7 +507,7 @@ export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends 
     return this._value().active;
   }
 
-  private _setActive(ids: OrArray<S['ids'][0]>) {
+  private _setActive(ids: OrArray<IDType>) {
     this._setState(state => {
       return {
         ...state,
@@ -516,8 +519,8 @@ export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends 
   private updateCache() {
     this.setHasCache(true);
     const ttlConfig = this.cacheConfig && this.cacheConfig.ttl;
-    if(ttlConfig) {
-      if(this.cache.ttl !== null) {
+    if (ttlConfig) {
+      if (this.cache.ttl !== null) {
         clearTimeout(this.cache.ttl);
       }
       this.cache.ttl = <any>setTimeout(() => this.setHasCache(false), ttlConfig);
@@ -537,7 +540,7 @@ export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends 
       };
     };
 
-    if(add) {
+    if (add) {
       uiEntities = this.ids.filter(id => isUndefined(this.ui.entities[id])).map(createFn);
     } else {
       uiEntities = ids.map(createFn);
@@ -550,8 +553,8 @@ export class EntityStore<S extends EntityState = any, DEPRECATED = any> extends 
     return this.hasUIStore() && isUndefined(this.ui._akitaCreateEntityFn) === false;
   }
 
-  private handleUIRemove(ids: S['ids'][0][]) {
-    if(this.hasUIStore()) {
+  private handleUIRemove(ids: IDType[]) {
+    if (this.hasUIStore()) {
       this.ui.remove(ids);
     }
   }

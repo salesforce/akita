@@ -1,5 +1,3 @@
-import { ID } from './types';
-
 export enum EntityActions {
   Set,
   Add,
@@ -7,7 +5,7 @@ export enum EntityActions {
   Remove
 }
 
-export interface EntityAction {
+export interface EntityAction<IDType> {
   type: EntityActions;
-  ids: ID[];
+  ids: IDType[];
 }
