@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.1.0"></a>
+# [4.1.0](https://github.com/datorama/akita/compare/v4.0.0...v4.1.0) (2019-06-26)
+
+
+### Features
+
+* **array-add:** upserts ([7e3f1f6](https://github.com/datorama/akita/commit/7e3f1f6))
+* **array-add:** upserts ([#239](https://github.com/datorama/akita/issues/239)) ([4dec464](https://github.com/datorama/akita/commit/4dec464))
+
+
+
 <a name="4.0.0"></a>
 # [4.0.0](https://github.com/datorama/akita/compare/v3.18.0...v4.0.0) (2019-06-26)
 
