@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.0.0"></a>
+# [4.0.0](https://github.com/datorama/akita/compare/v3.18.0...v4.0.0) (2019-06-26)
+
+
+### Features
+
+* **lib:** checkout the breaking changes file for more info ([4105a11](https://github.com/datorama/akita/commit/4105a11)), closes [#238](https://github.com/datorama/akita/issues/238)
+
+
+### BREAKING CHANGES
+
+* **lib:** checkout the breaking changes file for more info
+
+
+
 <a name="3.18.0"></a>
 # [3.18.0](https://github.com/datorama/akita/compare/v3.17.1...v3.18.0) (2019-06-23)
 
