@@ -19,7 +19,7 @@ export class AppComponent {
   ngOnInit() {
     persistState({
       key: 'akitaPlayground',
-      include: ['auth.token', 'todos', 'dynamic'],
+      include: ['auth.token', 'todos'],
       // storage: localForage,
       preStorageUpdateOperator: () => debounceTime(1000),
       preStorageUpdate: function(storeName, state) {

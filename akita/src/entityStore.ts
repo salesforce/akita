@@ -118,11 +118,10 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 
     if (data) {
       isDev() && setAction('Add Entity');
+      data.newState.loading = options.loading;
 
-      this._setState(() => ({
-        ...data.newState,
-        loading: options.loading
-      }));
+      this._setState(() => data.newState);
+
       if (this.hasInitialUIState()) {
         this.handleUICreation(true);
       }
