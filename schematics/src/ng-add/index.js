@@ -109,7 +109,7 @@ function addModuleToImports(options) {
         let importm = '';
         if ((options.withRouter || options.router) && options.devtools) {
             importm = `environment.production ?
-        [] :
+        AkitaNgRouterStoreModule.forRoot() :
         [ AkitaNgDevtools.forRoot(), AkitaNgRouterStoreModule.forRoot() ]`;
         }
         else if (options.devtools) {

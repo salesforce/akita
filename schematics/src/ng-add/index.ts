@@ -133,7 +133,7 @@ function addModuleToImports(options: Schema): Rule {
 
     if ((options.withRouter || options.router) && options.devtools) {
       importm = `environment.production ?
-        [] :
+        AkitaNgRouterStoreModule.forRoot() :
         [ AkitaNgDevtools.forRoot(), AkitaNgRouterStoreModule.forRoot() ]`;
     } else if (options.devtools) {
       importm = `environment.production ? [] : AkitaNgDevtools.forRoot()`;
