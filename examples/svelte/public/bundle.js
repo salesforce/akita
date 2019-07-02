@@ -5,6 +5,11 @@ var app = (function () {
 
 	function noop() {}
 
+	function assign(tar, src) {
+		for (const k in src) tar[k] = src[k];
+		return tar;
+	}
+
 	function add_location(element, file, line, column, char) {
 		element.__svelte_meta = {
 			loc: { file, line, column, char }
@@ -31,6 +36,10 @@ var app = (function () {
 		return a != a ? b == b : a !== b || ((a && typeof a === 'object') || typeof a === 'function');
 	}
 
+	function not_equal(a, b) {
+		return a != a ? b == b : a !== b;
+	}
+
 	function validate_store(store, name) {
 		if (!store || typeof store.subscribe !== 'function') {
 			throw new Error(`'${name}' is not a store with a 'subscribe' method`);
@@ -45,6 +54,25 @@ var app = (function () {
 			: unsub);
 	}
 
+	function create_slot(definition, ctx, fn) {
+		if (definition) {
+			const slot_ctx = get_slot_context(definition, ctx, fn);
+			return definition[0](slot_ctx);
+		}
+	}
+
+	function get_slot_context(definition, ctx, fn) {
+		return definition[1]
+			? assign({}, assign(ctx.$$scope.ctx, definition[1](fn ? fn(ctx) : {})))
+			: ctx.$$scope.ctx;
+	}
+
+	function get_slot_changes(definition, ctx, changed, fn) {
+		return definition[1]
+			? assign({}, assign(ctx.$$scope.changed || {}, definition[1](fn ? fn(changed) : {})))
+			: ctx.$$scope.changed || {};
+	}
+
 	function append(target, node) {
 		target.appendChild(node);
 	}
@@ -55,6 +83,12 @@ var app = (function () {
 
 	function detach(node) {
 		node.parentNode.removeChild(node);
+	}
+
+	function destroy_each(iterations, detaching) {
+		for (let i = 0; i < iterations.length; i += 1) {
+			if (iterations[i]) iterations[i].d(detaching);
+		}
 	}
 
 	function element(name) {
@@ -69,9 +103,30 @@ var app = (function () {
 		return text(' ');
 	}
 
+	function empty() {
+		return text('');
+	}
+
 	function listen(node, event, handler, options) {
 		node.addEventListener(event, handler, options);
 		return () => node.removeEventListener(event, handler, options);
+	}
+
+	function attr(node, attribute, value) {
+		if (value == null) node.removeAttribute(attribute);
+		else node.setAttribute(attribute, value);
+	}
+
+	function set_attributes(node, attributes) {
+		for (const key in attributes) {
+			if (key === 'style') {
+				node.style.cssText = attributes[key];
+			} else if (key in node) {
+				node[key] = attributes[key];
+			} else {
+				attr(node, key, attributes[key]);
+			}
+		}
 	}
 
 	function children(element) {
@@ -83,10 +138,69 @@ var app = (function () {
 		if (text.data !== data) text.data = data;
 	}
 
+	function toggle_class(element, name, toggle) {
+		element.classList[toggle ? 'add' : 'remove'](name);
+	}
+
+	function custom_event(type, detail) {
+		const e = document.createEvent('CustomEvent');
+		e.initCustomEvent(type, false, false, detail);
+		return e;
+	}
+
 	let current_component;
 
 	function set_current_component(component) {
 		current_component = component;
+	}
+
+	function get_current_component() {
+		if (!current_component) throw new Error(`Function called outside component initialization`);
+		return current_component;
+	}
+
+	function onMount(fn) {
+		get_current_component().$$.on_mount.push(fn);
+	}
+
+	function onDestroy(fn) {
+		get_current_component().$$.on_destroy.push(fn);
+	}
+
+	function createEventDispatcher() {
+		const component = current_component;
+
+		return (type, detail) => {
+			const callbacks = component.$$.callbacks[type];
+
+			if (callbacks) {
+				// TODO are there situations where events could be dispatched
+				// in a server (non-DOM) environment?
+				const event = custom_event(type, detail);
+				callbacks.slice().forEach(fn => {
+					fn.call(component, event);
+				});
+			}
+		};
+	}
+
+	function setContext(key, context) {
+		get_current_component().$$.context.set(key, context);
+	}
+
+	function getContext(key) {
+		return get_current_component().$$.context.get(key);
+	}
+
+	// TODO figure out if we still want to support
+	// shorthand events, or if we want to implement
+	// a real bubbling mechanism
+	function bubble(component, event) {
+		const callbacks = component.$$.callbacks[event.type];
+
+		if (callbacks) {
+			callbacks.slice().forEach(fn => fn(event));
+		}
 	}
 
 	const dirty_components = [];
@@ -152,6 +266,163 @@ var app = (function () {
 
 			$$.after_render.forEach(add_render_callback);
 		}
+	}
+
+	let outros;
+
+	function group_outros() {
+		outros = {
+			remaining: 0,
+			callbacks: []
+		};
+	}
+
+	function check_outros() {
+		if (!outros.remaining) {
+			run_all(outros.callbacks);
+		}
+	}
+
+	function on_outro(callback) {
+		outros.callbacks.push(callback);
+	}
+
+	function destroy_block(block, lookup) {
+		block.d(1);
+		lookup.delete(block.key);
+	}
+
+	function outro_and_destroy_block(block, lookup) {
+		on_outro(() => {
+			destroy_block(block, lookup);
+		});
+
+		block.o(1);
+	}
+
+	function update_keyed_each(old_blocks, changed, get_key, dynamic, ctx, list, lookup, node, destroy, create_each_block, next, get_context) {
+		let o = old_blocks.length;
+		let n = list.length;
+
+		let i = o;
+		const old_indexes = {};
+		while (i--) old_indexes[old_blocks[i].key] = i;
+
+		const new_blocks = [];
+		const new_lookup = new Map();
+		const deltas = new Map();
+
+		i = n;
+		while (i--) {
+			const child_ctx = get_context(ctx, list, i);
+			const key = get_key(child_ctx);
+			let block = lookup.get(key);
+
+			if (!block) {
+				block = create_each_block(key, child_ctx);
+				block.c();
+			} else if (dynamic) {
+				block.p(changed, child_ctx);
+			}
+
+			new_lookup.set(key, new_blocks[i] = block);
+
+			if (key in old_indexes) deltas.set(key, Math.abs(i - old_indexes[key]));
+		}
+
+		const will_move = new Set();
+		const did_move = new Set();
+
+		function insert(block) {
+			if (block.i) block.i(1);
+			block.m(node, next);
+			lookup.set(block.key, block);
+			next = block.first;
+			n--;
+		}
+
+		while (o && n) {
+			const new_block = new_blocks[n - 1];
+			const old_block = old_blocks[o - 1];
+			const new_key = new_block.key;
+			const old_key = old_block.key;
+
+			if (new_block === old_block) {
+				// do nothing
+				next = new_block.first;
+				o--;
+				n--;
+			}
+
+			else if (!new_lookup.has(old_key)) {
+				// remove old block
+				destroy(old_block, lookup);
+				o--;
+			}
+
+			else if (!lookup.has(new_key) || will_move.has(new_key)) {
+				insert(new_block);
+			}
+
+			else if (did_move.has(old_key)) {
+				o--;
+
+			} else if (deltas.get(new_key) > deltas.get(old_key)) {
+				did_move.add(new_key);
+				insert(new_block);
+
+			} else {
+				will_move.add(old_key);
+				o--;
+			}
+		}
+
+		while (o--) {
+			const old_block = old_blocks[o];
+			if (!new_lookup.has(old_block.key)) destroy(old_block, lookup);
+		}
+
+		while (n) insert(new_blocks[n - 1]);
+
+		return new_blocks;
+	}
+
+	function get_spread_update(levels, updates) {
+		const update = {};
+
+		const to_null_out = {};
+		const accounted_for = { $$scope: 1 };
+
+		let i = levels.length;
+		while (i--) {
+			const o = levels[i];
+			const n = updates[i];
+
+			if (n) {
+				for (const key in o) {
+					if (!(key in n)) to_null_out[key] = 1;
+				}
+
+				for (const key in n) {
+					if (!accounted_for[key]) {
+						update[key] = n[key];
+						accounted_for[key] = 1;
+					}
+				}
+
+				levels[i] = n;
+			} else {
+				for (const key in o) {
+					accounted_for[key] = 1;
+				}
+			}
+		}
+
+		for (const key in to_null_out) {
+			if (!(key in update)) update[key] = undefined;
+		}
+
+		return update;
 	}
 
 	function mount_component(component, target, anchor) {
@@ -295,6 +566,1330 @@ var app = (function () {
 		}
 	}
 
+	function readable(value, start) {
+		return {
+			subscribe: writable(value, start).subscribe
+		};
+	}
+
+	function writable(value, start = noop) {
+		let stop;
+		const subscribers = [];
+
+		function set(new_value) {
+			if (safe_not_equal(value, new_value)) {
+				value = new_value;
+				if (!stop) return; // not ready
+				subscribers.forEach(s => s[1]());
+				subscribers.forEach(s => s[0](value));
+			}
+		}
+
+		function update(fn) {
+			set(fn(value));
+		}
+
+		function subscribe(run, invalidate = noop) {
+			const subscriber = [run, invalidate];
+			subscribers.push(subscriber);
+			if (subscribers.length === 1) stop = start(set) || noop;
+			run(value);
+
+			return () => {
+				const index = subscribers.indexOf(subscriber);
+				if (index !== -1) subscribers.splice(index, 1);
+				if (subscribers.length === 0) stop();
+			};
+		}
+
+		return { set, update, subscribe };
+	}
+
+	function derived(stores, fn, initial_value) {
+		const single = !Array.isArray(stores);
+		if (single) stores = [stores];
+
+		const auto = fn.length < 2;
+
+		return readable(initial_value, set => {
+			let inited = false;
+			const values = [];
+
+			let pending = 0;
+
+			const sync = () => {
+				if (pending) return;
+				const result = fn(single ? values[0] : values, set);
+				if (auto) set(result);
+			};
+
+			const unsubscribers = stores.map((store, i) => store.subscribe(
+				value => {
+					values[i] = value;
+					pending &= ~(1 << i);
+					if (inited) sync();
+				},
+				() => {
+					pending |= (1 << i);
+				})
+			);
+
+			inited = true;
+			sync();
+
+			return function stop() {
+				run_all(unsubscribers);
+			};
+		});
+	}
+
+	const LOCATION = {};
+	const ROUTER = {};
+
+	/**
+	 * Adapted from https://github.com/reach/router/blob/b60e6dd781d5d3a4bdaaf4de665649c0f6a7e78d/src/lib/history.js
+	 *
+	 * https://github.com/reach/router/blob/master/LICENSE
+	 * */
+
+	function getLocation(source) {
+	  return {
+	    ...source.location,
+	    state: source.history.state,
+	    key: (source.history.state && source.history.state.key) || "initial"
+	  };
+	}
+
+	function createHistory(source, options) {
+	  const listeners = [];
+	  let location = getLocation(source);
+
+	  return {
+	    get location() {
+	      return location;
+	    },
+
+	    listen(listener) {
+	      listeners.push(listener);
+
+	      const popstateListener = () => {
+	        location = getLocation(source);
+	        listener({ location, action: "POP" });
+	      };
+
+	      source.addEventListener("popstate", popstateListener);
+
+	      return () => {
+	        source.removeEventListener("popstate", popstateListener);
+
+	        const index = listeners.indexOf(listener);
+	        listeners.splice(index, 1);
+	      };
+	    },
+
+	    navigate(to, { state, replace = false } = {}) {
+	      state = { ...state, key: Date.now() + "" };
+	      // try...catch iOS Safari limits to 100 pushState calls
+	      try {
+	        if (replace) {
+	          source.history.replaceState(state, null, to);
+	        } else {
+	          source.history.pushState(state, null, to);
+	        }
+	      } catch (e) {
+	        source.location[replace ? "replace" : "assign"](to);
+	      }
+
+	      location = getLocation(source);
+	      listeners.forEach(listener => listener({ location, action: "PUSH" }));
+	    }
+	  };
+	}
+
+	// Stores history entries in memory for testing or other platforms like Native
+	function createMemorySource(initialPathname = "/") {
+	  let index = 0;
+	  const stack = [{ pathname: initialPathname, search: "" }];
+	  const states = [];
+
+	  return {
+	    get location() {
+	      return stack[index];
+	    },
+	    addEventListener(name, fn) {},
+	    removeEventListener(name, fn) {},
+	    history: {
+	      get entries() {
+	        return stack;
+	      },
+	      get index() {
+	        return index;
+	      },
+	      get state() {
+	        return states[index];
+	      },
+	      pushState(state, _, uri) {
+	        const [pathname, search = ""] = uri.split("?");
+	        index++;
+	        stack.push({ pathname, search });
+	        states.push(state);
+	      },
+	      replaceState(state, _, uri) {
+	        const [pathname, search = ""] = uri.split("?");
+	        stack[index] = { pathname, search };
+	        states[index] = state;
+	      }
+	    }
+	  };
+	}
+
+	// Global history uses window.history as the source if available,
+	// otherwise a memory history
+	const canUseDOM = Boolean(
+	  typeof window !== "undefined" &&
+	    window.document &&
+	    window.document.createElement
+	);
+	const globalHistory = createHistory(canUseDOM ? window : createMemorySource());
+	const { navigate } = globalHistory;
+
+	/**
+	 * Adapted from https://github.com/reach/router/blob/b60e6dd781d5d3a4bdaaf4de665649c0f6a7e78d/src/lib/utils.js
+	 *
+	 * https://github.com/reach/router/blob/master/LICENSE
+	 * */
+
+	const paramRe = /^:(.+)/;
+
+	const SEGMENT_POINTS = 4;
+	const STATIC_POINTS = 3;
+	const DYNAMIC_POINTS = 2;
+	const SPLAT_PENALTY = 1;
+	const ROOT_POINTS = 1;
+
+	/**
+	 * Check if `string` starts with `search`
+	 * @param {string} string
+	 * @param {string} search
+	 * @return {boolean}
+	 */
+	function startsWith(string, search) {
+	  return string.substr(0, search.length) === search;
+	}
+
+	/**
+	 * Check if `segment` is a root segment
+	 * @param {string} segment
+	 * @return {boolean}
+	 */
+	function isRootSegment(segment) {
+	  return segment === "";
+	}
+
+	/**
+	 * Check if `segment` is a dynamic segment
+	 * @param {string} segment
+	 * @return {boolean}
+	 */
+	function isDynamic(segment) {
+	  return paramRe.test(segment);
+	}
+
+	/**
+	 * Check if `segment` is a splat
+	 * @param {string} segment
+	 * @return {boolean}
+	 */
+	function isSplat(segment) {
+	  return segment[0] === "*";
+	}
+
+	/**
+	 * Split up the URI into segments delimited by `/`
+	 * @param {string} uri
+	 * @return {string[]}
+	 */
+	function segmentize(uri) {
+	  return (
+	    uri
+	      // Strip starting/ending `/`
+	      .replace(/(^\/+|\/+$)/g, "")
+	      .split("/")
+	  );
+	}
+
+	/**
+	 * Strip `str` of potential start and end `/`
+	 * @param {string} str
+	 * @return {string}
+	 */
+	function stripSlashes(str) {
+	  return str.replace(/(^\/+|\/+$)/g, "");
+	}
+
+	/**
+	 * Score a route depending on how its individual segments look
+	 * @param {object} route
+	 * @param {number} index
+	 * @return {object}
+	 */
+	function rankRoute(route, index) {
+	  const score = route.default
+	    ? 0
+	    : segmentize(route.path).reduce((score, segment) => {
+	        score += SEGMENT_POINTS;
+
+	        if (isRootSegment(segment)) {
+	          score += ROOT_POINTS;
+	        } else if (isDynamic(segment)) {
+	          score += DYNAMIC_POINTS;
+	        } else if (isSplat(segment)) {
+	          score -= SEGMENT_POINTS + SPLAT_PENALTY;
+	        } else {
+	          score += STATIC_POINTS;
+	        }
+
+	        return score;
+	      }, 0);
+
+	  return { route, score, index };
+	}
+
+	/**
+	 * Give a score to all routes and sort them on that
+	 * @param {object[]} routes
+	 * @return {object[]}
+	 */
+	function rankRoutes(routes) {
+	  return (
+	    routes
+	      .map(rankRoute)
+	      // If two routes have the exact same score, we go by index instead
+	      .sort((a, b) =>
+	        a.score < b.score ? 1 : a.score > b.score ? -1 : a.index - b.index
+	      )
+	  );
+	}
+
+	/**
+	 * Ranks and picks the best route to match. Each segment gets the highest
+	 * amount of points, then the type of segment gets an additional amount of
+	 * points where
+	 *
+	 *  static > dynamic > splat > root
+	 *
+	 * This way we don't have to worry about the order of our routes, let the
+	 * computers do it.
+	 *
+	 * A route looks like this
+	 *
+	 *  { path, default, value }
+	 *
+	 * And a returned match looks like:
+	 *
+	 *  { route, params, uri }
+	 *
+	 * @param {object[]} routes
+	 * @param {string} uri
+	 * @return {?object}
+	 */
+	function pick(routes, uri) {
+	  let match;
+	  let default_;
+
+	  const [uriPathname] = uri.split("?");
+	  const uriSegments = segmentize(uriPathname);
+	  const isRootUri = uriSegments[0] === "";
+	  const ranked = rankRoutes(routes);
+
+	  for (let i = 0, l = ranked.length; i < l; i++) {
+	    const route = ranked[i].route;
+	    let missed = false;
+
+	    if (route.default) {
+	      default_ = {
+	        route,
+	        params: {},
+	        uri
+	      };
+	      continue;
+	    }
+
+	    const routeSegments = segmentize(route.path);
+	    const params = {};
+	    const max = Math.max(uriSegments.length, routeSegments.length);
+	    let index = 0;
+
+	    for (; index < max; index++) {
+	      const routeSegment = routeSegments[index];
+	      const uriSegment = uriSegments[index];
+
+	      if (isSplat(routeSegment)) {
+	        // Hit a splat, just grab the rest, and return a match
+	        // uri:   /files/documents/work
+	        // route: /files/* or /files/*splatname
+	        const splatName = routeSegment === '*' ? '*' : routeSegment.slice(1);
+
+	        params[splatName] = uriSegments
+	          .slice(index)
+	          .map(decodeURIComponent)
+	          .join("/");
+	        break;
+	      }
+
+	      if (uriSegment === undefined) {
+	        // URI is shorter than the route, no match
+	        // uri:   /users
+	        // route: /users/:userId
+	        missed = true;
+	        break;
+	      }
+
+	      let dynamicMatch = paramRe.exec(routeSegment);
+
+	      if (dynamicMatch && !isRootUri) {
+	        const value = decodeURIComponent(uriSegment);
+	        params[dynamicMatch[1]] = value;
+	      } else if (routeSegment !== uriSegment) {
+	        // Current segments don't match, not dynamic, not splat, so no match
+	        // uri:   /users/123/settings
+	        // route: /users/:id/profile
+	        missed = true;
+	        break;
+	      }
+	    }
+
+	    if (!missed) {
+	      match = {
+	        route,
+	        params,
+	        uri: "/" + uriSegments.slice(0, index).join("/")
+	      };
+	      break;
+	    }
+	  }
+
+	  return match || default_ || null;
+	}
+
+	/**
+	 * Check if the `path` matches the `uri`.
+	 * @param {string} path
+	 * @param {string} uri
+	 * @return {?object}
+	 */
+	function match(route, uri) {
+	  return pick([route], uri);
+	}
+
+	/**
+	 * Add the query to the pathname if a query is given
+	 * @param {string} pathname
+	 * @param {string} [query]
+	 * @return {string}
+	 */
+	function addQuery(pathname, query) {
+	  return pathname + (query ? `?${query}` : "");
+	}
+
+	/**
+	 * Resolve URIs as though every path is a directory, no files. Relative URIs
+	 * in the browser can feel awkward because not only can you be "in a directory",
+	 * you can be "at a file", too. For example:
+	 *
+	 *  browserSpecResolve('foo', '/bar/') => /bar/foo
+	 *  browserSpecResolve('foo', '/bar') => /foo
+	 *
+	 * But on the command line of a file system, it's not as complicated. You can't
+	 * `cd` from a file, only directories. This way, links have to know less about
+	 * their current path. To go deeper you can do this:
+	 *
+	 *  <Link to="deeper"/>
+	 *  // instead of
+	 *  <Link to=`{${props.uri}/deeper}`/>
+	 *
+	 * Just like `cd`, if you want to go deeper from the command line, you do this:
+	 *
+	 *  cd deeper
+	 *  # not
+	 *  cd $(pwd)/deeper
+	 *
+	 * By treating every path as a directory, linking to relative paths should
+	 * require less contextual information and (fingers crossed) be more intuitive.
+	 * @param {string} to
+	 * @param {string} base
+	 * @return {string}
+	 */
+	function resolve(to, base) {
+	  // /foo/bar, /baz/qux => /foo/bar
+	  if (startsWith(to, "/")) {
+	    return to;
+	  }
+
+	  const [toPathname, toQuery] = to.split("?");
+	  const [basePathname] = base.split("?");
+	  const toSegments = segmentize(toPathname);
+	  const baseSegments = segmentize(basePathname);
+
+	  // ?a=b, /users?b=c => /users?a=b
+	  if (toSegments[0] === "") {
+	    return addQuery(basePathname, toQuery);
+	  }
+
+	  // profile, /users/789 => /users/789/profile
+	  if (!startsWith(toSegments[0], ".")) {
+	    const pathname = baseSegments.concat(toSegments).join("/");
+
+	    return addQuery((basePathname === "/" ? "" : "/") + pathname, toQuery);
+	  }
+
+	  // ./       , /users/123 => /users/123
+	  // ../      , /users/123 => /users
+	  // ../..    , /users/123 => /
+	  // ../../one, /a/b/c/d   => /a/b/one
+	  // .././one , /a/b/c/d   => /a/b/c/one
+	  const allSegments = baseSegments.concat(toSegments);
+	  const segments = [];
+
+	  allSegments.forEach(segment => {
+	    if (segment === "..") {
+	      segments.pop();
+	    } else if (segment !== ".") {
+	      segments.push(segment);
+	    }
+	  });
+
+	  return addQuery("/" + segments.join("/"), toQuery);
+	}
+
+	/**
+	 * Combines the `basepath` and the `path` into one path.
+	 * @param {string} basepath
+	 * @param {string} path
+	 */
+	function combinePaths(basepath, path) {
+	  return `${stripSlashes(
+    path === "/" ? basepath : `${stripSlashes(basepath)}/${stripSlashes(path)}`
+  )}/*`;
+	}
+
+	/**
+	 * Decides whether a given `event` should result in a navigation or not.
+	 * @param {object} event
+	 */
+	function shouldNavigate(event) {
+	  return (
+	    !event.defaultPrevented &&
+	    event.button === 0 &&
+	    !(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey)
+	  );
+	}
+
+	/* node_modules/svelte-routing/src/Router.svelte generated by Svelte v3.2.1 */
+
+	function create_fragment(ctx) {
+		var current;
+
+		const default_slot_1 = ctx.$$slots.default;
+		const default_slot = create_slot(default_slot_1, ctx, null);
+
+		return {
+			c: function create() {
+				if (default_slot) default_slot.c();
+			},
+
+			l: function claim(nodes) {
+				if (default_slot) default_slot.l(nodes);
+				throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+			},
+
+			m: function mount(target, anchor) {
+				if (default_slot) {
+					default_slot.m(target, anchor);
+				}
+
+				current = true;
+			},
+
+			p: function update(changed, ctx) {
+				if (default_slot && default_slot.p && changed.$$scope) {
+					default_slot.p(get_slot_changes(default_slot_1, ctx, changed,), get_slot_context(default_slot_1, ctx, null));
+				}
+			},
+
+			i: function intro(local) {
+				if (current) return;
+				if (default_slot && default_slot.i) default_slot.i(local);
+				current = true;
+			},
+
+			o: function outro(local) {
+				if (default_slot && default_slot.o) default_slot.o(local);
+				current = false;
+			},
+
+			d: function destroy(detaching) {
+				if (default_slot) default_slot.d(detaching);
+			}
+		};
+	}
+
+	function instance($$self, $$props, $$invalidate) {
+		let $base, $location, $routes;
+
+		
+
+	  let { basepath = "/", url = null } = $$props;
+
+	  const locationContext = getContext(LOCATION);
+	  const routerContext = getContext(ROUTER);
+
+	  const routes = writable([]); validate_store(routes, 'routes'); subscribe($$self, routes, $$value => { $routes = $$value; $$invalidate('$routes', $routes); });
+	  const activeRoute = writable(null);
+	  let hasActiveRoute = false; // Used in SSR to synchronously set that a Route is active.
+
+	  // If locationContext is not set, this is the topmost Router in the tree.
+	  // If the `url` prop is given we force the location to it.
+	  const location =
+	    locationContext ||
+	    writable(url ? { pathname: url } : globalHistory.location); validate_store(location, 'location'); subscribe($$self, location, $$value => { $location = $$value; $$invalidate('$location', $location); });
+
+	  // If routerContext is set, the routerBase of the parent Router
+	  // will be the base for this Router's descendants.
+	  // If routerContext is not set, the path and resolved uri will both
+	  // have the value of the basepath prop.
+	  const base = routerContext
+	    ? routerContext.routerBase
+	    : writable({
+	        path: basepath,
+	        uri: basepath
+	      }); validate_store(base, 'base'); subscribe($$self, base, $$value => { $base = $$value; $$invalidate('$base', $base); });
+
+	  const routerBase = derived([base, activeRoute], ([base, activeRoute]) => {
+	    // If there is no activeRoute, the routerBase will be identical to the base.
+	    if (activeRoute === null) {
+	      return base;
+	    }
+
+	    const { path: basepath } = base;
+	    const { route, uri } = activeRoute;
+	    // Remove the potential /* or /*splatname from
+	    // the end of the child Routes relative paths.
+	    const path = route.default ? basepath : route.path.replace(/\*.*$/, "");
+
+	    return { path, uri };
+	  });
+
+	  function registerRoute(route) {
+	    const { path: basepath } = $base;
+	    let { path } = route;
+
+	    // We store the original path in the _path property so we can reuse
+	    // it when the basepath changes. The only thing that matters is that
+	    // the route reference is intact, so mutation is fine.
+	    route._path = path;
+	    route.path = combinePaths(basepath, path);
+
+	    if (typeof window === "undefined") {
+	      // In SSR we should set the activeRoute immediately if it is a match.
+	      // If there are more Routes being registered after a match is found,
+	      // we just skip them.
+	      if (hasActiveRoute) {
+	        return;
+	      }
+
+	      const matchingRoute = match(route, $location.pathname);
+	      if (matchingRoute) {
+	        activeRoute.set(matchingRoute);
+	        $$invalidate('hasActiveRoute', hasActiveRoute = true);
+	      }
+	    } else {
+	      routes.update(rs => {
+	        rs.push(route);
+	        return rs;
+	      });
+	    }
+	  }
+
+	  function unregisterRoute(route) {
+	    routes.update(rs => {
+	      const index = rs.indexOf(route);
+	      rs.splice(index, 1);
+	      return rs;
+	    });
+	  }
+
+	  if (!locationContext) {
+	    // The topmost Router in the tree is responsible for updating
+	    // the location store and supplying it through context.
+	    onMount(() => {
+	      const unlisten = globalHistory.listen(history => {
+	        location.set(history.location);
+	      });
+
+	      return unlisten;
+	    });
+
+	    setContext(LOCATION, location);
+	  }
+
+	  setContext(ROUTER, {
+	    activeRoute,
+	    base,
+	    routerBase,
+	    registerRoute,
+	    unregisterRoute
+	  });
+
+		let { $$slots = {}, $$scope } = $$props;
+
+		$$self.$set = $$props => {
+			if ('basepath' in $$props) $$invalidate('basepath', basepath = $$props.basepath);
+			if ('url' in $$props) $$invalidate('url', url = $$props.url);
+			if ('$$scope' in $$props) $$invalidate('$$scope', $$scope = $$props.$$scope);
+		};
+
+		$$self.$$.update = ($$dirty = { $base: 1, $routes: 1, $location: 1 }) => {
+			if ($$dirty.$base) { {
+	        const { path: basepath } = $base;
+	        routes.update(rs => {
+	          rs.forEach(r => (r.path = combinePaths(basepath, r._path)));
+	          return rs;
+	        });
+	      } }
+			if ($$dirty.$routes || $$dirty.$location) { {
+	        const bestMatch = pick($routes, $location.pathname);
+	        activeRoute.set(bestMatch);
+	      } }
+		};
+
+		return {
+			basepath,
+			url,
+			routes,
+			location,
+			base,
+			$$slots,
+			$$scope
+		};
+	}
+
+	class Router extends SvelteComponentDev {
+		constructor(options) {
+			super(options);
+			init(this, options, instance, create_fragment, safe_not_equal, ["basepath", "url"]);
+		}
+
+		get basepath() {
+			throw new Error("<Router>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+
+		set basepath(value) {
+			throw new Error("<Router>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+
+		get url() {
+			throw new Error("<Router>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+
+		set url(value) {
+			throw new Error("<Router>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+	}
+
+	/* node_modules/svelte-routing/src/Route.svelte generated by Svelte v3.2.1 */
+
+	// (41:0) {#if $activeRoute !== null && $activeRoute.route === route}
+	function create_if_block(ctx) {
+		var current_block_type_index, if_block, if_block_anchor, current;
+
+		var if_block_creators = [
+			create_if_block_1,
+			create_else_block
+		];
+
+		var if_blocks = [];
+
+		function select_block_type(ctx) {
+			if (ctx.component !== null) return 0;
+			return 1;
+		}
+
+		current_block_type_index = select_block_type(ctx);
+		if_block = if_blocks[current_block_type_index] = if_block_creators[current_block_type_index](ctx);
+
+		return {
+			c: function create() {
+				if_block.c();
+				if_block_anchor = empty();
+			},
+
+			m: function mount(target, anchor) {
+				if_blocks[current_block_type_index].m(target, anchor);
+				insert(target, if_block_anchor, anchor);
+				current = true;
+			},
+
+			p: function update(changed, ctx) {
+				var previous_block_index = current_block_type_index;
+				current_block_type_index = select_block_type(ctx);
+				if (current_block_type_index === previous_block_index) {
+					if_blocks[current_block_type_index].p(changed, ctx);
+				} else {
+					group_outros();
+					on_outro(() => {
+						if_blocks[previous_block_index].d(1);
+						if_blocks[previous_block_index] = null;
+					});
+					if_block.o(1);
+					check_outros();
+
+					if_block = if_blocks[current_block_type_index];
+					if (!if_block) {
+						if_block = if_blocks[current_block_type_index] = if_block_creators[current_block_type_index](ctx);
+						if_block.c();
+					}
+					if_block.i(1);
+					if_block.m(if_block_anchor.parentNode, if_block_anchor);
+				}
+			},
+
+			i: function intro(local) {
+				if (current) return;
+				if (if_block) if_block.i();
+				current = true;
+			},
+
+			o: function outro(local) {
+				if (if_block) if_block.o();
+				current = false;
+			},
+
+			d: function destroy(detaching) {
+				if_blocks[current_block_type_index].d(detaching);
+
+				if (detaching) {
+					detach(if_block_anchor);
+				}
+			}
+		};
+	}
+
+	// (44:2) {:else}
+	function create_else_block(ctx) {
+		var current;
+
+		const default_slot_1 = ctx.$$slots.default;
+		const default_slot = create_slot(default_slot_1, ctx, null);
+
+		return {
+			c: function create() {
+				if (default_slot) default_slot.c();
+			},
+
+			l: function claim(nodes) {
+				if (default_slot) default_slot.l(nodes);
+			},
+
+			m: function mount(target, anchor) {
+				if (default_slot) {
+					default_slot.m(target, anchor);
+				}
+
+				current = true;
+			},
+
+			p: function update(changed, ctx) {
+				if (default_slot && default_slot.p && changed.$$scope) {
+					default_slot.p(get_slot_changes(default_slot_1, ctx, changed,), get_slot_context(default_slot_1, ctx, null));
+				}
+			},
+
+			i: function intro(local) {
+				if (current) return;
+				if (default_slot && default_slot.i) default_slot.i(local);
+				current = true;
+			},
+
+			o: function outro(local) {
+				if (default_slot && default_slot.o) default_slot.o(local);
+				current = false;
+			},
+
+			d: function destroy(detaching) {
+				if (default_slot) default_slot.d(detaching);
+			}
+		};
+	}
+
+	// (42:2) {#if component !== null}
+	function create_if_block_1(ctx) {
+		var switch_instance_anchor, current;
+
+		var switch_instance_spread_levels = [
+			ctx.routeParams
+		];
+
+		var switch_value = ctx.component;
+
+		function switch_props(ctx) {
+			let switch_instance_props = {};
+			for (var i = 0; i < switch_instance_spread_levels.length; i += 1) {
+				switch_instance_props = assign(switch_instance_props, switch_instance_spread_levels[i]);
+			}
+			return {
+				props: switch_instance_props,
+				$$inline: true
+			};
+		}
+
+		if (switch_value) {
+			var switch_instance = new switch_value(switch_props(ctx));
+		}
+
+		return {
+			c: function create() {
+				if (switch_instance) switch_instance.$$.fragment.c();
+				switch_instance_anchor = empty();
+			},
+
+			m: function mount(target, anchor) {
+				if (switch_instance) {
+					mount_component(switch_instance, target, anchor);
+				}
+
+				insert(target, switch_instance_anchor, anchor);
+				current = true;
+			},
+
+			p: function update(changed, ctx) {
+				var switch_instance_changes = changed.routeParams ? get_spread_update(switch_instance_spread_levels, [
+					ctx.routeParams
+				]) : {};
+
+				if (switch_value !== (switch_value = ctx.component)) {
+					if (switch_instance) {
+						group_outros();
+						const old_component = switch_instance;
+						on_outro(() => {
+							old_component.$destroy();
+						});
+						old_component.$$.fragment.o(1);
+						check_outros();
+					}
+
+					if (switch_value) {
+						switch_instance = new switch_value(switch_props(ctx));
+
+						switch_instance.$$.fragment.c();
+						switch_instance.$$.fragment.i(1);
+						mount_component(switch_instance, switch_instance_anchor.parentNode, switch_instance_anchor);
+					} else {
+						switch_instance = null;
+					}
+				}
+
+				else if (switch_value) {
+					switch_instance.$set(switch_instance_changes);
+				}
+			},
+
+			i: function intro(local) {
+				if (current) return;
+				if (switch_instance) switch_instance.$$.fragment.i(local);
+
+				current = true;
+			},
+
+			o: function outro(local) {
+				if (switch_instance) switch_instance.$$.fragment.o(local);
+				current = false;
+			},
+
+			d: function destroy(detaching) {
+				if (detaching) {
+					detach(switch_instance_anchor);
+				}
+
+				if (switch_instance) switch_instance.$destroy(detaching);
+			}
+		};
+	}
+
+	function create_fragment$1(ctx) {
+		var if_block_anchor, current;
+
+		var if_block = (ctx.$activeRoute !== null && ctx.$activeRoute.route === ctx.route) && create_if_block(ctx);
+
+		return {
+			c: function create() {
+				if (if_block) if_block.c();
+				if_block_anchor = empty();
+			},
+
+			l: function claim(nodes) {
+				throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+			},
+
+			m: function mount(target, anchor) {
+				if (if_block) if_block.m(target, anchor);
+				insert(target, if_block_anchor, anchor);
+				current = true;
+			},
+
+			p: function update(changed, ctx) {
+				if (ctx.$activeRoute !== null && ctx.$activeRoute.route === ctx.route) {
+					if (if_block) {
+						if_block.p(changed, ctx);
+						if_block.i(1);
+					} else {
+						if_block = create_if_block(ctx);
+						if_block.c();
+						if_block.i(1);
+						if_block.m(if_block_anchor.parentNode, if_block_anchor);
+					}
+				} else if (if_block) {
+					group_outros();
+					on_outro(() => {
+						if_block.d(1);
+						if_block = null;
+					});
+
+					if_block.o(1);
+					check_outros();
+				}
+			},
+
+			i: function intro(local) {
+				if (current) return;
+				if (if_block) if_block.i();
+				current = true;
+			},
+
+			o: function outro(local) {
+				if (if_block) if_block.o();
+				current = false;
+			},
+
+			d: function destroy(detaching) {
+				if (if_block) if_block.d(detaching);
+
+				if (detaching) {
+					detach(if_block_anchor);
+				}
+			}
+		};
+	}
+
+	function instance$1($$self, $$props, $$invalidate) {
+		let $activeRoute;
+
+		
+
+	  let { path = "", component = null } = $$props;
+
+	  const { registerRoute, unregisterRoute, activeRoute } = getContext(ROUTER); validate_store(activeRoute, 'activeRoute'); subscribe($$self, activeRoute, $$value => { $activeRoute = $$value; $$invalidate('$activeRoute', $activeRoute); });
+
+	  const route = {
+	    path,
+	    // If no path prop is given, this Route will act as the default Route
+	    // that is rendered if no other Route in the Router is a match.
+	    default: path === ""
+	  };
+	  let routeParams = {};
+
+	  registerRoute(route);
+
+	  // There is no need to unregister Routes in SSR since it will all be
+	  // thrown away anyway.
+	  if (typeof window !== "undefined") {
+	    onDestroy(() => {
+	      unregisterRoute(route);
+	    });
+	  }
+
+		let { $$slots = {}, $$scope } = $$props;
+
+		$$self.$set = $$props => {
+			if ('path' in $$props) $$invalidate('path', path = $$props.path);
+			if ('component' in $$props) $$invalidate('component', component = $$props.component);
+			if ('$$scope' in $$props) $$invalidate('$$scope', $$scope = $$props.$$scope);
+		};
+
+		$$self.$$.update = ($$dirty = { $activeRoute: 1 }) => {
+			if ($$dirty.$activeRoute) { if ($activeRoute && $activeRoute.route === route) {
+	        const { params } = $activeRoute;
+	        $$invalidate('routeParams', routeParams = Object.keys(params).reduce((acc, param) => {
+	          if (param !== "*") {
+	            acc[param] = params[param];
+	          }
+	          return acc;
+	        }, {}));
+	      } }
+		};
+
+		return {
+			path,
+			component,
+			activeRoute,
+			route,
+			routeParams,
+			$activeRoute,
+			$$slots,
+			$$scope
+		};
+	}
+
+	class Route extends SvelteComponentDev {
+		constructor(options) {
+			super(options);
+			init(this, options, instance$1, create_fragment$1, safe_not_equal, ["path", "component"]);
+		}
+
+		get path() {
+			throw new Error("<Route>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+
+		set path(value) {
+			throw new Error("<Route>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+
+		get component() {
+			throw new Error("<Route>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+
+		set component(value) {
+			throw new Error("<Route>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+	}
+
+	/* node_modules/svelte-routing/src/Link.svelte generated by Svelte v3.2.1 */
+
+	const file = "node_modules/svelte-routing/src/Link.svelte";
+
+	function create_fragment$2(ctx) {
+		var a, current, dispose;
+
+		const default_slot_1 = ctx.$$slots.default;
+		const default_slot = create_slot(default_slot_1, ctx, null);
+
+		var a_levels = [
+			{ href: ctx.href },
+			{ "aria-current": ctx.ariaCurrent },
+			ctx.props
+		];
+
+		var a_data = {};
+		for (var i = 0; i < a_levels.length; i += 1) {
+			a_data = assign(a_data, a_levels[i]);
+		}
+
+		return {
+			c: function create() {
+				a = element("a");
+
+				if (default_slot) default_slot.c();
+
+				set_attributes(a, a_data);
+				add_location(a, file, 40, 0, 1249);
+				dispose = listen(a, "click", ctx.onClick);
+			},
+
+			l: function claim(nodes) {
+				if (default_slot) default_slot.l(a_nodes);
+				throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+			},
+
+			m: function mount(target, anchor) {
+				insert(target, a, anchor);
+
+				if (default_slot) {
+					default_slot.m(a, null);
+				}
+
+				current = true;
+			},
+
+			p: function update(changed, ctx) {
+				if (default_slot && default_slot.p && changed.$$scope) {
+					default_slot.p(get_slot_changes(default_slot_1, ctx, changed,), get_slot_context(default_slot_1, ctx, null));
+				}
+
+				set_attributes(a, get_spread_update(a_levels, [
+					(changed.href) && { href: ctx.href },
+					(changed.ariaCurrent) && { "aria-current": ctx.ariaCurrent },
+					(changed.props) && ctx.props
+				]));
+			},
+
+			i: function intro(local) {
+				if (current) return;
+				if (default_slot && default_slot.i) default_slot.i(local);
+				current = true;
+			},
+
+			o: function outro(local) {
+				if (default_slot && default_slot.o) default_slot.o(local);
+				current = false;
+			},
+
+			d: function destroy(detaching) {
+				if (detaching) {
+					detach(a);
+				}
+
+				if (default_slot) default_slot.d(detaching);
+				dispose();
+			}
+		};
+	}
+
+	function instance$2($$self, $$props, $$invalidate) {
+		let $base, $location;
+
+		
+
+	  let { to = "#", replace = false, state = {}, getProps = () => ({}) } = $$props;
+
+	  const { base } = getContext(ROUTER); validate_store(base, 'base'); subscribe($$self, base, $$value => { $base = $$value; $$invalidate('$base', $base); });
+	  const location = getContext(LOCATION); validate_store(location, 'location'); subscribe($$self, location, $$value => { $location = $$value; $$invalidate('$location', $location); });
+	  const dispatch = createEventDispatcher();
+
+	  let href, isPartiallyCurrent, isCurrent, props;
+
+	  function onClick(event) {
+	    dispatch("click", event);
+
+	    if (shouldNavigate(event)) {
+	      event.preventDefault();
+	      // Don't push another entry to the history stack when the user
+	      // clicks on a Link to the page they are currently on.
+	      const shouldReplace = $location.pathname === href || replace;
+	      navigate(href, { state, replace: shouldReplace });
+	    }
+	  }
+
+		let { $$slots = {}, $$scope } = $$props;
+
+		$$self.$set = $$props => {
+			if ('to' in $$props) $$invalidate('to', to = $$props.to);
+			if ('replace' in $$props) $$invalidate('replace', replace = $$props.replace);
+			if ('state' in $$props) $$invalidate('state', state = $$props.state);
+			if ('getProps' in $$props) $$invalidate('getProps', getProps = $$props.getProps);
+			if ('$$scope' in $$props) $$invalidate('$$scope', $$scope = $$props.$$scope);
+		};
+
+		let ariaCurrent;
+
+		$$self.$$.update = ($$dirty = { to: 1, $base: 1, $location: 1, href: 1, isCurrent: 1, getProps: 1, isPartiallyCurrent: 1 }) => {
+			if ($$dirty.to || $$dirty.$base) { $$invalidate('href', href = to === "/" ? $base.uri : resolve(to, $base.uri)); }
+			if ($$dirty.$location || $$dirty.href) { $$invalidate('isPartiallyCurrent', isPartiallyCurrent = startsWith($location.pathname, href)); }
+			if ($$dirty.href || $$dirty.$location) { $$invalidate('isCurrent', isCurrent = href === $location.pathname); }
+			if ($$dirty.isCurrent) { $$invalidate('ariaCurrent', ariaCurrent = isCurrent ? "page" : undefined); }
+			if ($$dirty.getProps || $$dirty.$location || $$dirty.href || $$dirty.isPartiallyCurrent || $$dirty.isCurrent) { $$invalidate('props', props = getProps({
+	        location: $location,
+	        href,
+	        isPartiallyCurrent,
+	        isCurrent
+	      })); }
+		};
+
+		return {
+			to,
+			replace,
+			state,
+			getProps,
+			base,
+			location,
+			href,
+			props,
+			onClick,
+			ariaCurrent,
+			$$slots,
+			$$scope
+		};
+	}
+
+	class Link extends SvelteComponentDev {
+		constructor(options) {
+			super(options);
+			init(this, options, instance$2, create_fragment$2, safe_not_equal, ["to", "replace", "state", "getProps"]);
+		}
+
+		get to() {
+			throw new Error("<Link>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+
+		set to(value) {
+			throw new Error("<Link>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+
+		get replace() {
+			throw new Error("<Link>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+
+		set replace(value) {
+			throw new Error("<Link>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+
+		get state() {
+			throw new Error("<Link>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+
+		set state(value) {
+			throw new Error("<Link>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+
+		get getProps() {
+			throw new Error("<Link>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+
+		set getProps(value) {
+			throw new Error("<Link>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+	}
+
+	/* src/Home.svelte generated by Svelte v3.2.1 */
+
+	const file$1 = "src/Home.svelte";
+
+	function create_fragment$3(ctx) {
+		var h1;
+
+		return {
+			c: function create() {
+				h1 = element("h1");
+				h1.textContent = "Home Page";
+				add_location(h1, file$1, 0, 0, 0);
+			},
+
+			l: function claim(nodes) {
+				throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+			},
+
+			m: function mount(target, anchor) {
+				insert(target, h1, anchor);
+			},
+
+			p: noop,
+			i: noop,
+			o: noop,
+
+			d: function destroy(detaching) {
+				if (detaching) {
+					detach(h1);
+				}
+			}
+		};
+	}
+
+	class Home extends SvelteComponentDev {
+		constructor(options) {
+			super(options);
+			init(this, options, null, create_fragment$3, safe_not_equal, []);
+		}
+	}
+
 	/*! *****************************************************************************
 	Copyright (c) Microsoft Corporation. All rights reserved.
 	Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -420,7 +2015,7 @@ var app = (function () {
 	//# sourceMappingURL=hostReportError.js.map
 
 	/** PURE_IMPORTS_START _config,_util_hostReportError PURE_IMPORTS_END */
-	var empty = {
+	var empty$1 = {
 	    closed: true,
 	    next: function (value) { },
 	    error: function (err) {
@@ -607,11 +2202,11 @@ var app = (function () {
 	        _this.isStopped = false;
 	        switch (arguments.length) {
 	            case 0:
-	                _this.destination = empty;
+	                _this.destination = empty$1;
 	                break;
 	            case 1:
 	                if (!destinationOrNext) {
-	                    _this.destination = empty;
+	                    _this.destination = empty$1;
 	                    break;
 	                }
 	                if (typeof destinationOrNext === 'object') {
@@ -699,7 +2294,7 @@ var app = (function () {
 	            next = observerOrNext.next;
 	            error = observerOrNext.error;
 	            complete = observerOrNext.complete;
-	            if (observerOrNext !== empty) {
+	            if (observerOrNext !== empty$1) {
 	                context = Object.create(observerOrNext);
 	                if (isFunction(context.unsubscribe)) {
 	                    _this.add(context.unsubscribe.bind(context));
@@ -850,7 +2445,7 @@ var app = (function () {
 	        }
 	    }
 	    if (!nextOrObserver && !error && !complete) {
-	        return new Subscriber(empty);
+	        return new Subscriber(empty$1);
 	    }
 	    return new Subscriber(nextOrObserver, error, complete);
 	}
@@ -1603,7 +3198,7 @@ var app = (function () {
 
 	/** PURE_IMPORTS_START _Observable PURE_IMPORTS_END */
 	var EMPTY = /*@__PURE__*/ new Observable(function (subscriber) { return subscriber.complete(); });
-	function empty$1(scheduler) {
+	function empty$2(scheduler) {
 	    return scheduler ? emptyScheduled(scheduler) : EMPTY;
 	}
 	function emptyScheduled(scheduler) {
@@ -1736,7 +3331,7 @@ var app = (function () {
 	            case 'E':
 	                return throwError(this.error);
 	            case 'C':
-	                return empty$1();
+	                return empty$2();
 	        }
 	        throw new Error('unexpected notification kind value');
 	    };
@@ -3022,7 +4617,7 @@ var app = (function () {
 	function take(count) {
 	    return function (source) {
 	        if (count === 0) {
-	            return empty$1();
+	            return empty$2();
 	        }
 	        else {
 	            return source.lift(new TakeOperator(count));
@@ -3663,21 +5258,6 @@ var app = (function () {
 	 * @fileoverview added by tsickle
 	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
 	 */
-	/**
-	 * @param {?} storeName
-	 * @param {?=} initialState
-	 * @return {?}
-	 */
-	function newStateAction(storeName, initialState) {
-	    if (initialState === void 0) { initialState = false; }
-	    return {
-	        type: 2 /* NEW_STATE */,
-	        payload: {
-	            name: storeName,
-	            initialState: initialState
-	        }
-	    };
-	}
 	/** @type {?} */
 	var currentAction = {
 	    type: null,
@@ -3761,13 +5341,7 @@ var app = (function () {
 	var transactionFinished = new Subject();
 	// @internal
 	/** @type {?} */
-	var transactionFinished$ = transactionFinished.asObservable();
-	// @internal
-	/** @type {?} */
 	var transactionInProcess = new BehaviorSubject(false);
-	// @internal
-	/** @type {?} */
-	var transactionInProcess$ = transactionInProcess.asObservable();
 	// @internal
 	/** @type {?} */
 	var transactionManager = {
@@ -3984,27 +5558,37 @@ var app = (function () {
 	 */
 	// @internal
 	/** @type {?} */
-	var rootDispatcher = new ReplaySubject();
-
-	/**
-	 * @fileoverview added by tsickle
-	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
-	 */
+	var $$deleteStore = new Subject();
 	// @internal
 	/** @type {?} */
-	var __stores__ = {};
-
-	/**
-	 * @fileoverview added by tsickle
-	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
-	 */
-	/** @type {?} */
-	var isBrowser = typeof window !== 'undefined';
-	/** @type {?} */
-	var isNativeScript = typeof global !== 'undefined' && typeof ((/** @type {?} */ (global))).__runtimeVersion !== 'undefined';
+	var $$addStore = new ReplaySubject(50, 5000);
 	// @internal
 	/** @type {?} */
-	var isNotBrowser = !isBrowser && !isNativeScript;
+	var $$updateStore = new Subject();
+	// @internal
+	/**
+	 * @param {?} storeName
+	 * @return {?}
+	 */
+	function dispatchDeleted(storeName) {
+	    $$deleteStore.next(storeName);
+	}
+	// @internal
+	/**
+	 * @param {?} storeName
+	 * @return {?}
+	 */
+	function dispatchAdded(storeName) {
+	    $$addStore.next(storeName);
+	}
+	// @internal
+	/**
+	 * @param {?} storeName
+	 * @return {?}
+	 */
+	function dispatchUpdate(storeName) {
+	    $$updateStore.next(storeName);
+	}
 
 	/**
 	 * @fileoverview added by tsickle
@@ -4025,7 +5609,27 @@ var app = (function () {
 	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
 	 */
 	/** @type {?} */
-	var DEFAULT_ID_KEY = 'id';
+	var isBrowser = typeof window !== 'undefined';
+	/** @type {?} */
+	var isNativeScript = typeof global !== 'undefined' && typeof ((/** @type {?} */ (global))).__runtimeVersion !== 'undefined';
+	// @internal
+	/** @type {?} */
+	var isNotBrowser = !isBrowser && !isNativeScript;
+
+	/**
+	 * @fileoverview added by tsickle
+	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+	 */
+	// @internal
+	/** @type {?} */
+	var __stores__ = {};
+	// @internal
+	/** @type {?} */
+	var __queries__ = {};
+	if (isBrowser && isDev()) {
+	    ((/** @type {?} */ (window))).$$stores = __stores__;
+	    ((/** @type {?} */ (window))).$$queries = __queries__;
+	}
 
 	/**
 	 * @fileoverview added by tsickle
@@ -4276,20 +5880,7 @@ var app = (function () {
 	         * @return {?}
 	         */
 	        function () {
-	            return this.config.storeName || this.options.storeName || this.options.name;
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
-	    Object.defineProperty(Store.prototype, "idKey", {
-	        // @internal
-	        get: 
-	        // @internal
-	        /**
-	         * @return {?}
-	         */
-	        function () {
-	            return this.config.idKey || this.options.idKey || DEFAULT_ID_KEY;
+	            return ((/** @type {?} */ (this.config))).storeName || ((/** @type {?} */ (this.options))).storeName || this.options.name;
 	        },
 	        enumerable: true,
 	        configurable: true
@@ -4320,6 +5911,19 @@ var app = (function () {
 	        enumerable: true,
 	        configurable: true
 	    });
+	    Object.defineProperty(Store.prototype, "resettable", {
+	        // @internal
+	        get: 
+	        // @internal
+	        /**
+	         * @return {?}
+	         */
+	        function () {
+	            return this.config.resettable || this.options.resettable;
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
 	    // @internal
 	    // @internal
 	    /**
@@ -4339,7 +5943,6 @@ var app = (function () {
 	        this.storeValue = __DEV__ ? this.deepFreeze(newStateFn(this._value())) : newStateFn(this._value());
 	        if (!this.store) {
 	            this.store = new BehaviorSubject(this.storeValue);
-	            rootDispatcher.next(newStateAction(this.storeName, true));
 	            return;
 	        }
 	        if (isTransactionInProcess()) {
@@ -4485,10 +6088,7 @@ var app = (function () {
 	            return;
 	        if (!((/** @type {?} */ (window))).hmrEnabled && this === __stores__[this.storeName]) {
 	            delete __stores__[this.storeName];
-	            rootDispatcher.next({
-	                type: 1 /* DELETE_STORE */,
-	                payload: { storeName: this.storeName }
-	            });
+	            dispatchDeleted(this.storeName);
 	            this.setHasCache(false);
 	            this.cache.active.complete();
 	        }
@@ -4504,16 +6104,12 @@ var app = (function () {
 	     * @return {?}
 	     */
 	    function (initialState) {
-	        isDev() && setAction('@@INIT');
 	        __stores__[this.storeName] = this;
 	        this._setState((/**
 	         * @return {?}
 	         */
 	        function () { return initialState; }));
-	        rootDispatcher.next({
-	            type: 0 /* NEW_STORE */,
-	            payload: { store: this }
-	        });
+	        dispatchAdded(this.storeName);
 	        if (this.isResettable()) {
 	            this._initialState = initialState;
 	        }
@@ -4535,7 +6131,7 @@ var app = (function () {
 	        if (_dispatchAction === void 0) { _dispatchAction = true; }
 	        this.store.next(state);
 	        if (_dispatchAction) {
-	            rootDispatcher.next(newStateAction(this.storeName));
+	            dispatchUpdate(this.storeName);
 	            resetCustomAction();
 	        }
 	    };
@@ -4566,12 +6162,10 @@ var app = (function () {
 	     * @return {?}
 	     */
 	    function () {
-	        /** @type {?} */
-	        var localReset = this.config && this.config.resettable;
-	        if (localReset === false) {
+	        if (this.resettable === false) {
 	            return false;
 	        }
-	        return localReset || getAkitaConfig().resettable;
+	        return this.resettable || getAkitaConfig().resettable;
 	    };
 	    /**
 	     * @private
@@ -4943,6 +6537,13 @@ var app = (function () {
 	 * @fileoverview added by tsickle
 	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
 	 */
+	/** @type {?} */
+	var DEFAULT_ID_KEY = 'id';
+
+	/**
+	 * @fileoverview added by tsickle
+	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+	 */
 	/**
 	 *
 	 * Store for managing a collection of entities
@@ -4952,14 +6553,14 @@ var app = (function () {
 	 * export interface WidgetsState extends EntityState<Widget> { }
 	 *
 	 * \@StoreConfig({ name: 'widgets' })
-	 *  export class WidgetsStore extends EntityStore<WidgetsState, Widget> {
+	 *  export class WidgetsStore extends EntityStore<WidgetsState> {
 	 *   constructor() {
 	 *     super();
 	 *   }
 	 * }
 	 *
 	 *
-	 * @template S, E, EntityID
+	 * @template S, DEPRECATED
 	 */
 	var EntityStore = /** @class */ (function (_super) {
 	    __extends(EntityStore, _super);
@@ -4968,23 +6569,9 @@ var app = (function () {
 	        if (options === void 0) { options = {}; }
 	        var _this = _super.call(this, __assign({}, getInitialEntitiesState(), initialState), options) || this;
 	        _this.options = options;
-	        _this.updatedEntityIds = new BehaviorSubject([]);
 	        _this.entityActions = new Subject();
 	        return _this;
 	    }
-	    Object.defineProperty(EntityStore.prototype, "updatedEntityIds$", {
-	        // @internal
-	        get: 
-	        // @internal
-	        /**
-	         * @return {?}
-	         */
-	        function () {
-	            return this.updatedEntityIds.asObservable();
-	        },
-	        enumerable: true,
-	        configurable: true
-	    });
 	    Object.defineProperty(EntityStore.prototype, "selectEntityAction$", {
 	        // @internal
 	        get: 
@@ -4994,6 +6581,19 @@ var app = (function () {
 	         */
 	        function () {
 	            return this.entityActions.asObservable();
+	        },
+	        enumerable: true,
+	        configurable: true
+	    });
+	    Object.defineProperty(EntityStore.prototype, "idKey", {
+	        // @internal
+	        get: 
+	        // @internal
+	        /**
+	         * @return {?}
+	         */
+	        function () {
+	            return ((/** @type {?} */ (this.config))).idKey || this.options.idKey || DEFAULT_ID_KEY;
 	        },
 	        enumerable: true,
 	        configurable: true
@@ -5106,7 +6706,6 @@ var app = (function () {
 	        var collection = coerceArray(entities);
 	        if (isEmpty(collection))
 	            return;
-	        isDev() && setAction('Add Entity');
 	        /** @type {?} */
 	        var data = addEntities({
 	            state: this._value(),
@@ -5116,6 +6715,7 @@ var app = (function () {
 	            options: options
 	        });
 	        if (data) {
+	            isDev() && setAction('Add Entity');
 	            this._setState((/**
 	             * @return {?}
 	             */
@@ -5172,7 +6772,6 @@ var app = (function () {
 	                newStateOrFn: newStateOrFn
 	            });
 	        }));
-	        this.updatedEntityIds.next(ids);
 	        this.entityActions.next({ type: EntityActions.Update, ids: ids });
 	    };
 	    /**
@@ -5338,9 +6937,73 @@ var app = (function () {
 	         * @return {?}
 	         */
 	        function (state) { return (__assign({}, state, { ids: addedIds.length ? __spread(state.ids, addedIds) : state.ids, entities: __assign({}, state.entities, updatedEntities), loading: !!options.loading })); }));
-	        updatedIds.length && this.updatedEntityIds.next(updatedIds);
 	        updatedIds.length && this.entityActions.next({ type: EntityActions.Update, ids: updatedIds });
 	        addedIds.length && this.entityActions.next({ type: EntityActions.Add, ids: addedIds });
+	    };
+	    /**
+	     *
+	     * Replace one or more entities (except the id property)
+	     *
+	     *
+	     * @example
+	     *
+	     * this.store.replace(5, newEntity)
+	     * this.store.replace([1,2,3], newEntity)
+	     */
+	    /**
+	     *
+	     * Replace one or more entities (except the id property)
+	     *
+	     *
+	     * \@example
+	     *
+	     * this.store.replace(5, newEntity)
+	     * this.store.replace([1,2,3], newEntity)
+	     * @param {?} ids
+	     * @param {?} newState
+	     * @return {?}
+	     */
+	    EntityStore.prototype.replace = /**
+	     *
+	     * Replace one or more entities (except the id property)
+	     *
+	     *
+	     * \@example
+	     *
+	     * this.store.replace(5, newEntity)
+	     * this.store.replace([1,2,3], newEntity)
+	     * @param {?} ids
+	     * @param {?} newState
+	     * @return {?}
+	     */
+	    function (ids, newState) {
+	        var e_2, _a;
+	        /** @type {?} */
+	        var toArray = coerceArray(ids);
+	        if (isEmpty(toArray))
+	            return;
+	        /** @type {?} */
+	        var replaced = {};
+	        try {
+	            for (var toArray_1 = __values(toArray), toArray_1_1 = toArray_1.next(); !toArray_1_1.done; toArray_1_1 = toArray_1.next()) {
+	                var id = toArray_1_1.value;
+	                newState[this.idKey] = id;
+	                replaced[id] = newState;
+	            }
+	        }
+	        catch (e_2_1) { e_2 = { error: e_2_1 }; }
+	        finally {
+	            try {
+	                if (toArray_1_1 && !toArray_1_1.done && (_a = toArray_1.return)) _a.call(toArray_1);
+	            }
+	            finally { if (e_2) throw e_2.error; }
+	        }
+	        isDev() && setAction('Replace Entity', ids);
+	        this._setState((/**
+	         * @param {?} state
+	         * @return {?}
+	         */
+	        function (state) { return (__assign({}, state, { entities: __assign({}, state.entities, replaced) })); }));
 	    };
 	    /**
 	     * @param {?=} idsOrFn
@@ -5723,7 +7386,6 @@ var app = (function () {
 	        if (this.ui instanceof EntityStore) {
 	            this.ui.destroy();
 	        }
-	        this.updatedEntityIds.complete();
 	        this.entityActions.complete();
 	    };
 	    // @internal
@@ -5931,12 +7593,12 @@ var app = (function () {
 	}(Store));
 	// @internal
 	/**
-	 * @template UIState, EntityUI
+	 * @template UIState, DEPRECATED
 	 */
 	var  
 	// @internal
 	/**
-	 * @template UIState, EntityUI
+	 * @template UIState, DEPRECATED
 	 */
 	EntityUIStore = /** @class */ (function (_super) {
 	    __extends(EntityUIStore, _super);
@@ -6033,6 +7695,10 @@ var app = (function () {
 	    function Query(store) {
 	        this.store = store;
 	        this.__store__ = store;
+	        if (isDev()) {
+	            // @internal
+	            __queries__[store.storeName] = this;
+	        }
 	    }
 	    /**
 	     * @template R
@@ -6109,7 +7775,7 @@ var app = (function () {
 	     * \@example
 	     *
 	     * this.query.selectError().subscribe(error => {})
-	     * @template E
+	     * @template ErrorType
 	     * @return {?}
 	     */
 	    Query.prototype.selectError = /**
@@ -6118,7 +7784,7 @@ var app = (function () {
 	     * \@example
 	     *
 	     * this.query.selectError().subscribe(error => {})
-	     * @template E
+	     * @template ErrorType
 	     * @return {?}
 	     */
 	    function () {
@@ -6433,6 +8099,32 @@ var app = (function () {
 	 */
 	// @internal
 	/**
+	 * @template E
+	 * @param {?} predicate
+	 * @param {?} entities
+	 * @return {?}
+	 */
+	function findEntityByPredicate(predicate, entities) {
+	    var e_1, _a;
+	    try {
+	        for (var _b = __values(Object.keys(entities)), _c = _b.next(); !_c.done; _c = _b.next()) {
+	            var entityId = _c.value;
+	            if (predicate(entities[entityId]) === true) {
+	                return entityId;
+	            }
+	        }
+	    }
+	    catch (e_1_1) { e_1 = { error: e_1_1 }; }
+	    finally {
+	        try {
+	            if (_c && !_c.done && (_a = _b.return)) _a.call(_b);
+	        }
+	        finally { if (e_1) throw e_1.error; }
+	    }
+	    return undefined;
+	}
+	// @internal
+	/**
 	 * @param {?} id
 	 * @param {?} project
 	 * @return {?}
@@ -6466,7 +8158,7 @@ var app = (function () {
 	 *
 	 *  The Entity Query is similar to the general Query, with additional functionality tailored for EntityStores.
 	 *
-	 *  class WidgetsQuery extends QueryEntity<WidgetsState, Widget> {
+	 *  class WidgetsQuery extends QueryEntity<WidgetsState> {
 	 *     constructor(protected store: WidgetsStore) {
 	 *       super(store);
 	 *     }
@@ -6474,13 +8166,13 @@ var app = (function () {
 	 *
 	 *
 	 *
-	 * @template S, E, EntityID
+	 * @template S, DEPRECATED
 	 */
 	var  /**
 	 *
 	 *  The Entity Query is similar to the general Query, with additional functionality tailored for EntityStores.
 	 *
-	 *  class WidgetsQuery extends QueryEntity<WidgetsState, Widget> {
+	 *  class WidgetsQuery extends QueryEntity<WidgetsState> {
 	 *     constructor(protected store: WidgetsStore) {
 	 *       super(store);
 	 *     }
@@ -6488,12 +8180,14 @@ var app = (function () {
 	 *
 	 *
 	 *
-	 * @template S, E, EntityID
+	 * @template S, DEPRECATED
 	 */
 	QueryEntity = /** @class */ (function (_super) {
 	    __extends(QueryEntity, _super);
-	    function QueryEntity(store) {
+	    function QueryEntity(store, options) {
+	        if (options === void 0) { options = {}; }
 	        var _this = _super.call(this, store) || this;
+	        _this.options = options;
 	        _this.__store__ = store;
 	        return _this;
 	    }
@@ -6532,7 +8226,7 @@ var app = (function () {
 	        if (options.asObject) {
 	            return entitiesToMap(this.getValue(), options);
 	        }
-	        sortByOptions(options, this.config);
+	        sortByOptions(options, this.config || this.options);
 	        return entitiesToArray(this.getValue(), options);
 	    };
 	    /**
@@ -6565,17 +8259,23 @@ var app = (function () {
 	    };
 	    /**
 	     * @template R
-	     * @param {?} id
+	     * @param {?} idOrPredicate
 	     * @param {?=} project
 	     * @return {?}
 	     */
 	    QueryEntity.prototype.selectEntity = /**
 	     * @template R
-	     * @param {?} id
+	     * @param {?} idOrPredicate
 	     * @param {?=} project
 	     * @return {?}
 	     */
-	    function (id, project) {
+	    function (idOrPredicate, project) {
+	        /** @type {?} */
+	        var id = idOrPredicate;
+	        if (isFunction$1(idOrPredicate)) {
+	            // For performance reason we expect the entity to be in the store
+	            ((/** @type {?} */ (id))) = findEntityByPredicate(idOrPredicate, this.getValue().entities);
+	        }
 	        return this.select((/**
 	         * @param {?} state
 	         * @return {?}
@@ -6818,41 +8518,6 @@ var app = (function () {
 	        function (ids) { return ids[0]; }), project);
 	    };
 	    /**
-	     * @deprecated use selectEntityAction
-	     *
-	     * Select the updated entities ids
-	     *
-	     *  @example
-	     *
-	     *  this.query.selectUpdatedEntityIds()
-	     *
-	     */
-	    /**
-	     * @deprecated use selectEntityAction
-	     *
-	     * Select the updated entities ids
-	     *
-	     * \@example
-	     *
-	     *  this.query.selectUpdatedEntityIds()
-	     *
-	     * @return {?}
-	     */
-	    QueryEntity.prototype.selectUpdatedEntityIds = /**
-	     * @deprecated use selectEntityAction
-	     *
-	     * Select the updated entities ids
-	     *
-	     * \@example
-	     *
-	     *  this.query.selectUpdatedEntityIds()
-	     *
-	     * @return {?}
-	     */
-	    function () {
-	        return this.store.updatedEntityIds$;
-	    };
-	    /**
 	     * @param {?=} action
 	     * @return {?}
 	     */
@@ -7027,12 +8692,12 @@ var app = (function () {
 	}(Query));
 	// @internal
 	/**
-	 * @template UIState, EntityUI
+	 * @template UIState, DEPRECATED
 	 */
 	var  
 	// @internal
 	/**
-	 * @template UIState, EntityUI
+	 * @template UIState, DEPRECATED
 	 */
 	EntityUIQuery = /** @class */ (function (_super) {
 	    __extends(EntityUIQuery, _super);
@@ -7068,12 +8733,373 @@ var app = (function () {
 	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
 	 */
 	/**
+	 * \@internal
+	 *
+	 * \@example
+	 *
+	 * getValue(state, 'todos.ui')
+	 *
+	 * @param {?} obj
+	 * @param {?} prop
+	 * @return {?}
+	 */
+	function getValue(obj, prop) {
+	    /** return the whole state  */
+	    if (prop.split('.').length === 1) {
+	        return obj;
+	    }
+	    /** @type {?} */
+	    var removeStoreName = prop
+	        .split('.')
+	        .slice(1)
+	        .join('.');
+	    return removeStoreName.split('.').reduce((/**
+	     * @param {?} acc
+	     * @param {?} part
+	     * @return {?}
+	     */
+	    function (acc, part) { return acc && acc[part]; }), obj);
+	}
+
+	/**
+	 * @fileoverview added by tsickle
+	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+	 */
+	/**
+	 * \@internal
+	 *
+	 * \@example
+	 * setValue(state, 'todos.ui', { filter: {} })
+	 * @param {?} obj
+	 * @param {?} prop
+	 * @param {?} val
+	 * @return {?}
+	 */
+	function setValue(obj, prop, val) {
+	    /** @type {?} */
+	    var split = prop.split('.');
+	    if (split.length === 1) {
+	        return val;
+	    }
+	    obj = __assign({}, obj);
+	    /** @type {?} */
+	    var lastIndex = split.length - 2;
+	    /** @type {?} */
+	    var removeStoreName = prop.split('.').slice(1);
+	    removeStoreName.reduce((/**
+	     * @param {?} acc
+	     * @param {?} part
+	     * @param {?} index
+	     * @return {?}
+	     */
+	    function (acc, part, index) {
+	        if (index === lastIndex) {
+	            acc[part] = val;
+	        }
+	        else {
+	            acc[part] = __assign({}, acc[part]);
+	        }
+	        return acc && acc[part];
+	    }), obj);
+	    return obj;
+	}
+
+	/**
+	 * @fileoverview added by tsickle
+	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+	 */
+	/** @type {?} */
+	var skipStorageUpdate = false;
+	/**
+	 * @return {?}
+	 */
+	function getSkipStorageUpdate() {
+	    return skipStorageUpdate;
+	}
+	/**
+	 * @param {?} v
+	 * @return {?}
+	 */
+	function isPromise$1(v) {
+	    return v && isFunction$1(v.then);
+	}
+	/**
+	 * @param {?} asyncOrValue
+	 * @return {?}
+	 */
+	function observify(asyncOrValue) {
+	    if (isPromise$1(asyncOrValue) || isObservable(asyncOrValue)) {
+	        return from(asyncOrValue);
+	    }
+	    return of(asyncOrValue);
+	}
+	/**
+	 * @param {?=} params
+	 * @return {?}
+	 */
+	function persistState(params) {
+	    if (isNotBrowser)
+	        return;
+	    /** @type {?} */
+	    var defaults = {
+	        key: 'AkitaStores',
+	        storage: typeof localStorage === 'undefined' ? params.storage : localStorage,
+	        deserialize: JSON.parse,
+	        serialize: JSON.stringify,
+	        include: [],
+	        exclude: [],
+	        persistOnDestroy: false,
+	        preStorageUpdate: (/**
+	         * @param {?} storeName
+	         * @param {?} state
+	         * @return {?}
+	         */
+	        function (storeName, state) {
+	            return state;
+	        }),
+	        preStoreUpdate: (/**
+	         * @param {?} storeName
+	         * @param {?} state
+	         * @return {?}
+	         */
+	        function (storeName, state) {
+	            return state;
+	        }),
+	        skipStorageUpdate: getSkipStorageUpdate,
+	        preStorageUpdateOperator: (/**
+	         * @return {?}
+	         */
+	        function () { return (/**
+	         * @param {?} source
+	         * @return {?}
+	         */
+	        function (source) { return source; }); })
+	    };
+	    var _a = Object.assign({}, defaults, params), storage = _a.storage, deserialize = _a.deserialize, serialize = _a.serialize, include = _a.include, exclude = _a.exclude, key = _a.key, preStorageUpdate = _a.preStorageUpdate, persistOnDestroy = _a.persistOnDestroy, preStorageUpdateOperator = _a.preStorageUpdateOperator, preStoreUpdate = _a.preStoreUpdate, skipStorageUpdate = _a.skipStorageUpdate;
+	    /** @type {?} */
+	    var hasInclude = include.length > 0;
+	    /** @type {?} */
+	    var hasExclude = exclude.length > 0;
+	    /** @type {?} */
+	    var includeStores;
+	    if (hasInclude && hasExclude) {
+	        throw new AkitaError('You can\'t use both include and exclude');
+	    }
+	    if (hasInclude) {
+	        includeStores = include.reduce((/**
+	         * @param {?} acc
+	         * @param {?} path
+	         * @return {?}
+	         */
+	        function (acc, path) {
+	            /** @type {?} */
+	            var storeName = path.split('.')[0];
+	            acc[storeName] = path;
+	            return acc;
+	        }), {});
+	    }
+	    /** @type {?} */
+	    var stores = {};
+	    /** @type {?} */
+	    var acc = {};
+	    /** @type {?} */
+	    var subscriptions = [];
+	    /** @type {?} */
+	    var buffer = [];
+	    /**
+	     * @param {?} v
+	     * @return {?}
+	     */
+	    function _save(v) {
+	        observify(v).subscribe((/**
+	         * @return {?}
+	         */
+	        function () {
+	            /** @type {?} */
+	            var next = buffer.shift();
+	            next && _save(next);
+	        }));
+	    }
+	    // when we use the local/session storage we perform the serialize, otherwise we let the passed storage implementation to do it
+	    /** @type {?} */
+	    var isLocalStorage = typeof localStorage !== 'undefined' && (storage === localStorage || storage === sessionStorage);
+	    observify(storage.getItem(key)).subscribe((/**
+	     * @param {?} value
+	     * @return {?}
+	     */
+	    function (value) {
+	        /** @type {?} */
+	        var storageState = isObject$1(value) ? value : deserialize(value || '{}');
+	        /**
+	         * @param {?} storeCache
+	         * @return {?}
+	         */
+	        function save(storeCache) {
+	            storageState['$cache'] = __assign({}, (storageState['$cache'] || {}), storeCache);
+	            /** @type {?} */
+	            var storageValue = Object.assign({}, storageState, acc);
+	            buffer.push(storage.setItem(key, isLocalStorage ? serialize(storageValue) : storageValue));
+	            _save(buffer.shift());
+	        }
+	        /**
+	         * @param {?} storeName
+	         * @param {?} path
+	         * @return {?}
+	         */
+	        function subscribe(storeName, path) {
+	            stores[storeName] = __stores__[storeName]
+	                ._select((/**
+	             * @param {?} state
+	             * @return {?}
+	             */
+	            function (state) { return getValue(state, path); }))
+	                .pipe(skip(1), filter((/**
+	             * @return {?}
+	             */
+	            function () { return skipStorageUpdate() === false; })), preStorageUpdateOperator())
+	                .subscribe((/**
+	             * @param {?} data
+	             * @return {?}
+	             */
+	            function (data) {
+	                acc[storeName] = preStorageUpdate(storeName, data);
+	                Promise.resolve().then((/**
+	                 * @return {?}
+	                 */
+	                function () {
+	                    var _a;
+	                    return save((_a = {}, _a[storeName] = __stores__[storeName]._cache().getValue(), _a));
+	                }));
+	            }));
+	        }
+	        /**
+	         * @param {?} storeName
+	         * @param {?} store
+	         * @param {?} path
+	         * @return {?}
+	         */
+	        function setInitial(storeName, store, path) {
+	            if (storeName in storageState) {
+	                setAction('@PersistState');
+	                store._setState((/**
+	                 * @param {?} state
+	                 * @return {?}
+	                 */
+	                function (state) {
+	                    return setValue(state, path, preStoreUpdate(storeName, storageState[storeName]));
+	                }));
+	                /** @type {?} */
+	                var hasCache = storageState['$cache'] ? storageState['$cache'][storeName] : false;
+	                __stores__[storeName].setHasCache(hasCache);
+	                if (store.setDirty) {
+	                    store.setDirty();
+	                }
+	            }
+	        }
+	        subscriptions.push($$deleteStore.subscribe((/**
+	         * @param {?} storeName
+	         * @return {?}
+	         */
+	        function (storeName) {
+	            if (stores[storeName]) {
+	                if (persistOnDestroy === false) {
+	                    delete storageState[storeName];
+	                    save(false);
+	                }
+	                stores[storeName].unsubscribe();
+	                stores[storeName] = null;
+	            }
+	        })));
+	        subscriptions.push($$addStore.subscribe((/**
+	         * @param {?} storeName
+	         * @return {?}
+	         */
+	        function (storeName) {
+	            if (hasExclude && exclude.includes(storeName)) {
+	                return;
+	            }
+	            /** @type {?} */
+	            var store = __stores__[storeName];
+	            if (hasInclude) {
+	                /** @type {?} */
+	                var path = includeStores[storeName];
+	                if (!path) {
+	                    return;
+	                }
+	                setInitial(storeName, store, path);
+	                subscribe(storeName, path);
+	            }
+	            else {
+	                setInitial(storeName, store, storeName);
+	                subscribe(storeName, storeName);
+	            }
+	        })));
+	    }));
+	    return {
+	        destroy: /**
+	         * @return {?}
+	         */
+	        function () {
+	            subscriptions.forEach((/**
+	             * @param {?} s
+	             * @return {?}
+	             */
+	            function (s) { return s.unsubscribe(); }));
+	            for (var i = 0, keys = Object.keys(stores); i < keys.length; i++) {
+	                /** @type {?} */
+	                var storeName = keys[i];
+	                stores[storeName].unsubscribe();
+	            }
+	            stores = {};
+	        },
+	        clear: /**
+	         * @return {?}
+	         */
+	        function () {
+	            storage.clear();
+	        },
+	        clearStore: /**
+	         * @param {?=} storeName
+	         * @return {?}
+	         */
+	        function (storeName) {
+	            if (isNil(storeName)) {
+	                /** @type {?} */
+	                var value_1 = observify(storage.setItem(key, '{}'));
+	                value_1.subscribe();
+	                return;
+	            }
+	            /** @type {?} */
+	            var value = storage.getItem(key);
+	            observify(value).subscribe((/**
+	             * @param {?} v
+	             * @return {?}
+	             */
+	            function (v) {
+	                /** @type {?} */
+	                var storageState = deserialize(v || '{}');
+	                if (storageState[storeName]) {
+	                    delete storageState[storeName];
+	                    /** @type {?} */
+	                    var value_2 = observify(storage.setItem(key, serialize(storageState)));
+	                    value_2.subscribe();
+	                }
+	            }));
+	        }
+	    };
+	}
+
+	/**
+	 * @fileoverview added by tsickle
+	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+	 */
+	/**
 	 * @abstract
-	 * @template E, S
+	 * @template State
 	 */
 	var  /**
 	 * @abstract
-	 * @template E, S
+	 * @template State
 	 */
 	AkitaPlugin = /** @class */ (function () {
 	    function AkitaPlugin(query, config) {
@@ -7248,7 +9274,7 @@ var app = (function () {
 	    clearStoreWithCache: true
 	};
 	/**
-	 * @template E
+	 * @template State
 	 */
 	var PaginatorPlugin = /** @class */ (function (_super) {
 	    __extends(PaginatorPlugin, _super);
@@ -7291,10 +9317,9 @@ var app = (function () {
 	        _this.page = new BehaviorSubject(startWith);
 	        if (isObservable(cacheTimeout)) {
 	            _this.clearCacheSubscription = cacheTimeout.subscribe((/**
-	             * @param {?} _
 	             * @return {?}
 	             */
-	            function (_) { return _this.clearCache(); }));
+	            function () { return _this.clearCache(); }));
 	        }
 	        return _this;
 	    }
@@ -7678,6 +9703,18 @@ var app = (function () {
 	        return this.query;
 	    };
 	    /**
+	     * @return {?}
+	     */
+	    PaginatorPlugin.prototype.refreshCurrentPage = /**
+	     * @return {?}
+	     */
+	    function () {
+	        if (isNil(this.currentPage) === false) {
+	            this.clearPage(this.currentPage);
+	            this.setPage(this.currentPage);
+	        }
+	    };
+	    /**
 	     * @private
 	     * @return {?}
 	     */
@@ -7777,82 +9814,6 @@ var app = (function () {
 	        arr.push(i + 1);
 	    }
 	    return arr;
-	}
-
-	/**
-	 * @fileoverview added by tsickle
-	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
-	 */
-	/**
-	 * \@internal
-	 *
-	 * \@example
-	 *
-	 * getValue(state, 'todos.ui')
-	 *
-	 * @param {?} obj
-	 * @param {?} prop
-	 * @return {?}
-	 */
-	function getValue(obj, prop) {
-	    /** return the whole state  */
-	    if (prop.split('.').length === 1) {
-	        return obj;
-	    }
-	    /** @type {?} */
-	    var removeStoreName = prop
-	        .split('.')
-	        .slice(1)
-	        .join('.');
-	    return removeStoreName.split('.').reduce((/**
-	     * @param {?} acc
-	     * @param {?} part
-	     * @return {?}
-	     */
-	    function (acc, part) { return acc && acc[part]; }), obj);
-	}
-
-	/**
-	 * @fileoverview added by tsickle
-	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
-	 */
-	/**
-	 * \@internal
-	 *
-	 * \@example
-	 * setValue(state, 'todos.ui', { filter: {} })
-	 * @param {?} obj
-	 * @param {?} prop
-	 * @param {?} val
-	 * @return {?}
-	 */
-	function setValue(obj, prop, val) {
-	    /** @type {?} */
-	    var split = prop.split('.');
-	    if (split.length === 1) {
-	        return val;
-	    }
-	    obj = __assign({}, obj);
-	    /** @type {?} */
-	    var lastIndex = split.length - 2;
-	    /** @type {?} */
-	    var removeStoreName = prop.split('.').slice(1);
-	    removeStoreName.reduce((/**
-	     * @param {?} acc
-	     * @param {?} part
-	     * @param {?} index
-	     * @return {?}
-	     */
-	    function (acc, part, index) {
-	        if (index === lastIndex) {
-	            acc[part] = val;
-	        }
-	        else {
-	            acc[part] = __assign({}, acc[part]);
-	        }
-	        return acc && acc[part];
-	    }), obj);
-	    return obj;
 	}
 
 	/**
@@ -8111,9 +10072,7 @@ var app = (function () {
 	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
 	 */
 	/** @type {?} */
-	var rootDispatcherSub;
-	/** @type {?} */
-	var devtoolsSub;
+	var subs = [];
 	/**
 	 * @param {?=} ngZoneOrOptions
 	 * @param {?=} options
@@ -8121,11 +10080,16 @@ var app = (function () {
 	 */
 	function akitaDevtools(ngZoneOrOptions, options) {
 	    if (options === void 0) { options = {}; }
+	    if (isNotBrowser)
+	        return;
 	    if (!((/** @type {?} */ (window))).__REDUX_DEVTOOLS_EXTENSION__) {
 	        return;
 	    }
-	    rootDispatcherSub && rootDispatcherSub.unsubscribe();
-	    devtoolsSub && devtoolsSub();
+	    subs.length && subs.forEach((/**
+	     * @param {?} s
+	     * @return {?}
+	     */
+	    function (s) { return s.unsubscribe(); }));
 	    /** @type {?} */
 	    var isAngular = ngZoneOrOptions && ngZoneOrOptions['run'];
 	    if (!isAngular) {
@@ -8145,50 +10109,58 @@ var app = (function () {
 	    var devTools = ((/** @type {?} */ (window))).__REDUX_DEVTOOLS_EXTENSION__.connect(merged);
 	    /** @type {?} */
 	    var appState = {};
-	    rootDispatcherSub = rootDispatcher.subscribe((/**
-	     * @param {?} action
+	    subs.push($$addStore.subscribe((/**
+	     * @param {?} storeName
 	     * @return {?}
 	     */
-	    function (action$$1) {
+	    function (storeName) {
 	        var _a;
-	        if (action$$1.type === 1 /* DELETE_STORE */) {
-	            /** @type {?} */
-	            var storeName = action$$1.payload.storeName;
-	            delete appState[storeName];
-	            devTools.send({ type: "[" + storeName + "] - Delete Store" }, appState);
+	        appState = __assign({}, appState, (_a = {}, _a[storeName] = __stores__[storeName]._value(), _a));
+	        devTools.send({ type: "[" + capitalize(storeName) + "] - @@INIT" }, appState);
+	    })));
+	    subs.push($$deleteStore.subscribe((/**
+	     * @param {?} storeName
+	     * @return {?}
+	     */
+	    function (storeName) {
+	        delete appState[storeName];
+	        devTools.send({ type: "[" + storeName + "] - Delete Store" }, appState);
+	    })));
+	    subs.push($$updateStore.subscribe((/**
+	     * @param {?} storeName
+	     * @return {?}
+	     */
+	    function (storeName) {
+	        var _a;
+	        var type = currentAction.type, entityIds = currentAction.entityIds, skip$$1 = currentAction.skip;
+	        if (skip$$1) {
+	            setSkipAction(false);
 	            return;
 	        }
-	        if (action$$1.type === 2 /* NEW_STATE */) {
-	            var type = currentAction.type, entityIds = currentAction.entityIds, skip$$1 = currentAction.skip;
-	            if (skip$$1) {
-	                setSkipAction(false);
-	                return;
-	            }
-	            /** @type {?} */
-	            var store = __stores__[action$$1.payload.name];
-	            if (!store) {
-	                return;
-	            }
-	            if (options.shallow === false && appState[action$$1.payload.name]) {
-	                /** @type {?} */
-	                var isEqual = JSON.stringify(store._value()) === JSON.stringify(appState[action$$1.payload.name]);
-	                if (isEqual)
-	                    return;
-	            }
-	            appState = __assign({}, appState, (_a = {}, _a[action$$1.payload.name] = store._value(), _a));
-	            /** @type {?} */
-	            var storeName = capitalize(action$$1.payload.name);
-	            /** @type {?} */
-	            var msg = isDefined(entityIds) ? "[" + storeName + "] - " + type + " (ids: " + entityIds + ")" : "[" + storeName + "] - " + type;
-	            if (options.logTrace) {
-	                console.group(msg);
-	                console.trace();
-	                console.groupEnd();
-	            }
-	            devTools.send({ type: msg }, appState);
+	        /** @type {?} */
+	        var store = __stores__[storeName];
+	        if (!store) {
+	            return;
 	        }
-	    }));
-	    devtoolsSub = devTools.subscribe((/**
+	        if (options.shallow === false && appState[storeName]) {
+	            /** @type {?} */
+	            var isEqual = JSON.stringify(store._value()) === JSON.stringify(appState[storeName]);
+	            if (isEqual)
+	                return;
+	        }
+	        appState = __assign({}, appState, (_a = {}, _a[storeName] = store._value(), _a));
+	        /** @type {?} */
+	        var normalize = capitalize(storeName);
+	        /** @type {?} */
+	        var msg = isDefined(entityIds) ? "[" + normalize + "] - " + type + " (ids: " + entityIds + ")" : "[" + normalize + "] - " + type;
+	        if (options.logTrace) {
+	            console.group(msg);
+	            console.trace();
+	            console.groupEnd();
+	        }
+	        devTools.send({ type: msg }, appState);
+	    })));
+	    subs.push(devTools.subscribe((/**
 	     * @param {?} message
 	     * @return {?}
 	     */
@@ -8241,7 +10213,7 @@ var app = (function () {
 	                }
 	            }
 	        }
-	    }));
+	    })));
 	}
 
 	/**
@@ -8249,12 +10221,14 @@ var app = (function () {
 	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
 	 */
 	/**
+	 * Each plugin that wants to add support for entities should extend this interface.
 	 * @abstract
-	 * @template E, P
+	 * @template State, P
 	 */
 	var  /**
+	 * Each plugin that wants to add support for entities should extend this interface.
 	 * @abstract
-	 * @template E, P
+	 * @template State, P
 	 */
 	EntityCollectionPlugin = /** @class */ (function () {
 	    function EntityCollectionPlugin(query, entityIds) {
@@ -8559,10 +10533,10 @@ var app = (function () {
 	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
 	 */
 	/**
-	 * @template E, S
+	 * @template State
 	 */
 	var  /**
-	 * @template E, S
+	 * @template State
 	 */
 	StateHistoryPlugin = /** @class */ (function (_super) {
 	    __extends(StateHistoryPlugin, _super);
@@ -8590,13 +10564,11 @@ var app = (function () {
 	         * Skip the update when redo/undo
 	         */
 	        _this.skipUpdate = false;
-	        params.maxAge = toBoolean(params.maxAge) ? params.maxAge : 10;
+	        params.maxAge = !!params.maxAge ? params.maxAge : 10;
 	        params.comparator = params.comparator || ((/**
-	         * @param {?} prev
-	         * @param {?} current
 	         * @return {?}
 	         */
-	        function (prev, current) { return true; }));
+	        function () { return true; }));
 	        _this.activate();
 	        return _this;
 	    }
@@ -8629,8 +10601,7 @@ var app = (function () {
 	    function () {
 	        var _this = this;
 	        this.history.present = this.getSource(this._entityId);
-	        this.subscription = this.selectSource(this._entityId)
-	            .pipe(pairwise())
+	        this.subscription = ((/** @type {?} */ (this))).selectSource(this._entityId).pipe(pairwise())
 	            .subscribe((/**
 	         * @param {?} __0
 	         * @return {?}
@@ -8747,13 +10718,54 @@ var app = (function () {
 	        this.update('Redo');
 	    };
 	    /**
+	     * Clear the history
+	     *
+	     * @param customUpdateFn Callback function for only clearing part of the history
+	     *
+	     * @example
+	     *
+	     * stateHistory.clear((history) => {
+	     *  return {
+	     *    past: history.past,
+	     *    present: history.present,
+	     *    future: []
+	     *  };
+	     * });
+	     */
+	    /**
+	     * Clear the history
+	     *
+	     * \@example
+	     *
+	     * stateHistory.clear((history) => {
+	     *  return {
+	     *    past: history.past,
+	     *    present: history.present,
+	     *    future: []
+	     *  };
+	     * });
+	     * @param {?=} customUpdateFn Callback function for only clearing part of the history
+	     *
 	     * @return {?}
 	     */
 	    StateHistoryPlugin.prototype.clear = /**
+	     * Clear the history
+	     *
+	     * \@example
+	     *
+	     * stateHistory.clear((history) => {
+	     *  return {
+	     *    past: history.past,
+	     *    present: history.present,
+	     *    future: []
+	     *  };
+	     * });
+	     * @param {?=} customUpdateFn Callback function for only clearing part of the history
+	     *
 	     * @return {?}
 	     */
-	    function () {
-	        this.history = {
+	    function (customUpdateFn) {
+	        this.history = isFunction$1(customUpdateFn) ? customUpdateFn(this.history) : {
 	            past: [],
 	            present: null,
 	            future: []
@@ -8808,10 +10820,10 @@ var app = (function () {
 	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
 	 */
 	/**
-	 * @template E, P
+	 * @template State, P
 	 */
 	var  /**
-	 * @template E, P
+	 * @template State, P
 	 */
 	EntityStateHistoryPlugin = /** @class */ (function (_super) {
 	    __extends(EntityStateHistoryPlugin, _super);
@@ -9014,10 +11026,10 @@ var app = (function () {
 	    function (obj, key) { return (obj && obj[key] !== 'undefined' ? obj[key] : undefined); }), nestedObj);
 	}
 	/**
-	 * @template Entity, StoreState
+	 * @template State
 	 */
 	var  /**
-	 * @template Entity, StoreState
+	 * @template State
 	 */
 	DirtyCheckPlugin = /** @class */ (function (_super) {
 	    __extends(DirtyCheckPlugin, _super);
@@ -9094,7 +11106,7 @@ var app = (function () {
 	     * @return {?}
 	     */
 	    function () {
-	        return toBoolean(this.dirty.value);
+	        return !!this.dirty.value;
 	    };
 	    /**
 	     * @return {?}
@@ -9103,7 +11115,7 @@ var app = (function () {
 	     * @return {?}
 	     */
 	    function () {
-	        return toBoolean(this.getHead());
+	        return !!this.getHead();
 	    };
 	    /**
 	     * @return {?}
@@ -9265,10 +11277,10 @@ var app = (function () {
 	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
 	 */
 	/**
-	 * @template E, P
+	 * @template State, P
 	 */
 	var  /**
-	 * @template E, P
+	 * @template State, P
 	 */
 	EntityDirtyCheckPlugin = /** @class */ (function (_super) {
 	    __extends(EntityDirtyCheckPlugin, _super);
@@ -9488,38 +11500,143 @@ var app = (function () {
 	    return EntityDirtyCheckPlugin;
 	}(EntityCollectionPlugin));
 
+	/**
+	 * @fileoverview added by tsickle
+	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+	 */
+	/**
+	 * Generate random guid
+	 *
+	 * \@example
+	 *
+	 * {
+	 *   id: guid()
+	 * }
+	 *
+	 * @return {?}
+	 */
+	function guid() {
+	    return 'xxxxxx4xyx'.replace(/[xy]/g, (/**
+	     * @param {?} c
+	     * @return {?}
+	     */
+	    function (c) {
+	        /** @type {?} */
+	        var r = (Math.random() * 16) | 0;
+	        /** @type {?} */
+	        var v = c == 'x' ? r : (r & 0x3) | 0x8;
+	        return v.toString(16);
+	    }));
+	}
+	/**
+	 * @template State
+	 * @param {?} initialState
+	 * @param {?} options
+	 * @return {?}
+	 */
+	function createEntityStore(initialState, options) {
+	    return new EntityStore(initialState, options);
+	}
+	/**
+	 * @template State
+	 * @param {?} store
+	 * @param {?} options
+	 * @return {?}
+	 */
+	function createEntityQuery(store, options) {
+	    return new QueryEntity(store, options);
+	}
+
 	//# sourceMappingURL=datorama-akita.js.map
 
-	class CounterStore extends Store {}
-	class CounterQuery extends Query {}
+	const initialState = {
+	  filter: "SHOW_ALL"
+	};
 
-	const store = new CounterStore(
-	  {
-	    count: 0
-	  },
-	  { name: 'counter' }
+	const todosStore = createEntityStore(initialState, {
+	  name: 'todos'
+	});
+
+	const todosQuery = createEntityQuery(todosStore);
+
+	const selectFilter = todosQuery.select('filter');
+
+	const visibileTodos = combineLatest(
+	  selectFilter,
+	  todosQuery.selectAll(),
+	  function getVisibleTodos(filter, todos) {
+	    switch (filter) {
+	      case "SHOW_COMPLETED":
+	        return todos.filter(t => t.completed);
+	      case "SHOW_ACTIVE":
+	        return todos.filter(t => !t.completed);
+	      default:
+	        return todos;
+	    }
+	  }
 	);
 
-	const query = new CounterQuery(store);
+	async function addTodo(title) {
+	  const todo = {
+	    title,
+	    completed: false,
+	  };
+	  const idFromServer = await Promise.resolve(guid());
+	  todosStore.add({
+	    id: idFromServer,
+	    ...todo
+	  });
+	}
 
-	/* src/App.svelte generated by Svelte v3.2.1 */
+	async function toggleCompleted(id, completed) {
+	  await Promise.resolve();
+	  todosStore.update(id, {
+	    completed
+	  });
+	}
 
-	const file = "src/App.svelte";
+	async function removeTodo(id) {
+	  await Promise.resolve();
+	  todosStore.remove(id);
+	}
 
-	function create_fragment(ctx) {
-		var h1, t1, button, t2, t3, dispose;
+	function updateFilter(filter) {
+	  todosStore.update({
+	    filter
+	  });
+	}
+
+	/* src/Todo.svelte generated by Svelte v3.2.1 */
+
+	const file$2 = "src/Todo.svelte";
+
+	function create_fragment$4(ctx) {
+		var li, div, input, input_checked_value, t0, t1_value = ctx.todo.title, t1, t2, button, dispose;
 
 		return {
 			c: function create() {
-				h1 = element("h1");
-				h1.textContent = "Svelte Akita";
-				t1 = space();
+				li = element("li");
+				div = element("div");
+				input = element("input");
+				t0 = space();
+				t1 = text(t1_value);
+				t2 = space();
 				button = element("button");
-				t2 = text("Clicks: ");
-				t3 = text(ctx.$count);
-				add_location(h1, file, 12, 0, 205);
-				add_location(button, file, 13, 0, 227);
-				dispose = listen(button, "click", handleClick);
+				button.textContent = "X";
+				attr(input, "type", "checkbox");
+				input.checked = input_checked_value = ctx.todo.completed;
+				add_location(input, file$2, 15, 4, 194);
+				add_location(div, file$2, 14, 2, 184);
+				button.type = "button";
+				button.className = "btn btn-sm btn-danger";
+				add_location(button, file$2, 19, 2, 285);
+				li.className = "list-group-item svelte-1kjaqhi";
+				add_location(li, file$2, 13, 0, 153);
+
+				dispose = [
+					listen(input, "change", ctx.change_handler),
+					listen(button, "click", ctx.click_handler)
+				];
 			},
 
 			l: function claim(nodes) {
@@ -9527,16 +11644,22 @@ var app = (function () {
 			},
 
 			m: function mount(target, anchor) {
-				insert(target, h1, anchor);
-				insert(target, t1, anchor);
-				insert(target, button, anchor);
-				append(button, t2);
-				append(button, t3);
+				insert(target, li, anchor);
+				append(li, div);
+				append(div, input);
+				append(div, t0);
+				append(div, t1);
+				append(li, t2);
+				append(li, button);
 			},
 
 			p: function update(changed, ctx) {
-				if (changed.$count) {
-					set_data(t3, ctx.$count);
+				if ((changed.todo) && input_checked_value !== (input_checked_value = ctx.todo.completed)) {
+					input.checked = input_checked_value;
+				}
+
+				if ((changed.todo) && t1_value !== (t1_value = ctx.todo.title)) {
+					set_data(t1, t1_value);
 				}
 			},
 
@@ -9545,8 +11668,175 @@ var app = (function () {
 
 			d: function destroy(detaching) {
 				if (detaching) {
-					detach(h1);
-					detach(t1);
+					detach(li);
+				}
+
+				run_all(dispose);
+			}
+		};
+	}
+
+	function instance$3($$self, $$props, $$invalidate) {
+		let { todo } = $$props;
+
+		function change_handler(event) {
+			bubble($$self, event);
+		}
+
+		function click_handler(event) {
+			bubble($$self, event);
+		}
+
+		$$self.$set = $$props => {
+			if ('todo' in $$props) $$invalidate('todo', todo = $$props.todo);
+		};
+
+		return { todo, change_handler, click_handler };
+	}
+
+	class Todo extends SvelteComponentDev {
+		constructor(options) {
+			super(options);
+			init(this, options, instance$3, create_fragment$4, not_equal, ["todo"]);
+
+			const { ctx } = this.$$;
+			const props = options.props || {};
+			if (ctx.todo === undefined && !('todo' in props)) {
+				console.warn("<Todo> was created without expected prop 'todo'");
+			}
+		}
+
+		get todo() {
+			throw new Error("<Todo>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+
+		set todo(value) {
+			throw new Error("<Todo>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+	}
+
+	/* src/AddTodo.svelte generated by Svelte v3.2.1 */
+
+	const file$3 = "src/AddTodo.svelte";
+
+	function create_fragment$5(ctx) {
+		var div, input, dispose;
+
+		return {
+			c: function create() {
+				div = element("div");
+				input = element("input");
+				input.className = "form-control";
+				input.placeholder = "Add todo..";
+				add_location(input, file$3, 10, 2, 189);
+				div.className = "form-group";
+				add_location(div, file$3, 9, 0, 162);
+
+				dispose = [
+					listen(input, "input", ctx.input_input_handler),
+					listen(input, "keydown", ctx.keydown_handler)
+				];
+			},
+
+			l: function claim(nodes) {
+				throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+			},
+
+			m: function mount(target, anchor) {
+				insert(target, div, anchor);
+				append(div, input);
+
+				input.value = ctx.todo;
+			},
+
+			p: function update(changed, ctx) {
+				if (changed.todo && (input.value !== ctx.todo)) input.value = ctx.todo;
+			},
+
+			i: noop,
+			o: noop,
+
+			d: function destroy(detaching) {
+				if (detaching) {
+					detach(div);
+				}
+
+				run_all(dispose);
+			}
+		};
+	}
+
+	function instance$4($$self, $$props, $$invalidate) {
+		const dispatch = createEventDispatcher();
+
+	  let todo = "";
+
+		function input_input_handler() {
+			todo = this.value;
+			$$invalidate('todo', todo);
+		}
+
+		function keydown_handler(event) {
+		      if (event.key === 'Enter') {
+		        dispatch('todo', todo);
+		        todo = ''; $$invalidate('todo', todo);
+		      }
+		    }
+
+		return {
+			dispatch,
+			todo,
+			input_input_handler,
+			keydown_handler
+		};
+	}
+
+	class AddTodo extends SvelteComponentDev {
+		constructor(options) {
+			super(options);
+			init(this, options, instance$4, create_fragment$5, not_equal, []);
+		}
+	}
+
+	/* src/Filters.svelte generated by Svelte v3.2.1 */
+
+	const file$4 = "src/Filters.svelte";
+
+	function get_each_context(ctx, list, i) {
+		const child_ctx = Object.create(ctx);
+		child_ctx.filter = list[i];
+		return child_ctx;
+	}
+
+	// (19:2) {#each filters as filter}
+	function create_each_block(ctx) {
+		var button, t_value = ctx.filter.label, t, button_data_filter_id_value, dispose;
+
+		return {
+			c: function create() {
+				button = element("button");
+				t = text(t_value);
+				button.type = "button";
+				button.className = "btn btn-outline-dark";
+				button.dataset.filterId = button_data_filter_id_value = ctx.filter.id;
+				toggle_class(button, "active", ctx.filter.id === ctx.$currentFilter ? 'active' : '');
+				add_location(button, file$4, 19, 3, 290);
+				dispose = listen(button, "click", ctx.click_handler);
+			},
+
+			m: function mount(target, anchor) {
+				insert(target, button, anchor);
+				append(button, t);
+			},
+
+			p: function update(changed, ctx) {
+				if ((changed.filters || changed.$currentFilter)) {
+					toggle_class(button, "active", ctx.filter.id === ctx.$currentFilter ? 'active' : '');
+				}
+			},
+
+			d: function destroy(detaching) {
+				if (detaching) {
 					detach(button);
 				}
 
@@ -9555,28 +11845,799 @@ var app = (function () {
 		};
 	}
 
-	function handleClick() {
-	  store.update(state => ({
-	    count: state.count + 1
-	  }));
+	function create_fragment$6(ctx) {
+		var div;
+
+		var each_value = ctx.filters;
+
+		var each_blocks = [];
+
+		for (var i = 0; i < each_value.length; i += 1) {
+			each_blocks[i] = create_each_block(get_each_context(ctx, each_value, i));
+		}
+
+		return {
+			c: function create() {
+				div = element("div");
+
+				for (var i = 0; i < each_blocks.length; i += 1) {
+					each_blocks[i].c();
+				}
+				div.className = "btn-group";
+				add_location(div, file$4, 17, 0, 235);
+			},
+
+			l: function claim(nodes) {
+				throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+			},
+
+			m: function mount(target, anchor) {
+				insert(target, div, anchor);
+
+				for (var i = 0; i < each_blocks.length; i += 1) {
+					each_blocks[i].m(div, null);
+				}
+			},
+
+			p: function update(changed, ctx) {
+				if (changed.filters || changed.$currentFilter) {
+					each_value = ctx.filters;
+
+					for (var i = 0; i < each_value.length; i += 1) {
+						const child_ctx = get_each_context(ctx, each_value, i);
+
+						if (each_blocks[i]) {
+							each_blocks[i].p(changed, child_ctx);
+						} else {
+							each_blocks[i] = create_each_block(child_ctx);
+							each_blocks[i].c();
+							each_blocks[i].m(div, null);
+						}
+					}
+
+					for (; i < each_blocks.length; i += 1) {
+						each_blocks[i].d(1);
+					}
+					each_blocks.length = each_value.length;
+				}
+			},
+
+			i: noop,
+			o: noop,
+
+			d: function destroy(detaching) {
+				if (detaching) {
+					detach(div);
+				}
+
+				destroy_each(each_blocks, detaching);
+			}
+		};
 	}
 
-	function instance($$self, $$props, $$invalidate) {
-		let $count;
+	function instance$5($$self, $$props, $$invalidate) {
+		let $currentFilter;
 
-		let count = query.select("count"); validate_store(count, 'count'); subscribe($$self, count, $$value => { $count = $$value; $$invalidate('$count', $count); });
+		let { currentFilter } = $$props; validate_store(currentFilter, 'currentFilter'); subscribe($$self, currentFilter, $$value => { $currentFilter = $$value; $$invalidate('$currentFilter', $currentFilter); });
 
-		return { count, $count };
+	 const filters = [{
+	   id: 'SHOW_ALL',
+	   label: 'All'
+	 },{
+	   id: 'SHOW_ACTIVE',
+	   label: 'Active'
+	 },{
+	   id: 'SHOW_COMPLETED',
+	   label: 'Completed'
+	 }];
+
+		function click_handler(event) {
+			bubble($$self, event);
+		}
+
+		$$self.$set = $$props => {
+			if ('currentFilter' in $$props) $$invalidate('currentFilter', currentFilter = $$props.currentFilter);
+		};
+
+		return {
+			currentFilter,
+			filters,
+			$currentFilter,
+			click_handler
+		};
+	}
+
+	class Filters extends SvelteComponentDev {
+		constructor(options) {
+			super(options);
+			init(this, options, instance$5, create_fragment$6, not_equal, ["currentFilter"]);
+
+			const { ctx } = this.$$;
+			const props = options.props || {};
+			if (ctx.currentFilter === undefined && !('currentFilter' in props)) {
+				console.warn("<Filters> was created without expected prop 'currentFilter'");
+			}
+		}
+
+		get currentFilter() {
+			throw new Error("<Filters>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+
+		set currentFilter(value) {
+			throw new Error("<Filters>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+	}
+
+	/* src/Todos.svelte generated by Svelte v3.2.1 */
+
+	const file$5 = "src/Todos.svelte";
+
+	function get_each_context$1(ctx, list, i) {
+		const child_ctx = Object.create(ctx);
+		child_ctx.todo = list[i];
+		child_ctx.i = i;
+		return child_ctx;
+	}
+
+	// (37:4) {#each $visibileTodos as todo, i (todo.id)}
+	function create_each_block$1(key_1, ctx) {
+		var first, current;
+
+		function click_handler_1() {
+			return ctx.click_handler_1(ctx);
+		}
+
+		function change_handler(...args) {
+			return ctx.change_handler(ctx, ...args);
+		}
+
+		var todo_1 = new Todo({
+			props: { todo: ctx.todo },
+			$$inline: true
+		});
+		todo_1.$on("click", click_handler_1);
+		todo_1.$on("change", change_handler);
+
+		return {
+			key: key_1,
+
+			first: null,
+
+			c: function create() {
+				first = empty();
+				todo_1.$$.fragment.c();
+				this.first = first;
+			},
+
+			m: function mount(target, anchor) {
+				insert(target, first, anchor);
+				mount_component(todo_1, target, anchor);
+				current = true;
+			},
+
+			p: function update(changed, new_ctx) {
+				ctx = new_ctx;
+				var todo_1_changes = {};
+				if (changed.$visibileTodos) todo_1_changes.todo = ctx.todo;
+				todo_1.$set(todo_1_changes);
+			},
+
+			i: function intro(local) {
+				if (current) return;
+				todo_1.$$.fragment.i(local);
+
+				current = true;
+			},
+
+			o: function outro(local) {
+				todo_1.$$.fragment.o(local);
+				current = false;
+			},
+
+			d: function destroy(detaching) {
+				if (detaching) {
+					detach(first);
+				}
+
+				todo_1.$destroy(detaching);
+			}
+		};
+	}
+
+	function create_fragment$7(ctx) {
+		var section, h1, t1, t2, t3, ul, each_blocks = [], each_1_lookup = new Map(), t4, t5_value = ctx.$visibileTodos.length, t5, current;
+
+		var filters = new Filters({
+			props: { currentFilter: selectFilter },
+			$$inline: true
+		});
+		filters.$on("click", ctx.click_handler);
+
+		var addtodo = new AddTodo({ $$inline: true });
+		addtodo.$on("todo", ctx.todo_handler);
+
+		var each_value = ctx.$visibileTodos;
+
+		const get_key = ctx => ctx.todo.id;
+
+		for (var i = 0; i < each_value.length; i += 1) {
+			let child_ctx = get_each_context$1(ctx, each_value, i);
+			let key = get_key(child_ctx);
+			each_1_lookup.set(key, each_blocks[i] = create_each_block$1(key, child_ctx));
+		}
+
+		return {
+			c: function create() {
+				section = element("section");
+				h1 = element("h1");
+				h1.textContent = "Todos";
+				t1 = space();
+				filters.$$.fragment.c();
+				t2 = space();
+				addtodo.$$.fragment.c();
+				t3 = space();
+				ul = element("ul");
+
+				for (i = 0; i < each_blocks.length; i += 1) each_blocks[i].c();
+
+				t4 = space();
+				t5 = text(t5_value);
+				add_location(h1, file$5, 28, 2, 416);
+				ul.className = "list-group";
+				add_location(ul, file$5, 35, 2, 594);
+				section.className = "svelte-sog0wn";
+				add_location(section, file$5, 27, 0, 404);
+			},
+
+			l: function claim(nodes) {
+				throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+			},
+
+			m: function mount(target, anchor) {
+				insert(target, section, anchor);
+				append(section, h1);
+				append(section, t1);
+				mount_component(filters, section, null);
+				append(section, t2);
+				mount_component(addtodo, section, null);
+				append(section, t3);
+				append(section, ul);
+
+				for (i = 0; i < each_blocks.length; i += 1) each_blocks[i].m(ul, null);
+
+				append(section, t4);
+				append(section, t5);
+				current = true;
+			},
+
+			p: function update(changed, ctx) {
+				var filters_changes = {};
+				if (changed.selectFilter) filters_changes.currentFilter = selectFilter;
+				filters.$set(filters_changes);
+
+				const each_value = ctx.$visibileTodos;
+
+				group_outros();
+				each_blocks = update_keyed_each(each_blocks, changed, get_key, 1, ctx, each_value, each_1_lookup, ul, outro_and_destroy_block, create_each_block$1, null, get_each_context$1);
+				check_outros();
+
+				if ((!current || changed.$visibileTodos) && t5_value !== (t5_value = ctx.$visibileTodos.length)) {
+					set_data(t5, t5_value);
+				}
+			},
+
+			i: function intro(local) {
+				if (current) return;
+				filters.$$.fragment.i(local);
+
+				addtodo.$$.fragment.i(local);
+
+				for (var i = 0; i < each_value.length; i += 1) each_blocks[i].i();
+
+				current = true;
+			},
+
+			o: function outro(local) {
+				filters.$$.fragment.o(local);
+				addtodo.$$.fragment.o(local);
+
+				for (i = 0; i < each_blocks.length; i += 1) each_blocks[i].o();
+
+				current = false;
+			},
+
+			d: function destroy(detaching) {
+				if (detaching) {
+					detach(section);
+				}
+
+				filters.$destroy();
+
+				addtodo.$destroy();
+
+				for (i = 0; i < each_blocks.length; i += 1) each_blocks[i].d();
+			}
+		};
+	}
+
+	function instance$6($$self, $$props, $$invalidate) {
+		let $visibileTodos;
+
+		validate_store(visibileTodos, 'visibileTodos');
+		subscribe($$self, visibileTodos, $$value => { $visibileTodos = $$value; $$invalidate('$visibileTodos', $visibileTodos); });
+
+		function click_handler(event) {
+			return updateFilter(event.target.dataset.filterId);
+		}
+
+		function todo_handler(e) {
+			return addTodo(e.detail);
+		}
+
+		function click_handler_1({ todo }) {
+			return removeTodo(todo.id);
+		}
+
+		function change_handler({ todo }, e) {
+			return toggleCompleted(todo.id, e.target.checked);
+		}
+
+		return {
+			$visibileTodos,
+			click_handler,
+			todo_handler,
+			click_handler_1,
+			change_handler
+		};
+	}
+
+	class Todos extends SvelteComponentDev {
+		constructor(options) {
+			super(options);
+			init(this, options, instance$6, create_fragment$7, not_equal, []);
+		}
+	}
+
+	/* src/NavLink.svelte generated by Svelte v3.2.1 */
+
+	// (14:0) <Link {to} {getProps}>
+	function create_default_slot(ctx) {
+		var current;
+
+		const default_slot_1 = ctx.$$slots.default;
+		const default_slot = create_slot(default_slot_1, ctx, null);
+
+		return {
+			c: function create() {
+				if (default_slot) default_slot.c();
+			},
+
+			l: function claim(nodes) {
+				if (default_slot) default_slot.l(nodes);
+			},
+
+			m: function mount(target, anchor) {
+				if (default_slot) {
+					default_slot.m(target, anchor);
+				}
+
+				current = true;
+			},
+
+			p: function update(changed, ctx) {
+				if (default_slot && default_slot.p && changed.$$scope) {
+					default_slot.p(get_slot_changes(default_slot_1, ctx, changed,), get_slot_context(default_slot_1, ctx, null));
+				}
+			},
+
+			i: function intro(local) {
+				if (current) return;
+				if (default_slot && default_slot.i) default_slot.i(local);
+				current = true;
+			},
+
+			o: function outro(local) {
+				if (default_slot && default_slot.o) default_slot.o(local);
+				current = false;
+			},
+
+			d: function destroy(detaching) {
+				if (default_slot) default_slot.d(detaching);
+			}
+		};
+	}
+
+	function create_fragment$8(ctx) {
+		var current;
+
+		var link = new Link({
+			props: {
+			to: ctx.to,
+			getProps: getProps,
+			$$slots: { default: [create_default_slot] },
+			$$scope: { ctx }
+		},
+			$$inline: true
+		});
+
+		return {
+			c: function create() {
+				link.$$.fragment.c();
+			},
+
+			l: function claim(nodes) {
+				throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+			},
+
+			m: function mount(target, anchor) {
+				mount_component(link, target, anchor);
+				current = true;
+			},
+
+			p: function update(changed, ctx) {
+				var link_changes = {};
+				if (changed.to) link_changes.to = ctx.to;
+				if (changed.getProps) link_changes.getProps = getProps;
+				if (changed.$$scope) link_changes.$$scope = { changed, ctx };
+				link.$set(link_changes);
+			},
+
+			i: function intro(local) {
+				if (current) return;
+				link.$$.fragment.i(local);
+
+				current = true;
+			},
+
+			o: function outro(local) {
+				link.$$.fragment.o(local);
+				current = false;
+			},
+
+			d: function destroy(detaching) {
+				link.$destroy(detaching);
+			}
+		};
+	}
+
+	function getProps({ location, href, isPartiallyCurrent, isCurrent }) {
+	  const isActive = href === "/" ? isCurrent : isPartiallyCurrent || isCurrent;
+	  // The object returned here is spread on the anchor element's attributes
+	  if (isActive) {
+	    return { class: "active" };
+	  }
+	  return {};
+	}
+
+	function instance$7($$self, $$props, $$invalidate) {
+		let { to = "" } = $$props;
+
+		let { $$slots = {}, $$scope } = $$props;
+
+		$$self.$set = $$props => {
+			if ('to' in $$props) $$invalidate('to', to = $$props.to);
+			if ('$$scope' in $$props) $$invalidate('$$scope', $$scope = $$props.$$scope);
+		};
+
+		return { to, $$slots, $$scope };
+	}
+
+	class NavLink extends SvelteComponentDev {
+		constructor(options) {
+			super(options);
+			init(this, options, instance$7, create_fragment$8, safe_not_equal, ["to"]);
+		}
+
+		get to() {
+			throw new Error("<NavLink>: Props cannot be read directly from the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+
+		set to(value) {
+			throw new Error("<NavLink>: Props cannot be set directly on the component instance unless compiling with 'accessors: true' or '<svelte:options accessors/>'");
+		}
+	}
+
+	/* src/App.svelte generated by Svelte v3.2.1 */
+
+	const file$6 = "src/App.svelte";
+
+	// (10:4) <NavLink to="/">
+	function create_default_slot_4(ctx) {
+		var t;
+
+		return {
+			c: function create() {
+				t = text("Home");
+			},
+
+			m: function mount(target, anchor) {
+				insert(target, t, anchor);
+			},
+
+			d: function destroy(detaching) {
+				if (detaching) {
+					detach(t);
+				}
+			}
+		};
+	}
+
+	// (11:4) <NavLink to="todos">
+	function create_default_slot_3(ctx) {
+		var t;
+
+		return {
+			c: function create() {
+				t = text("Todos");
+			},
+
+			m: function mount(target, anchor) {
+				insert(target, t, anchor);
+			},
+
+			d: function destroy(detaching) {
+				if (detaching) {
+					detach(t);
+				}
+			}
+		};
+	}
+
+	// (14:4) <Route path="/">
+	function create_default_slot_2(ctx) {
+		var current;
+
+		var home = new Home({ $$inline: true });
+
+		return {
+			c: function create() {
+				home.$$.fragment.c();
+			},
+
+			m: function mount(target, anchor) {
+				mount_component(home, target, anchor);
+				current = true;
+			},
+
+			i: function intro(local) {
+				if (current) return;
+				home.$$.fragment.i(local);
+
+				current = true;
+			},
+
+			o: function outro(local) {
+				home.$$.fragment.o(local);
+				current = false;
+			},
+
+			d: function destroy(detaching) {
+				home.$destroy(detaching);
+			}
+		};
+	}
+
+	// (17:4) <Route path="/todos">
+	function create_default_slot_1(ctx) {
+		var current;
+
+		var todos = new Todos({ $$inline: true });
+
+		return {
+			c: function create() {
+				todos.$$.fragment.c();
+			},
+
+			m: function mount(target, anchor) {
+				mount_component(todos, target, anchor);
+				current = true;
+			},
+
+			i: function intro(local) {
+				if (current) return;
+				todos.$$.fragment.i(local);
+
+				current = true;
+			},
+
+			o: function outro(local) {
+				todos.$$.fragment.o(local);
+				current = false;
+			},
+
+			d: function destroy(detaching) {
+				todos.$destroy(detaching);
+			}
+		};
+	}
+
+	// (8:0) <Router>
+	function create_default_slot$1(ctx) {
+		var nav, t0, t1, div, t2, current;
+
+		var navlink0 = new NavLink({
+			props: {
+			to: "/",
+			$$slots: { default: [create_default_slot_4] },
+			$$scope: { ctx }
+		},
+			$$inline: true
+		});
+
+		var navlink1 = new NavLink({
+			props: {
+			to: "todos",
+			$$slots: { default: [create_default_slot_3] },
+			$$scope: { ctx }
+		},
+			$$inline: true
+		});
+
+		var route0 = new Route({
+			props: {
+			path: "/",
+			$$slots: { default: [create_default_slot_2] },
+			$$scope: { ctx }
+		},
+			$$inline: true
+		});
+
+		var route1 = new Route({
+			props: {
+			path: "/todos",
+			$$slots: { default: [create_default_slot_1] },
+			$$scope: { ctx }
+		},
+			$$inline: true
+		});
+
+		return {
+			c: function create() {
+				nav = element("nav");
+				navlink0.$$.fragment.c();
+				t0 = space();
+				navlink1.$$.fragment.c();
+				t1 = space();
+				div = element("div");
+				route0.$$.fragment.c();
+				t2 = space();
+				route1.$$.fragment.c();
+				add_location(nav, file$6, 8, 2, 203);
+				div.className = "container";
+				add_location(div, file$6, 12, 2, 295);
+			},
+
+			m: function mount(target, anchor) {
+				insert(target, nav, anchor);
+				mount_component(navlink0, nav, null);
+				append(nav, t0);
+				mount_component(navlink1, nav, null);
+				insert(target, t1, anchor);
+				insert(target, div, anchor);
+				mount_component(route0, div, null);
+				append(div, t2);
+				mount_component(route1, div, null);
+				current = true;
+			},
+
+			p: function update(changed, ctx) {
+				var navlink0_changes = {};
+				if (changed.$$scope) navlink0_changes.$$scope = { changed, ctx };
+				navlink0.$set(navlink0_changes);
+
+				var navlink1_changes = {};
+				if (changed.$$scope) navlink1_changes.$$scope = { changed, ctx };
+				navlink1.$set(navlink1_changes);
+
+				var route0_changes = {};
+				if (changed.$$scope) route0_changes.$$scope = { changed, ctx };
+				route0.$set(route0_changes);
+
+				var route1_changes = {};
+				if (changed.$$scope) route1_changes.$$scope = { changed, ctx };
+				route1.$set(route1_changes);
+			},
+
+			i: function intro(local) {
+				if (current) return;
+				navlink0.$$.fragment.i(local);
+
+				navlink1.$$.fragment.i(local);
+
+				route0.$$.fragment.i(local);
+
+				route1.$$.fragment.i(local);
+
+				current = true;
+			},
+
+			o: function outro(local) {
+				navlink0.$$.fragment.o(local);
+				navlink1.$$.fragment.o(local);
+				route0.$$.fragment.o(local);
+				route1.$$.fragment.o(local);
+				current = false;
+			},
+
+			d: function destroy(detaching) {
+				if (detaching) {
+					detach(nav);
+				}
+
+				navlink0.$destroy();
+
+				navlink1.$destroy();
+
+				if (detaching) {
+					detach(t1);
+					detach(div);
+				}
+
+				route0.$destroy();
+
+				route1.$destroy();
+			}
+		};
+	}
+
+	function create_fragment$9(ctx) {
+		var current;
+
+		var router = new Router({
+			props: {
+			$$slots: { default: [create_default_slot$1] },
+			$$scope: { ctx }
+		},
+			$$inline: true
+		});
+
+		return {
+			c: function create() {
+				router.$$.fragment.c();
+			},
+
+			l: function claim(nodes) {
+				throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
+			},
+
+			m: function mount(target, anchor) {
+				mount_component(router, target, anchor);
+				current = true;
+			},
+
+			p: function update(changed, ctx) {
+				var router_changes = {};
+				if (changed.$$scope) router_changes.$$scope = { changed, ctx };
+				router.$set(router_changes);
+			},
+
+			i: function intro(local) {
+				if (current) return;
+				router.$$.fragment.i(local);
+
+				current = true;
+			},
+
+			o: function outro(local) {
+				router.$$.fragment.o(local);
+				current = false;
+			},
+
+			d: function destroy(detaching) {
+				router.$destroy(detaching);
+			}
+		};
 	}
 
 	class App extends SvelteComponentDev {
 		constructor(options) {
 			super(options);
-			init(this, options, instance, create_fragment, safe_not_equal, []);
+			init(this, options, null, create_fragment$9, safe_not_equal, []);
 		}
 	}
 
 	akitaDevtools();
+	persistState();
 
 	const app = new App({
 	  target: document.body,

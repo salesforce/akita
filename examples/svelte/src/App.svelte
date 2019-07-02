@@ -1,12 +1,21 @@
 <script>
-  import { store, selectCount } from "./count.state";
-
-  function handleClick() {
-    store.update(state => ({
-      count: state.count + 1
-    }));
-  }
+  import { Router, Link, Route } from "svelte-routing";
+  import Home from "./Home.svelte";
+  import Todos from "./Todos.svelte";
+  import NavLink from "./NavLink.svelte";
 </script>
 
-<h1>Svelte Akita</h1>
-<button on:click={handleClick}>Clicks: {$selectCount} </button>
+<Router>
+  <nav>
+    <NavLink to="/">Home</NavLink>
+    <NavLink to="todos">Todos</NavLink>
+  </nav>
+  <div class="container">
+    <Route path="/">
+      <Home />
+    </Route>
+    <Route path="/todos">
+      <Todos />
+    </Route>
+  </div>
+</Router>

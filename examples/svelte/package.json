@@ -20,7 +20,9 @@
     "start:dev": "sirv public --dev"
   },
   "dependencies": {
-    "@datorama/akita": "^3.10.2",
-    "axios": "^0.18.0"
+    "@datorama/akita": "^3.11.1",
+    "@datorama/akita-cli": "^4.0.0",
+    "axios": "^0.18.0",
+    "svelte-routing": "^1.1.0"
   }
 }
