@@ -5,6 +5,11 @@ import {
   guid
 } from '@datorama/akita';
 
+export async function readTodos() {
+  const todos = await Promise.resolve([{id:1, completed: true, title: 'create sample Svelte+Akita todo app'}]);
+  todosStore.set(todos);
+}
+
 export async function addTodo(title) {
   const todo = {
     title,

@@ -1137,7 +1137,7 @@ var app = (function () {
 	function instance($$self, $$props, $$invalidate) {
 		let $base, $location, $routes;
 
-		
+
 
 	  let { basepath = "/", url = null } = $$props;
 
@@ -1584,7 +1584,7 @@ var app = (function () {
 	function instance$1($$self, $$props, $$invalidate) {
 		let $activeRoute;
 
-		
+
 
 	  let { path = "", component = null } = $$props;
 
@@ -1747,7 +1747,7 @@ var app = (function () {
 	function instance$2($$self, $$props, $$invalidate) {
 		let $base, $location;
 
-		
+
 
 	  let { to = "#", replace = false, state = {}, getProps = () => ({}) } = $$props;
 
@@ -5233,7 +5233,7 @@ var app = (function () {
 	 * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
 	 */
 	// @internal
-	var 
+	var
 	// @internal
 	AkitaError = /** @class */ (function (_super) {
 	    __extends(AkitaError, _super);
@@ -5823,7 +5823,7 @@ var app = (function () {
 	     * @param {?} project
 	     * @return {?}
 	     */
-	    Store.prototype._select = 
+	    Store.prototype._select =
 	    // @internal
 	    /**
 	     * @template R
@@ -5838,7 +5838,7 @@ var app = (function () {
 	    /**
 	     * @return {?}
 	     */
-	    Store.prototype._value = 
+	    Store.prototype._value =
 	    // @internal
 	    /**
 	     * @return {?}
@@ -5851,7 +5851,7 @@ var app = (function () {
 	    /**
 	     * @return {?}
 	     */
-	    Store.prototype._cache = 
+	    Store.prototype._cache =
 	    // @internal
 	    /**
 	     * @return {?}
@@ -5861,7 +5861,7 @@ var app = (function () {
 	    };
 	    Object.defineProperty(Store.prototype, "config", {
 	        // @internal
-	        get: 
+	        get:
 	        // @internal
 	        /**
 	         * @return {?}
@@ -5874,7 +5874,7 @@ var app = (function () {
 	    });
 	    Object.defineProperty(Store.prototype, "storeName", {
 	        // @internal
-	        get: 
+	        get:
 	        // @internal
 	        /**
 	         * @return {?}
@@ -5887,7 +5887,7 @@ var app = (function () {
 	    });
 	    Object.defineProperty(Store.prototype, "deepFreeze", {
 	        // @internal
-	        get: 
+	        get:
 	        // @internal
 	        /**
 	         * @return {?}
@@ -5900,7 +5900,7 @@ var app = (function () {
 	    });
 	    Object.defineProperty(Store.prototype, "cacheConfig", {
 	        // @internal
-	        get: 
+	        get:
 	        // @internal
 	        /**
 	         * @return {?}
@@ -5913,7 +5913,7 @@ var app = (function () {
 	    });
 	    Object.defineProperty(Store.prototype, "resettable", {
 	        // @internal
-	        get: 
+	        get:
 	        // @internal
 	        /**
 	         * @return {?}
@@ -5931,7 +5931,7 @@ var app = (function () {
 	     * @param {?=} _dispatchAction
 	     * @return {?}
 	     */
-	    Store.prototype._setState = 
+	    Store.prototype._setState =
 	    // @internal
 	    /**
 	     * @param {?} newStateFn
@@ -6035,7 +6035,7 @@ var app = (function () {
 	     * @param {?} nextState
 	     * @return {?}
 	     */
-	    Store.prototype.akitaPreUpdate = 
+	    Store.prototype.akitaPreUpdate =
 	    // @internal
 	    /**
 	     * @param {?} _
@@ -6574,7 +6574,7 @@ var app = (function () {
 	    }
 	    Object.defineProperty(EntityStore.prototype, "selectEntityAction$", {
 	        // @internal
-	        get: 
+	        get:
 	        // @internal
 	        /**
 	         * @return {?}
@@ -6587,7 +6587,7 @@ var app = (function () {
 	    });
 	    Object.defineProperty(EntityStore.prototype, "idKey", {
 	        // @internal
-	        get: 
+	        get:
 	        // @internal
 	        /**
 	         * @return {?}
@@ -7376,7 +7376,7 @@ var app = (function () {
 	    /**
 	     * @return {?}
 	     */
-	    EntityStore.prototype.destroy = 
+	    EntityStore.prototype.destroy =
 	    // @internal
 	    /**
 	     * @return {?}
@@ -7395,7 +7395,7 @@ var app = (function () {
 	     * @param {?} nextEntity
 	     * @return {?}
 	     */
-	    EntityStore.prototype.akitaPreUpdateEntity = 
+	    EntityStore.prototype.akitaPreUpdateEntity =
 	    // @internal
 	    /**
 	     * @param {?} _
@@ -7411,7 +7411,7 @@ var app = (function () {
 	     * @param {?} newEntity
 	     * @return {?}
 	     */
-	    EntityStore.prototype.akitaPreAddEntity = 
+	    EntityStore.prototype.akitaPreAddEntity =
 	    // @internal
 	    /**
 	     * @param {?} newEntity
@@ -7595,7 +7595,7 @@ var app = (function () {
 	/**
 	 * @template UIState, DEPRECATED
 	 */
-	var  
+	var
 	// @internal
 	/**
 	 * @template UIState, DEPRECATED
@@ -7892,7 +7892,7 @@ var app = (function () {
 	    };
 	    Object.defineProperty(Query.prototype, "config", {
 	        // @internal
-	        get: 
+	        get:
 	        // @internal
 	        /**
 	         * @return {?}
@@ -8694,7 +8694,7 @@ var app = (function () {
 	/**
 	 * @template UIState, DEPRECATED
 	 */
-	var  
+	var
 	// @internal
 	/**
 	 * @template UIState, DEPRECATED
@@ -9824,7 +9824,7 @@ var app = (function () {
 	/**
 	 * @template T
 	 */
-	var  
+	var
 	// Todo: Return  AbstractControl interface
 	/**
 	 * @template T
@@ -11561,7 +11561,7 @@ var app = (function () {
 
 	const selectFilter = todosQuery.select('filter');
 
-	const visibileTodos = combineLatest(
+	const visibleTodos = combineLatest(
 	  selectFilter,
 	  todosQuery.selectAll(),
 	  function getVisibleTodos(filter, todos) {
@@ -11979,7 +11979,7 @@ var app = (function () {
 		return child_ctx;
 	}
 
-	// (37:4) {#each $visibileTodos as todo, i (todo.id)}
+	// (37:4) {#each $visibleTodos as todo, i (todo.id)}
 	function create_each_block$1(key_1, ctx) {
 		var first, current;
 
@@ -12018,7 +12018,7 @@ var app = (function () {
 			p: function update(changed, new_ctx) {
 				ctx = new_ctx;
 				var todo_1_changes = {};
-				if (changed.$visibileTodos) todo_1_changes.todo = ctx.todo;
+				if (changed.$visibleTodos) todo_1_changes.todo = ctx.todo;
 				todo_1.$set(todo_1_changes);
 			},
 
@@ -12045,7 +12045,7 @@ var app = (function () {
 	}
 
 	function create_fragment$7(ctx) {
-		var section, h1, t1, t2, t3, ul, each_blocks = [], each_1_lookup = new Map(), t4, t5_value = ctx.$visibileTodos.length, t5, current;
+		var section, h1, t1, t2, t3, ul, each_blocks = [], each_1_lookup = new Map(), t4, t5_value = ctx.$visibleTodos.length, t5, current;
 
 		var filters = new Filters({
 			props: { currentFilter: selectFilter },
@@ -12056,7 +12056,7 @@ var app = (function () {
 		var addtodo = new AddTodo({ $$inline: true });
 		addtodo.$on("todo", ctx.todo_handler);
 
-		var each_value = ctx.$visibileTodos;
+		var each_value = ctx.$visibleTodos;
 
 		const get_key = ctx => ctx.todo.id;
 
@@ -12115,13 +12115,13 @@ var app = (function () {
 				if (changed.selectFilter) filters_changes.currentFilter = selectFilter;
 				filters.$set(filters_changes);
 
-				const each_value = ctx.$visibileTodos;
+				const each_value = ctx.$visibleTodos;
 
 				group_outros();
 				each_blocks = update_keyed_each(each_blocks, changed, get_key, 1, ctx, each_value, each_1_lookup, ul, outro_and_destroy_block, create_each_block$1, null, get_each_context$1);
 				check_outros();
 
-				if ((!current || changed.$visibileTodos) && t5_value !== (t5_value = ctx.$visibileTodos.length)) {
+				if ((!current || changed.$visibleTodos) && t5_value !== (t5_value = ctx.$visibleTodos.length)) {
 					set_data(t5, t5_value);
 				}
 			},
@@ -12161,10 +12161,10 @@ var app = (function () {
 	}
 
 	function instance$6($$self, $$props, $$invalidate) {
-		let $visibileTodos;
+		let $visibleTodos;
 
-		validate_store(visibileTodos, 'visibileTodos');
-		subscribe($$self, visibileTodos, $$value => { $visibileTodos = $$value; $$invalidate('$visibileTodos', $visibileTodos); });
+		validate_store(visibleTodos, 'visibleTodos');
+		subscribe($$self, visibleTodos, $$value => { $visibleTodos = $$value; $$invalidate('$visibleTodos', $visibleTodos); });
 
 		function click_handler(event) {
 			return updateFilter(event.target.dataset.filterId);
@@ -12183,7 +12183,7 @@ var app = (function () {
 		}
 
 		return {
-			$visibileTodos,
+			$visibleTodos,
 			click_handler,
 			todo_handler,
 			click_handler_1,

@@ -2,8 +2,9 @@
 
 <script>
   import {
-    visibileTodos,
+    visibleTodos,
     addTodo,
+    readTodos,
     removeTodo,
     selectFilter,
     updateFilter,
@@ -15,6 +16,7 @@ import AddTodo from './AddTodo.svelte';
 import Filters from './Filters.svelte';
 
   let todo = "";
+  readTodos();
 </script>
 
 <style>
@@ -34,11 +36,11 @@ import Filters from './Filters.svelte';
   <AddTodo on:todo={ e => addTodo(e.detail) }/>
 
   <ul class="list-group">
-    {#each $visibileTodos as todo, i (todo.id)}
+    {#each $visibleTodos as todo, i (todo.id)}
       <Todo {todo}
         on:click={() => removeTodo(todo.id)}
         on:change={e => toggleCompleted(todo.id, e.target.checked)} />
     {/each}
   </ul>
-  {$visibileTodos.length}
+  {$visibleTodos.length}
 </section>

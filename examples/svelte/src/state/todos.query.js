@@ -12,7 +12,7 @@ export const todosQuery = createEntityQuery(todosStore);
 
 export const selectFilter = todosQuery.select('filter');
 
-export const visibileTodos = combineLatest(
+export const visibleTodos = combineLatest(
   selectFilter,
   todosQuery.selectAll(),
   function getVisibleTodos(filter, todos) {
