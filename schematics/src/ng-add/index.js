@@ -17,7 +17,7 @@ function addPackageJsonDependencies(options) {
         if (options.withRouter || options.router) {
             dependencies.push({
                 type: schematics_utilities_1.NodeDependencyType.Dev,
-                version: '^3.0.0',
+                version: '^3.1.3',
                 name: '@datorama/akita-ng-router-store'
             });
         }
@@ -106,23 +106,25 @@ function addModuleToImports(options) {
         const project = schematics_utilities_1.getProjectFromWorkspace(workspace, 
         // Takes the first project in case it's not provided by CLI
         options.project ? options.project : Object.keys(workspace['projects'])[0]);
-        let importm = '';
+        let importDevtools = '';
+        let importRouter = '';
         if ((options.withRouter || options.router) && options.devtools) {
-            importm = `environment.production ?
-        AkitaNgRouterStoreModule.forRoot() :
-        [ AkitaNgDevtools.forRoot(), AkitaNgRouterStoreModule.forRoot() ]`;
-        }
-        else if (options.devtools) {
-            importm = `environment.production ? [] : AkitaNgDevtools.forRoot()`;
-        }
-        if (importm) {
-            schematics_utilities_1.addModuleImportToRootModule(host, importm, null, project);
+            importRouter = `AkitaNgRouterStoreModule.forRoot()`;
         }
         if (options.devtools) {
-            context.logger.log('info', `✅️ AkitaNgDevtools is imported`);
+            importDevtools = `environment.production ? [] : AkitaNgDevtools.forRoot()`;
+        }
+        if (importDevtools) {
+            schematics_utilities_1.addModuleImportToRootModule(host, importDevtools, null, project);
+        }
+        if (importRouter) {
+            schematics_utilities_1.addModuleImportToRootModule(host, importRouter, null, project);
+        }
+        if (options.devtools) {
+            context.logger.log('info', `🔥 AkitaNgDevtools is imported`);
         }
         if (options.withRouter || options.router) {
-            context.logger.log('info', `✅️ AkitaNgRouterStoreModule is imported`);
+            context.logger.log('info', `🦄 AkitaNgRouterStoreModule is imported`);
         }
         return host;
     };
