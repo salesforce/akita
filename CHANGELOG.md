@@ -1,6 +1,15 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [4.2.2](https://github.com/datorama/akita/compare/v4.2.1...v4.2.2) (2019-07-03)
+
+
+### Bug Fixes
+
+* **schematics:** import packages improvements ([45324ef](https://github.com/datorama/akita/commit/45324ef))
+
+
 
 <a name="4.2.1"></a>
 ## [4.2.1](https://github.com/datorama/akita/compare/v4.2.0...v4.2.1) (2019-06-30)
