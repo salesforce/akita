@@ -76,11 +76,22 @@ export class Store<S> {
    *
    * store.setHasCache(true)
    * store.setHasCache(false)
+   * store.setHasCache(true, { restartTTL: true })
    *
    */
-  setHasCache(hasCache: boolean) {
+  setHasCache(hasCache: boolean, options: { restartTTL: boolean } = { restartTTL: false }) {
     if (hasCache !== this.cache.active.value) {
       this.cache.active.next(hasCache);
+    }
+
+    if (options.restartTTL) {
+      const ttlConfig = this.cacheConfig && this.cacheConfig.ttl;
+      if (ttlConfig) {
+        if (this.cache.ttl !== null) {
+          clearTimeout(this.cache.ttl);
+        }
+        this.cache.ttl = <any>setTimeout(() => this.setHasCache(false), ttlConfig);
+      }
     }
   }
 

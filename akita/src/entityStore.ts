@@ -83,7 +83,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
       })
     );
 
-    this.updateCache();
+    this.setHasCache(true, { restartTTL: true });
 
     if (this.hasInitialUIState()) {
       this.handleUICreation();
@@ -537,17 +537,6 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
         active: ids
       };
     });
-  }
-
-  private updateCache() {
-    this.setHasCache(true);
-    const ttlConfig = this.cacheConfig && this.cacheConfig.ttl;
-    if (ttlConfig) {
-      if (this.cache.ttl !== null) {
-        clearTimeout(this.cache.ttl);
-      }
-      this.cache.ttl = <any>setTimeout(() => this.setHasCache(false), ttlConfig);
-    }
   }
 
   private handleUICreation(add = false) {
