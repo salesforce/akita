@@ -1,8 +1,19 @@
-# Changelog
+# Change Log
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [4.2.2](https://github.com/datorama/akita/compare/v4.2.1...v4.2.2) (2019-07-03)
+<a name="4.3.0"></a>
+# [4.3.0](https://github.com/datorama/akita/compare/v4.2.2...v4.3.0) (2019-07-05)
+
+
+### Features
+
+* **entity-store:** add move method ([bd7369d](https://github.com/datorama/akita/commit/bd7369d))
+* **store:** move cache ttl to base store ([114238a](https://github.com/datorama/akita/commit/114238a))
+
+
+
+## [4.2.2](https://github.com/datorama/akita/compare/v4.2.1...v4.2.2) (2019-07-03)
 
 
 ### Bug Fixes
