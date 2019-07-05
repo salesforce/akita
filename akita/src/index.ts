@@ -63,3 +63,4 @@ export { arrayRemove } from './arrayRemove';
 export { createEntityQuery, createEntityStore, createQuery, createStore } from './fp';
 export * from './entityActions';
 export * from './dispatchers';
+export { cacheable } from './cacheable';

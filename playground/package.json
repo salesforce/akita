@@ -25,6 +25,7 @@
     "faker": "^4.1.0",
     "helpful-decorators": "1.7.2",
     "ngx-take-until-destroy": "5.2.3",
+    "prettier": "^1.18.2",
     "rxjs": "^6.4.0",
     "zone.js": "^0.8.26"
   },

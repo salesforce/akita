@@ -39,7 +39,7 @@ import { __DEV__, isDev } from './env';
  *   }
  * }
  */
-export class Store<S> {
+export class Store<S = any> {
   private store: BehaviorSubject<Readonly<S>>;
   private storeValue: S;
   private inTransaction = false;
