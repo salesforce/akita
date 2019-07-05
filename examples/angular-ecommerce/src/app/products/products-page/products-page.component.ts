@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { combineLatest, EMPTY, Observable } from 'rxjs';
 import { BaseProduct } from '../state/product.model';
 import { ProductsService } from '../state/products.service';
@@ -9,7 +9,7 @@ import { untilDestroyed } from 'ngx-take-until-destroy';
 @Component({
   templateUrl: './products-page.component.html'
 })
-export class ProductsPageComponent implements OnInit {
+export class ProductsPageComponent implements OnInit, OnDestroy {
   isLoading$: Observable<boolean>;
   products$: Observable<BaseProduct[]>;
 
