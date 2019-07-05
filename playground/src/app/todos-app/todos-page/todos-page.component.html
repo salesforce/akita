@@ -49,9 +49,9 @@
     </thead>
 
     <tbody>
-      <tr *ngFor="let todo of todos$ | async">
+      <tr *ngFor="let todo of todos$ | async; trackBy: trackBy; index as index">
         <td>{{todo.id}}</td>
-        <td>{{todo.title}}</td>
+        <td (click)="moveUp(index)">{{todo.title}}</td>
         <td>
           <label>
             <input type="checkbox" [checked]="todo.completed" (change)="complete2($event, todo)"/>

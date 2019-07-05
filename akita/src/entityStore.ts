@@ -298,6 +298,30 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 
   /**
    *
+   * Move entity inside the collection
+   *
+   *
+   * @example
+   *
+   * this.store.move(5, fromIndex, toIndex)
+   */
+  move(from: number, to: number) {
+    const ids = this.ids.slice();
+    ids.splice(to < 0 ? ids.length + to : to, 0, ids.splice(from, 1)[0]);
+
+    isDev() && setAction('Move Entity');
+    this._setState(state => ({
+      ...state,
+      // Change the entities reference so that selectAll emit
+      entities: {
+        ...state.entities
+      },
+      ids
+    }));
+  }
+
+  /**
+   *
    * Remove one or more entities
    *
    * @example

@@ -18,9 +18,9 @@ interface Article {
 interface ArticlesState extends EntityState<Article> {}
 
 @StoreConfig({ name: 'articles' })
-class ArticlesStore extends EntityStore<ArticlesState, Article> {}
+class ArticlesStore extends EntityStore<ArticlesState> {}
 
-class ArticlesQuery extends QueryEntity<ArticlesState, Article> {}
+class ArticlesQuery extends QueryEntity<ArticlesState> {}
 
 const store = new ArticlesStore();
 const query = new ArticlesQuery(store);

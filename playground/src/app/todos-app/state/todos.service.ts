@@ -35,4 +35,9 @@ export class TodosService {
       completed
     });
   }
+
+  move(index: number) {
+    console.log('TCL: move -> index', index);
+    this.todosStore.move(index, index - 1);
+  }
 }

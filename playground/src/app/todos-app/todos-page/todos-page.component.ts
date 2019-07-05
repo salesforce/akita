@@ -31,6 +31,10 @@ export class TodosPageComponent implements OnInit {
     this.stateHistoryEntity = new EntityStateHistoryPlugin(this.todosQuery);
   }
 
+  moveUp(index: number) {
+    this.todosService.move(index);
+  }
+
   undo(id?) {
     if (isUndefined(id)) {
       this.stateHistory.undo();
@@ -72,5 +76,9 @@ export class TodosPageComponent implements OnInit {
 
   checkAll({ target }) {
     this.todosService.checkAll(target.checked);
+  }
+
+  trackBy(_, todo) {
+    return todo.id;
   }
 }
