@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.4.1"></a>
+## [4.4.1](https://github.com/datorama/akita/compare/v4.4.0...v4.4.1) (2019-07-06)
+
+
+### Bug Fixes
+
+* **devtools:** fix hmr regression and remove devtools action ([fa45d84](https://github.com/datorama/akita/commit/fa45d84))
+
+
+
 <a name="4.4.0"></a>
 # [4.4.0](https://github.com/datorama/akita/compare/v4.3.0...v4.4.0) (2019-07-05)
 
