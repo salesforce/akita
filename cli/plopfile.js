@@ -82,7 +82,7 @@ module.exports = function(plop) {
         type: 'add',
         skipIfExists: true,
         path: buildPath(`{{'dashCase' name}}.service.${extension}`, directory, folderName),
-        templateFile: `./templates/${templateBase}/service.tpl`
+        templateFile: `./templates/${templateBase}/${templateBase === 'angular' && data.isEntityStore ? 'entity-service' : 'service'}.tpl`
       });
 
       if (template !== 'js') {
