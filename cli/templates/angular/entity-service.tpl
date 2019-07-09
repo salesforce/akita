@@ -11,6 +11,6 @@ export class {{pascalCase name}}Service {
   }
 
   get() {
-    return this.http.get('').pipe(tap(entities => this.{{camelCase name}}Store.update(entities)));
+    return this.http.get('').pipe(tap(entities => this.{{camelCase name}}Store.set(entities)));
   }
 }
