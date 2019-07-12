@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.4.2"></a>
+## [4.4.2](https://github.com/datorama/akita/compare/v4.4.1...v4.4.2) (2019-07-12)
+
+
+### Bug Fixes
+
+* **upsert-many:** should run pre hooks ([1786129](https://github.com/datorama/akita/commit/1786129)), closes [#248](https://github.com/datorama/akita/issues/248)
+
+
+
 <a name="4.4.1"></a>
 ## [4.4.1](https://github.com/datorama/akita/compare/v4.4.0...v4.4.1) (2019-07-06)
 
