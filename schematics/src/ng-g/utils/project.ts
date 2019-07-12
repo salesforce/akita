@@ -16,8 +16,8 @@ export function getProjectPath(host: Tree, options: { project?: string | undefin
 
   if (options.path === undefined) {
     const projectDirName = project.projectType === 'application' ? 'app' : 'lib';
-
-    return `${project.root ? `/${project.root}` : ''}/src/${projectDirName}`;
+    const root = project.sourceRoot ? `/${project.sourceRoot}/` : `/${project.root}/src/`;
+    return `${root}${projectDirName}`;
   }
 
   return options.path;
