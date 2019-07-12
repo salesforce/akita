@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="4.4.3"></a>
+## [4.4.3](https://github.com/datorama/akita/compare/v4.4.2...v4.4.3) (2019-07-12)
+
+
+### Bug Fixes
+
+* **schematics:** should support sourceroot key ([793774f](https://github.com/datorama/akita/commit/793774f))
+
+
+
 <a name="4.4.2"></a>
 ## [4.4.2](https://github.com/datorama/akita/compare/v4.4.1...v4.4.2) (2019-07-12)
 
