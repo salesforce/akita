@@ -243,12 +243,18 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     for (const entity of entities) {
       const id = entity[this.idKey];
       if (hasEntity(this.entities, id)) {
-        updatedEntities[id] = { ...this._value().entities[id], ...entity };
-        updatedIds.push(id);
+        const prev = this._value().entities[id];
+        const next = { ...this._value().entities[id], ...entity };
+        const withHook = this.akitaPreUpdateEntity(prev, next);
+        const nextId = withHook[this.idKey];
+        updatedEntities[nextId] = withHook;
+        updatedIds.push(nextId);
       } else {
         const newEntity = options.baseClass ? new options.baseClass(entity) : entity;
-        addedIds.push(id);
-        updatedEntities[id] = newEntity;
+        const withHook = this.akitaPreAddEntity(newEntity);
+        const nextId = withHook[this.idKey];
+        addedIds.push(nextId);
+        updatedEntities[nextId] = withHook;
       }
     }
 

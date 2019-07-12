@@ -10,10 +10,12 @@ interface Article {
   };
 }
 
-interface ArticlesState extends EntityState<Article> {}
+interface ArticlesState extends EntityState<Article> {
+}
 
 @StoreConfig({ name: 'articles' })
-class ArticlesStore extends EntityStore<ArticlesState, Article> {}
+class ArticlesStore extends EntityStore<ArticlesState, Article> {
+}
 
 const store = new ArticlesStore();
 
@@ -47,7 +49,11 @@ describe('upsert', () => {
 
   describe('UpsertMany', () => {
     it('should support array of entities', () => {
-      const data = [{ id: 1, title: '1', moreInfo: { description: 'desc1' } }, { id: 2, title: '2', moreInfo: { description: 'desc2' } }];
+      const data = [{ id: 1, title: '1', moreInfo: { description: 'desc1' } }, {
+        id: 2,
+        title: '2',
+        moreInfo: { description: 'desc2' }
+      }];
       store.set(data);
       expect(store._value().ids.length).toBe(2);
       const baseData: Article[] = [{ id: 1, title: '1' }, { id: 2, title: '2' }];
@@ -58,6 +64,41 @@ describe('upsert', () => {
         id: 1,
         title: '1',
         moreInfo: { description: 'desc1' }
+      });
+      store.upsertMany([{ id: 1, title: '12', moreInfo: { description: 'desc1' } }]);
+      expect(store._value().entities[1]).toEqual({
+        id: 1,
+        title: '12',
+        moreInfo: { description: 'desc1' }
+      });
+      store.remove();
+    });
+
+    it('should support hooks', () => {
+      ArticlesStore.prototype.akitaPreAddEntity = function(entity: Article) {
+        return {
+          ...entity,
+          id: 11
+        };
+      };
+
+      ArticlesStore.prototype.akitaPreUpdateEntity = function(pre: Article, next: Article) {
+        return {
+          ...next,
+          id: 11,
+          title: 'BLA!!'
+        };
+      };
+
+      store.upsertMany([{ title: '1', id: 1}]);
+      expect(store._value().entities[11]).toEqual({
+        id: 11,
+        title: '1',
+      });
+      store.upsertMany([{ title: '1', id: 11 }]);
+      expect(store._value().entities[11]).toEqual({
+        id: 11,
+        title: 'BLA!!',
       });
     });
   });
