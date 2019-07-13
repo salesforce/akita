@@ -52,3 +52,6 @@ export type Constructor<T = any> = new (...args: any[]) => T;
 export type OrArray<Type> = Type | Type[];
 export type getEntityType<S> = S extends EntityState<infer I> ? I : never;
 export type getIDType<S> = S extends EntityState<any, infer I> ? I : never;
+export type ReturnTypes<T extends Array<(...a: any[]) => any>> = {
+  [P in keyof T]: T[P] extends (...a: any[]) => infer R ? R : never
+}
