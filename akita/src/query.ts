@@ -15,7 +15,7 @@ export class Query<S> {
 
   constructor(protected store: Store<S>) {
     this.__store__ = store;
-    if(isDev()) {
+    if (isDev()) {
       // @internal
       __queries__[store.storeName] = this;
     }
@@ -40,25 +40,26 @@ export class Query<S> {
   select(): Observable<S>;
   select<R>(project?: ((store: S) => R) | keyof S | (keyof S)[] | ((state: S) => any)[]): Observable<R | S | any[]> {
     let mapFn;
-    if(isFunction(project)) {
+    if (isFunction(project)) {
       mapFn = project;
-    } else if(isString(project)) {
+    } else if (isString(project)) {
       mapFn = state => state[project];
-    } else if(Array.isArray(project)) {
-      return this.store._select(state => state).pipe(
-        distinctUntilChanged(compareKeys(project)),
-        map(state => {
-          if(isFunction(project[0])) {
-            return (project as ((state: S) => any)[]).map(func => func(state));
-          }
+    } else if (Array.isArray(project)) {
+      return this.store
+        ._select(state => state)
+        .pipe(
+          distinctUntilChanged(compareKeys(project)),
+          map(state => {
+            if (isFunction(project[0])) {
+              return (project as ((state: S) => any)[]).map(func => func(state));
+            }
 
-          return (project as (keyof S)[]).reduce((acc, k) => {
-            acc[k as any] = state[k];
-            return acc;
-          }, {});
-        })
-      ) as any;
-
+            return (project as (keyof S)[]).reduce((acc, k) => {
+              acc[k as any] = state[k];
+              return acc;
+            }, {});
+          })
+        ) as any;
     } else {
       mapFn = state => state;
     }

@@ -1,8 +1,8 @@
 import { createQuery, createStore } from '../src';
 
-type State = { name: string, email: string, age: number };
+type State = { name: string; email: string; age: number };
 
-const store = createStore<State>({ name: '', email: '', age: 21 }, { name: 'test', resettable: true  });
+const store = createStore<State>({ name: '', email: '', age: 21 }, { name: 'test', resettable: true });
 const query = createQuery<State>(store);
 
 describe('Multi Selectors', () => {
@@ -45,6 +45,7 @@ describe('Multi Selectors', () => {
   it('should work with callbacks', () => {
     const spy = jest.fn();
     const arr = query.select([state => state.age, state => state.name]);
+
     arr.subscribe(spy);
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).toHaveBeenCalledWith([21, '']);

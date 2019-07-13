@@ -64,3 +64,4 @@ export { createEntityQuery, createEntityStore, createQuery, createStore } from '
 export * from './entityActions';
 export * from './dispatchers';
 export { cacheable } from './cacheable';
+export { combineQueries } from './combineQueries';
