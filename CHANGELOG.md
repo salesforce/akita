@@ -1,6 +1,16 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [4.5.0](https://github.com/datorama/akita/compare/v4.4.3...v4.5.0) (2019-07-14)
+
+
+### Features
+
+* **query:** add combine queries helper ([5d0a9f2](https://github.com/datorama/akita/commit/5d0a9f2))
+* **query:** add support for querying multiple keys ([b2b0dd1](https://github.com/datorama/akita/commit/b2b0dd1))
+
+
 
 <a name="4.4.3"></a>
 ## [4.4.3](https://github.com/datorama/akita/compare/v4.4.2...v4.4.3) (2019-07-12)
