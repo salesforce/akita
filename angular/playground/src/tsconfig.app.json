@@ -5,13 +5,8 @@
     "baseUrl": "./",
     "module": "es2015",
     "paths": {
-      "@datorama/akita": [
-        "../../akita/index.ts"
-      ]
+      "@datorama/akita": ["../../../akita/index.ts"]
     }
   },
-  "exclude": [
-    "test.ts",
-    "**/*.spec.ts"
-  ]
+  "exclude": ["test.ts", "**/*.spec.ts"]
 }

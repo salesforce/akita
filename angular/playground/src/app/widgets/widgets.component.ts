@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DirtyCheckPlugin, EntityDirtyCheckPlugin, ID } from '../../../../akita/src';
+import { DirtyCheckPlugin, EntityDirtyCheckPlugin, ID } from '@datorama/akita';
 import { resetId, Widget } from './state/widget.model';
 import { WidgetsService } from './state/widgets.service';
 import { WidgetsQuery } from './state/widgets.query';
@@ -16,7 +16,10 @@ export class WidgetsComponent implements OnInit, OnDestroy {
   activeWidgets$: Observable<Widget[]>;
   dashoboardName$: Observable<string>;
 
-  constructor(private widgetsQuery: WidgetsQuery, private widgetService: WidgetsService) {}
+  constructor(
+    private widgetsQuery: WidgetsQuery,
+    private widgetService: WidgetsService
+  ) {}
 
   ngOnInit() {
     if (this.widgetsQuery.hasEntity() === false) {
@@ -25,8 +28,12 @@ export class WidgetsComponent implements OnInit, OnDestroy {
     this.dashoboardName$ = this.widgetsQuery.select(state => state.name);
     this.widgets$ = this.widgetsQuery.selectAll();
     this.activeWidgets$ = this.widgetsQuery.selectActive();
-    this.collection = new DirtyCheckPlugin(this.widgetsQuery, { watchProperty: 'entities' }).setHead();
-    this.widgetsSpecific = new EntityDirtyCheckPlugin(this.widgetsQuery).setHead();
+    this.collection = new DirtyCheckPlugin(this.widgetsQuery, {
+      watchProperty: 'entities'
+    }).setHead();
+    this.widgetsSpecific = new EntityDirtyCheckPlugin(
+      this.widgetsQuery
+    ).setHead();
   }
 
   updateName(nameInput) {

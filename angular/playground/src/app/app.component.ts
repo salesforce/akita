@@ -1,7 +1,6 @@
 import { Component, NgZone } from '@angular/core';
-import { akitaDevtools } from '../../../akita/src/devtools';
 import { environment } from '../environments/environment';
-import { persistState } from '@datorama/akita';
+import { persistState, akitaDevtools } from '@datorama/akita';
 import { debounceTime } from 'rxjs/operators';
 
 @Component({
