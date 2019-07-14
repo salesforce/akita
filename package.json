@@ -7,15 +7,12 @@
     "release": "standard-version",
     "build": "ng-packagr -p package.json && npm run copy:readme && npm run copy:schematics",
     "test": "jest",
-    "test:debug": "node --inspect-brk ./node_modules/.bin/jest --runInBand --watch",
     "test:watch": "jest --watch",
-    "github-pages": "push-dir --dir=playground/dist --branch=gh-pages --overwrite-local",
     "contributors:add": "all-contributors add",
     "contributors:generate": "all-contributors generate",
     "copy:readme": "copy README.md dist",
     "copy:schematics": "cp -r schematics/src/ dist/schematics",
-    "commit": "git-cz",
-    "demo": "cd playground && npm start"
+    "commit": "git-cz"
   },
   "publishConfig": {
     "access": "public"
@@ -104,10 +101,8 @@
     "jest": "^24.8.0",
     "jest-localstorage-mock": "2.4.0",
     "lint-staged": "8.1.6",
-    "localforage": "^1.7.3",
     "ng-packagr": "4.7.1",
     "prettier": "1.16.4",
-    "push-dir": "0.4.1",
     "rxjs": "6.4.0",
     "standard-version": "^6.0.1",
     "ts-jest": "24.0.0",

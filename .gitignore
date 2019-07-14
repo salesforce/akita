@@ -1,7 +1,7 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 .vscode
 # compiled output
-/dist
+dist/
 /dist-server
 /tmp
 /out-tsc

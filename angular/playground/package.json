@@ -26,7 +26,8 @@
     "core-js": "3.1.4",
     "faker": "^4.1.0",
     "helpful-decorators": "1.7.2",
-    "ngx-take-until-destroy": "5.4.0"
+    "ngx-take-until-destroy": "5.4.0",
+    "localforage": "^1.7.3"
   },
   "devDependencies": {
     "prettier": "1.18.2",
