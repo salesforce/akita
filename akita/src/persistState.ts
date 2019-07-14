@@ -81,6 +81,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
     deserialize: JSON.parse,
     serialize: JSON.stringify,
     include: [],
+    // @deprecated
     exclude: [],
     persistOnDestroy: false,
     preStorageUpdate: function(storeName, state) {

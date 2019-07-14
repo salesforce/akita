@@ -1,6 +1,6 @@
 import { Subject } from 'rxjs';
 import { PersistNgFormPlugin } from '../src/plugins/persistForm/persistNgFormPlugin';
-import { createStory, Story } from '../../playground/src/app/stories/state/story.model';
+import { createStory, Story } from '../../angular/playground/src/app/stories/state/story.model';
 import { EntityStore, QueryEntity, StoreConfig } from '../src/index';
 
 jest.useFakeTimers();
