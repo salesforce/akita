@@ -21,6 +21,7 @@
     "@angular/platform-browser-dynamic": "8.1.1",
     "@angular/router": "8.1.1",
     "rxjs": "^6.4.0",
+    "tslib": "^1.9.0",
     "zone.js": "0.9.1",
     "@netbasal/content-loader": "^1.1.0",
     "core-js": "3.1.4",
@@ -30,6 +31,8 @@
     "localforage": "^1.7.3"
   },
   "devDependencies": {
+    "@angular-devkit/build-ng-packagr": "~0.800.6",
+    "ng-packagr": "^5.1.0",
     "prettier": "1.18.2",
     "@angular-devkit/build-angular": "~0.800.0",
     "@angular/cli": "~8.0.3",
@@ -49,6 +52,7 @@
     "karma-jasmine-html-reporter": "^1.4.0",
     "protractor": "~5.4.0",
     "ts-node": "~7.0.0",
+    "tsickle": "^0.35.0",
     "tslint": "~5.15.0",
     "typescript": "~3.4.3",
     "del": "^3.0.0",

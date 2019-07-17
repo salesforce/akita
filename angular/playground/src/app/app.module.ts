@@ -11,6 +11,7 @@ import { ProductPageComponent } from './product-page/product-page.component';
 import { NavComponent } from './nav/nav.component';
 import { AuthModule } from './auth/auth.module';
 import { AuthGuard } from './auth/auth.guard';
+import { NG_ENTITY_SERVICE_CONFIG } from '@datorama/akita-ng-entity-service';
 
 @NgModule({
   declarations: [AppComponent, NavComponent, ProductPageComponent],
@@ -24,7 +25,10 @@ import { AuthGuard } from './auth/auth.guard';
     CartModule,
     AuthModule
   ],
-  providers: [AuthGuard],
+  providers: [
+    AuthGuard,
+    { provide: NG_ENTITY_SERVICE_CONFIG, useValue: { baseUrl: 'https://jsonplaceholder.typicode.com' } }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
