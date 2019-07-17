@@ -9,10 +9,15 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es5",
-    "typeRoots": ["node_modules/@types"],
+    "typeRoots": [
+      "node_modules/@types"
+    ],
     "paths": {
-      "@datorama/akita": ["../../akita/index.ts"]
+      "@datorama/akita-ng-entity-service": ["projects/ng-entity-service/src/public-api.ts"]
     },
-    "lib": ["es2017", "dom"]
+    "lib": [
+      "es2017",
+      "dom"
+    ]
   }
 }

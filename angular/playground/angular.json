@@ -121,6 +121,41 @@
           }
         }
       }
+    },
+    "ng-entity-service": {
+      "projectType": "library",
+      "root": "projects/ng-entity-service",
+      "sourceRoot": "projects/ng-entity-service/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/ng-entity-service/tsconfig.lib.json",
+            "project": "projects/ng-entity-service/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ng-entity-service/src/test.ts",
+            "tsConfig": "projects/ng-entity-service/tsconfig.spec.json",
+            "karmaConfig": "projects/ng-entity-service/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/ng-entity-service/tsconfig.lib.json",
+              "projects/ng-entity-service/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "akita-store-app",

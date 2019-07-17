@@ -65,3 +65,4 @@ export * from './entityActions';
 export * from './dispatchers';
 export { cacheable } from './cacheable';
 export { combineQueries } from './combineQueries';
+export { EntityService } from './entityService';

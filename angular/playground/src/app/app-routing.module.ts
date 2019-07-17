@@ -47,6 +47,10 @@ const routes: Routes = [
   {
     path: 'widgets',
     loadChildren: 'app/widgets/widgets.module#WidgetsModule'
+  },
+  {
+    path: 'posts',
+    loadChildren: 'app/posts/posts.module#PostsModule'
   }
 ];
 
