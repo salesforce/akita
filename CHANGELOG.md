@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.6.0](https://github.com/datorama/akita/compare/v4.5.0...v4.6.0) (2019-07-18)
+
+
+### Features
+
+* **packages:** entity-service ([9b1bf13](https://github.com/datorama/akita/commit/9b1bf13))
+
+
+
 ## [4.5.0](https://github.com/datorama/akita/compare/v4.4.3...v4.5.0) (2019-07-14)
 
 
