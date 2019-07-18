@@ -1,7 +1,9 @@
 {
   "name": "akita-playground",
   "version": "0.0.0",
+  "license": "Apache License 2.0",
   "scripts": {
+    "build:ng-entity-service": "ng build ng-entity-service",
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --prod",
@@ -20,7 +22,7 @@
     "@angular/platform-browser": "8.1.1",
     "@angular/platform-browser-dynamic": "8.1.1",
     "@angular/router": "8.1.1",
-    "@datorama/akita": "^4.5.0",
+    "@datorama/akita": "^4.6.0",
     "@netbasal/content-loader": "^1.1.0",
     "core-js": "3.1.4",
     "faker": "^4.1.0",
