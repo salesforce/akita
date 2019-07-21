@@ -15,10 +15,11 @@ import { isObject } from './isObject';
  * }))
  */
 export function arrayUpsert<Root extends any[]>(arr: Root, id: ID, obj: Partial<Root[0]>, idKey = DEFAULT_ID_KEY): Root[0][] {
-  const entityExists = arr.some(entity => (isObject(entity) ? entity[idKey] === id : entity === id));
+  const entityIsObject = isObject(obj);
+  const entityExists = arr.some(entity => (entityIsObject ? entity[idKey] === id : entity === id));
   if (entityExists) {
     return arrayUpdate(arr, id, obj);
   } else {
-    return arrayAdd(arr, isObject(obj) ? { ...obj, [idKey]: id } : obj);
+    return arrayAdd(arr, entityIsObject ? { ...obj, [idKey]: id } : obj);
   }
 }
