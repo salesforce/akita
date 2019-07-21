@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.8.0](https://github.com/datorama/akita/compare/v4.7.0...v4.8.0) (2019-07-21)
+
+
+### Features
+
+* **upsert-many:** add akitaPreCheckEntity hook ([9eddf45](https://github.com/datorama/akita/commit/9eddf45))
+* **upsert-many:** add akitaPreCheckEntity hook ([#255](https://github.com/datorama/akita/issues/255)) ([6d05be9](https://github.com/datorama/akita/commit/6d05be9))
+
+
+
 ## [4.7.0](https://github.com/datorama/akita/compare/v4.6.0...v4.7.0) (2019-07-21)
 
 
