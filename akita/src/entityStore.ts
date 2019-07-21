@@ -241,16 +241,17 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 
     // Update the state directly to optimize performance
     for (const entity of entities) {
-      const id = entity[this.idKey];
+      const withPreCheckHook = this.akitaPreCheckEntity(entity);
+      const id = withPreCheckHook[this.idKey];
       if (hasEntity(this.entities, id)) {
         const prev = this._value().entities[id];
-        const next = { ...this._value().entities[id], ...entity };
+        const next = { ...this._value().entities[id], ...withPreCheckHook };
         const withHook = this.akitaPreUpdateEntity(prev, next);
         const nextId = withHook[this.idKey];
         updatedEntities[nextId] = withHook;
         updatedIds.push(nextId);
       } else {
-        const newEntity = options.baseClass ? new options.baseClass(entity) : entity;
+        const newEntity = options.baseClass ? new options.baseClass(withPreCheckHook) : withPreCheckHook;
         const withHook = this.akitaPreAddEntity(newEntity);
         const nextId = withHook[this.idKey];
         addedIds.push(nextId);
@@ -521,6 +522,11 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 
   // @internal
   akitaPreAddEntity(newEntity: Readonly<EntityType>): EntityType {
+    return newEntity;
+  }
+
+  // @internal
+  akitaPreCheckEntity(newEntity: Readonly<EntityType>): EntityType {
     return newEntity;
   }
 
