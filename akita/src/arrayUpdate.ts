@@ -10,15 +10,15 @@ import { isArray } from './isArray';
  *
  * @example
  *
- * store.update(1, arrayUpdate<Article, Comment>('comments', 1, { name: 'newName' }))
- * store.update(1, arrayUpdate<Article, Comment>('comments', 1, { name: 'newName' }, '_id'))
- * store.update(1, arrayUpdate<Article, Comment>('comments', item => item.completed === true, { name: 'newName' }))
  *
  * store.update(1, entity => ({
  *   comments: arrayUpdate(entity.comments, 1, { name: 'newComment' })
  * }))
  */
 export function arrayUpdate<Root extends any[], Entity = any>(keyOrRoot: Root, predicateOrIds: IDS | ItemPredicate<Root[0]>, obj: Partial<Root[0]>, idKey?: string): Root[0][];
+/**
+ * @deprecated
+ */
 export function arrayUpdate<Root, Entity = any>(keyOrRoot: ArrayProperties<Root>, predicateOrIds: IDS | ItemPredicate<Entity>, obj: Partial<Entity>, idKey?: string): (state: Root) => Root;
 export function arrayUpdate<Root, Entity = any>(keyOrRoot: ArrayProperties<Root> | Root, predicateOrIds: IDS | ItemPredicate<Entity>, obj: Partial<Entity>, idKey = DEFAULT_ID_KEY) {
   let condition: ItemPredicate<Entity>;

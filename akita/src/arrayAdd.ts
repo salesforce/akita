@@ -8,10 +8,6 @@ import { isArray } from './isArray';
  *
  * @example
  *
- * const comments = [{id: 1}];
- * store.update(1, arrayAdd<Article>('comments', comments))
- * store.update(1, arrayAdd<Article>('comments', ['a', 'b']))
- * store.update(1, arrayAdd<Article>('comments', comments, { prepend: true }))
  *
  * store.update(state => ({
  *   comments: arrayAdd(state.comments, { id: 2 })
@@ -19,6 +15,9 @@ import { isArray } from './isArray';
  *
  */
 export function arrayAdd<Root extends any[], Entity = any>(keyOrRoot: Root, newEntity: OrArray<Root[0]>, options?: AddEntitiesOptions): Root[0][];
+/**
+ * @deprecated
+ */
 export function arrayAdd<Root, Entity = any>(keyOrRoot: ArrayProperties<Root>, newEntity: OrArray<Entity>, options?: AddEntitiesOptions): (state: Root) => Root;
 export function arrayAdd<Root, Entity = any>(keyOrRoot: ArrayProperties<Root> | Root, newEntity: OrArray<Entity>, options: AddEntitiesOptions = {}) {
   const newEntities = coerceArray(newEntity);

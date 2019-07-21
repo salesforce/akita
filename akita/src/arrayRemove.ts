@@ -10,16 +10,15 @@ import { not } from './not';
  *
  * @example
  *
- * store.update(1, arrayRemove<Article>('comments', ids))
- * store.update(1, arrayRemove<Article>('comments', 'comment'))
- * store.update(1, arrayRemove<Article>('comments', comment => comment.draft === true))
- * store.update(1, arrayRemove<Article>('comments', ids, '_id'))
  *
  * store.update(state => ({
  *   names: arrayRemove(state.names, ['one', 'second'])
  * }))
  */
 export function arrayRemove<Root extends any[], Entity = Root[0]>(keyOrRoot: Root, identifier: IDS | ItemPredicate<Root[0]>, idKey?: string): Root[0][];
+/**
+ * @deprecated
+ */
 export function arrayRemove<Root, Entity = any>(keyOrRoot: ArrayProperties<Root>, identifier: IDS | ItemPredicate<Entity>, idKey?: string): (state: Root) => Root;
 export function arrayRemove<Root, Entity = any>(keyOrRoot: ArrayProperties<Root> | Root, identifier: IDS | ItemPredicate<Entity>, idKey = DEFAULT_ID_KEY) {
   let identifiers;
