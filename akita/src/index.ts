@@ -58,6 +58,7 @@ export { isNotBrowser } from './root';
 export { runStoreAction, StoreActions } from './runStoreAction';
 export { arrayUpdate } from './arrayUpdate';
 export { arrayAdd } from './arrayAdd';
+export { arrayUpsert } from './arrayUpsert';
 export { arrayFind, distinctUntilArrayItemChanged, find } from './arrayFind';
 export { arrayRemove } from './arrayRemove';
 export { createEntityQuery, createEntityStore, createQuery, createStore } from './fp';
