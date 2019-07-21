@@ -1,7 +1,6 @@
 import { EntityState, ID } from '../src/types';
 import { StoreConfig } from '../src/storeConfig';
 import { EntityStore } from '../src/entityStore';
-import { arrayUpdate } from '../src/arrayUpdate';
 import { arrayUpsert } from '../src/arrayUpsert';
 
 interface Comment {
@@ -28,7 +27,7 @@ class ArticlesStore extends EntityStore<ArticlesState, Article> {
 
 const store = new ArticlesStore();
 
-describe('arrayUpdate', () => {
+describe('arrayUpsert', () => {
   it('should update when the id is present', () => {
     const article: Article = {
       id: 1,
