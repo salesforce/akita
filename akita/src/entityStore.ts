@@ -245,7 +245,8 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
       const id = withPreCheckHook[this.idKey];
       if (hasEntity(this.entities, id)) {
         const prev = this._value().entities[id];
-        const next = { ...this._value().entities[id], ...withPreCheckHook };
+        const merged = { ...this._value().entities[id], ...withPreCheckHook };
+        const next = options.baseClass ? new options.baseClass(merged) : merged;
         const withHook = this.akitaPreUpdateEntity(prev, next);
         const nextId = withHook[this.idKey];
         updatedEntities[nextId] = withHook;

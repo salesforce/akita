@@ -28,12 +28,12 @@ export const mapResponse = (config: HttpConfig) =>
 
 export class NgEntityService<S extends EntityState = any> extends EntityService<S> {
   baseUrl: string;
+  loader: NgEntityServiceLoader;
 
   private http: HttpClient;
   private notifier: NgEntityServiceNotifier;
   private globalConfig: NgEntityServiceGlobalConfig = {};
   private mergedConfig: NgEntityServiceParams & NgEntityServiceGlobalConfig;
-  private loader: NgEntityServiceLoader;
 
   private dispatchSuccess: (action: Partial<EntityServiceAction>) => void;
   private dispatchError: (action: Partial<EntityServiceAction>) => void;
