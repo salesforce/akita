@@ -22,6 +22,12 @@
       "default": false,
       "description": "Whether to include Akita's router",
       "x-prompt": "💎 Set up Akita's router store?"
+    },
+    "entityService": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to include Akita's Http Entity Service",
+      "x-prompt": "☄️ Set up Akita's Http Entity Service?"
     }
   },
   "required": []

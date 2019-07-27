@@ -13,6 +13,10 @@ export interface Schema {
    * Add the the devtools
    */
   devtools?: boolean;
+  /**
+   * Add the entity service
+   */
+  entityService?: boolean;
 
   project?: any;
 }

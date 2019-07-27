@@ -28,6 +28,14 @@ function addPackageJsonDependencies(options) {
                 name: '@datorama/akita-ngdevtools'
             });
         }
+        if (options.entityService) {
+            // @todo: uncomment when lib is on npm
+            // dependencies.push({
+            //   type: NodeDependencyType.Dev,
+            //   version: 'latest',
+            //   name: '@datorama/akita-ng-entity-service'
+            // });
+        }
         dependencies.forEach(dependency => {
             schematics_utilities_1.addPackageJsonDependency(host, dependency);
             context.logger.log('info', `✅️ Added "${dependency.name}" into ${dependency.type}`);
@@ -53,7 +61,7 @@ function getTsSourceFile(host, path) {
 }
 function injectImports(options) {
     return (host, context) => {
-        if (!options.router && !options.devtools) {
+        if (!options.router && !options.devtools && !options.entityService) {
             return;
         }
         const workspace = schematics_utilities_1.getWorkspace(host);
@@ -88,6 +96,14 @@ function injectImports(options) {
                 host.commitUpdate(recorder);
             }
         }
+        if (options.entityService) {
+            const entityServiceChange = utils_1.insertImport(moduleSource, modulePath, 'NG_ENTITY_SERVICE_CONFIG', '@datorama/akita-ng-entity-service');
+            if (entityServiceChange) {
+                const recorder = host.beginUpdate(modulePath);
+                recorder.insertLeft(entityServiceChange.pos, entityServiceChange.toAdd);
+                host.commitUpdate(recorder);
+            }
+        }
         return host;
     };
 }
@@ -108,11 +124,15 @@ function addModuleToImports(options) {
         options.project ? options.project : Object.keys(workspace['projects'])[0]);
         let importDevtools = '';
         let importRouter = '';
+        let provideEntityServiceConfig = '';
         if ((options.withRouter || options.router) && options.devtools) {
             importRouter = `AkitaNgRouterStoreModule.forRoot()`;
         }
         if (options.devtools) {
             importDevtools = `environment.production ? [] : AkitaNgDevtools.forRoot()`;
+        }
+        if (options.entityService) {
+            provideEntityServiceConfig = `{ provide: NG_ENTITY_SERVICE_CONFIG, useValue: { baseUrl: 'https://jsonplaceholder.typicode.com' }}`;
         }
         if (importDevtools) {
             schematics_utilities_1.addModuleImportToRootModule(host, importDevtools, null, project);
@@ -120,11 +140,29 @@ function addModuleToImports(options) {
         if (importRouter) {
             schematics_utilities_1.addModuleImportToRootModule(host, importRouter, null, project);
         }
+        if (provideEntityServiceConfig) {
+            const modulePath = schematics_utilities_1.getAppModulePath(host, project.architect.build.options.main);
+            const moduleSource = schematics_utilities_1.getSourceFile(host, modulePath);
+            if (!moduleSource) {
+                throw new schematics_1.SchematicsException(`Module not found: ${modulePath}`);
+            }
+            const changes = schematics_utilities_1.addProviderToModule(moduleSource, modulePath, provideEntityServiceConfig, null);
+            const recorder = host.beginUpdate(modulePath);
+            changes.forEach(change => {
+                if (change instanceof schematics_utilities_1.InsertChange) {
+                    recorder.insertLeft(change.pos, change.toAdd);
+                }
+            });
+            host.commitUpdate(recorder);
+        }
         if (options.devtools) {
             context.logger.log('info', `🔥 AkitaNgDevtools is imported`);
         }
         if (options.withRouter || options.router) {
             context.logger.log('info', `🦄 AkitaNgRouterStoreModule is imported`);
+        }
+        if (options.entityService) {
+            context.logger.log('info', `🌈 NgEntityService is imported`);
         }
         return host;
     };
