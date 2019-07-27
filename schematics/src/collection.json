@@ -36,6 +36,12 @@
       "factory": "./ng-g/entity-query/index",
       "schema": "./ng-g/entity-query/schema.json"
     },
+    "http-entity-service": {
+      "aliases": ["ahes"],
+      "description": "An http entity service",
+      "factory": "./ng-g/http-entity-service/index",
+      "schema": "./ng-g/http-entity-service/schema.json"
+    },
     "model": {
       "aliases": ["am"],
       "description": "A model",
