@@ -31,7 +31,7 @@ function addPackageJsonDependencies(options) {
         if (options.entityService) {
             // @todo: uncomment when lib is on npm
             // dependencies.push({
-            //   type: NodeDependencyType.Dev,
+            //   type: NodeDependencyType.Default,
             //   version: 'latest',
             //   name: '@datorama/akita-ng-entity-service'
             // });
