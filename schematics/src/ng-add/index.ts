@@ -43,12 +43,11 @@ function addPackageJsonDependencies(options: Schema): Rule {
     }
 
     if (options.entityService) {
-      // @todo: uncomment when lib is on npm
-      // dependencies.push({
-      //   type: NodeDependencyType.Default,
-      //   version: 'latest',
-      //   name: '@datorama/akita-ng-entity-service'
-      // });
+      dependencies.push({
+        type: NodeDependencyType.Default,
+        version: '^1.0.0',
+        name: '@datorama/akita-ng-entity-service'
+      });
     }
 
     dependencies.forEach(dependency => {
