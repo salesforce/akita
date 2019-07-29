@@ -34,6 +34,14 @@ module.exports = function(plop) {
     message: 'Give me a folder name, please'
   };
 
+  const httpEntityService = template === 'angular'
+    ? [{
+      type: 'confirm',
+      name: 'useHttpService',
+      message: 'Use Http Entity Service ? (from @datorama/akita-ng-entity-service)'
+    }]
+    : []
+
   plop.setGenerator('Akita', {
     description: 'Create new stack',
     prompts: [
@@ -46,8 +54,9 @@ module.exports = function(plop) {
         type: 'list',
         name: 'storeType',
         choices: ['Entity Store', 'Store'],
-        message: 'Which store do you need? 😊'
-      }
+        message: 'Which store do you need? 😊',
+      },
+      ...httpEntityService
     ].concat(customFolderName ? customFolderNameAction : [], chooseDirAction),
     actions: function(data) {
       const { storeType, directory, folderName } = data;
@@ -78,11 +87,18 @@ module.exports = function(plop) {
         }
       ];
 
+      let serviceTpl;
+      if (templateBase === 'angular' && data.isEntityStore) {
+        serviceTpl = data.useHttpService ? 'http-entity-service' : 'entity-service'
+      } else {
+        serviceTpl = 'service'
+      }
+
       files.push({
         type: 'add',
         skipIfExists: true,
         path: buildPath(`{{'dashCase' name}}.service.${extension}`, directory, folderName),
-        templateFile: `./templates/${templateBase}/${templateBase === 'angular' && data.isEntityStore ? 'entity-service' : 'service'}.tpl`
+        templateFile: `./templates/${templateBase}/${serviceTpl}.tpl`
       });
 
       if (template !== 'js') {
