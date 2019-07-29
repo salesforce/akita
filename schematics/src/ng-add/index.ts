@@ -1,5 +1,16 @@
 import { Rule, SchematicContext, Tree, noop, chain, SchematicsException } from '@angular-devkit/schematics';
-import { NodeDependency, addPackageJsonDependency, NodeDependencyType, getWorkspace, getProjectFromWorkspace, addModuleImportToRootModule, getAppModulePath, InsertChange } from 'schematics-utilities';
+import {
+  NodeDependency,
+  addPackageJsonDependency,
+  NodeDependencyType,
+  getWorkspace,
+  getProjectFromWorkspace,
+  addModuleImportToRootModule,
+  getAppModulePath,
+  InsertChange,
+  getSourceFile,
+  addProviderToModule
+} from 'schematics-utilities';
 import { NodePackageInstallTask } from '@angular-devkit/schematics/tasks';
 import { Schema } from './schema';
 import * as ts from 'typescript';
@@ -28,6 +39,14 @@ function addPackageJsonDependencies(options: Schema): Rule {
         type: NodeDependencyType.Dev,
         version: '^3.0.2',
         name: '@datorama/akita-ngdevtools'
+      });
+    }
+
+    if (options.entityService) {
+      dependencies.push({
+        type: NodeDependencyType.Default,
+        version: '^1.0.0',
+        name: '@datorama/akita-ng-entity-service'
       });
     }
 
@@ -62,7 +81,7 @@ function getTsSourceFile(host: Tree, path: string): ts.SourceFile {
 
 function injectImports(options: Schema): Rule {
   return (host: Tree, context: SchematicContext) => {
-    if (!options.router && !options.devtools) {
+    if (!options.router && !options.devtools && !options.entityService) {
       return;
     }
     const workspace = getWorkspace(host);
@@ -105,6 +124,15 @@ function injectImports(options: Schema): Rule {
       }
     }
 
+    if (options.entityService) {
+      const entityServiceChange = insertImport(moduleSource, modulePath, 'NG_ENTITY_SERVICE_CONFIG', '@datorama/akita-ng-entity-service');
+      if (entityServiceChange) {
+        const recorder = host.beginUpdate(modulePath);
+        recorder.insertLeft((entityServiceChange as InsertChange).pos, (entityServiceChange as InsertChange).toAdd);
+        host.commitUpdate(recorder);
+      }
+    }
+
     return host;
   };
 }
@@ -131,6 +159,7 @@ function addModuleToImports(options: Schema): Rule {
 
     let importDevtools = '';
     let importRouter = '';
+    let provideEntityServiceConfig = '';
 
     if ((options.withRouter || options.router) && options.devtools) {
       importRouter = `AkitaNgRouterStoreModule.forRoot()`;
@@ -138,6 +167,10 @@ function addModuleToImports(options: Schema): Rule {
 
     if (options.devtools) {
       importDevtools = `environment.production ? [] : AkitaNgDevtools.forRoot()`;
+    }
+
+    if (options.entityService) {
+      provideEntityServiceConfig = `{ provide: NG_ENTITY_SERVICE_CONFIG, useValue: { baseUrl: 'https://jsonplaceholder.typicode.com' }}`;
     }
 
     if (importDevtools) {
@@ -148,12 +181,35 @@ function addModuleToImports(options: Schema): Rule {
       addModuleImportToRootModule(host, importRouter, null as any, project);
     }
 
+    if (provideEntityServiceConfig) {
+      const modulePath = getAppModulePath(host, project.architect.build.options.main);
+      const moduleSource = getSourceFile(host, modulePath);
+
+      if (!moduleSource) {
+        throw new SchematicsException(`Module not found: ${modulePath}`);
+      }
+      const changes = addProviderToModule(moduleSource, modulePath, provideEntityServiceConfig, null);
+      const recorder = host.beginUpdate(modulePath);
+
+      changes.forEach(change => {
+        if (change instanceof InsertChange) {
+          recorder.insertLeft(change.pos, change.toAdd);
+        }
+      });
+
+      host.commitUpdate(recorder);
+    }
+
     if (options.devtools) {
       context.logger.log('info', `🔥 AkitaNgDevtools is imported`);
     }
 
     if (options.withRouter || options.router) {
       context.logger.log('info', `🦄 AkitaNgRouterStoreModule is imported`);
+    }
+
+    if (options.entityService) {
+      context.logger.log('info', `🌈 NgEntityService is imported`);
     }
 
     return host;
