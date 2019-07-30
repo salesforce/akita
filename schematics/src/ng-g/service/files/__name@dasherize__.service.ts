@@ -13,8 +13,8 @@ export class <%= classify(name) %>Service {
   }
 <% if (!plain) { %>
   get() {
-    return this.http.get('https://api.com').pipe(tap(entities => {
-      this.<%= camelize(name) %>Store.set(entities)
+    return this.http.get<<%= singular(classify(name)) %>>('https://api.com').pipe(tap(entities => {
+      this.<%= camelize(name) %>Store.set(entities);
     }));
   }
 
