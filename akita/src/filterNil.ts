@@ -1,8 +1,6 @@
 import { Observable } from 'rxjs';
 import { filter } from 'rxjs/operators';
-
-// Utility type, remove types from T that are assignable to U
-type Diff<T, U> = T extends U ? never : T;
+import { Diff } from './types';
 
 /**
  * @example
