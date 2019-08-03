@@ -3,6 +3,7 @@ import { Rule, SchematicContext, Tree, chain, schematic } from '@angular-devkit/
 export default function(options: any): Rule {
   const plain = options.plain;
   const withModule = options.withModule;
+  const httpService = plain ? false : options.httpService;
 
   let files = [
     schematic(plain ? 'store' : 'entity-store', {
@@ -23,7 +24,7 @@ export default function(options: any): Rule {
       dirName: options.dirName,
       feature: true
     }),
-    schematic('service', {
+    schematic(httpService ? 'http-entity-service' : 'service', {
       flat: options.flat,
       module: options.module,
       name: options.name,

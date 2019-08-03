@@ -53,6 +53,9 @@
     },
     "withModule": {
       "type": "boolean"
+    },
+    "httpService": {
+      "type": "boolean"
     }
   },
   "required": []

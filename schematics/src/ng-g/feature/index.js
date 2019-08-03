@@ -4,6 +4,7 @@ const schematics_1 = require("@angular-devkit/schematics");
 function default_1(options) {
     const plain = options.plain;
     const withModule = options.withModule;
+    const httpService = plain ? false : options.httpService;
     let files = [
         schematics_1.schematic(plain ? 'store' : 'entity-store', {
             flat: options.flat,
@@ -23,7 +24,7 @@ function default_1(options) {
             dirName: options.dirName,
             feature: true
         }),
-        schematics_1.schematic('service', {
+        schematics_1.schematic(httpService ? 'http-entity-service' : 'service', {
             flat: options.flat,
             module: options.module,
             name: options.name,
