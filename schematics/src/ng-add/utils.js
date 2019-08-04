@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const ts = require("typescript");
+const schematics_1 = require("@angular-devkit/schematics");
 /**
  * An operation that does nothing.
  */
@@ -363,7 +364,7 @@ function getFirstNgModuleName(source) {
     return moduleClass.name.text;
 }
 exports.getFirstNgModuleName = getFirstNgModuleName;
-function addSymbolToNgModuleMetadata(source, ngModulePath, metadataField, symbolName, importPath = null) {
+function addSymbolToNgModuleMetadata(source, ngModulePath, metadataField, symbolName, importPath = null, skipImport = true) {
     const nodes = getDecoratorMetadata(source, 'NgModule', '@angular/core');
     let node = nodes[0]; // tslint:disable-line:no-any
     // Find the decorator declaration.
@@ -412,7 +413,10 @@ function addSymbolToNgModuleMetadata(source, ngModulePath, metadataField, symbol
             }
         }
         if (importPath !== null) {
-            return [new InsertChange(ngModulePath, position, toInsert), insertImport(source, ngModulePath, symbolName.replace(/\..*$/, ''), importPath)];
+            return [
+                new InsertChange(ngModulePath, position, toInsert)
+                // insertImport(source, ngModulePath, symbolName.replace(/\..*$/, ''), importPath)
+            ];
         }
         else {
             return [new InsertChange(ngModulePath, position, toInsert)];
@@ -451,18 +455,16 @@ function addSymbolToNgModuleMetadata(source, ngModulePath, metadataField, symbol
         const expr = node;
         if (expr.properties.length == 0) {
             position = expr.getEnd() - 1;
-            toInsert = `  ${metadataField}: [${symbolName}]\n`;
+            toInsert = `  ${symbolName}\n`;
         }
         else {
-            node = expr.properties[expr.properties.length - 1];
-            position = node.getEnd();
             // Get the indentation of the last element, if any.
             const text = node.getFullText(source);
-            if (text.match('^\r?\r?\n')) {
-                toInsert = `,${text.match(/^\r?\n\s+/)[0]}${metadataField}: [${symbolName}]`;
+            if (text.match(/^\r?\r?\n/)) {
+                toInsert = `,${text.match(/^\r?\n\s*/)[0]}${symbolName}`;
             }
             else {
-                toInsert = `, ${metadataField}: [${symbolName}]`;
+                toInsert = `, ${symbolName}`;
             }
         }
     }
@@ -475,14 +477,17 @@ function addSymbolToNgModuleMetadata(source, ngModulePath, metadataField, symbol
         // Get the indentation of the last element, if any.
         const text = node.getFullText(source);
         if (text.match(/^\r?\n/)) {
-            toInsert = `,${text.match(/^\r?\n(\r?)\s+/)[0]}${symbolName}`;
+            toInsert = `,${text.match(/^\r?\n(\r?)\s*/)[0]}${symbolName}`;
         }
         else {
             toInsert = `, ${symbolName}`;
         }
     }
     if (importPath !== null) {
-        return [new InsertChange(ngModulePath, position, toInsert), insertImport(source, ngModulePath, symbolName.replace(/\..*$/, ''), importPath)];
+        return [
+            new InsertChange(ngModulePath, position, toInsert),
+            skipImport ? new NoopChange() : insertImport(source, ngModulePath, symbolName.replace(/\..*$/, ''), importPath)
+        ];
     }
     return [new InsertChange(ngModulePath, position, toInsert)];
 }
@@ -551,4 +556,27 @@ function isImported(source, classifiedName, importPath) {
     return matchingNodes.length > 0;
 }
 exports.isImported = isImported;
+function getModuleFile(host, modulePath) {
+    if (!host.exists(modulePath)) {
+        throw new schematics_1.SchematicsException(`File ${modulePath} does not exist.`);
+    }
+    const text = host.read(modulePath);
+    if (text === null) {
+        throw new schematics_1.SchematicsException(`File ${modulePath} does not exist.`);
+    }
+    const sourceText = text.toString('utf-8');
+    return ts.createSourceFile(modulePath, sourceText, ts.ScriptTarget.Latest, true);
+}
+exports.getModuleFile = getModuleFile;
+function applyChanges(host, path, changes) {
+    const recorder = host.beginUpdate(path);
+    for (const change of changes) {
+        if (change instanceof InsertChange) {
+            recorder.insertLeft(change.pos, change.toAdd);
+        }
+    }
+    host.commitUpdate(recorder);
+    return host;
+}
+exports.applyChanges = applyChanges;
 //# sourceMappingURL=utils.js.map
