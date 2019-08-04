@@ -27,8 +27,6 @@ Akita encourages simplicity. It saves you the hassle of creating boilerplate cod
 - 📖 Read the blog [posts](https://netbasal.gitbook.io/akita/general/blog-posts)
 - 🍄 Join Akita's [Gitter](https://gitter.im/akita-state-management/Lobby#) room
 
-[<img src="https://i.imgur.com/wyvfowv.png">](https://goo.gl/forms/J0oY5iDnyG8frFJq2)
-
 ## Contributors 
 
 Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
