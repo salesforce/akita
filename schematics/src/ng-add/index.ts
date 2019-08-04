@@ -8,13 +8,12 @@ import {
   addModuleImportToRootModule,
   getAppModulePath,
   InsertChange,
-  getSourceFile,
-  addProviderToModule
+  getSourceFile
 } from 'schematics-utilities';
 import { NodePackageInstallTask } from '@angular-devkit/schematics/tasks';
 import { Schema } from './schema';
 import * as ts from 'typescript';
-import { isImported, insertImport } from './utils';
+import { isImported, insertImport, addProviderToModule, getModuleFile, applyChanges } from './utils';
 
 function addPackageJsonDependencies(options: Schema): Rule {
   return (host: Tree, context: SchematicContext) => {
@@ -183,21 +182,9 @@ function addModuleToImports(options: Schema): Rule {
 
     if (provideEntityServiceConfig) {
       const modulePath = getAppModulePath(host, project.architect.build.options.main);
-      const moduleSource = getSourceFile(host, modulePath);
-
-      if (!moduleSource) {
-        throw new SchematicsException(`Module not found: ${modulePath}`);
-      }
-      const changes = addProviderToModule(moduleSource, modulePath, provideEntityServiceConfig, null);
-      const recorder = host.beginUpdate(modulePath);
-
-      changes.forEach(change => {
-        if (change instanceof InsertChange) {
-          recorder.insertLeft(change.pos, change.toAdd);
-        }
-      });
-
-      host.commitUpdate(recorder);
+      const module = getModuleFile(host, modulePath);
+      const providerChanges = addProviderToModule(module, modulePath, provideEntityServiceConfig, null);
+      applyChanges(host, modulePath, providerChanges as InsertChange[]);
     }
 
     if (options.devtools) {

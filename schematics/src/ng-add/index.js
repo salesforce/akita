@@ -141,18 +141,9 @@ function addModuleToImports(options) {
         }
         if (provideEntityServiceConfig) {
             const modulePath = schematics_utilities_1.getAppModulePath(host, project.architect.build.options.main);
-            const moduleSource = schematics_utilities_1.getSourceFile(host, modulePath);
-            if (!moduleSource) {
-                throw new schematics_1.SchematicsException(`Module not found: ${modulePath}`);
-            }
-            const changes = schematics_utilities_1.addProviderToModule(moduleSource, modulePath, provideEntityServiceConfig, null);
-            const recorder = host.beginUpdate(modulePath);
-            changes.forEach(change => {
-                if (change instanceof schematics_utilities_1.InsertChange) {
-                    recorder.insertLeft(change.pos, change.toAdd);
-                }
-            });
-            host.commitUpdate(recorder);
+            const module = utils_1.getModuleFile(host, modulePath);
+            const providerChanges = utils_1.addProviderToModule(module, modulePath, provideEntityServiceConfig, null);
+            utils_1.applyChanges(host, modulePath, providerChanges);
         }
         if (options.devtools) {
             context.logger.log('info', `🔥 AkitaNgDevtools is imported`);

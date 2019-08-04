@@ -1,4 +1,5 @@
 import * as ts from 'typescript';
+import { Tree, SchematicsException } from '@angular-devkit/schematics';
 
 export interface Host {
   write(path: string, content: string): Promise<void>;
@@ -330,11 +331,13 @@ function _angularImportsFromNode(node: ts.ImportDeclaration, _sourceFile: ts.Sou
         // This is of the form `import {a,b,c} from 'path'`
         const namedImports = nb as ts.NamedImports;
 
-        return namedImports.elements.map((is: ts.ImportSpecifier) => (is.propertyName ? is.propertyName.text : is.name.text)).reduce((acc: { [name: string]: string }, curr: string) => {
-          acc[curr] = modulePath;
+        return namedImports.elements
+          .map((is: ts.ImportSpecifier) => (is.propertyName ? is.propertyName.text : is.name.text))
+          .reduce((acc: { [name: string]: string }, curr: string) => {
+            acc[curr] = modulePath;
 
-          return acc;
-        }, {});
+            return acc;
+          }, {});
       }
     }
 
@@ -418,7 +421,7 @@ export function getFirstNgModuleName(source: ts.SourceFile): string | undefined 
   return moduleClass.name.text;
 }
 
-export function addSymbolToNgModuleMetadata(source: ts.SourceFile, ngModulePath: string, metadataField: string, symbolName: string, importPath: string | null = null): Change[] {
+export function addSymbolToNgModuleMetadata(source: ts.SourceFile, ngModulePath: string, metadataField: string, symbolName: string, importPath: string | null = null, skipImport = true): Change[] {
   const nodes = getDecoratorMetadata(source, 'NgModule', '@angular/core');
   let node: any = nodes[0]; // tslint:disable-line:no-any
 
@@ -469,7 +472,10 @@ export function addSymbolToNgModuleMetadata(source: ts.SourceFile, ngModulePath:
       }
     }
     if (importPath !== null) {
-      return [new InsertChange(ngModulePath, position, toInsert), insertImport(source, ngModulePath, symbolName.replace(/\..*$/, ''), importPath)];
+      return [
+        new InsertChange(ngModulePath, position, toInsert)
+        // insertImport(source, ngModulePath, symbolName.replace(/\..*$/, ''), importPath)
+      ];
     } else {
       return [new InsertChange(ngModulePath, position, toInsert)];
     }
@@ -513,16 +519,14 @@ export function addSymbolToNgModuleMetadata(source: ts.SourceFile, ngModulePath:
     const expr = node as ts.ObjectLiteralExpression;
     if (expr.properties.length == 0) {
       position = expr.getEnd() - 1;
-      toInsert = `  ${metadataField}: [${symbolName}]\n`;
+      toInsert = `  ${symbolName}\n`;
     } else {
-      node = expr.properties[expr.properties.length - 1];
-      position = node.getEnd();
       // Get the indentation of the last element, if any.
       const text = node.getFullText(source);
-      if (text.match('^\r?\r?\n')) {
-        toInsert = `,${text.match(/^\r?\n\s+/)[0]}${metadataField}: [${symbolName}]`;
+      if (text.match(/^\r?\r?\n/)) {
+        toInsert = `,${text.match(/^\r?\n\s*/)[0]}${symbolName}`;
       } else {
-        toInsert = `, ${metadataField}: [${symbolName}]`;
+        toInsert = `, ${symbolName}`;
       }
     }
   } else if (node.kind == ts.SyntaxKind.ArrayLiteralExpression) {
@@ -533,13 +537,13 @@ export function addSymbolToNgModuleMetadata(source: ts.SourceFile, ngModulePath:
     // Get the indentation of the last element, if any.
     const text = node.getFullText(source);
     if (text.match(/^\r?\n/)) {
-      toInsert = `,${text.match(/^\r?\n(\r?)\s+/)[0]}${symbolName}`;
+      toInsert = `,${text.match(/^\r?\n(\r?)\s*/)[0]}${symbolName}`;
     } else {
       toInsert = `, ${symbolName}`;
     }
   }
   if (importPath !== null) {
-    return [new InsertChange(ngModulePath, position, toInsert), insertImport(source, ngModulePath, symbolName.replace(/\..*$/, ''), importPath)];
+    return [new InsertChange(ngModulePath, position, toInsert), skipImport ? new NoopChange() : insertImport(source, ngModulePath, symbolName.replace(/\..*$/, ''), importPath)];
   }
 
   return [new InsertChange(ngModulePath, position, toInsert)];
@@ -609,4 +613,31 @@ export function isImported(source: ts.SourceFile, classifiedName: string, import
     });
 
   return matchingNodes.length > 0;
+}
+
+export function getModuleFile(host: Tree, modulePath): ts.SourceFile {
+  if (!host.exists(modulePath)) {
+    throw new SchematicsException(`File ${modulePath} does not exist.`);
+  }
+
+  const text = host.read(modulePath);
+  if (text === null) {
+    throw new SchematicsException(`File ${modulePath} does not exist.`);
+  }
+  const sourceText = text.toString('utf-8');
+
+  return ts.createSourceFile(modulePath, sourceText, ts.ScriptTarget.Latest, true);
+}
+
+export function applyChanges(host: Tree, path: string, changes: InsertChange[]): Tree {
+  const recorder = host.beginUpdate(path);
+
+  for (const change of changes) {
+    if (change instanceof InsertChange) {
+      recorder.insertLeft(change.pos, change.toAdd);
+    }
+  }
+  host.commitUpdate(recorder);
+
+  return host;
 }
