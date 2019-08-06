@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.9.0](https://github.com/datorama/akita/compare/v4.8.1...v4.9.0) (2019-08-06)
+
+
+### Bug Fixes
+
+* **operators:** filternil type  ([5be64cd](https://github.com/datorama/akita/commit/5be64cd))
+* **schematic:** uncomment ng-entity-service deps ([401f049](https://github.com/datorama/akita/commit/401f049))
+* **schematic-path:** update path ([f4b9539](https://github.com/datorama/akita/commit/f4b9539))
+* **schematic-path:** update path ([c097b4a](https://github.com/datorama/akita/commit/c097b4a))
+* **schematics:** can update providers with object ([6c2b41d](https://github.com/datorama/akita/commit/6c2b41d))
+* **schematics:** change requested + build ([9096c1f](https://github.com/datorama/akita/commit/9096c1f))
+* **schematics:** change requested after review ([1fce27b](https://github.com/datorama/akita/commit/1fce27b))
+
+
+### Features
+
+* **cli:** add http entity service ([792e7a5](https://github.com/datorama/akita/commit/792e7a5))
+* **cli:** add http entity service ([0ce57a4](https://github.com/datorama/akita/commit/0ce57a4))
+* **schematics:** add entity service ([8714eb8](https://github.com/datorama/akita/commit/8714eb8))
+* **schematics:** add entity service ([33c0b88](https://github.com/datorama/akita/commit/33c0b88))
+* **schematics:** generate http entity service ([838f58b](https://github.com/datorama/akita/commit/838f58b))
+* **schematics:** generate http entity service ([36069f6](https://github.com/datorama/akita/commit/36069f6))
+* **schematics:** httpService option for feature ([a37ad89](https://github.com/datorama/akita/commit/a37ad89))
+
+
+
 ### [4.8.1](https://github.com/datorama/akita/compare/v4.8.0...v4.8.1) (2019-07-25)
 
 
