@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.9.2](https://github.com/datorama/akita/compare/v4.9.1...v4.9.2) (2019-08-09)
+
+
+### Bug Fixes
+
+* **dirty-check-plugin:** added missing generic type in DirtyCheckParams ([f12eb1e](https://github.com/datorama/akita/commit/f12eb1e))
+
+
+
 ## [4.9.0](https://github.com/datorama/akita/compare/v4.8.1...v4.9.0) (2019-08-06)
 
 
