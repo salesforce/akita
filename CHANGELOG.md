@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.9.3](https://github.com/datorama/akita/compare/v4.9.2...v4.9.3) (2019-08-09)
+
+
+### Bug Fixes
+
+* **array-utils:** array upsert should pass the id key ([b824e67](https://github.com/datorama/akita/commit/b824e67)), closes [#270](https://github.com/datorama/akita/issues/270)
+
+
+
 ### [4.9.2](https://github.com/datorama/akita/compare/v4.9.1...v4.9.2) (2019-08-09)
 
 
