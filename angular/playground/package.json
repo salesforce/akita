@@ -23,8 +23,12 @@
     "@angular/router": "~7.2.0",
     "@datorama/akita": "^4.9.0",
     "@datorama/akita-ng-entity-service": "^1.0.0",
+    "@netbasal/content-loader": "^1.1.0",
     "core-js": "^2.5.4",
+    "faker": "^4.1.0",
+    "helpful-decorators": "^2.0.5",
     "localforage": "^1.7.3",
+    "ngx-take-until-destroy": "^5.4.0",
     "rxjs": "~6.3.3",
     "tslib": "^1.9.0",
     "zone.js": "~0.8.26"
