@@ -40,7 +40,7 @@ export class DirtyCheckPlugin<State = any> extends AkitaPlugin<State> {
   isDirty$: Observable<boolean> = this.dirty.asObservable().pipe(distinctUntilChanged());
   reset$ = this._reset.asObservable();
 
-  constructor(protected query: Queries<State>, private params?: DirtyCheckParams, private _entityId?: any) {
+  constructor(protected query: Queries<State>, private params?: DirtyCheckParams<State>, private _entityId?: any) {
     super(query);
     this.params = { ...dirtyCheckDefaultParams, ...params };
     if (this.params.watchProperty) {
@@ -109,12 +109,14 @@ export class DirtyCheckPlugin<State = any> extends AkitaPlugin<State> {
     /** if we are tracking specific properties select only the relevant ones */
     const source = this.params.watchProperty
       ? (this.params.watchProperty as (keyof State)[]).map(prop =>
-          this.query.select(state => state[prop]).pipe(
-            map(val => ({
-              val,
-              __akitaKey: prop
-            }))
-          )
+          this.query
+            .select(state => state[prop])
+            .pipe(
+              map(val => ({
+                val,
+                __akitaKey: prop
+              }))
+            )
         )
       : [this.selectSource(this._entityId)];
     this.subscription = combineLatest(...source)
