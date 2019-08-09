@@ -18,7 +18,7 @@ export function arrayUpsert<Root extends any[]>(arr: Root, id: ID, obj: Partial<
   const entityIsObject = isObject(obj);
   const entityExists = arr.some(entity => (entityIsObject ? entity[idKey] === id : entity === id));
   if (entityExists) {
-    return arrayUpdate(arr, id, obj);
+    return arrayUpdate(arr, id, obj, idKey);
   } else {
     return arrayAdd(arr, entityIsObject ? { ...obj, [idKey]: id } : obj);
   }
