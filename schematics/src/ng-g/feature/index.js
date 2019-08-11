@@ -4,7 +4,8 @@ const schematics_1 = require("@angular-devkit/schematics");
 function default_1(options) {
     const plain = options.plain;
     const withModule = options.withModule;
-    const httpService = plain ? false : options.httpService;
+    const entityService = plain ? 'default' : options.entityService;
+    const serviceSchematic = entityService === "Http" /* http */ ? 'http-entity-service' : entityService === "Firebase" /* firebase */ ? 'firebase-entity-service' : 'service';
     let files = [
         schematics_1.schematic(plain ? 'store' : 'entity-store', {
             flat: options.flat,
@@ -24,7 +25,7 @@ function default_1(options) {
             dirName: options.dirName,
             feature: true
         }),
-        schematics_1.schematic(httpService ? 'http-entity-service' : 'service', {
+        schematics_1.schematic(serviceSchematic, {
             flat: options.flat,
             module: options.module,
             name: options.name,

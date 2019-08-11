@@ -1,15 +1,5 @@
 import { Rule, SchematicContext, Tree, noop, chain, SchematicsException } from '@angular-devkit/schematics';
-import {
-  NodeDependency,
-  addPackageJsonDependency,
-  NodeDependencyType,
-  getWorkspace,
-  getProjectFromWorkspace,
-  addModuleImportToRootModule,
-  getAppModulePath,
-  InsertChange,
-  getSourceFile
-} from 'schematics-utilities';
+import { NodeDependency, addPackageJsonDependency, NodeDependencyType, getWorkspace, getProjectFromWorkspace, addModuleImportToRootModule, getAppModulePath, InsertChange } from 'schematics-utilities';
 import { NodePackageInstallTask } from '@angular-devkit/schematics/tasks';
 import { Schema } from './schema';
 import * as ts from 'typescript';
@@ -41,11 +31,19 @@ function addPackageJsonDependencies(options: Schema): Rule {
       });
     }
 
-    if (options.entityService) {
+    if (options.httpEntityService) {
       dependencies.push({
         type: NodeDependencyType.Default,
         version: '^1.0.0',
         name: '@datorama/akita-ng-entity-service'
+      });
+    }
+
+    if (options.firebaseEntityService) {
+      dependencies.push({
+        type: NodeDependencyType.Default,
+        version: '^1.0.0',
+        name: 'akita-ng-fire'
       });
     }
 
@@ -80,7 +78,7 @@ function getTsSourceFile(host: Tree, path: string): ts.SourceFile {
 
 function injectImports(options: Schema): Rule {
   return (host: Tree, context: SchematicContext) => {
-    if (!options.router && !options.devtools && !options.entityService) {
+    if (!options.router && !options.devtools && !options.httpEntityService && !options.firebaseEntityService) {
       return;
     }
     const workspace = getWorkspace(host);
@@ -123,7 +121,7 @@ function injectImports(options: Schema): Rule {
       }
     }
 
-    if (options.entityService) {
+    if (options.httpEntityService) {
       const entityServiceChange = insertImport(moduleSource, modulePath, 'NG_ENTITY_SERVICE_CONFIG', '@datorama/akita-ng-entity-service');
       if (entityServiceChange) {
         const recorder = host.beginUpdate(modulePath);
@@ -168,7 +166,7 @@ function addModuleToImports(options: Schema): Rule {
       importDevtools = `environment.production ? [] : AkitaNgDevtools.forRoot()`;
     }
 
-    if (options.entityService) {
+    if (options.httpEntityService) {
       provideEntityServiceConfig = `{ provide: NG_ENTITY_SERVICE_CONFIG, useValue: { baseUrl: 'https://jsonplaceholder.typicode.com' }}`;
     }
 
@@ -195,7 +193,7 @@ function addModuleToImports(options: Schema): Rule {
       context.logger.log('info', `🦄 AkitaNgRouterStoreModule is imported`);
     }
 
-    if (options.entityService) {
+    if (options.httpEntityService) {
       context.logger.log('info', `🌈 NgEntityService is imported`);
     }
 

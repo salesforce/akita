@@ -28,11 +28,18 @@ function addPackageJsonDependencies(options) {
                 name: '@datorama/akita-ngdevtools'
             });
         }
-        if (options.entityService) {
+        if (options.httpEntityService) {
             dependencies.push({
                 type: schematics_utilities_1.NodeDependencyType.Default,
                 version: '^1.0.0',
                 name: '@datorama/akita-ng-entity-service'
+            });
+        }
+        if (options.firebaseEntityService) {
+            dependencies.push({
+                type: schematics_utilities_1.NodeDependencyType.Default,
+                version: '^1.0.0',
+                name: 'akita-ng-fire'
             });
         }
         dependencies.forEach(dependency => {
@@ -60,7 +67,7 @@ function getTsSourceFile(host, path) {
 }
 function injectImports(options) {
     return (host, context) => {
-        if (!options.router && !options.devtools && !options.entityService) {
+        if (!options.router && !options.devtools && !options.httpEntityService && !options.firebaseEntityService) {
             return;
         }
         const workspace = schematics_utilities_1.getWorkspace(host);
@@ -95,7 +102,7 @@ function injectImports(options) {
                 host.commitUpdate(recorder);
             }
         }
-        if (options.entityService) {
+        if (options.httpEntityService) {
             const entityServiceChange = utils_1.insertImport(moduleSource, modulePath, 'NG_ENTITY_SERVICE_CONFIG', '@datorama/akita-ng-entity-service');
             if (entityServiceChange) {
                 const recorder = host.beginUpdate(modulePath);
@@ -130,7 +137,7 @@ function addModuleToImports(options) {
         if (options.devtools) {
             importDevtools = `environment.production ? [] : AkitaNgDevtools.forRoot()`;
         }
-        if (options.entityService) {
+        if (options.httpEntityService) {
             provideEntityServiceConfig = `{ provide: NG_ENTITY_SERVICE_CONFIG, useValue: { baseUrl: 'https://jsonplaceholder.typicode.com' }}`;
         }
         if (importDevtools) {
@@ -151,7 +158,7 @@ function addModuleToImports(options) {
         if (options.withRouter || options.router) {
             context.logger.log('info', `🦄 AkitaNgRouterStoreModule is imported`);
         }
-        if (options.entityService) {
+        if (options.httpEntityService) {
             context.logger.log('info', `🌈 NgEntityService is imported`);
         }
         return host;

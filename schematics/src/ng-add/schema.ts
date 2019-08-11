@@ -14,9 +14,13 @@ export interface Schema {
    */
   devtools?: boolean;
   /**
-   * Add the entity service
+   * Add the Http entity service
    */
-  entityService?: boolean;
+  httpEntityService?: boolean;
+  /**
+   * Add the Firebase entity service
+   */
+  firebaseEntityService?: boolean;
 
   project?: any;
 }

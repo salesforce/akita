@@ -54,8 +54,15 @@
     "withModule": {
       "type": "boolean"
     },
-    "httpService": {
-      "type": "boolean"
+    "entityService": {
+      "type": "string",
+      "default": "Default",
+      "description": "Choose the entity service to use",
+      "x-prompt": {
+        "type": "list",
+        "message": "What type of service do you want to use ?",
+        "items": ["Http", "Firebase", "Default"]
+      }
     }
   },
   "required": []

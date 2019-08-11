@@ -1,9 +1,17 @@
 import { Rule, SchematicContext, Tree, chain, schematic } from '@angular-devkit/schematics';
 
+const enum EntityServiceType {
+  http = 'Http',
+  firebase = 'Firebase',
+  default = 'Default'
+}
+
 export default function(options: any): Rule {
   const plain = options.plain;
   const withModule = options.withModule;
-  const httpService = plain ? false : options.httpService;
+  const entityService = plain ? 'default' : options.entityService;
+
+  const serviceSchematic = entityService === EntityServiceType.http ? 'http-entity-service' : entityService === EntityServiceType.firebase ? 'firebase-entity-service' : 'service';
 
   let files = [
     schematic(plain ? 'store' : 'entity-store', {
@@ -24,7 +32,7 @@ export default function(options: any): Rule {
       dirName: options.dirName,
       feature: true
     }),
-    schematic(httpService ? 'http-entity-service' : 'service', {
+    schematic(serviceSchematic, {
       flat: options.flat,
       module: options.module,
       name: options.name,
