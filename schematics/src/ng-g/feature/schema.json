@@ -61,7 +61,11 @@
       "x-prompt": {
         "type": "list",
         "message": "What type of service do you want to use?",
-        "items": ["Default", "Http", "Firebase"]
+        "items": [
+          {"label": "Default", "value": "Default"},
+          {"label": "Http     [https://bit.ly/2Krqhpi]", "value": "Http"},
+          {"label": "Firebase [https://bit.ly/2H3lgkW]", "value": "Firebase"}
+        ]
       }
     }
   },
