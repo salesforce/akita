@@ -21,7 +21,8 @@ export default function(options: any): Rule {
       project: options.project,
       dirName: options.dirName,
       feature: true,
-      spec: options.spec
+      spec: options.spec,
+      withActive: entityService === EntityServiceType.firebase ? true : options.withActive
     }),
     schematic(plain ? 'query' : 'entity-query', {
       flat: options.flat,

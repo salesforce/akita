@@ -27,6 +27,11 @@
       "type": "string",
       "default": "state",
       "description": "Specifies the name of the generated folder"
+    },
+    "withActive": {
+      "type": "boolean",
+      "default": false,
+      "description": "Specifies if the entity state is ActiveState"
     }
   },
   "required": []

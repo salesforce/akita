@@ -14,7 +14,8 @@ function default_1(options) {
             project: options.project,
             dirName: options.dirName,
             feature: true,
-            spec: options.spec
+            spec: options.spec,
+            withActive: entityService === "Firebase" /* firebase */ ? true : options.withActive
         }),
         schematics_1.schematic(plain ? 'query' : 'entity-query', {
             flat: options.flat,
