@@ -18,11 +18,11 @@ export interface Entities<E> {
   ids: ID[];
 }
 
-export interface ActiveState<T = ID> {
+export interface ActiveState<T = any> {
   active: T | null;
 }
 
-export interface MultiActiveState<T = ID> {
+export interface MultiActiveState<T = any> {
   active: T[];
 }
 
