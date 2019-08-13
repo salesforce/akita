@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.9.4](https://github.com/datorama/akita/compare/v4.9.3...v4.9.4) (2019-08-13)
+
+
+### Bug Fixes
+
+* **schematics:** add doc link to entityservices ([d8b34c9](https://github.com/datorama/akita/commit/d8b34c9))
+* **types:** activestate use any by default ([fd96dbb](https://github.com/datorama/akita/commit/fd96dbb))
+
+
+
 ### [4.9.3](https://github.com/datorama/akita/compare/v4.9.2...v4.9.3) (2019-08-09)
 
 
