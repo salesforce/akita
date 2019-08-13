@@ -16,6 +16,7 @@ exports.stringUtils = {
     group: string_1.group,
     capitalize: string_1.capitalize,
     featurePath: string_1.featurePath,
-    singular: string_1.singular
+    singular: string_1.singular,
+    plural: string_1.plural
 };
 //# sourceMappingURL=index.js.map

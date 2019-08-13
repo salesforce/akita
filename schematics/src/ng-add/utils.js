@@ -287,7 +287,9 @@ function _angularImportsFromNode(node, _sourceFile) {
             else {
                 // This is of the form `import {a,b,c} from 'path'`
                 const namedImports = nb;
-                return namedImports.elements.map((is) => (is.propertyName ? is.propertyName.text : is.name.text)).reduce((acc, curr) => {
+                return namedImports.elements
+                    .map((is) => (is.propertyName ? is.propertyName.text : is.name.text))
+                    .reduce((acc, curr) => {
                     acc[curr] = modulePath;
                     return acc;
                 }, {});
@@ -484,10 +486,7 @@ function addSymbolToNgModuleMetadata(source, ngModulePath, metadataField, symbol
         }
     }
     if (importPath !== null) {
-        return [
-            new InsertChange(ngModulePath, position, toInsert),
-            skipImport ? new NoopChange() : insertImport(source, ngModulePath, symbolName.replace(/\..*$/, ''), importPath)
-        ];
+        return [new InsertChange(ngModulePath, position, toInsert), skipImport ? new NoopChange() : insertImport(source, ngModulePath, symbolName.replace(/\..*$/, ''), importPath)];
     }
     return [new InsertChange(ngModulePath, position, toInsert)];
 }

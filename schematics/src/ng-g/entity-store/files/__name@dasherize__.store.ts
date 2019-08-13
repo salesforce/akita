@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
 import { <%= singular(classify(name)) %> } from './<%= singular(dasherize(name)) %>.model';
+import { EntityState<% if (withActive) { %>, ActiveState<%}%>, EntityStore, StoreConfig } from '@datorama/akita';
 
-export interface <%= classify(name) %>State extends EntityState<<%= singular(classify(name)) %>> {}
+export interface <%= classify(name) %>State extends EntityState<<%= singular(classify(name)) %>><% if (withActive) { %>, ActiveState<% } %> {}
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: '<%= name %>' })

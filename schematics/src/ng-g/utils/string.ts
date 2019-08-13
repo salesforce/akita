@@ -113,6 +113,10 @@ export function singular(value: string) {
   return pluralize.singular(value);
 }
 
+export function plural(value: string) {
+  return pluralize.plural(value);
+}
+
 export function group(name: string, group: string | undefined) {
   return group ? `${group}/${name}` : name;
 }

@@ -1,12 +1,13 @@
 {
   "$schema": "http://json-schema.org/schema",
-  "id": "SchematicsAkitaStore",
-  "title": "Akita Store Options Schema",
+  "id": "SchematicsAkitaHttpEntityService",
+  "title": "Akita Firebase Entity Service Options Schema",
   "type": "object",
   "properties": {
     "name": {
-      "description": "The name of the store.",
+      "description": "The name of the firebase entity service.",
       "type": "string",
+      "alias": "s",
       "$default": {
         "$source": "argv",
         "index": 0
@@ -15,7 +16,7 @@
     "path": {
       "type": "string",
       "format": "path",
-      "description": "The path to create the store.",
+      "description": "The path to create the query.",
       "visible": false
     },
     "spec": {
@@ -27,11 +28,6 @@
       "type": "string",
       "default": "state",
       "description": "Specifies the name of the generated folder"
-    },
-    "withActive": {
-      "type": "boolean",
-      "default": false,
-      "description": "Specifies if the entity state is ActiveState"
     }
   },
   "required": []

@@ -1,4 +1,4 @@
-import { dasherize, decamelize, camelize, classify, underscore, group, capitalize, featurePath, singular } from './string';
+import { dasherize, decamelize, camelize, classify, underscore, group, capitalize, featurePath, singular, plural } from './string';
 export * from './parse-name';
 export * from './project';
 export * from './workspace';
@@ -12,4 +12,5 @@ export declare const stringUtils: {
     capitalize: typeof capitalize;
     featurePath: typeof featurePath;
     singular: typeof singular;
+    plural: typeof plural;
 };

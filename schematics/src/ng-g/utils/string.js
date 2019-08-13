@@ -113,6 +113,10 @@ function singular(value) {
     return pluralize.singular(value);
 }
 exports.singular = singular;
+function plural(value) {
+    return pluralize.plural(value);
+}
+exports.plural = plural;
 function group(name, group) {
     return group ? `${group}/${name}` : name;
 }

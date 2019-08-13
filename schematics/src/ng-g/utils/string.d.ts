@@ -67,5 +67,6 @@ export declare function underscore(str: string): string;
  */
 export declare function capitalize(str: string): string;
 export declare function singular(value: string): any;
+export declare function plural(value: string): any;
 export declare function group(name: string, group: string | undefined): string;
 export declare function featurePath(group: boolean | undefined, flat: boolean | undefined, path: string, name: string): string;
