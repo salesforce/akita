@@ -2,7 +2,7 @@ import { Rule, apply, branchAndMerge, chain, filter, mergeWith, move, noop, temp
 
 import { getProjectPath, stringUtils, parseName } from '../utils';
 
-function getExtentionState({ idType, name, withActive }: any) {
+function getExtensionState({ idType, name, withActive }: any) {
   const isID = idType === 'string' || idType === 'number';
   const entityType = stringUtils.singular(stringUtils.classify(name));
   const generics = [entityType];
@@ -22,7 +22,7 @@ export default function(options: any): Rule {
     options.path = getProjectPath(host, options);
 
     // Build state based on options
-    const extensionState = getExtentionState(options);
+    const extensionState = getExtensionState(options);
 
     const parsedPath = parseName(options);
     options.name = parsedPath.name;
