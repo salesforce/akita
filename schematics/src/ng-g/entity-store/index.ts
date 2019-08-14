@@ -9,12 +9,12 @@ function getExtensionState({ idType, name, withActive }: any) {
   if (isID) {
     generics.push(idType);
   }
-  const extentions = [`EntityState<${generics.join(', ')}>`];
+  const extensions = [`EntityState<${generics.join(', ')}>`];
   if (withActive) {
     const activeState = isID ? `ActiveState<${idType}>` : `ActiveState`;
-    extentions.push(activeState);
+    extensions.push(activeState);
   }
-  return extentions.join(', ');
+  return extensions.join(', ');
 }
 
 export default function(options: any): Rule {
