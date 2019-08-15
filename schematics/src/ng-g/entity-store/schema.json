@@ -32,6 +32,10 @@
       "type": "boolean",
       "default": false,
       "description": "Specifies if the entity state is ActiveState"
+    },
+    "idType": {
+      "type": "string",
+      "description": "Specifies the type of the entity ID. Can be string or number."
     }
   },
   "required": []
