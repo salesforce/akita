@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.9.6](https://github.com/datorama/akita/compare/v4.9.5...v4.9.6) (2019-08-15)
+
+
+### Bug Fixes
+
+* **entity-store:** removeActive add support for single active ([5097ec4](https://github.com/datorama/akita/commit/5097ec4))
+
+
+
 ### [4.9.5](https://github.com/datorama/akita/compare/v4.9.4...v4.9.5) (2019-08-15)
 
 
