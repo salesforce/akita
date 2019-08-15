@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.9.5](https://github.com/datorama/akita/compare/v4.9.4...v4.9.5) (2019-08-15)
+
+
+### Bug Fixes
+
+* **schematics:** fix typo ([dee8c37](https://github.com/datorama/akita/commit/dee8c37))
+* **schematics:** fix typos ([bdf594a](https://github.com/datorama/akita/commit/bdf594a))
+* **types:** activestate use id by default again ([ab90451](https://github.com/datorama/akita/commit/ab90451))
+
+
+
 ### [4.9.4](https://github.com/datorama/akita/compare/v4.9.3...v4.9.4) (2019-08-13)
 
 
