@@ -454,7 +454,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     this._setState(state => {
       return {
         ...state,
-        active: state.active.filter(currentId => toArray.indexOf(currentId) === -1)
+        active: Array.isArray(state.active) ? state.active.filter(currentId => toArray.indexOf(currentId) === -1) : null
       };
     });
   }
