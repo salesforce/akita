@@ -110,7 +110,7 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
           successMsg: _config.successMsg
         });
       }),
-      catchError(error => this.handleError(method, error, config.errorMsg)),
+      catchError(error => this.handleError(method, error, _config.errorMsg)),
       finalize(() => {
         this.loader.dispatch({
           method,
