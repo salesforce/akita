@@ -96,7 +96,7 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
     });
 
     return this.http[method.toLowerCase()](url, _config).pipe(
-      mapResponse(config),
+      mapResponse(_config),
       tap((data: any) => {
         if (isSingle) {
           this.store.upsert(idOrConfig as getIDType<S>, data);
@@ -183,7 +183,7 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
     return this.http[method.toLocaleLowerCase()](this.resolveUrl(config, id), entity, config).pipe(
       mapResponse(config),
       tap(entity => {
-        this.store.update(id, entity);
+        this.store.update(id, entity as any);
         this.dispatchSuccess({
           method,
           payload: entity,

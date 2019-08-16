@@ -33,7 +33,13 @@ export class PostsComponent implements OnInit {
       )
       .subscribe(v => console.log(v));
 
-    this.postsService.get().subscribe();
+    this.postsService
+      .get({
+        mapResponseFn: res => {
+          return res;
+        }
+      })
+      .subscribe();
     this.loaders.deleteEntity(3);
   }
 
