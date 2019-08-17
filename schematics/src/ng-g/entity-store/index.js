@@ -4,17 +4,18 @@ const schematics_1 = require("@angular-devkit/schematics");
 const utils_1 = require("../utils");
 function getExtensionState({ idType, name, withActive }) {
     const isID = idType === 'string' || idType === 'number';
-    const entityType = utils_1.stringUtils.singular(utils_1.stringUtils.classify(name));
+    const entityName = name.split('/').pop();
+    const entityType = utils_1.stringUtils.singular(utils_1.stringUtils.classify(entityName));
     const generics = [entityType];
     if (isID) {
         generics.push(idType);
     }
-    const extentions = [`EntityState<${generics.join(', ')}>`];
+    const extensions = [`EntityState<${generics.join(', ')}>`];
     if (withActive) {
         const activeState = isID ? `ActiveState<${idType}>` : `ActiveState`;
-        extentions.push(activeState);
+        extensions.push(activeState);
     }
-    return extentions.join(', ');
+    return extensions.join(', ');
 }
 function default_1(options) {
     return (host, context) => {

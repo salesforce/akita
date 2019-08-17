@@ -4,7 +4,8 @@ import { getProjectPath, stringUtils, parseName } from '../utils';
 
 function getExtensionState({ idType, name, withActive }: any) {
   const isID = idType === 'string' || idType === 'number';
-  const entityType = stringUtils.singular(stringUtils.classify(name));
+  const entityName = name.split('/').pop();
+  const entityType = stringUtils.singular(stringUtils.classify(entityName));
   const generics = [entityType];
   if (isID) {
     generics.push(idType);
