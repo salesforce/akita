@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.9.7](https://github.com/datorama/akita/compare/v4.9.6...v4.9.7) (2019-08-17)
+
+
+### Bug Fixes
+
+* **schematics:** use name as last part of path ([d0ef1cf](https://github.com/datorama/akita/commit/d0ef1cf))
+
+
+
 ### [4.9.6](https://github.com/datorama/akita/compare/v4.9.5...v4.9.6) (2019-08-15)
 
 
