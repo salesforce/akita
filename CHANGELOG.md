@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.10.0](https://github.com/datorama/akita/compare/v4.9.7...v4.10.0) (2019-08-20)
+
+
+### Features
+
+* **devtools:** allow to change instance name visible in devtools ([50a65e9](https://github.com/datorama/akita/commit/50a65e9))
+
+
+
 ### [4.9.7](https://github.com/datorama/akita/compare/v4.9.6...v4.9.7) (2019-08-17)
 
 
