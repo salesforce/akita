@@ -6,6 +6,8 @@ import { capitalize } from './captialize';
 import { isNotBrowser } from './root';
 
 export type DevtoolsOptions = {
+  /** instance name visible in devtools */
+  name: string;
   /**  maximum allowed actions to be stored in the history tree */
   maxAge: number;
   latency: number;
