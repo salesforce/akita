@@ -92,6 +92,15 @@ describe('EntityUIState', () => {
     expect(store.ui._value().ids.length).toBe(3);
   });
 
+  it('should support upsertMany', () => {
+    store.upsertMany([{ id: 20, title: 'new' }]);
+    expect(store.ui._value().entities).toEqual(
+      expect.objectContaining({
+        '20': { id: 20, isLoading: false, isOpen: true }
+      })
+    );
+  });
+
   it('should destroy the ui store when destroying the parent store', () => {
     spyOn(store.ui, 'destroy').and.callThrough();
     store.destroy();
@@ -103,7 +112,7 @@ describe('EntityUIState', () => {
 class Articles2Store extends EntityStore<ArticlesState, Article> {
   constructor() {
     super();
-    this.createUIStore({}, { storeName: 'myname' });
+    this.createUIStore({}, { name: 'myname' });
   }
 }
 
@@ -134,7 +143,7 @@ const store3 = new Articles3Store();
 
 describe('EntityUIState - support a prehook', () => {
   it('should support work', () => {
-    store3.set([{ title: '3'}])
+    store3.set([{ title: '3' }]);
     store3.add([{ title: '1' }, { title: '2' }]);
     expect(store3.ui._value().ids).toEqual([0, 1, 2]);
     expect(store3.ui._value().entities).toEqual({ '0': { uid: 0, isOpen: false }, '1': { uid: 1, isOpen: false }, '2': { uid: 2, isOpen: false } });

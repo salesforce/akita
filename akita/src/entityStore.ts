@@ -274,6 +274,9 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 
     updatedIds.length && this.entityActions.next({ type: EntityActions.Update, ids: updatedIds });
     addedIds.length && this.entityActions.next({ type: EntityActions.Add, ids: addedIds });
+    if (addedIds.length && this.hasUIStore()) {
+      this.handleUICreation(true);
+    }
   }
 
   /**
