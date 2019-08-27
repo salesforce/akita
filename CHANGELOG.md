@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.10.1](https://github.com/datorama/akita/compare/v4.10.0...v4.10.1) (2019-08-27)
+
+
+### Bug Fixes
+
+* **ui-store:** should support upsertmany ([4ee8b2f](https://github.com/datorama/akita/commit/4ee8b2f)), closes [#285](https://github.com/datorama/akita/issues/285)
+
+
+
 ## [4.10.0](https://github.com/datorama/akita/compare/v4.9.7...v4.10.0) (2019-08-20)
 
 
