@@ -134,7 +134,7 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
     return this.select(state => state.entities).pipe(
       map(entities => mapSkipUndefined(ids, id => getEntity(id, project)(entities))),
       distinctUntilArrayItemChanged()
-    ) as Observable<R[] | EntityType[]>;
+    );
   }
 
   /**
