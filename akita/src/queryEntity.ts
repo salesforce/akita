@@ -123,7 +123,7 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    *
    * @example
    *
-   * this.query.selectMany([1,2])
+   * this.query.selectMany([1,2,3])
    * this.query.selectMany([1,2], entity => entity.title)
    */
   selectMany<R>(ids: IDType[]): Observable<EntityType[]>;
