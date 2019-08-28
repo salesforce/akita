@@ -129,9 +129,11 @@ describe('Entities Query', () => {
     });
 
     it('should not throw when the entity does not exists', () => {
-      sub = query.selectEntity(2, entity => entity.title).subscribe(entity => {
-        expect(entity).toBe(undefined);
-      });
+      sub = query
+        .selectEntity(2, entity => entity.title)
+        .subscribe(entity => {
+          expect(entity).toBe(undefined);
+        });
     });
 
     it('should select by predicate', () => {
@@ -140,7 +142,7 @@ describe('Entities Query', () => {
       store.add(factory());
       const spy = jest.fn();
       query.selectEntity(e => e.id === 1).subscribe(spy);
-      expect(spy).toHaveBeenCalledWith({"complete": false, "id": 1, "title": "Todo 1"});
+      expect(spy).toHaveBeenCalledWith({ complete: false, id: 1, title: 'Todo 1' });
       store.remove(1);
       expect(spy).toHaveBeenCalledWith(undefined);
     });
@@ -365,7 +367,6 @@ describe('Entities Query', () => {
     });
 
     describe('without TTL', () => {
-
       describe('selectHasCache', () => {
         it('should work in a full flow', () => {
           sub = query.selectHasCache().subscribe(spy);
@@ -420,8 +421,6 @@ describe('Entities Query', () => {
       });
     });
   });
-
-
 
   describe('hasEntity', () => {
     it('should have entity', () => {
@@ -665,34 +664,30 @@ describe('Many', () => {
   describe('SelectMany', () => {
     it('should select many', () => {
       queryTodos.selectMany([0, 1]).subscribe(spy);
-      todosStore.add(createTodos(3));
-      jest.runAllTimers();
       expect(spy).toHaveBeenCalledTimes(1);
+
+      todosStore.add(createTodos(3));
+      expect(spy).toHaveBeenCalledTimes(2);
       expect(spy).toHaveBeenCalledWith(createTodos(2));
     });
 
     it('should not fire when a different entity change', () => {
       todosStore.add(createTodos(3));
       queryTodos.selectMany([0, 1]).subscribe(spy);
-      jest.runAllTimers();
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith(createTodos(2));
       todosStore.update(2, { completed: true });
-      jest.runAllTimers();
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
     it('should work with function projection', () => {
       todosStore.add(createTodos(3));
       queryTodos.selectMany([0, 1], entity => entity.title).subscribe(spy);
-      jest.runAllTimers();
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith(['Todo 0', 'Todo 1']);
       todosStore.update(2, { completed: true });
-      jest.runAllTimers();
       expect(spy).toHaveBeenCalledTimes(1);
       todosStore.update(1, { title: 'new title' });
-      jest.runAllTimers();
       expect(spy).toHaveBeenCalledTimes(2);
       expect(spy).toHaveBeenCalledWith(['Todo 0', 'new title']);
     });

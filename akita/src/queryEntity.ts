@@ -1,5 +1,5 @@
-import { combineLatest, Observable, of } from 'rxjs';
-import { auditTime, distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
 import { isDefined } from './isDefined';
 import { EntityStore } from './entityStore';
 import { Query } from './query';
@@ -16,6 +16,8 @@ import { findEntityByPredicate, getEntity } from './getEntity';
 import { EntityAction, EntityActions } from './entityActions';
 import { isUndefined } from './isUndefined';
 import { QueryConfigOptions } from './queryConfig';
+import { distinctUntilArrayItemChanged } from './arrayFind';
+import { mapSkipUndefined } from './mapSkipUndefined';
 
 /**
  *
@@ -129,11 +131,9 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
   selectMany<R>(ids: IDType[], project?: (entity: EntityType) => R): Observable<EntityType[] | R[]> {
     if (!ids || !ids.length) return of([]);
 
-    const entities = ids.map(id => this.selectEntity(id, project));
-
-    return combineLatest(entities).pipe(
-      map(v => v.filter(Boolean)),
-      auditTime(0)
+    return this.select(state => state.entities).pipe(
+      map(entities => mapSkipUndefined(ids, id => getEntity(id, project)(entities))),
+      distinctUntilArrayItemChanged()
     );
   }
 
