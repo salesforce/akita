@@ -17,6 +17,7 @@ import { EntityAction, EntityActions } from './entityActions';
 import { isUndefined } from './isUndefined';
 import { QueryConfigOptions } from './queryConfig';
 import { distinctUntilArrayItemChanged } from './arrayFind';
+import { mapSkipUndefined } from './mapSkipUndefined';
 
 /**
  *
@@ -131,8 +132,7 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
     if (!ids || !ids.length) return of([]);
 
     return this.select(state => state.entities).pipe(
-      map(entities => ids.map(id => getEntity(id, project)(entities))),
-      map((entities): R[] | EntityType[] => entities.filter(Boolean)),
+      map(entities => mapSkipUndefined(ids, id => getEntity(id, project)(entities))),
       distinctUntilArrayItemChanged()
     ) as Observable<R[] | EntityType[]>;
   }
