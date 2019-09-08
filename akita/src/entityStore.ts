@@ -314,7 +314,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
    *
    * @example
    *
-   * this.store.move(5, fromIndex, toIndex)
+   * this.store.move(fromIndex, toIndex)
    */
   move(from: number, to: number) {
     const ids = this.ids.slice();
