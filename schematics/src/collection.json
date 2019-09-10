@@ -1,5 +1,7 @@
 {
-  "extends": ["@schematics/angular"],
+  "extends": [
+    "@schematics/angular"
+  ],
   "schematics": {
     "ng-add": {
       "description": "Akita schematic",
@@ -7,55 +9,73 @@
       "factory": "./ng-add/index#akitaNgAdd"
     },
     "feature": {
-      "aliases": ["af"],
+      "aliases": [
+        "af"
+      ],
       "factory": "./ng-g/feature",
       "schema": "./ng-g/feature/schema.json",
       "description": "Add feature state"
     },
     "store": {
-      "aliases": ["as"],
+      "aliases": [
+        "as"
+      ],
       "description": "A store",
       "factory": "./ng-g/store/index",
       "schema": "./ng-g/store/schema.json"
     },
     "query": {
-      "aliases": ["aq"],
+      "aliases": [
+        "aq"
+      ],
       "description": "A query",
       "factory": "./ng-g/query/index",
       "schema": "./ng-g/query/schema.json"
     },
     "entity-store": {
-      "aliases": ["aes"],
+      "aliases": [
+        "aes"
+      ],
       "description": "An entity store",
       "factory": "./ng-g/entity-store/index",
       "schema": "./ng-g/entity-store/schema.json"
     },
     "entity-query": {
-      "aliases": ["aeq"],
+      "aliases": [
+        "aeq"
+      ],
       "description": "An entity query",
       "factory": "./ng-g/entity-query/index",
       "schema": "./ng-g/entity-query/schema.json"
     },
     "http-entity-service": {
-      "aliases": ["ahes"],
+      "aliases": [
+        "ahes"
+      ],
       "description": "An http entity service",
       "factory": "./ng-g/http-entity-service/index",
       "schema": "./ng-g/http-entity-service/schema.json"
     },
     "firebase-entity-service": {
-      "aliases": ["afes"],
+      "aliases": [
+        "afes"
+      ],
       "description": "An Firebase entity service",
       "factory": "./ng-g/firebase-entity-service/index",
       "schema": "./ng-g/firebase-entity-service/schema.json"
     },
     "model": {
-      "aliases": ["am"],
+      "aliases": [
+        "am"
+      ],
       "description": "A model",
       "factory": "./ng-g/model/index",
       "schema": "./ng-g/model/schema.json"
     },
-    "service": {
-      "aliases": ["asr"],
+    "akita-service": {
+      "aliases": [
+        "asr"
+      ],
       "description": "A service",
       "factory": "./ng-g/service/index",
       "schema": "./ng-g/service/schema.json"

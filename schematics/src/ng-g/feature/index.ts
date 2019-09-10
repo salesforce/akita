@@ -11,7 +11,7 @@ export default function(options: any): Rule {
   const withModule = options.withModule;
   const entityService = plain ? 'default' : options.entityService;
 
-  const serviceSchematic = entityService === EntityServiceType.http ? 'http-entity-service' : entityService === EntityServiceType.firebase ? 'firebase-entity-service' : 'service';
+  const serviceSchematic = entityService === EntityServiceType.http ? 'http-entity-service' : entityService === EntityServiceType.firebase ? 'firebase-entity-service' : 'akita-service';
 
   let files = [
     schematic(plain ? 'store' : 'entity-store', {
