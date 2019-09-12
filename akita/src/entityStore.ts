@@ -269,7 +269,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
         ...state.entities,
         ...updatedEntities
       },
-      loading: !!options.loading
+      ...(options.loading == undefined ? undefined : { loading: options.loading })
     }));
 
     updatedIds.length && this.entityActions.next({ type: EntityActions.Update, ids: updatedIds });
