@@ -110,8 +110,13 @@ export function runStoreAction<Entity = any>(storeName: string, action: StoreAct
  *
  * runStoreAction('books', StoreActions.UpsertEntities, {
  *   payload: {
- *    data: [{ title: 'New Title' }],
+ *    data: { title: 'New Title' },
  *    entityIds: [1, 2]
+ *   }
+ * });
+ * runStoreAction('books', StoreActions.UpsertEntities, {
+ *   payload: {
+ *    data: [{ id: 2, title: 'New Title' }, { id: 3, title: 'Another title'}],
  *   }
  * });
  */

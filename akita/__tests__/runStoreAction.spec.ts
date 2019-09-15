@@ -30,6 +30,14 @@ describe('runStoreAction', () => {
     expect(store._value().entities[3].title).toBe('Another title');
     expect(store._value().ids.length).toBe(5);
 
+    runStoreAction<TestBook>('books', StoreActions.UpsertEntities, {
+      payload: {
+        data: [{ id: 2, title: 'New title' }, { id: 4, title: 'Another title' }]
+      }
+    });
+    expect(store._value().entities[2].title).toBe('New title');
+    expect(store._value().ids.length).toBe(6);
+
     runStoreAction<TestBook>('books', StoreActions.RemoveEntities, { payload: { entityIds: 1 } });
     expect(store._value().entities[1]).toBeUndefined();
 
