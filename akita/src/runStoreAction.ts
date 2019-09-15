@@ -11,7 +11,8 @@ export enum StoreActions {
   AddEntities,
   SetEntities,
   UpdateEntities,
-  RemoveEntities
+  RemoveEntities,
+  UpsertEntities
 }
 
 interface RunStoreActionSetEntities<Entity = any> {
@@ -37,6 +38,13 @@ interface RunStoreActionUpdateEntities<Entity = any> {
 interface RunStoreActionRemoveEntities<Entity = any> {
   payload: {
     entityIds: IDS;
+  };
+}
+
+interface RunStoreActionUpsertEntities<Entity = any> {
+  payload: {
+    data: Partial<Entity>[] | Partial<Entity>;
+    entityIds?: IDS;
   };
 }
 
@@ -97,10 +105,31 @@ export function runStoreAction<Entity = any>(storeName: string, action: StoreAct
  * });
  */
 export function runStoreAction<Entity = any>(storeName: string, action: StoreActions.AddEntities, params: RunStoreActionAddEntities<Entity>);
+/**
+ * @example
+ *
+ * runStoreAction('books', StoreActions.UpsertEntities, {
+ *   payload: {
+ *    data: { title: 'New Title' },
+ *    entityIds: [1, 2]
+ *   }
+ * });
+ * runStoreAction('books', StoreActions.UpsertEntities, {
+ *   payload: {
+ *    data: [{ id: 2, title: 'New Title' }, { id: 3, title: 'Another title'}],
+ *   }
+ * });
+ */
+export function runStoreAction<Entity = any>(storeName: string, action: StoreActions.UpsertEntities, params: RunStoreActionUpsertEntities<Entity>);
 export function runStoreAction<EntityOrState = any>(
   storeName: string,
   action: StoreActions,
-  params: RunStoreActionSetEntities<EntityOrState> | RunStoreActionAddEntities<EntityOrState> | RunStoreActionRemoveEntities<EntityOrState> | RunStoreActionUpdateEntities<EntityOrState>
+  params:
+    | RunStoreActionSetEntities<EntityOrState>
+    | RunStoreActionAddEntities<EntityOrState>
+    | RunStoreActionRemoveEntities<EntityOrState>
+    | RunStoreActionUpdateEntities<EntityOrState>
+    | RunStoreActionUpsertEntities<EntityOrState>
 ) {
   const store = __stores__[storeName];
 
@@ -130,6 +159,17 @@ export function runStoreAction<EntityOrState = any>(
       const { payload } = params as RunStoreActionRemoveEntities;
       (store as EntityStore).remove(payload.entityIds);
       return;
+    }
+
+    case StoreActions.UpsertEntities: {
+      const { payload } = params as RunStoreActionUpsertEntities;
+      if (payload.entityIds) {
+        (store as EntityStore).upsert(payload.entityIds, payload.data);
+      } else if (Array.isArray(payload.data)) {
+        (store as EntityStore).upsertMany(payload.data);
+      } else {
+        (store as EntityStore).upsertMany([payload.data]);
+      }
     }
 
     case StoreActions.Update: {
