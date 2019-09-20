@@ -8,7 +8,6 @@ import { getValue } from './getValueByString';
 import { setAction } from './actions';
 import { setValue } from './setValueByString';
 import { $$addStore, $$deleteStore } from './dispatchers';
-import { isNotBrowser } from './root';
 import { isNil } from './isNil';
 import { isObject } from './isObject';
 
@@ -73,7 +72,6 @@ export interface PersistStateParams {
 }
 
 export function persistState(params?: Partial<PersistStateParams>) {
-  if (isNotBrowser) return;
 
   const defaults: PersistStateParams = {
     key: 'AkitaStores',
