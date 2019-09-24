@@ -11,7 +11,7 @@ import { isFunction } from './isFunction';
 import { dispatchAdded, dispatchDeleted, dispatchUpdate } from './dispatchers';
 import { __stores__ } from './stores';
 import { resetCustomAction, setAction } from './actions';
-import { isNotBrowser } from './root';
+import { isBrowser } from './root';
 import { __DEV__, isDev } from './env';
 
 /**
@@ -240,8 +240,8 @@ export class Store<S = any> {
    *
    */
   destroy() {
-    if (isNotBrowser) return;
-    if (!(window as any).hmrEnabled && this === __stores__[this.storeName]) {
+    const hmrEnabled = isBrowser ? (window as any).hmrEnabled : false;
+    if (!hmrEnabled && this === __stores__[this.storeName]) {
       delete __stores__[this.storeName];
       dispatchDeleted(this.storeName);
       this.setHasCache(false);
