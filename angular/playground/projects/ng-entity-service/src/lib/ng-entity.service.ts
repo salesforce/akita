@@ -76,10 +76,13 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
    */
   get<T>(id?: getIDType<S>, config?: HttpConfig & { append?: boolean } & Msg): Observable<T>;
   get<T>(config?: HttpConfig & { append?: boolean } & Msg): Observable<T>;
-  get<T>(idOrConfig?: getIDType<S> | HttpConfig, config?: HttpConfig & { append?: boolean } & Msg): Observable<T> {
+  get<T>(
+    idOrConfig?: getIDType<S> | HttpConfig,
+    config?: HttpConfig & { append?: boolean; upsert?: boolean } & Msg
+  ): Observable<T> {
     let url: string;
     const isSingle = isID(idOrConfig);
-    const _config: HttpConfig & { append?: boolean } & Msg = (isSingle ? config : idOrConfig) || {};
+    const _config: HttpConfig & { append?: boolean; upsert?: boolean } & Msg = (isSingle ? config : idOrConfig) || {};
     const method = this.getHttpMethod(HttpMethod.GET);
 
     if (_config.url) {
@@ -101,7 +104,13 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
         if (isSingle) {
           this.store.upsert(idOrConfig as getIDType<S>, data);
         } else {
-          _config.append ? this.store.add(data) : this.store.set(data);
+          if (_config.append) {
+            this.store.add(data);
+          } else if (_config.upsert) {
+            this.store.upsertMany(data);
+          } else {
+            this.store.set(data);
+          }
         }
 
         this.dispatchSuccess({
