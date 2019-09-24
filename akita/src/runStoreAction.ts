@@ -170,6 +170,7 @@ export function runStoreAction<EntityOrState = any>(
       } else {
         (store as EntityStore).upsertMany([payload.data]);
       }
+      return;
     }
 
     case StoreActions.Update: {
