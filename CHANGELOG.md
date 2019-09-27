@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.10.7](https://github.com/datorama/akita/compare/v4.10.6...v4.10.7) (2019-09-27)
+
+
+### Bug Fixes
+
+* **entity-query:** selectEntityAction typing ([#301](https://github.com/datorama/akita/issues/301)) ([1f7d6d0](https://github.com/datorama/akita/commit/1f7d6d0))
+* **persist-state:** Allow in non-browser ([#300](https://github.com/datorama/akita/issues/300)) ([4c45d12](https://github.com/datorama/akita/commit/4c45d12))
+* **root:** fix isNotBrowser check ([#303](https://github.com/datorama/akita/issues/303)) ([9993821](https://github.com/datorama/akita/commit/9993821))
+
+
+
+### [4.10.5](https://github.com/datorama/akita/compare/v4.10.4...v4.10.5) (2019-09-24)
+
+
+### Bug Fixes
+
+* **run-store-action:** add return in switch case ([#302](https://github.com/datorama/akita/issues/302)) ([3946bb3](https://github.com/datorama/akita/commit/3946bb3))
+
+
+
 ### [4.10.6](https://github.com/datorama/akita/compare/v4.10.4...v4.10.6) (2019-09-27)
 
 
