@@ -10,6 +10,7 @@ import { setValue } from './setValueByString';
 import { $$addStore, $$deleteStore } from './dispatchers';
 import { isNil } from './isNil';
 import { isObject } from './isObject';
+import { isNotBrowser } from './root';
 
 let skipStorageUpdate = false;
 
@@ -44,6 +45,8 @@ function observify(asyncOrValue: any) {
 export interface PersistStateParams {
   /** The storage key */
   key: string;
+  /** Whether to enable persistState in a non-browser environment */
+  enableInNonBrowser: boolean;
   /** Storage strategy to use. This defaults to LocalStorage but you can pass SessionStorage or anything that implements the StorageEngine API. */
   storage: PersistStateStorage;
   /** Custom deserializer. Defaults to JSON.parse */
@@ -72,9 +75,9 @@ export interface PersistStateParams {
 }
 
 export function persistState(params?: Partial<PersistStateParams>) {
-
   const defaults: PersistStateParams = {
     key: 'AkitaStores',
+    enableInNonBrowser: false,
     storage: typeof localStorage === 'undefined' ? params.storage : localStorage,
     deserialize: JSON.parse,
     serialize: JSON.stringify,
@@ -92,11 +95,13 @@ export function persistState(params?: Partial<PersistStateParams>) {
     preStorageUpdateOperator: () => source => source
   };
 
-  const { storage, deserialize, serialize, include, exclude, key, preStorageUpdate, persistOnDestroy, preStorageUpdateOperator, preStoreUpdate, skipStorageUpdate } = Object.assign(
+  const { storage, enableInNonBrowser, deserialize, serialize, include, exclude, key, preStorageUpdate, persistOnDestroy, preStorageUpdateOperator, preStoreUpdate, skipStorageUpdate } = Object.assign(
     {},
     defaults,
     params
   );
+
+  if (isNotBrowser && !enableInNonBrowser) return;
 
   const hasInclude = include.length > 0;
   const hasExclude = exclude.length > 0;
