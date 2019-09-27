@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.10.5](https://github.com/datorama/akita/compare/v4.10.4...v4.10.5) (2019-09-27)
+
+
+### Bug Fixes
+
+* 🐛 destroy should support nativescript ([6b94952](https://github.com/datorama/akita/commit/6b94952))
+
+
+
 ### [4.10.4](https://github.com/datorama/akita/compare/v4.10.3...v4.10.4) (2019-09-15)
 
 
