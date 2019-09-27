@@ -1,7 +1,6 @@
 import { EntityStore, Query, Store, StoreConfig } from '../src';
 import { TodosStore } from './setup';
 
-
 interface State {
   theme: {
     color: string;
@@ -72,6 +71,21 @@ describe('Store', () => {
     expect(todos.options.cache.ttl).toBe(100);
     todos.updateStoreConfig({ cache: { ttl: 400 } });
     expect(todos.options.cache.ttl).toBe(400);
+  });
+
+  it('should destroy the store', () => {
+    const store = new ThemeStore();
+    spyOn(store, 'setHasCache');
+    store.destroy();
+    expect(store.setHasCache).toHaveBeenCalledTimes(1);
+  });
+
+  it('should NOT destroy the store when hmr enabled', () => {
+    (window as any).hmrEnabled = true;
+    const store = new ThemeStore();
+    spyOn(store, 'setHasCache');
+    store.destroy();
+    expect(store.setHasCache).toHaveBeenCalledTimes(0);
   });
 });
 
