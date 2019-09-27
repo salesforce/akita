@@ -301,9 +301,9 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    *
    *  this.query.selectEntityAction();
    */
-  selectEntityAction(action: EntityActions): Observable<ID[]>;
-  selectEntityAction(): Observable<EntityAction<EntityType>>;
-  selectEntityAction(action?: EntityActions): Observable<ID[] | EntityAction<EntityType>> {
+  selectEntityAction(action: EntityActions): Observable<IDType[]>;
+  selectEntityAction(): Observable<EntityAction<IDType>>;
+  selectEntityAction(action?: EntityActions): Observable<IDType[] | EntityAction<IDType>> {
     if (isUndefined(action)) {
       return this.store.selectEntityAction$;
     }
