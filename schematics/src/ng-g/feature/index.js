@@ -5,7 +5,7 @@ function default_1(options) {
     const plain = options.plain;
     const withModule = options.withModule;
     const entityService = plain ? 'default' : options.entityService;
-    const serviceSchematic = entityService === "Http" /* http */ ? 'http-entity-service' : entityService === "Firebase" /* firebase */ ? 'firebase-entity-service' : 'service';
+    const serviceSchematic = entityService === "Http" /* http */ ? 'http-entity-service' : entityService === "Firebase" /* firebase */ ? 'firebase-entity-service' : 'akita-service';
     let files = [
         schematics_1.schematic(plain ? 'store' : 'entity-store', {
             flat: options.flat,
