@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.10.9](https://github.com/datorama/akita/compare/v4.10.8...v4.10.9) (2019-10-27)
+
+
+### Bug Fixes
+
+* **schematics:** improve model file ([88e214b](https://github.com/datorama/akita/commit/88e214b))
+
+
+
 ### [4.10.8](https://github.com/datorama/akita/compare/v4.10.7...v4.10.8) (2019-10-10)
 
 
