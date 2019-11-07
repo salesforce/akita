@@ -1,4 +1,4 @@
-import { EMPTY, Observable } from 'rxjs';
+import { EMPTY, Observable, of } from 'rxjs';
 import { Store } from './store';
 
 /**
@@ -17,6 +17,9 @@ import { Store } from './store';
  *   }
  * }
  */
-export function cacheable<T>(store: Store, request$: Observable<T>) {
-  return store._cache().value ? EMPTY : request$;
+export function cacheable<T>(store: Store, request$: Observable<T>, options: { emitNext: boolean } = { emitNext: true }) {
+  if (store._cache().value) {
+    return options.emitNext ? EMPTY : of(undefined);
+  }
+  return request$;
 }
