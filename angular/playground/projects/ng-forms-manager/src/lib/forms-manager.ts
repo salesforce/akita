@@ -21,7 +21,7 @@ export type ArrayControlFactory = (value: any) => AbstractControl;
   providedIn: 'root'
 })
 export class AkitaNgFormsManager<FormsState = any> {
-  private readonly _store: FormsStore;
+  private readonly _store: FormsStore<FormsState>;
   private readonly _query: FormsQuery<FormsState>;
 
   private valueChanges: HashMap<Subscription> = {};
