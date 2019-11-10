@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.11.0](https://github.com/datorama/akita/compare/v4.10.9...v4.11.0) (2019-11-10)
+
+
+### Bug Fixes
+
+* 🐛 add emitNext to cacheable ([80ec395](https://github.com/datorama/akita/commit/80ec395))
+
+
+### Features
+
+* 🎸 add getValue method to the store ([6fd84c8](https://github.com/datorama/akita/commit/6fd84c8))
+* 🎸 add jump method to state history ([94dac25](https://github.com/datorama/akita/commit/94dac25))
+* 🎸 add withLoading operator ([d9c1fb5](https://github.com/datorama/akita/commit/d9c1fb5))
+* 🎸 expose http provider in entity service ([e5a96e0](https://github.com/datorama/akita/commit/e5a96e0))
+
+
+
 ### [4.10.10](https://github.com/datorama/akita/compare/v4.10.9...v4.10.10) (2019-11-07)
 
 
