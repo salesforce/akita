@@ -96,6 +96,17 @@ export class Store<S = any> {
   }
 
   /**
+   *
+   * Sometimes we need to access the store value from a store
+   *
+   * @example middleware
+   *
+   */
+  getValue() {
+    return this.storeValue;
+  }
+
+  /**
    *  Set the error state
    *
    *  @example
