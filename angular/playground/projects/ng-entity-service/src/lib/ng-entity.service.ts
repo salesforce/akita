@@ -268,6 +268,7 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
     if (isDefined(id)) {
       return customUrl || `${this.api}/${id}`;
     }
+
     return customUrl || this.api;
   }
 
@@ -277,6 +278,7 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
       errorMsg,
       payload: error
     });
+
     return throwError(error);
   }
 }
