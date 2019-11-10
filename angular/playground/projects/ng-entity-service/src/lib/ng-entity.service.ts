@@ -63,6 +63,10 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
     this.baseUrl = api;
   }
 
+  getHttp() {
+    return this.http;
+  }
+
   /**
    *
    * Get all or one entity - Creates a GET request
