@@ -1,5 +1,5 @@
 import { EntityStore, QueryEntity } from '../src';
-import { withLoading } from '../src/withLoading';
+import { setLoading } from '../src/setLoading';
 import { timer } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { cacheable } from '../src/index';
@@ -9,11 +9,11 @@ const query = new QueryEntity(store);
 
 jest.useFakeTimers();
 
-describe.only('withLoading', () => {
+describe('setLoading', () => {
   it('should work', () => {
     const log = [];
     const request = timer(1000).pipe(
-      withLoading(store),
+      setLoading(store),
       tap(() => log.push(1)),
       tap(() => store.set([{ id: 1 }]))
     );
