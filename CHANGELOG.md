@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.11.1](https://github.com/datorama/akita/compare/v4.11.0...v4.11.1) (2019-11-10)
+
+
+### Bug Fixes
+
+* 🐛 change method name ([995069c](https://github.com/datorama/akita/commit/995069c))
+
+
+
 ## [4.11.0](https://github.com/datorama/akita/compare/v4.10.9...v4.11.0) (2019-11-10)
 
 
