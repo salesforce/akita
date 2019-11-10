@@ -1,0 +1,122 @@
+<div class="container">
+  <section>
+    <h5>Single Control</h5>
+    <div>
+      <input type="email" placeholder="Enter email" [formControl]="email" />
+      <p>
+        Value: <code>{{ email.value }}</code>
+      </p>
+      <p>
+        Valid: <code>{{ email.valid }}</code>
+      </p>
+      <p>
+        Errors: <code>{{ email.errors | json }}</code>
+      </p>
+    </div>
+  </section>
+
+  <hr />
+
+  <section>
+    <h5>Array Control</h5>
+
+    <div *ngFor="let control of arr.controls; index as index">
+      <input [formControl]="arr.controls[index]" class="form-control" />
+    </div>
+    <button (click)="addControl()" class="btn">Add</button>
+
+    <p>
+      Value: <code>{{ arr.value }}</code>
+    </p>
+    <p>
+      Valid: <code>{{ arr.valid }}</code>
+    </p>
+    <p>
+      Errors: <code>{{ arr.errors | json }}</code>
+    </p>
+  </section>
+
+  <hr />
+
+  <section>
+    <h5>Form Group</h5>
+    <form [formGroup]="group">
+      <input type="email" formControlName="email" placeholder="name@example.com" />
+      <input
+        type="number"
+        formControlName="price"
+        placeholder="Price"
+        [class.border-danger]="group.get('price').errors"
+      />
+      Price Valid: <code>{{ group.get('price').valid }}</code>
+      <p>
+        Price Errors: <code>{{ group.get('price').errors | json }}</code>
+      </p>
+
+      <div formGroupName="phone">
+        <input type="number" formControlName="number" placeholder="Number" />
+        <input type="number" class="form-control" formControlName="prefix" placeholder="Prefix" />
+        <div formGroupName="a">
+          <input class="form-control" formControlName="b" placeholder="B" />
+          <input class="form-control" formControlName="c" placeholder="C" />
+        </div>
+      </div>
+
+      <div>
+        <select formControlName="number" class="browser-default">
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+        </select>
+      </div>
+
+      <p>
+        <label>
+          <input type="checkbox" formControlName="checkbox" />
+          <span>Toggle</span>
+        </label>
+      </p>
+    </form>
+
+    <p>
+      Value: <code>{{ group.value | json }}</code>
+    </p>
+    <p>
+      Valid: <code>{{ group.valid }}</code>
+    </p>
+  </section>
+
+  <section>
+    <h5>FormGroup with FormArray</h5>
+    <form [formGroup]="config">
+      <p>
+        <label>
+          <input type="checkbox" formControlName="someBoolean" />
+          <span>Toggle</span>
+        </label>
+      </p>
+
+      <div formArrayName="skills">
+        <div *ngFor="let control of config.get('skills').controls; index as index">
+          <input [formControlName]="index" class="form-control" />
+        </div>
+      </div>
+
+      <input type="number" formControlName="minAge" placeholder="Min age" />
+      <button class="btn" (click)="addSkill()">Add</button>
+    </form>
+
+    <p>Value: <code>{{ config.value | json }}</code></p>
+    <p>Valid: <code>{{ config.valid }}</code></p>
+    <p>Errors: <code>{{ config.errors | json }}</code></p>
+  </section>
+
+  <hr>
+
+  <h4>Settings</h4>
+  <form [formGroup]="settings">
+    <div class="form-group">
+      <input type="number" placeholder="Min price" formControlName="minPrice">
+    </div>
+  </form>
+</div>

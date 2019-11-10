@@ -6,6 +6,7 @@
     "module": "es2015",
     "paths": {
       "@datorama/akita": ["../../../akita/public_api.ts"],
+      "@datorama/akita-ng-forms-manager": ["../projects/ng-forms-manager/src/public-api.ts"],
       "@datorama/akita-ng-entity-service": ["../projects/ng-entity-service/src/public-api.ts"]
     }
   },

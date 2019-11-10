@@ -20,7 +20,7 @@ export class AppComponent {
       key: 'akitaPlayground',
       include: ['auth.token', 'todos'],
       // storage: localForage,
-      preStorageUpdateOperator: () => debounceTime(1000),
+      preStorageUpdateOperator: () => debounceTime(300),
       preStorageUpdate: function(storeName, state) {
         console.log(`preStorageUpdate`, storeName, state);
         return state;

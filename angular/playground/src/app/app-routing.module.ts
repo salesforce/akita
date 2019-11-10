@@ -51,6 +51,10 @@ const routes: Routes = [
   {
     path: 'posts',
     loadChildren: 'app/posts/posts.module#PostsModule'
+  },
+  {
+    path: 'formsmanager',
+    loadChildren: 'app/forms-manager/forms-manager.module#FormsManagerModule'
   }
 ];
 

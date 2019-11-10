@@ -70,10 +70,6 @@ app-todo {
   justify-content: space-between;
 }
 
-.cyan.lighten-2 {
-  background-color: #be835d !important;
-}
-
 .pointer {
   cursor: pointer;
 }
@@ -95,4 +91,14 @@ input:not([type]).actor-input {
 
 .blue-text.text-lighten-2 {
   color: #333333 !important;
+}
+
+code {
+  color: #e83e8c;
+  word-break: break-word;
+  font-size: 14px;
+}
+
+.btn {
+  background-color: #ee6e73 !important;
 }

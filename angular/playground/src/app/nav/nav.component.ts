@@ -29,11 +29,16 @@ import { CartQuery } from '../cart/state/cart.query';
   `
 })
 export class NavComponent {
-  navItems = ['Todos', 'Contacts', 'Stories', 'Movies', 'Widgets', 'Posts'];
+  navItems = ['Todos', 'Contacts', 'Stories', 'Movies', 'Widgets', 'Posts', 'FormsManager'];
   count$: Observable<number>;
   isLoggedIn$: Observable<boolean>;
 
-  constructor(private cartQuery: CartQuery, private authService: AuthService, private authQuery: AuthQuery, private router: Router) {
+  constructor(
+    private cartQuery: CartQuery,
+    private authService: AuthService,
+    private authQuery: AuthQuery,
+    private router: Router
+  ) {
     this.count$ = this.cartQuery.selectCount();
     this.isLoggedIn$ = this.authQuery.isLoggedIn$;
   }
