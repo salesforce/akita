@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "license": "Apache License 2.0",
   "scripts": {
-    "build:ng-entity-service": "ng build ng-entity-service",
+    "build:akita": "cd ../../ && npm run build",
+    "build:ng-entity-service": "node ./build.js ng-entity-service",
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --prod",
