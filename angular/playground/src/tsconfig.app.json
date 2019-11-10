@@ -5,6 +5,7 @@
     "baseUrl": "./",
     "module": "es2015",
     "paths": {
+      "@datorama/akita": ["../../../akita/public_api.ts"],
       "@datorama/akita-ng-entity-service": ["../projects/ng-entity-service/src/public-api.ts"]
     }
   },
