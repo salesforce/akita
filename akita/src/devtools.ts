@@ -106,15 +106,12 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
       }
 
       if (options.sortAlphabetically) {
-        const sortedAppState = {};
-        const appStateKeys = Object.keys(appState);
-        appStateKeys.sort();
-
-        for (let i = 0; i < appStateKeys.length; i++) {
-          const storeName = appStateKeys[i];
-          const storeValues = appState[storeName];
-          sortedAppState[storeName] = storeValues;
-        }
+        const sortedAppState = Object.keys(appState)
+          .sort()
+          .reduce((acc, storeName) => {
+            acc[storeName] = appState[storeName];
+            return acc;
+          }, {});
 
         devTools.send({ type: msg }, sortedAppState);
         return;
