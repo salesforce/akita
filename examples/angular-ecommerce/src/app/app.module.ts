@@ -13,16 +13,14 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
-    environment.production ? [] : AkitaNgDevtools.forRoot({ shallow: false }),
+    environment.production ? [] : AkitaNgDevtools.forRoot({ shallow: false, sortAlphabetically: true }),
     ProductsModule,
     CartModule,
     AuthModule,
@@ -30,5 +28,4 @@ import { ToastrModule } from 'ngx-toastr';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {
-}
+export class AppModule {}

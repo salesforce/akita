@@ -17,6 +17,7 @@ export type DevtoolsOptions = {
   logTrace: boolean;
   predicate: (state: any, action: any) => boolean;
   shallow: boolean;
+  sortAlphabetically: boolean;
 };
 let subs = [];
 
@@ -102,6 +103,18 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
         console.group(msg);
         console.trace();
         console.groupEnd();
+      }
+
+      if (options.sortAlphabetically) {
+        const sortedAppState = Object.keys(appState)
+          .sort()
+          .reduce((acc, storeName) => {
+            acc[storeName] = appState[storeName];
+            return acc;
+          }, {});
+
+        devTools.send({ type: msg }, sortedAppState);
+        return;
       }
 
       devTools.send({ type: msg }, appState);
