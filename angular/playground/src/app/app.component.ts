@@ -1,6 +1,5 @@
-import { Component, NgZone } from '@angular/core';
-import { environment } from '../environments/environment';
-import { persistState, akitaDevtools } from '@datorama/akita';
+import { Component } from '@angular/core';
+import { persistState } from '@datorama/akita';
 import { debounceTime } from 'rxjs/operators';
 
 @Component({
@@ -9,12 +8,6 @@ import { debounceTime } from 'rxjs/operators';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  constructor(private ngZone: NgZone) {
-    if (!environment.production) {
-      akitaDevtools(ngZone);
-    }
-  }
-
   ngOnInit() {
     persistState({
       key: 'akitaPlayground',

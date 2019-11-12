@@ -1,7 +1,7 @@
 const fs = require('fs-extra');
 const chalk = require('chalk');
 const process = require('child_process');
-const projects = ['ng-entity-service', 'ng-forms-manager'];
+const projects = ['ng-entity-service', 'ng-forms-manager', 'ng-router-store', 'ng-devtools'];
 const basePath = `angular/playground/projects`;
 const packgerFile = `ng-package.json`;
 
