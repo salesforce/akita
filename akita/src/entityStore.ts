@@ -525,8 +525,8 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
   }
 
   // @internal
-  akitaPreAddEntity(newEntity: Readonly<EntityType>): EntityType {
-    return newEntity;
+  akitaPreAddEntity(newEntity: any): EntityType {
+    return newEntity as EntityType;
   }
 
   // @internal
