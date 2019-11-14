@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.12.1](https://github.com/datorama/akita/compare/v4.12.0...v4.12.1) (2019-11-14)
+
+
+### Bug Fixes
+
+* 🐛 pre add entity type can be any ([85b5ba1](https://github.com/datorama/akita/commit/85b5ba1))
+* **with-transaction:** improve typings ([#327](https://github.com/datorama/akita/issues/327)) ([eb91f89](https://github.com/datorama/akita/commit/eb91f89))
+
+
+
 ## [4.12.0](https://github.com/datorama/akita/compare/v4.11.2...v4.12.0) (2019-11-11)
 
 
