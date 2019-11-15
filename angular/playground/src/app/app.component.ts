@@ -1,6 +1,14 @@
 import { Component } from '@angular/core';
 import { persistState } from '@datorama/akita';
 import { debounceTime } from 'rxjs/operators';
+import * as localForage from 'localforage';
+
+localForage.config({
+  driver: localForage.INDEXEDDB,
+  name: 'Akita',
+  version: 1.0,
+  storeName: 'akita_playground'
+});
 
 @Component({
   selector: 'app-root',

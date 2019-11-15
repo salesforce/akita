@@ -1,5 +1,5 @@
 import { filter, skip } from 'rxjs/operators';
-import { from, isObservable, of, OperatorFunction, Subscription } from 'rxjs';
+import { from, isObservable, of, OperatorFunction, ReplaySubject, Subscription } from 'rxjs';
 import { HashMap, MaybeAsync } from './types';
 import { isFunction } from './isFunction';
 import { AkitaError } from './errors';
@@ -13,6 +13,12 @@ import { isObject } from './isObject';
 import { isNotBrowser } from './root';
 
 let skipStorageUpdate = false;
+
+const _persistStateInit = new ReplaySubject(1);
+
+export function selectPersistStateInit() {
+  return _persistStateInit.asObservable();
+}
 
 export function setSkipStorageUpdate(skip: boolean) {
   skipStorageUpdate = skip;
@@ -216,6 +222,8 @@ export function persistState(params?: Partial<PersistStateParams>) {
         }
       })
     );
+
+    _persistStateInit.next();
   });
 
   return {
