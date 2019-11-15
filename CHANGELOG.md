@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.13.0](https://github.com/datorama/akita/compare/v4.12.1...v4.13.0) (2019-11-15)
+
+
+### Features
+
+* 🎸 add persist state init to persist state ([b3df8ba](https://github.com/datorama/akita/commit/b3df8ba)), closes [#329](https://github.com/datorama/akita/issues/329)
+
+
+
 ### [4.12.1](https://github.com/datorama/akita/compare/v4.12.0...v4.12.1) (2019-11-14)
 
 
