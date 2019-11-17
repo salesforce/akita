@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.14.0](https://github.com/datorama/akita/compare/v4.13.0...v4.14.0) (2019-11-17)
+
+
+### Features
+
+* 🎸 add stores whitelist to devtools ([12e6a76](https://github.com/datorama/akita/commit/12e6a76))
+
+
+
 ## [4.13.0](https://github.com/datorama/akita/compare/v4.12.1...v4.13.0) (2019-11-15)
 
 
