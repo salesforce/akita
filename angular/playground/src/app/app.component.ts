@@ -1,7 +1,14 @@
-import { Component, NgZone } from '@angular/core';
-import { environment } from '../environments/environment';
-import { persistState, akitaDevtools } from '@datorama/akita';
+import { Component } from '@angular/core';
+import { persistState } from '@datorama/akita';
 import { debounceTime } from 'rxjs/operators';
+import * as localForage from 'localforage';
+
+localForage.config({
+  driver: localForage.INDEXEDDB,
+  name: 'Akita',
+  version: 1.0,
+  storeName: 'akita_playground'
+});
 
 @Component({
   selector: 'app-root',
@@ -9,12 +16,6 @@ import { debounceTime } from 'rxjs/operators';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  constructor(private ngZone: NgZone) {
-    if (!environment.production) {
-      akitaDevtools(ngZone);
-    }
-  }
-
   ngOnInit() {
     persistState({
       key: 'akitaPlayground',

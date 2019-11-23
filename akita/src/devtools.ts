@@ -13,6 +13,7 @@ export type DevtoolsOptions = {
   latency: number;
   actionsBlacklist: string[];
   actionsWhitelist: string[];
+  storesWhitelist: string[];
   shouldCatchErrors: boolean;
   logTrace: boolean;
   predicate: (state: any, action: any) => boolean;
@@ -49,14 +50,23 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
     options = ngZoneOrOptions as Partial<DevtoolsOptions>;
   }
 
-  const defaultOptions: Partial<DevtoolsOptions> & { name: string } = { name: 'Akita', shallow: true };
+  const defaultOptions: Partial<DevtoolsOptions> & { name: string } = { name: 'Akita', shallow: true, storesWhitelist: [] };
   const merged = Object.assign({}, defaultOptions, options);
-
+  const storesWhitelist = merged.storesWhitelist;
   const devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__.connect(merged);
   let appState = {};
 
+  const isAllowed = storeName => {
+    if (!storesWhitelist.length) {
+      return true;
+    }
+
+    return storesWhitelist.indexOf(storeName) > -1;
+  };
+
   subs.push(
     $$addStore.subscribe(storeName => {
+      if (isAllowed(storeName) === false) return;
       appState = {
         ...appState,
         [storeName]: __stores__[storeName]._value()
@@ -67,6 +77,7 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
 
   subs.push(
     $$deleteStore.subscribe(storeName => {
+      if (isAllowed(storeName) === false) return;
       delete appState[storeName];
       devTools.send({ type: `[${storeName}] - Delete Store` }, appState);
     })
@@ -74,6 +85,7 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
 
   subs.push(
     $$updateStore.subscribe(storeName => {
+      if (isAllowed(storeName) === false) return;
       const { type, entityIds, skip } = currentAction;
 
       if (skip) {

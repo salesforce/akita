@@ -12,6 +12,8 @@ import { NavComponent } from './nav/nav.component';
 import { AuthModule } from './auth/auth.module';
 import { AuthGuard } from './auth/auth.guard';
 import { HttpMethod, NG_ENTITY_SERVICE_CONFIG, NgEntityServiceGlobalConfig } from '@datorama/akita-ng-entity-service';
+import { AkitaNgRouterStoreModule } from '@datorama/akita-ng-router-store';
+import { AkitaNgDevtools } from '@datorama/akita-ng-devtools';
 
 @NgModule({
   declarations: [AppComponent, NavComponent, ProductPageComponent],
@@ -23,7 +25,9 @@ import { HttpMethod, NG_ENTITY_SERVICE_CONFIG, NgEntityServiceGlobalConfig } fro
     BrowserAnimationsModule,
     ProductsModule,
     CartModule,
-    AuthModule
+    AuthModule,
+    AkitaNgRouterStoreModule,
+    AkitaNgDevtools.forRoot()
   ],
   providers: [
     AuthGuard,

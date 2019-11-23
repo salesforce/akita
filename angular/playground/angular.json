@@ -191,6 +191,76 @@
           }
         }
       }
+    },
+    "ng-router-store": {
+      "root": "projects/ng-router-store",
+      "sourceRoot": "projects/ng-router-store/src",
+      "projectType": "library",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/ng-router-store/tsconfig.lib.json",
+            "project": "projects/ng-router-store/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ng-router-store/src/test.ts",
+            "tsConfig": "projects/ng-router-store/tsconfig.spec.json",
+            "karmaConfig": "projects/ng-router-store/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/ng-router-store/tsconfig.lib.json",
+              "projects/ng-router-store/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "ng-devtools": {
+      "root": "projects/ng-devtools",
+      "sourceRoot": "projects/ng-devtools/src",
+      "projectType": "library",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/ng-devtools/tsconfig.lib.json",
+            "project": "projects/ng-devtools/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ng-devtools/src/test.ts",
+            "tsConfig": "projects/ng-devtools/tsconfig.spec.json",
+            "karmaConfig": "projects/ng-devtools/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/ng-devtools/tsconfig.lib.json",
+              "projects/ng-devtools/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "akita-store-app",

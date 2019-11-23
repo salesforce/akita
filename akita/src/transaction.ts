@@ -21,7 +21,7 @@ export const transactionManager: TransactionManager = {
 
 // @internal
 export function startBatch() {
-  if(!isTransactionInProcess()) {
+  if (!isTransactionInProcess()) {
     transactionManager.batchTransaction = new Subject();
   }
   transactionManager.activeTransactions++;
@@ -30,7 +30,7 @@ export function startBatch() {
 
 // @internal
 export function endBatch() {
-  if(--transactionManager.activeTransactions === 0) {
+  if (--transactionManager.activeTransactions === 0) {
     transactionManager.batchTransaction.next(true);
     transactionManager.batchTransaction.complete();
     transactionInProcess.next(false);

@@ -1,5 +1,5 @@
 import { filter, skip } from 'rxjs/operators';
-import { from, isObservable, of, OperatorFunction, Subscription } from 'rxjs';
+import { from, isObservable, of, OperatorFunction, ReplaySubject, Subscription } from 'rxjs';
 import { HashMap, MaybeAsync } from './types';
 import { isFunction } from './isFunction';
 import { AkitaError } from './errors';
@@ -13,6 +13,12 @@ import { isObject } from './isObject';
 import { isNotBrowser } from './root';
 
 let skipStorageUpdate = false;
+
+const _persistStateInit = new ReplaySubject(1);
+
+export function selectPersistStateInit() {
+  return _persistStateInit.asObservable();
+}
 
 export function setSkipStorageUpdate(skip: boolean) {
   skipStorageUpdate = skip;
@@ -143,13 +149,13 @@ export function persistState(params?: Partial<PersistStateParams>) {
   const isLocalStorage = typeof localStorage !== 'undefined' && (storage === localStorage || storage === sessionStorage);
 
   observify(storage.getItem(key)).subscribe((value: any) => {
-    const storageState = isObject(value) ? value : deserialize(value || '{}');
+    let storageState = isObject(value) ? value : deserialize(value || '{}');
 
     function save(storeCache) {
       storageState['$cache'] = { ...(storageState['$cache'] || {}), ...storeCache };
-      const storageValue = Object.assign({}, storageState, acc);
+      storageState = Object.assign({}, storageState, acc);
 
-      buffer.push(storage.setItem(key, isLocalStorage ? serialize(storageValue) : storageValue));
+      buffer.push(storage.setItem(key, isLocalStorage ? serialize(storageState) : storageState));
       _save(buffer.shift());
     }
 
@@ -182,7 +188,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
       $$deleteStore.subscribe(storeName => {
         if (stores[storeName]) {
           if (persistOnDestroy === false) {
-            save(false);
+            save({ [storeName]: false });
           }
           stores[storeName].unsubscribe();
           delete stores[storeName];
@@ -216,6 +222,8 @@ export function persistState(params?: Partial<PersistStateParams>) {
         }
       })
     );
+
+    _persistStateInit.next();
   });
 
   return {
