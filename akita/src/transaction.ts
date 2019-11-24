@@ -114,8 +114,8 @@ export function transaction() {
  * )
  *
  */
-export function withTransaction<T>(transactionFn: Function) {
+export function withTransaction<T>(next: (value: T) => void) {
   return function(source: Observable<T>): Observable<T> {
-    return source.pipe(tap(value => applyTransaction(() => transactionFn(value))));
+    return source.pipe(tap(value => applyTransaction(() => next(value))));
   };
 }
