@@ -67,6 +67,10 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
     return this.http;
   }
 
+  getConfig() {
+    return this.mergedConfig;
+  }
+
   /**
    *
    * Get all or one entity - Creates a GET request
