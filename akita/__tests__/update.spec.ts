@@ -1,9 +1,9 @@
 import { Subscription } from 'rxjs';
-import { EntityStore, getInitialEntitiesState } from '../src/api/entity-store';
-import { QueryEntity } from '../src/api/query-entity';
-import { EntityState } from '../src/api/types';
-import { push } from '../src/api/arrays';
-import { StoreConfig } from '../src/api/store-config';
+import { EntityStore } from '../src/entityStore';
+import { QueryEntity } from '../src/queryEntity';
+import { EntityState } from '../src/types';
+import { StoreConfig } from '../src/storeConfig';
+import { getInitialEntitiesState } from '../index';
 
 export type Widget = {
   id: number;
@@ -175,7 +175,7 @@ describe('Update', () => {
       return {
         options: {
           ...entity.options,
-          a: push(entity.options.a, 2)
+          a: [...entity.options.a, 2]
         }
       };
     });

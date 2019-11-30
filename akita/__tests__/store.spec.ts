@@ -1,6 +1,5 @@
-import { AkitaImmutabilityError } from '../src/internal/error';
-import { Store } from '../src/api/store';
-import { StoreConfig } from '../src/api/store-config';
+import { EntityStore, Query, Store, StoreConfig } from '../src';
+import { TodosStore } from './setup';
 
 interface State {
   theme: {
@@ -48,7 +47,7 @@ describe('Store', () => {
   it('should set a new state', () => {
     const spy = jest.fn();
     store._select(state => state.theme).subscribe(spy);
-    store.setState(state => {
+    store._setState(state => {
       return {
         ...state,
         theme: {
@@ -67,10 +66,26 @@ describe('Store', () => {
     });
   });
 
-  it('should throw error if the state is the same', () => {
-    expect(function() {
-      store.setState(state => state);
-    }).toThrow(new AkitaImmutabilityError('themes') as any);
+  it('should update the store config', () => {
+    const todos = new TodosStore({ cache: { ttl: 100 } });
+    expect(todos.options.cache.ttl).toBe(100);
+    todos.updateStoreConfig({ cache: { ttl: 400 } });
+    expect(todos.options.cache.ttl).toBe(400);
+  });
+
+  it('should destroy the store', () => {
+    const store = new ThemeStore();
+    spyOn(store, 'setHasCache');
+    store.destroy();
+    expect(store.setHasCache).toHaveBeenCalledTimes(1);
+  });
+
+  it('should NOT destroy the store when hmr enabled', () => {
+    (window as any).hmrEnabled = true;
+    const store = new ThemeStore();
+    spyOn(store, 'setHasCache');
+    store.destroy();
+    expect(store.setHasCache).toHaveBeenCalledTimes(0);
   });
 });
 
@@ -108,5 +123,54 @@ describe('With Class', () => {
     expect(userStore._value() instanceof User).toBeTruthy();
     expect(userStore._value()).toEqual(jasmine.any(User));
     expect(userStore._value().name).toEqual('Netanel Basal');
+  });
+});
+
+@StoreConfig({
+  name: 'user'
+})
+class TestStore extends Store<User> {
+  constructor() {
+    super({ config: {}, loading: true } as any);
+  }
+}
+
+const testStore = new TestStore();
+const testQuery = new Query(testStore);
+
+describe('Loading Basic Store', () => {
+  it('should support loading', () => {
+    let value;
+    testQuery.selectLoading().subscribe(v => {
+      value = v;
+    });
+    expect(value).toBeTruthy();
+    testStore.setLoading(false);
+    expect(value).toBeFalsy();
+  });
+});
+
+@StoreConfig({ name: 'products' })
+export class ProductsStore extends EntityStore<any, any> {
+  constructor() {
+    super();
+  }
+}
+
+const productsStore = new ProductsStore();
+
+export class ProductsStoreWithoutDeco extends EntityStore<any, any> {}
+
+const productsStore2 = new ProductsStoreWithoutDeco({}, { name: 'pr' });
+
+describe('StoreConfig', () => {
+  it('should take from decorator', () => {
+    expect(productsStore.storeName).toBe('products');
+    expect(productsStore.idKey).toBe('id');
+  });
+
+  it('should take from the constructor', () => {
+    expect(productsStore2.storeName).toBe('pr');
+    expect(productsStore2.idKey).toBe('id');
   });
 });

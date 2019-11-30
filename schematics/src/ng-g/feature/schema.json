@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "SchematicsAkitaFeature",
+  "title": "Akita Feature Options Schema",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "format": "path",
+      "description": "The path to create the component.",
+      "visible": false
+    },
+    "name": {
+      "description": "The name of the feature.",
+      "type": "string",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      }
+    },
+    "spec": {
+      "type": "boolean",
+      "default": false,
+      "description": "Specifies if a spec file is generated."
+    },
+    "plain": {
+      "type": "boolean",
+      "default": false,
+      "alias": "p",
+      "description": "Specifies if a plain store is generated."
+    },
+    "module": {
+      "type": "boolean",
+      "default": false,
+      "description": "Specifies if module and component are generated."
+    },
+    "dirName": {
+      "type": "string",
+      "default": "state",
+      "description": "Specifies the name of the generated folder"
+    },
+    "styleext": {
+      "description": "The file extension to be used for style files.",
+      "type": "string",
+      "default": "scss"
+    },
+    "project": {
+      "type": "string",
+      "description": "The name of the project.",
+      "$default": {
+        "$source": "projectName"
+      }
+    },
+    "withModule": {
+      "type": "boolean"
+    },
+    "withActive": {
+      "type": "boolean",
+      "default": false,
+      "description": "Specifies if the entity state is ActiveState"
+    },
+    "idType": {
+      "type": "string",
+      "description": "Specifies the type of the entity ID. Can be string or number."
+    },
+    "entityService": {
+      "type": "string",
+      "default": "Default",
+      "description": "Choose the entity service to use",
+      "x-prompt": {
+        "type": "list",
+        "message": "What type of service do you want to use?",
+        "items": [
+          {"label": "Default", "value": "Default"},
+          {"label": "Http     [https://bit.ly/2Krqhpi]", "value": "Http"},
+          {"label": "Firebase [https://bit.ly/2H3lgkW]", "value": "Firebase"}
+        ]
+      }
+    }
+  },
+  "required": []
+}

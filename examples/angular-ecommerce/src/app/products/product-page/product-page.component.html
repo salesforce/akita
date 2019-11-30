@@ -1,0 +1,34 @@
+<section *ngIf="product$ | async as product;">
+  <div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h1 class="display-5 mb-3">{{product.title}}</h1>
+      <p class="lead">{{product.additionalData.description}}</p>
+    </div>
+  </div>
+
+  <ul class="list-group list-group-flush mb-10">
+    <li class="list-group-item">Department: {{product.additionalData.department}}</li>
+    <li class="list-group-item">Material: {{product.additionalData.productMaterial}}</li>
+    <li class="list-group-item">Color: {{product.additionalData.color}}</li>
+    <li class="list-group-item">Adjective: {{product.additionalData.productAdjective}}</li>
+    <li class="list-group-item">Price: {{ product.additionalData.price }}$</li>
+  </ul>
+
+  <section class="flex justify-end">
+
+    <div class="form-group" style="width: 140px;">
+      <label for="quantity">Quantity</label>
+      <select class="form-control" id="quantity" [formControl]="quantity">
+        <option [ngValue]="1">1</option>
+        <option [ngValue]="2">2</option>
+        <option [ngValue]="3">3</option>
+      </select>
+    </div>
+
+  </section>
+
+  <footer class="flex justify-end">
+    <button (click)="addToCart(product)" type="button" class="btn btn-outline-dark btn-lg">Add to cart</button>
+  </footer>
+
+</section>

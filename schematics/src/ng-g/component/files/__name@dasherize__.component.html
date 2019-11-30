@@ -1,0 +1,9 @@
+<% if (entity) { %>
+<ng-template #loading>Loading...</ng-template>
+
+<ul *ngIf="!(isLoading$ | async); else loading">
+  <li *ngFor="let <%= singular(camelize(name)) %> of (<%= camelize(name) %>$ | async)">
+    ...
+  </li>
+</ul>
+<% } %>

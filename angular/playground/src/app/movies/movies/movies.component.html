@@ -1,0 +1,46 @@
+<section class="padding">
+
+  <div class="progress" *ngIf="isLoading$ | async">
+    <div class="indeterminate"></div>
+  </div>
+
+  <h3>Movies</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Actors</th>
+        <th>Genres</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let movie of movies$ | async" (click)="markAsOpen(movie.id)" [ngStyle]="(isOpen(movie.id) | async) && { background: 'lightgrey' }">
+        <td>{{movie.title}}</td>
+        <td><span *ngFor="let actor of movie.actors">{{actor.name}}</span></td>
+        <td><span *ngFor="let genre of movie.genres">{{genre.name}}</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Actors</h3>
+  <table style="width: 30%;">
+    <thead>
+      <tr>
+        <th>Name</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let actor of actors$ | async">
+        <td class="flex align-center">
+          <input #actorName [value]="actor.name" class="actor-input" [class.view]="!inEditMode(actor.id)"
+                 (keyup.enter)="edit(actor.id, actorName.value)">
+          <i class="tiny material-icons" (click)="toggleView(actor.id, actorName)">edit</i>
+        </td>
+        <td><button (click)="deleteActor(actor)">Delete</button></td>
+      </tr>
+    </tbody>
+  </table>
+
+</section>

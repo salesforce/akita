@@ -1,0 +1,14 @@
+{
+  "version": 3,
+  "file": "bundle.css",
+  "sources": [
+    "../src/Todos.svelte",
+    "../src/Todo.svelte"
+  ],
+  "sourcesContent": [
+    "<svelte:options immutable />\n\n<script>\n  import {\n    visibleTodos,\n    addTodo,\n    removeTodo,\n    selectFilter,\n    updateFilter,\n    toggleCompleted\n  } from \"./state\";\n\nimport Todo from './Todo.svelte';\nimport AddTodo from './AddTodo.svelte';\nimport Filters from './Filters.svelte';\n\n  let todo = \"\";\n</script>\n\n<style>\n  input {\n    margin-right: 10px;\n  }\n\n  section {margin-top: 20px}\n</style>\n\n<section>\n  <h1>Todos</h1>\n\n  <Filters currentFilter={selectFilter}\n    on:click={event => updateFilter(event.target.dataset.filterId)}/>\n\n  <AddTodo on:todo={ e => addTodo(e.detail) }/>\n\n  <ul class=\"list-group\">\n    {#each $visibleTodos as todo, i (todo.id)}\n      <Todo {todo}\n        on:click={() => removeTodo(todo.id)}\n        on:change={e => toggleCompleted(todo.id, e.target.checked)} />\n    {/each}\n  </ul>\n  {$visibleTodos.length}\n</section>\n",
+    "<svelte:options immutable />\n\n<script>\n  export let todo;\n</script>\n\n<style>\n  li {\n    display: flex;\n    justify-content: space-between;\n  }\n</style>\n\n<li class=\"list-group-item\">\n  <div>\n    <input type=\"checkbox\" checked={todo.completed} on:change />\n     {todo.title}\n  </div>\n\n  <button type=\"button\" class=\"btn btn-sm btn-danger\" on:click>X</button>\n</li>\n"
+  ],
+  "names": [],
+  "mappings": "AAwBE,OAAO,cAAC,CAAC,UAAU,CAAE,IAAI,CAAC;ACjB1B,EAAE,eAAC,CAAC,AACF,OAAO,CAAE,IAAI,CACb,eAAe,CAAE,aAAa,AAChC,CAAC"
+}

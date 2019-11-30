@@ -1,24 +1,19 @@
 {
   "name": "@datorama/akita",
-  "version": "0.0.0-development",
-  "description": "Simple and Effective State Management for Angular Applications",
-  "$schema": "./node_modules/ng-packagr/package.schema.json",
+  "version": "4.14.1",
+  "description": "State Management Tailored-Made for JS Applications",
+  "schematics": "./schematics/collection.json",
   "scripts": {
-    "build": "ng-packagr -p package.json && npm run copy",
+    "release": "standard-version",
+    "build:lib": "ng-packagr -p package.json && npm run copy:readme && npm run copy:schematics",
+    "build": "node ./build.js",
     "test": "jest",
-    "test:debug": "node --inspect-brk ./node_modules/.bin/jest --runInBand --watch",
     "test:watch": "jest --watch",
-    "setup": "semantic-release-cli setup",
-    "github-pages": "push-dir --dir=playground/dist --branch=gh-pages --overwrite-local",
     "contributors:add": "all-contributors add",
     "contributors:generate": "all-contributors generate",
-    "copy": "copy README.md dist",
-    "precommit": "lint-staged",
-    "commit": "git-cz",
-    "commitmsg": "commitlint -e $GIT_PARAMS",
-    "demo": "cd playground && npm start",
-    "semantic-release": "semantic-release",
-    "travis-deploy-once": "travis-deploy-once"
+    "copy:readme": "copy README.md dist",
+    "copy:schematics": "ncp schematics/src dist/schematics",
+    "commit": "git-cz"
   },
   "publishConfig": {
     "access": "public"
@@ -26,6 +21,12 @@
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -e $GIT_PARAMS"
     }
   },
   "lint-staged": {
@@ -45,6 +46,11 @@
   "keywords": [
     "angular",
     "state management",
+    "react",
+    "vue",
+    "typescript",
+    "javascript",
+    "rxjs",
     "angular store",
     "store",
     "observable data stores",
@@ -57,10 +63,18 @@
         "dom",
         "es2017"
       ]
-    }
+    },
+    "whitelistedNonPeerDependencies": [
+      "schematics-utilities"
+    ]
   },
   "author": "Netanel Basal",
   "jest": {
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false
+      }
+    },
     "moduleFileExtensions": [
       "ts",
       "js"
@@ -69,60 +83,41 @@
       "jest-localstorage-mock"
     ],
     "transform": {
-      "\\.(ts)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+      "\\.(ts)$": "ts-jest"
     },
     "testRegex": "/__tests__/.*\\.spec.(ts|js)$"
   },
   "devDependencies": {
-    "@angular/compiler": "6.1.0",
-    "@angular/compiler-cli": "6.1.0",
-    "@angular/core": "6.1.0",
-    "@commitlint/cli": "^6.1.3",
-    "@commitlint/config-angular": "^6.1.3",
-    "@commitlint/config-conventional": "^7.0.1",
-    "@semantic-release/changelog": "^2.0.1",
-    "@semantic-release/git": "^4.0.1",
-    "@semantic-release/npm": "^3.2.2",
-    "@types/jest": "^23.0.0",
-    "all-contributors-cli": "^4.11.1",
-    "commitizen": "^2.9.6",
+    "@angular/compiler": "7.2.7",
+    "@angular/compiler-cli": "7.2.7",
+    "@angular/core": "7.2.7",
+    "@commitlint/cli": "8.1.0",
+    "@commitlint/config-angular": "8.1.0",
+    "@commitlint/config-conventional": "8.1.0",
+    "@types/jest": "24.0.9",
+    "all-contributors-cli": "6.4.0",
+    "chalk": "^3.0.0",
     "copy": "^0.3.2",
-    "cross-env": "^5.1.4",
-    "cz-conventional-changelog": "^2.1.0",
-    "husky": "^0.14.3",
-    "jest": "^23.1.0",
-    "jest-localstorage-mock": "^2.2.0",
-    "lint-staged": "^7.1.3",
-    "ng-packagr": "^3.0.6",
-    "prettier": "^1.13.5",
-    "push-dir": "^0.4.1",
-    "rxjs": "^6.2.0",
-    "semantic-release": "^15.5.1",
-    "semantic-release-cli": "^4.0.5",
-    "travis-deploy-once": "^5.0.0",
-    "ts-jest": "^22.4.6",
-    "typescript": "^2.9.2"
+    "fs-extra": "^8.1.0",
+    "git-cz": "^3.2.1",
+    "husky": "^1.3.1",
+    "jest": "^24.8.0",
+    "jest-localstorage-mock": "2.4.0",
+    "lint-staged": "8.1.6",
+    "ncp": "^2.0.0",
+    "ng-packagr": "4.7.1",
+    "prettier": "1.16.4",
+    "rxjs": "6.4.0",
+    "standard-version": "^6.0.1",
+    "ts-jest": "24.0.0",
+    "tsickle": "0.34.3",
+    "typescript": "3.2.4"
   },
-  "release": {
-    "verifyConditions": [
-      "@semantic-release/changelog",
-      "@semantic-release/npm",
-      "@semantic-release/git"
-    ],
-    "prepare": [
-      "@semantic-release/changelog",
-      {
-        "path": "@semantic-release/npm",
-        "pkgRoot": "dist"
-      },
-      "@semantic-release/git"
-    ],
-    "publish": [
-      {
-        "path": "@semantic-release/npm",
-        "pkgRoot": "dist"
-      }
-    ]
+  "peerDependencies": {
+    "rxjs": "^6.3.3"
+  },
+  "dependencies": {
+    "schematics-utilities": "^1.1.1"
   },
   "license": "Apache License 2.0"
 }

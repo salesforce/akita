@@ -1,0 +1,21 @@
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+.active {
+  color: hotpink;
+}
+
+nav {
+  padding: .5rem 1rem;
+  background-color: #f8f9fa;
+  height: 60px;
+  display: flex;
+  align-items: center;
+}
+
+nav a {
+  margin-right: 20px;
+}

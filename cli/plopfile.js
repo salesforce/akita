@@ -1,130 +1,143 @@
-const promptDirectory = require('inquirer-directory');
 const path = require('path');
 const pluralize = require('pluralize');
 const finder = require('find-package-json');
 const pjson = finder(process.cwd()).next().value;
-let userPath, customFolderName;
+let userPath,
+  customFolderName,
+  template = 'js';
 
-module.exports = function( plop ) {
-  userPath = pjson.akitaCli && pjson.akitaCli.basePath || '';
+module.exports = function(plop) {
+  userPath = (pjson.akitaCli && pjson.akitaCli.basePath) || '';
   customFolderName = (pjson.akitaCli && pjson.akitaCli.customFolderName) || false;
-  const userConfig = path.resolve(process.cwd(), userPath);
 
+  if (pjson.akitaCli && 'template' in pjson.akitaCli) {
+    template = pjson.akitaCli.template;
+  }
+
+  const userConfig = path.resolve(process.cwd(), userPath);
   const basePath = userConfig || process.cwd();
 
-  plop.setPrompt('directory', promptDirectory);
+  plop.setPrompt('fuzzypath', require('inquirer-fuzzy-path'));
 
   const chooseDirAction = {
-    type    : 'directory',
-    name    : 'directory',
-    message : 'Choose a directory..',
-    basePath: basePath
+    type: 'fuzzypath',
+    name: 'directory',
+    itemType: 'directory',
+    excludePath: nodePath => nodePath.startsWith('node_modules'),
+    message: 'Choose a directory..',
+    rootPath: basePath
   };
 
   const customFolderNameAction = {
-    type   : 'input',
-    name   : 'folderName',
+    type: 'input',
+    name: 'folderName',
     message: 'Give me a folder name, please'
-  }
+  };
+
+  const httpEntityService = template === 'angular'
+    ? [{
+      type: 'confirm',
+      name: 'useHttpService',
+      message: 'Use Http Entity Service ? (from @datorama/akita-ng-entity-service)'
+    }]
+    : []
 
   plop.setGenerator('Akita', {
     description: 'Create new stack',
-    prompts    : [
+    prompts: [
       {
-        type   : 'input',
-        name   : 'name',
+        type: 'input',
+        name: 'name',
         message: 'Give me a name, please 😀'
       },
       {
-        type   : 'list',
-        name   : 'storeType',
+        type: 'list',
+        name: 'storeType',
         choices: ['Entity Store', 'Store'],
-        message: 'Which store do you need? 😊'
+        message: 'Which store do you need? 😊',
       },
-      {
-        type   : 'confirm',
-        default: false,
-        name   : 'UIStore',
-        message: 'Is it UIStore?'
-      }
+      ...httpEntityService
     ].concat(customFolderName ? customFolderNameAction : [], chooseDirAction),
-    actions    : function( data ) {
+    actions: function(data) {
       const { storeType, directory, folderName } = data;
-
       data.isStore = storeType === 'Store';
       data.isEntityStore = storeType === 'Entity Store';
-      const dataService = {
-        type        : 'add',
+      const templateBase = template;
+
+      const extension = template === 'js' ? 'js' : 'ts';
+
+      const files = [
+        {
+          type: 'add',
+          skipIfExists: true,
+          path: buildPath(`index.${extension}`, directory, folderName),
+          templateFile: `./templates/${templateBase}/index.tpl`
+        },
+        {
+          type: 'add',
+          skipIfExists: true,
+          path: buildPath(`{{'dashCase' name}}.query.${extension}`, directory, folderName),
+          templateFile: `./templates/${templateBase}/${data.isEntityStore ? 'entity-query' : 'query'}.tpl`
+        },
+        {
+          type: 'add',
+          skipIfExists: true,
+          path: buildPath(`{{'dashCase' name}}.store.${extension}`, directory, folderName),
+          templateFile: `./templates/${templateBase}/${data.isEntityStore ? 'entity-store' : 'store'}.tpl`
+        }
+      ];
+
+      let serviceTpl;
+      if (templateBase === 'angular' && data.isEntityStore) {
+        serviceTpl = data.useHttpService ? 'http-entity-service' : 'entity-service'
+      } else {
+        serviceTpl = 'service'
+      }
+
+      files.push({
+        type: 'add',
         skipIfExists: true,
-        path        : buildPath('{{\'dashCase\' name}}-data.service.ts', directory, folderName),
-        templateFile: './templates/data-service.tpl'
-      };
+        path: buildPath(`{{'dashCase' name}}.service.${extension}`, directory, folderName),
+        templateFile: `./templates/${templateBase}/${serviceTpl}.tpl`
+      });
 
-      const index = {
-        type        : 'add',
-        skipIfExists: true,
-        path        : buildPath('index.ts', directory, folderName),
-        templateFile: './templates/index.tpl'
-      };
+      if (template !== 'js') {
+        if (data.isEntityStore) {
+          files.push({
+            type: 'add',
+            skipIfExists: true,
+            path: buildPath(`{{ 'singular' ('dashCase' name) name}}.model.${extension}`, directory, folderName),
+            templateFile: `./templates/${templateBase}/model.tpl`
+          });
+        }
+      }
 
-
-      const model = {
-        type        : 'add',
-        skipIfExists: true,
-        path        : buildPath('{{ \'singular\' (\'dashCase\' name) name}}.model.ts', directory, folderName),
-        templateFile: './templates/model.tpl'
-      };
-
-      const query = {
-        type        : 'add',
-        skipIfExists: true,
-        path        : buildPath('{{\'dashCase\' name}}.query.ts', directory, folderName),
-        templateFile: `./templates/${data.isEntityStore ? 'entity-query' : 'query'}.tpl`
-      };
-
-      const service = {
-        type        : 'add',
-        skipIfExists: true,
-        path        : buildPath('{{\'dashCase\' name}}.service.ts', directory, folderName),
-        templateFile: './templates/service.tpl'
-      };
-
-      const store = {
-        type        : 'add',
-        skipIfExists: true,
-        path        : buildPath('{{\'dashCase\' name}}.store.ts', directory, folderName),
-        templateFile:  `./templates/${data.isEntityStore ? 'entity-store' : 'store'}.tpl`
-      };
-
-      const WholeShebang = [dataService, query, service, store, index].concat(data.isEntityStore ? [model] : []);
-
-      return WholeShebang;
+      return files;
     }
   });
 
-
-  plop.setHelper('switch', function( value, options ) {
+  plop.setHelper('switch', function(value, options) {
     this._switch_value_ = value;
     var html = options.fn(this);
     delete this._switch_value_;
     return html;
   });
 
-  plop.setHelper('case', function( value, options ) {
-    if( value == this._switch_value_ ) {
+  plop.setHelper('case', function(value, options) {
+    if (value == this._switch_value_) {
       return options.fn(this);
     }
   });
 
-  plop.setHelper('singular', function( value ) {
+  plop.setHelper('singular', function(value) {
     return pluralize.singular(value);
   });
 
-  function buildPath( name, chosenDir, folderName = 'state') {
-    if(userPath) {
-      return `${userConfig}/${chosenDir}/${folderName}/${name}`;
-    }
-     return `${process.cwd()}/${chosenDir}/${folderName}/${name}`;
+  function buildPath(name, chosenDir, folderName = 'state') {
+    return `${chosenDir}/${folderName}/${name}`;
+    // if (userPath) {
+    //   return `${userConfig}/${chosenDir}/${folderName}/${name}`;
+    // }
+    // return `${process.cwd()}/${chosenDir}/${folderName}/${name}`;
   }
-
 };

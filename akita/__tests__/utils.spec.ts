@@ -1,6 +1,4 @@
-import { isObject, isPlainObject } from '../src/internal/utils';
-
-class TestClass {}
+import { isPlainObject } from '../src/isPlainObject';
 
 describe('Utils', () => {
   describe('isPlainObject', () => {
@@ -14,20 +12,6 @@ describe('Utils', () => {
 
     it('should return false when passing function', () => {
       expect(isPlainObject(function() {})).toBeFalsy();
-    });
-  });
-
-  describe('isObject', () => {
-    it('should return true', () => {
-      expect(isObject({})).toBeTruthy();
-    });
-
-    it('should return false', () => {
-      expect(isObject(class User {})).toBeFalsy();
-    });
-
-    it('should return false when passing function', () => {
-      expect(isObject(function() {})).toBeFalsy();
     });
   });
 });

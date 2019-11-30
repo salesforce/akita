@@ -1,7 +1,7 @@
-import { EntityStore, getInitialActiveState } from '../src/api/entity-store';
-import { ActiveState, EntityState, ID } from '../src/api/types';
-import { StoreConfig } from '../src/api/store-config';
-import { QueryEntity } from '../src/api/query-entity';
+import { EntityStore } from '../src/entityStore';
+import { ActiveState, EntityState, ID } from '../src/types';
+import { StoreConfig } from '../src/storeConfig';
+import { QueryEntity } from '../src/queryEntity';
 
 export class Todo {
   id: ID;
@@ -21,7 +21,7 @@ export interface State extends EntityState<Todo>, ActiveState {
 }
 
 export const initialState: State = {
-  ...getInitialActiveState(),
+  active: null,
   metadata: { name: 'metadata' }
 };
 
@@ -29,8 +29,8 @@ export const initialState: State = {
   name: 'todos'
 })
 export class TodosStore extends EntityStore<State, Todo> {
-  constructor() {
-    super(initialState);
+  constructor(options) {
+    super(initialState, options);
   }
 }
 
@@ -69,7 +69,7 @@ export function ct() {
       id,
       title: `Todo ${id}`,
       complete: false
-    };
+    } as Todo;
   };
 }
 
@@ -107,3 +107,5 @@ export function createWidget(id) {
     complete: false
   } as Widget;
 }
+
+export const tick = () => new Promise(process.nextTick);

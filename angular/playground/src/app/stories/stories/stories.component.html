@@ -1,0 +1,102 @@
+<section class="padding">
+
+  <h5>Root Key</h5>
+  <form class="col s12" [formGroup]="formRootKey">
+    <div class="row">
+      <div class="col s12">
+        <p>
+          <label>
+            <input type="checkbox" formControlName="someBoolean"/>
+            <span>Is Admin</span>
+          </label>
+        </p>
+      </div>
+    </div>
+    <button (click)="addSkill()">Add skill</button>
+    {{formRootKey.value | json}}
+  </form>
+
+  {{formKeyBased.value | json}}
+  <h5>Key Based</h5>
+  <form class="col s12" [formGroup]="formKeyBased" (ngSubmit)="submit()">
+    <div class="row">
+      <div class="input-field col s12">
+        <input autocomplete="off" formControlName="time" placeholder="Time">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col s12">
+        <p>
+          <label>
+            <input type="checkbox" formControlName="isAdmin"/>
+            <span>Is Admin</span>
+          </label>
+        </p>
+      </div>
+    </div>
+  </form>
+
+  <h5>New Story</h5>
+
+  <div class="row">
+    <form class="col s12" [formGroup]="form" (ngSubmit)="submit()">
+
+
+      <div class="row">
+        <div class="input-field col s12">
+          <input id="title" type="text" autocomplete="off" formControlName="title" placeholder="Title">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="input-field col s12">
+          <textarea id="story" class="materialize-textarea" formControlName="story" placeholder="Story"></textarea>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col s12">
+          <p>
+            <label>
+              <input type="checkbox" formControlName="draft"/>
+              <span>Draft</span>
+            </label>
+          </p>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col s12">
+          <label>Category</label>
+          <select class="browser-default" formControlName="category">
+            <option value="js">JavaScript</option>
+            <option value="rxjs">RxJS</option>
+            <option value="angular">Angular</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="progress" *ngIf="loading$ | async">
+        <div class="indeterminate"></div>
+      </div>
+
+      <button class="btn waves-effect waves-light" type="submit" name="action">Submit
+        <i class="material-icons right">send</i>
+      </button>
+
+    </form>
+
+  </div>
+
+  <div class="row">
+    <section style="margin-top: 10px">
+      <h6>Form local value:</h6>
+      {{form.value | json}}
+
+      <h6>Store value:</h6>
+      {{storeValue | async | json}}
+    </section>
+  </div>
+
+</section>

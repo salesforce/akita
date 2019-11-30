@@ -1,0 +1,32 @@
+<div class="container" class="padding">
+  <h1>Entity Service</h1>
+
+  <ng-template #idle>Idle</ng-template>
+
+  <h5>Loaders</h5>
+  <p>Get => <span *ngIf="(loaders.get$ | async); else idle">Loading...</span></p>
+  <p>POST => <span *ngIf="(loaders.add$ | async); else idle">Loading...</span></p>
+  <p>PUT => <span *ngIf="(loaders.update$ | async); else idle">Loading...</span></p>
+  <p>DELETE => <span *ngIf="(loaders.delete$ | async); else idle">Loading...</span></p>
+
+  <p>PUT id 3 => <span *ngIf="updateEntityLoading(3) | async; else idle">Loading...</span></p>
+  <p>DELETE id 3 => <span *ngIf="deleteEntityLoading(3) | async; else idle">Loading...</span></p>
+
+  <section style="margin-bottom: 10px;">
+    <button (click)="fetchOne()" class="btn waves-effect waves-light">Fetch posts/1</button>
+    <button (click)="add()" class="btn waves-effect waves-light">Add</button>
+    <button (click)="update(1)" class="btn waves-effect waves-light">Update</button>
+    <button (click)="remove(1)" class="btn waves-effect waves-light">Remove</button>
+
+    <button (click)="update(3)" class="btn waves-effect waves-light">Update id 3</button>
+    <button (click)="remove(3)" class="btn waves-effect waves-light">Remove id 3</button>
+  </section>
+
+  <h3 *ngIf="(loaders.get$ | async); else posts">Loading...</h3>
+
+  <ng-template #posts>
+    <div *ngFor="let post of (posts$ | async)">
+      {{ post.title }}
+    </div>
+  </ng-template>
+</div>

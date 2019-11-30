@@ -18,6 +18,7 @@ To change it, add to the root `package.json` the following config:
 ```
 "akitaCli": {
   "customFolderName": "true",
+  "template": "js|angular|ts", // default is js
   "basePath": "./playground/src/app/"
 }
 ```
