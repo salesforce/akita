@@ -1,4 +1,4 @@
-import { EntityStore, Query, Store, StoreConfig } from '../src';
+import { akitaConfig, EntityStore, Query, Store, StoreConfig } from '../src';
 import { TodosStore } from './setup';
 
 interface State {
@@ -163,6 +163,11 @@ export class ProductsStoreWithoutDeco extends EntityStore<any, any> {}
 
 const productsStore2 = new ProductsStoreWithoutDeco({}, { name: 'pr' });
 
+akitaConfig({
+  resettable: true,
+  ttl: 300
+});
+
 describe('StoreConfig', () => {
   it('should take from decorator', () => {
     expect(productsStore.storeName).toBe('products');
@@ -172,5 +177,11 @@ describe('StoreConfig', () => {
   it('should take from the constructor', () => {
     expect(productsStore2.storeName).toBe('pr');
     expect(productsStore2.idKey).toBe('id');
+  });
+
+  it('should set cache timeout with 300ms', () => {
+    jest.useFakeTimers();
+    productsStore.setHasCache(true, { restartTTL: true });
+    expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 300);
   });
 });

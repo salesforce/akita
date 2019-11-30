@@ -3,10 +3,12 @@ export interface AkitaConfig {
    * Whether to allowed the reset() stores functionality
    */
   resettable?: boolean;
+  ttl?: number;
 }
 
 let CONFIG: AkitaConfig = {
-  resettable: false
+  resettable: false,
+  ttl: null
 };
 
 export function akitaConfig(config: AkitaConfig) {
