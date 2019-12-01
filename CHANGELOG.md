@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.16.0](https://github.com/datorama/akita/compare/v4.14.1...v4.16.0) (2019-12-01)
+
+
+### Bug Fixes
+
+* **withTransaction:** Fixed typing ([#334](https://github.com/datorama/akita/issues/334)) ([055c2c3](https://github.com/datorama/akita/commit/055c2c3))
+
+
+### Features
+
+* **config:** add TTL to global Akita config ([#340](https://github.com/datorama/akita/issues/340)) ([5debdc0](https://github.com/datorama/akita/commit/5debdc0))
+* 🎸 add watch property support for state history ([2bf07cf](https://github.com/datorama/akita/commit/2bf07cf))
+* add observable past & future for history ([#339](https://github.com/datorama/akita/issues/339)) ([791e8c2](https://github.com/datorama/akita/commit/791e8c2))
+
+
+
 ## [4.15.0](https://github.com/datorama/akita/compare/v4.14.1...v4.15.0) (2019-12-01)
 
 
