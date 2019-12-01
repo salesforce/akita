@@ -49,8 +49,6 @@ export class StateHistoryPlugin<State = any> extends AkitaPlugin<State> {
   /**
    * Observable stream representing whether the history plugin has an available past
    *
-   * @readonly
-   * @memberof StateHistoryPlugin
    */
   get hasPast$(): Observable<boolean> {
     return this._hasPast$;
@@ -59,9 +57,6 @@ export class StateHistoryPlugin<State = any> extends AkitaPlugin<State> {
   /**
    * Observable stream representing whether the history plugin has an available future
    *
-   * @readonly
-   * @type {Observable<boolean>}
-   * @memberof StateHistoryPlugin
    */
   get hasFuture$(): Observable<boolean> {
     return this._hasFuture$;
