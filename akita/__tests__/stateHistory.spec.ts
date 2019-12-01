@@ -271,7 +271,7 @@ type MyState = {
   nope: object;
 };
 
-describe.only('StateHistory - watchProperty', () => {
+describe('StateHistory - watchProperty', () => {
   const store = new Store<MyState>({ yeap: {}, nope: {} }, { name: 'watchProperty' });
   const query = new Query<MyState>(store);
   const history = new StateHistoryPlugin(query, { watchProperty: 'yeap' });
