@@ -1,10 +1,12 @@
-import { pairwise } from 'rxjs/operators';
+import { pairwise, distinctUntilChanged } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { AkitaPlugin, Queries } from '../plugin';
 import { logAction } from '../../actions';
 import { isFunction } from '../../isFunction';
 
 export interface StateHistoryParams {
   maxAge?: number;
+  watchProperty?: string;
   comparator?: (prevState, currentState) => boolean;
 }
 
@@ -28,13 +30,36 @@ export class StateHistoryPlugin<State = any> extends AkitaPlugin<State> {
   private skipUpdate = false;
   private subscription;
 
+  /* Subjects for supporting observable hasPast$ and hasFuture$ */
+  private hasPastSubject: BehaviorSubject<boolean>;
+  private _hasPast$: Observable<boolean>;
+  private hasFutureSubject: BehaviorSubject<boolean>;
+  private _hasFuture$: Observable<boolean>;
+
   constructor(protected query: Queries<State>, private params: StateHistoryParams = {}, private _entityId?: any) {
     super(query, {
       resetFn: () => this.clear()
     });
     params.maxAge = !!params.maxAge ? params.maxAge : 10;
     params.comparator = params.comparator || (() => true);
+
     this.activate();
+  }
+
+  /**
+   * Observable stream representing whether the history plugin has an available past
+   *
+   */
+  get hasPast$(): Observable<boolean> {
+    return this._hasPast$;
+  }
+
+  /**
+   * Observable stream representing whether the history plugin has an available future
+   *
+   */
+  get hasFuture$(): Observable<boolean> {
+    return this._hasFuture$;
   }
 
   get hasPast() {
@@ -45,10 +70,25 @@ export class StateHistoryPlugin<State = any> extends AkitaPlugin<State> {
     return this.history.future.length > 0;
   }
 
+  private get property() {
+    return this.params.watchProperty;
+  }
+
+  /* Updates the hasPast$ hasFuture$ observables*/
+  private updateHasHistory() {
+    this.hasFutureSubject.next(this.hasFuture);
+    this.hasPastSubject.next(this.hasPast);
+  }
+
   activate() {
-    this.history.present = this.getSource(this._entityId);
+    this.hasPastSubject = new BehaviorSubject(false);
+    this._hasPast$ = this.hasPastSubject.asObservable().pipe(distinctUntilChanged());
+    this.hasFutureSubject = new BehaviorSubject(false);
+    this._hasFuture$ = this.hasFutureSubject.asObservable().pipe(distinctUntilChanged());
+
+    this.history.present = this.getSource(this._entityId, this.property);
     this.subscription = (this as any)
-      .selectSource(this._entityId)
+      .selectSource(this._entityId, this.property)
       .pipe(pairwise())
       .subscribe(([past, present]) => {
         if (this.skip) {
@@ -66,6 +106,7 @@ export class StateHistoryPlugin<State = any> extends AkitaPlugin<State> {
           }
           this.history.past = [...this.history.past, past];
           this.history.present = present;
+          this.updateHasHistory();
         }
       });
   }
@@ -163,6 +204,7 @@ export class StateHistoryPlugin<State = any> extends AkitaPlugin<State> {
           present: null,
           future: []
         };
+    this.updateHasHistory();
   }
 
   destroy(clearHistory = false) {
@@ -179,7 +221,8 @@ export class StateHistoryPlugin<State = any> extends AkitaPlugin<State> {
   private update(action = 'Undo') {
     this.skipUpdate = true;
     logAction(`@StateHistory - ${action}`);
-    this.updateStore(this.history.present, this._entityId);
+    this.updateStore(this.history.present, this._entityId, this.property);
+    this.updateHasHistory();
     this.skipUpdate = false;
   }
 }

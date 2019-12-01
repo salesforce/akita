@@ -2,6 +2,7 @@ import { Store } from '../src/store';
 import { Query } from '../src/query';
 import { StateHistoryPlugin } from '../src/plugins/stateHistory/stateHistoryPlugin';
 import { StoreConfig } from '../src/storeConfig';
+import { Observable } from 'rxjs';
 
 interface State {
   counter: number;
@@ -185,7 +186,7 @@ describe('StateHistory', () => {
       future: [{ counter: 4 }]
     });
 
-    stateHistory.clear((history) => {
+    stateHistory.clear(history => {
       return {
         past: history.past,
         present: history.present,
@@ -199,7 +200,7 @@ describe('StateHistory', () => {
       future: []
     });
 
-    stateHistory.clear((history) => {
+    stateHistory.clear(history => {
       return {
         past: [],
         present: history.present,
@@ -263,4 +264,237 @@ describe('StateHistory - Limit', () => {
   });
 
   expect(stateHistory2.history).toEqual({ past: [{ counter: 6 }], present: { counter: 7 }, future: [] });
+});
+
+type MyState = {
+  yeap: { a?: number; b?: number };
+  nope: object;
+};
+
+describe('StateHistory - watchProperty', () => {
+  const store = new Store<MyState>({ yeap: {}, nope: {} }, { name: 'watchProperty' });
+  const query = new Query<MyState>(store);
+  const history = new StateHistoryPlugin(query, { watchProperty: 'yeap' });
+
+  it('should watch only this property', () => {
+    store.update({ nope: {} });
+    expect(history.history).toEqual({ future: [], past: [], present: {} });
+    store.update({ yeap: { a: 1, b: 1 } });
+    expect(history.history).toEqual({ future: [], past: [{}], present: { a: 1, b: 1 } });
+    store.update({ yeap: { a: 1, b: 2 }, nope: { what: 1 } });
+    expect(history.history).toEqual({ future: [], past: [{}, { a: 1, b: 1 }], present: { a: 1, b: 2 } });
+    history.undo();
+    expect(history.history).toEqual({ future: [{ a: 1, b: 2 }], past: [{}], present: { a: 1, b: 1 } });
+    history.redo();
+    expect(history.history).toEqual({ future: [], past: [{}, { a: 1, b: 1 }], present: { a: 1, b: 2 } });
+  });
+
+  describe('should support nested props', () => {
+    const store = new Store({ yeap: { a: 0, b: 1 }, nope: {} }, { name: 'watchProperty' });
+    const query = new Query(store);
+    const history = new StateHistoryPlugin(query, { watchProperty: 'yeap.a' });
+    it('should watch only this property', () => {
+      store.update({ nope: {} });
+      expect(history.history).toEqual({ future: [], past: [], present: 0 });
+      store.update({ yeap: { a: 1, b: 2 } });
+      expect(history.history).toEqual({ future: [], past: [0], present: 1 });
+      store.update({ yeap: { a: 2, b: 233 } });
+      expect(history.history).toEqual({ future: [], past: [0, 1], present: 2 });
+      history.undo();
+      expect(history.history).toEqual({ future: [2], past: [0], present: 1 });
+      history.redo();
+      expect(history.history).toEqual({ future: [], past: [0, 1], present: 2 });
+      history.clear();
+      expect(history.history).toEqual({ future: [], past: [], present: null });
+    });
+  });
+});
+
+describe('StateHistory - Observability', () => {
+  // Convenience for creating new store and history for each test
+  function getStateHistory() {
+    const store = new CounterStore();
+    const query = new CounterQuery(store);
+    const history = new StateHistoryPlugin(query);
+
+    // Simple mutator function for convenience
+    const makeChange = () => {
+      store._setState(state => {
+        return {
+          counter: state.counter + 1
+        };
+      });
+    };
+
+    return {
+      history,
+      makeChange
+    };
+  }
+
+  // Just a convenience wraper for handling assertions on the observable stream
+  function expectHistoryStatusEqual(status$: Observable<boolean>, expectedValues: Boolean[], done: () => void) {
+    const values: boolean[] = [];
+    status$.subscribe(val => {
+      values.push(val);
+      if (values.length == expectedValues.length) {
+        expect(values).toEqual(expectedValues);
+        done();
+      }
+    });
+  }
+
+  describe('hasPast$', () => {
+    it('should initially be false', done => {
+      const { history } = getStateHistory();
+
+      history.hasPast$.subscribe(val => {
+        expect(val).toEqual(false);
+        done();
+      });
+    });
+
+    it('should update observable on update', done => {
+      const { history, makeChange } = getStateHistory();
+
+      const expectedValues: boolean[] = [
+        false, // Initial
+        true, // makeChange
+        false, // undo
+        true // redo
+      ];
+
+      expectHistoryStatusEqual(history.hasPast$, expectedValues, done);
+
+      makeChange();
+      history.undo();
+      history.redo();
+    });
+
+    it('should only update on change', done => {
+      const { history, makeChange } = getStateHistory();
+
+      const expectedValues: boolean[] = [
+        false, // initial
+        true, // after first change
+        false // after both undo's
+      ];
+
+      expectHistoryStatusEqual(history.hasPast$, expectedValues, done);
+
+      makeChange();
+      makeChange();
+
+      history.undo();
+      history.undo();
+    });
+
+    it('should work with ignoreNext', done => {
+      const { history, makeChange } = getStateHistory();
+
+      const expectedValues: boolean[] = [
+        false, // initial
+        true, // after first change
+        false // after undo
+      ];
+
+      expectHistoryStatusEqual(history.hasPast$, expectedValues, done);
+
+      makeChange();
+      history.undo();
+      history.ignoreNext();
+      makeChange();
+    });
+
+    it('should work with clear', done => {
+      const { history, makeChange } = getStateHistory();
+
+      const expectedValues: boolean[] = [
+        false, // initial
+        true, // after first change
+        false // after clear
+      ];
+
+      expectHistoryStatusEqual(history.hasPast$, expectedValues, done);
+
+      makeChange();
+      history.clear();
+    });
+  });
+
+  describe('hasFuture$', () => {
+    it('should initially be false', done => {
+      const { history } = getStateHistory();
+
+      history.hasFuture$.subscribe(val => {
+        expect(val).toEqual(false);
+        done();
+      });
+    });
+
+    it('should update observable on update', done => {
+      const { history, makeChange } = getStateHistory();
+
+      const expectedValues: boolean[] = [
+        false, // Initial
+        true, // undo
+        false // redo
+      ];
+
+      expectHistoryStatusEqual(history.hasFuture$, expectedValues, done);
+
+      makeChange();
+      history.undo();
+      history.redo();
+    });
+
+    it('should only update on change', done => {
+      const { history, makeChange } = getStateHistory();
+
+      const expectedValues: boolean[] = [
+        false, // initial
+        true // after undo
+      ];
+
+      expectHistoryStatusEqual(history.hasFuture$, expectedValues, done);
+
+      makeChange();
+      makeChange();
+
+      history.undo();
+      history.undo();
+    });
+
+    it('should work with ignoreNext', done => {
+      const { history, makeChange } = getStateHistory();
+
+      const expectedValues: boolean[] = [
+        false, // initial
+        true // after undo
+      ];
+
+      expectHistoryStatusEqual(history.hasFuture$, expectedValues, done);
+
+      makeChange();
+      history.undo();
+      history.ignoreNext();
+      makeChange();
+    });
+
+    it('should work with clear', done => {
+      const { history, makeChange } = getStateHistory();
+
+      const expectedValues: boolean[] = [
+        false, // initial
+        true, // after undo
+        false // after clear
+      ];
+
+      expectHistoryStatusEqual(history.hasFuture$, expectedValues, done);
+
+      makeChange();
+      history.undo();
+      history.clear();
+    });
+  });
 });
