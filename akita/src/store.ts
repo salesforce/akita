@@ -85,7 +85,7 @@ export class Store<S = any> {
     }
 
     if (options.restartTTL) {
-      const ttlConfig = this.cacheConfig && this.cacheConfig.ttl;
+      const ttlConfig = this.getCacheTTL();
       if (ttlConfig) {
         if (this.cache.ttl !== null) {
           clearTimeout(this.cache.ttl);
@@ -297,5 +297,9 @@ export class Store<S = any> {
       this.watchTransaction();
       this.inTransaction = true;
     }
+  }
+
+  private getCacheTTL() {
+    return (this.cacheConfig && this.cacheConfig.ttl) || getAkitaConfig().ttl;
   }
 }
