@@ -3,6 +3,8 @@ import { Query } from '../query';
 import { filterNil } from '../filterNil';
 import { toBoolean } from '../toBoolean';
 import { getAkitaConfig } from '../config';
+import { getValue } from '../getValueByString';
+import { setValue } from '../setValueByString';
 
 export type Queries<State> = Query<State> | QueryEntity<State>;
 
@@ -34,27 +36,51 @@ export abstract class AkitaPlugin<State = any> {
   }
 
   /** This method is responsible for selecting the source; it can be the whole store or one entity. */
-  protected selectSource(entityId: any) {
+  protected selectSource(entityId: any, property?: string) {
     if (this.isEntityBased(entityId)) {
       return (this.getQuery() as QueryEntity<State>).selectEntity(entityId).pipe(filterNil);
     }
 
-    return (this.getQuery() as Query<State>).select(state => state);
+    if (property) {
+      return this.getQuery().select(state => getValue(state, this.withStoreName(property)));
+    }
+
+    return this.getQuery().select();
   }
 
-  protected getSource(entityId: any): any {
+  protected getSource(entityId: any, property?: string): any {
     if (this.isEntityBased(entityId)) {
       return (this.getQuery() as QueryEntity<State>).getEntity(entityId);
     }
 
-    return this.getQuery().getValue();
+    const state = this.getQuery().getValue();
+
+    if (property) {
+      return getValue(state, this.withStoreName(property));
+    }
+
+    return state;
+  }
+
+  protected withStoreName(prop: string) {
+    return `${this.storeName}.${prop}`;
+  }
+
+  protected get storeName() {
+    return this.getStore().storeName;
   }
 
   /** This method is responsible for updating the store or one entity; it can be the whole store or one entity. */
-  protected updateStore(newState, entityId?) {
+  protected updateStore(newState, entityId?, property?: string) {
     if (this.isEntityBased(entityId)) {
       this.getStore().update(entityId, newState);
     } else {
+      if (property) {
+        this.getStore()._setState(state => {
+          return setValue(state, this.withStoreName(property), newState);
+        });
+        return;
+      }
       this.getStore()._setState(state => ({ ...state, ...newState }));
     }
   }

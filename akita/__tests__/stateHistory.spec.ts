@@ -266,6 +266,50 @@ describe('StateHistory - Limit', () => {
   expect(stateHistory2.history).toEqual({ past: [{ counter: 6 }], present: { counter: 7 }, future: [] });
 });
 
+type MyState = {
+  yeap: { a?: number; b?: number };
+  nope: object;
+};
+
+describe.only('StateHistory - watchProperty', () => {
+  const store = new Store<MyState>({ yeap: {}, nope: {} }, { name: 'watchProperty' });
+  const query = new Query<MyState>(store);
+  const history = new StateHistoryPlugin(query, { watchProperty: 'yeap' });
+
+  it('should watch only this property', () => {
+    store.update({ nope: {} });
+    expect(history.history).toEqual({ future: [], past: [], present: {} });
+    store.update({ yeap: { a: 1, b: 1 } });
+    expect(history.history).toEqual({ future: [], past: [{}], present: { a: 1, b: 1 } });
+    store.update({ yeap: { a: 1, b: 2 }, nope: { what: 1 } });
+    expect(history.history).toEqual({ future: [], past: [{}, { a: 1, b: 1 }], present: { a: 1, b: 2 } });
+    history.undo();
+    expect(history.history).toEqual({ future: [{ a: 1, b: 2 }], past: [{}], present: { a: 1, b: 1 } });
+    history.redo();
+    expect(history.history).toEqual({ future: [], past: [{}, { a: 1, b: 1 }], present: { a: 1, b: 2 } });
+  });
+
+  describe('should support nested props', () => {
+    const store = new Store({ yeap: { a: 0, b: 1 }, nope: {} }, { name: 'watchProperty' });
+    const query = new Query(store);
+    const history = new StateHistoryPlugin(query, { watchProperty: 'yeap.a' });
+    it('should watch only this property', () => {
+      store.update({ nope: {} });
+      expect(history.history).toEqual({ future: [], past: [], present: 0 });
+      store.update({ yeap: { a: 1, b: 2 } });
+      expect(history.history).toEqual({ future: [], past: [0], present: 1 });
+      store.update({ yeap: { a: 2, b: 233 } });
+      expect(history.history).toEqual({ future: [], past: [0, 1], present: 2 });
+      history.undo();
+      expect(history.history).toEqual({ future: [2], past: [0], present: 1 });
+      history.redo();
+      expect(history.history).toEqual({ future: [], past: [0, 1], present: 2 });
+      history.clear();
+      expect(history.history).toEqual({ future: [], past: [], present: null });
+    });
+  });
+});
+
 describe('StateHistory - Observability', () => {
   // Convenience for creating new store and history for each test
   function getStateHistory() {
