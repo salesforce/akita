@@ -520,8 +520,8 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
   }
 
   // @internal
-  akitaPreUpdateEntity(_: Readonly<EntityType>, nextEntity: Readonly<EntityType>): EntityType {
-    return nextEntity;
+  akitaPreUpdateEntity(_: Readonly<EntityType>, nextEntity: any): EntityType {
+    return nextEntity as EntityType;
   }
 
   // @internal
