@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.17.0](https://github.com/datorama/akita/compare/v4.16.0...v4.17.0) (2019-12-05)
+
+
+### Features
+
+* **context:** release the entry type of akitaPreUpdateEntity ([#341](https://github.com/datorama/akita/issues/341)) ([1d019c1](https://github.com/datorama/akita/commit/1d019c1))
+
+
+
 ## [4.16.0](https://github.com/datorama/akita/compare/v4.14.1...v4.16.0) (2019-12-01)
 
 
