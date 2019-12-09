@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
+import { Injectable, InjectionToken, Inject, Optional } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormArray, FormControl, FormGroup, ValidatorFn } from '@angular/forms';
 import { coerceArray, filterNil, HashMap, logAction } from '@datorama/akita';
 import { merge, Observable, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, tap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { FormsQuery } from './forms-manager.query';
 import { FormsStore } from './forms-manager.store';
 
@@ -17,6 +17,18 @@ export interface AkitaAbstractGroup<C = any> extends AkitaAbstractControl {
 
 export type ArrayControlFactory = (value: any) => AbstractControl;
 
+export type FormsManagerOptions = {
+  debounceTime: number;
+  updateStoreOnUnsubscribe: boolean;
+};
+
+export const FORMSMANAGER_OPTIONS = new InjectionToken<FormsManagerOptions>('FormsManagerOptions');
+
+const defaultOptions: Partial<FormsManagerOptions> & { debounceTime: number; updateStoreOnUnsubscribe: boolean } = {
+  debounceTime: 300,
+  updateStoreOnUnsubscribe: false
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -27,7 +39,11 @@ export class AkitaNgFormsManager<FormsState = any> {
   private valueChanges: HashMap<Subscription> = {};
   private ngForms: HashMap<AbstractControl> = {};
 
-  constructor() {
+  private options: FormsManagerOptions;
+
+  constructor(@Optional() @Inject(FORMSMANAGER_OPTIONS) options: Partial<FormsManagerOptions> = {}) {
+    this.options = Object.assign({}, defaultOptions, options);
+
     this._store = new FormsStore({} as FormsState);
     this._query = new FormsQuery(this.store);
   }
@@ -120,10 +136,9 @@ export class AkitaNgFormsManager<FormsState = any> {
       emitEvent?: boolean;
       arrControlFactory?: ArrayControlFactory | HashMap<ArrayControlFactory>;
       persistForm?: boolean;
-      updateStoreOnUnsubscribe?: boolean;
     } = {}
   ) {
-    const merged = { ...{ debounceTime: 300, emitEvent: false }, ...config };
+    const merged = { ...{ debounceTime: this.options.debounceTime, emitEvent: false }, ...config };
 
     /** If the form already exist, patch the form with the store value */
     if (this.hasForm(formName) === true) {
@@ -138,22 +153,9 @@ export class AkitaNgFormsManager<FormsState = any> {
       }
     }
 
-    const formChanges$ = merge(form.valueChanges, form.statusChanges.pipe(distinctUntilChanged())).pipe(
-      debounceTime(merged.debounceTime),
-      tap(() => this.updateStore(formName, form))
-    );
-
-    /** wrapping formChanges ensures form state is synced with the store when unsubscribing
-     *  as debounce might prevent last update from reaching the store */
-    this.valueChanges[formName as any] = Observable.create(observer => {
-      const innerSubscription = formChanges$.subscribe();
-      () => {
-        innerSubscription.unsubscribe();
-        if (config.updateStoreOnUnsubscribe) {
-          this.updateStore(formName, form);
-        }
-      };
-    }).subscribe();
+    this.valueChanges[formName as any] = merge(form.valueChanges, form.statusChanges.pipe(distinctUntilChanged()))
+      .pipe(debounceTime(merged.debounceTime))
+      .subscribe(() => this.updateStore(formName, form));
 
     return this;
   }
@@ -170,8 +172,12 @@ export class AkitaNgFormsManager<FormsState = any> {
     this.unsubscribe(formName);
   }
 
-  unsubscribe(formName?: keyof FormsState, config: { removeNgForm?: boolean } = {}) {
-    const _config = { removeNgForm: true, ...config };
+  unsubscribe(formName?: keyof FormsState, config: { removeNgForm?: boolean; updateStore?: boolean } = {}) {
+    const _config = {
+      removeNgForm: true,
+      ...{ updateStore: this.options.updateStoreOnUnsubscribe },
+      ...config
+    };
     const _formName = formName as any;
     const removeInstance = (name: any) => (_config.removeNgForm ? this.removeFormInstance(name) : null);
 
@@ -179,11 +185,17 @@ export class AkitaNgFormsManager<FormsState = any> {
       if (this.valueChanges[_formName]) {
         this.valueChanges[_formName].unsubscribe();
         delete this.valueChanges[_formName];
+        if (config.updateStore) {
+          this.updateStore(formName, this.getNgForm(_formName));
+        }
         removeInstance(_formName);
       }
     } else {
-      for (const name of Object.keys(this.valueChanges)) {
+      for (const name of Object.keys(this.valueChanges) as any[]) {
         this.valueChanges[name].unsubscribe();
+        if (config.updateStore) {
+          this.updateStore(name, this.getNgForm(name));
+        }
         removeInstance(name);
       }
       this.valueChanges = {};
