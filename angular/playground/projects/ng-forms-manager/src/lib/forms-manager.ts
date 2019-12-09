@@ -142,7 +142,7 @@ export class AkitaNgFormsManager<FormsState = any> {
       tap(() => this.updateStore(formName, form))
     );
 
-    /** wrapping formChanges ensures synced with the store when unsubscribing
+    /** wrapping formChanges ensures form state is synced with the store when unsubscribing
      *  as debounce might prevent last update from reaching the store */
     this.valueChanges[formName as any] = Observable.create(observer => {
       const innerSubscription = formChanges$.subscribe();
