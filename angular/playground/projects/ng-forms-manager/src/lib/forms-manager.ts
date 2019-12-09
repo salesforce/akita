@@ -120,6 +120,7 @@ export class AkitaNgFormsManager<FormsState = any> {
       emitEvent?: boolean;
       arrControlFactory?: ArrayControlFactory | HashMap<ArrayControlFactory>;
       persistForm?: boolean;
+      updateStoreOnUnsubscribe?: boolean;
     } = {}
   ) {
     const merged = { ...{ debounceTime: 300, emitEvent: false }, ...config };
@@ -148,7 +149,9 @@ export class AkitaNgFormsManager<FormsState = any> {
       const innerSubscription = formChanges$.subscribe();
       () => {
         innerSubscription.unsubscribe();
-        this.updateStore(formName, form);
+        if (config.updateStoreOnUnsubscribe) {
+          this.updateStore(formName, form);
+        }
       };
     }).subscribe();
 
