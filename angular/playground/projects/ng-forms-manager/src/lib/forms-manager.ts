@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormArray, FormControl, FormGroup, ValidatorFn } from '@angular/forms';
 import { coerceArray, filterNil, HashMap, logAction } from '@datorama/akita';
 import { merge, Observable, Subscription } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, tap } from 'rxjs/operators';
 import { FormsQuery } from './forms-manager.query';
 import { FormsStore } from './forms-manager.store';
 
@@ -137,9 +137,20 @@ export class AkitaNgFormsManager<FormsState = any> {
       }
     }
 
-    this.valueChanges[formName as any] = merge(form.valueChanges, form.statusChanges.pipe(distinctUntilChanged()))
-      .pipe(debounceTime(merged.debounceTime))
-      .subscribe(() => this.updateStore(formName, form));
+    const formChanges$ = merge(form.valueChanges, form.statusChanges.pipe(distinctUntilChanged())).pipe(
+      debounceTime(merged.debounceTime),
+      tap(() => this.updateStore(formName, form))
+    );
+
+    /** wrapping formChanges ensures synced with the store when unsubscribing
+     *  as debounce might prevent last update from reaching the store */
+    this.valueChanges[formName as any] = Observable.create(observer => {
+      const innerSubscription = formChanges$.subscribe();
+      () => {
+        innerSubscription.unsubscribe();
+        this.updateStore(formName, form);
+      };
+    }).subscribe();
 
     return this;
   }
