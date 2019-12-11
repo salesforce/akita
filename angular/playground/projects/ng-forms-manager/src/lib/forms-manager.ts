@@ -5,6 +5,7 @@ import { merge, Observable, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { FormsQuery } from './forms-manager.query';
 import { FormsStore } from './forms-manager.store';
+import { FormsManagerOptions, FORMS_MANAGER_OPTIONS, defaultOptions } from './forms-manager-options';
 
 export type AkitaAbstractControl = Pick<
   AbstractControl,
@@ -16,18 +17,6 @@ export interface AkitaAbstractGroup<C = any> extends AkitaAbstractControl {
 }
 
 export type ArrayControlFactory = (value: any) => AbstractControl;
-
-export type FormsManagerOptions = {
-  debounceTime: number;
-  updateStoreOnUnsubscribe: boolean;
-};
-
-export const FORMSMANAGER_OPTIONS = new InjectionToken<FormsManagerOptions>('FormsManagerOptions');
-
-const defaultOptions: Partial<FormsManagerOptions> & { debounceTime: number; updateStoreOnUnsubscribe: boolean } = {
-  debounceTime: 300,
-  updateStoreOnUnsubscribe: false
-};
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +30,7 @@ export class AkitaNgFormsManager<FormsState = any> {
 
   private options: FormsManagerOptions;
 
-  constructor(@Optional() @Inject(FORMSMANAGER_OPTIONS) options: Partial<FormsManagerOptions> = {}) {
+  constructor(@Optional() @Inject(FORMS_MANAGER_OPTIONS) options: Partial<FormsManagerOptions> = {}) {
     this.options = Object.assign({}, defaultOptions, options);
 
     this._store = new FormsStore({} as FormsState);
@@ -185,15 +174,15 @@ export class AkitaNgFormsManager<FormsState = any> {
       if (this.valueChanges[_formName]) {
         this.valueChanges[_formName].unsubscribe();
         delete this.valueChanges[_formName];
-        if (config.updateStore) {
-          this.updateStore(formName, this.getNgForm(_formName));
+        if (config.updateStore && this.hasForm(name)) {
+          this.updateStore(name, this.getNgForm(name));
         }
         removeInstance(_formName);
       }
     } else {
       for (const name of Object.keys(this.valueChanges) as any[]) {
         this.valueChanges[name].unsubscribe();
-        if (config.updateStore) {
+        if (config.updateStore && this.hasForm(name)) {
           this.updateStore(name, this.getNgForm(name));
         }
         removeInstance(name);
