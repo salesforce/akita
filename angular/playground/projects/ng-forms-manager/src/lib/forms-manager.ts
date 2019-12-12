@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, InjectionToken, Inject, Optional } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormArray, FormControl, FormGroup, ValidatorFn } from '@angular/forms';
 import { coerceArray, filterNil, HashMap, logAction } from '@datorama/akita';
 import { merge, Observable, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { FormsQuery } from './forms-manager.query';
 import { FormsStore } from './forms-manager.store';
+import { FormsManagerOptions, FORMS_MANAGER_OPTIONS, defaultOptions } from './forms-manager-options';
 
 export type AkitaAbstractControl = Pick<
   AbstractControl,
@@ -21,13 +22,15 @@ export type ArrayControlFactory = (value: any) => AbstractControl;
   providedIn: 'root'
 })
 export class AkitaNgFormsManager<FormsState = any> {
+  private readonly _options: FormsManagerOptions;
   private readonly _store: FormsStore<FormsState>;
   private readonly _query: FormsQuery<FormsState>;
 
   private valueChanges: HashMap<Subscription> = {};
   private ngForms: HashMap<AbstractControl> = {};
 
-  constructor() {
+  constructor(@Optional() @Inject(FORMS_MANAGER_OPTIONS) options: Partial<FormsManagerOptions> = {}) {
+    this._options = Object.assign({}, defaultOptions, options);
     this._store = new FormsStore({} as FormsState);
     this._query = new FormsQuery(this.store);
   }
@@ -122,7 +125,7 @@ export class AkitaNgFormsManager<FormsState = any> {
       persistForm?: boolean;
     } = {}
   ) {
-    const merged = { ...{ debounceTime: 300, emitEvent: false }, ...config };
+    const merged = { ...{ debounceTime: this._options.debounceTime, emitEvent: false }, ...config };
 
     /** If the form already exist, patch the form with the store value */
     if (this.hasForm(formName) === true) {
@@ -156,8 +159,12 @@ export class AkitaNgFormsManager<FormsState = any> {
     this.unsubscribe(formName);
   }
 
-  unsubscribe(formName?: keyof FormsState, config: { removeNgForm?: boolean } = {}) {
-    const _config = { removeNgForm: true, ...config };
+  unsubscribe(formName?: keyof FormsState, config: { removeNgForm?: boolean; updateStore?: boolean } = {}) {
+    const _config = {
+      removeNgForm: true,
+      ...{ updateStore: this._options.updateStoreOnUnsubscribe },
+      ...config
+    };
     const _formName = formName as any;
     const removeInstance = (name: any) => (_config.removeNgForm ? this.removeFormInstance(name) : null);
 
@@ -165,11 +172,17 @@ export class AkitaNgFormsManager<FormsState = any> {
       if (this.valueChanges[_formName]) {
         this.valueChanges[_formName].unsubscribe();
         delete this.valueChanges[_formName];
+        if (config.updateStore && this.ngForms[_formName]) {
+          this.updateStore(_formName, this.getNgForm(_formName));
+        }
         removeInstance(_formName);
       }
     } else {
-      for (const name of Object.keys(this.valueChanges)) {
+      for (const name of Object.keys(this.valueChanges) as any[]) {
         this.valueChanges[name].unsubscribe();
+        if (config.updateStore && this.ngForms[name]) {
+          this.updateStore(name, this.getNgForm(name));
+        }
         removeInstance(name);
       }
       this.valueChanges = {};
