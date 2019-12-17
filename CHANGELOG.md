@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.17.1](https://github.com/datorama/akita/compare/v4.17.0...v4.17.1) (2019-12-17)
+
+
+### Bug Fixes
+
+* 🐛 createquery fp options should be optional ([9d4c3f5](https://github.com/datorama/akita/commit/9d4c3f5))
+* change arrayFind id param type ([#350](https://github.com/datorama/akita/issues/350)) ([80102b6](https://github.com/datorama/akita/commit/80102b6)), closes [#349](https://github.com/datorama/akita/issues/349)
+* **formsmanager.unsubscribe:** update store before unsubscribing ([#344](https://github.com/datorama/akita/issues/344)) ([ee4286b](https://github.com/datorama/akita/commit/ee4286b))
+
+
+
 ## [4.17.0](https://github.com/datorama/akita/compare/v4.16.0...v4.17.0) (2019-12-05)
 
 
