@@ -98,6 +98,79 @@ describe('arrayFind.spec.ts', () => {
     expect(result).toBe(undefined);
   });
 
+  it('should find one by id of type string', () => {
+    store.remove();
+    const spy = jest.fn();
+    const article: Article = {
+      id: 1,
+      title: '',
+      comments: [{ id: 'one', text: '1' }, { id: 'two', text: '2' }, { id: 'three', text: '3' }]
+    };
+
+    const article2: Article = {
+      id: 2,
+      title: '',
+      comments: [{ id: 'one', text: '1' }, { id: 'two', text: '2' }, { id: 'three', text: '3' }]
+    };
+    store.add([article, article2]);
+    let result;
+
+    query
+      .selectEntity(1, 'comments')
+      .pipe(arrayFind('one'))
+      .subscribe(v => {
+        result = v;
+        spy();
+      });
+
+    expect(result).toBe(article.comments[0]);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    store.update(1, article => {
+      return {
+        comments: article.comments.map(comment => {
+          if (comment.id === 'one') {
+            return {
+              ...comment,
+              text: 'update'
+            };
+          }
+          return comment;
+        })
+      };
+    });
+
+    expect(spy).toHaveBeenCalledTimes(2);
+    // it should not fire when updating a different comment
+    store.update(1, article => {
+      return {
+        comments: article.comments.map(comment => {
+          if (comment.id === 'two') {
+            return {
+              ...comment,
+              text: 'update'
+            };
+          }
+          return comment;
+        })
+      };
+    });
+
+    // it should not fire when deleting a different comment
+    store.remove(2);
+    expect(spy).toHaveBeenCalledTimes(2);
+
+    // it should fire when deleteing the sub entity
+    store.update(1, article => {
+      return {
+        comments: article.comments.filter(comment => comment.id !== 'one')
+      };
+    });
+    expect(spy).toHaveBeenCalledTimes(3);
+    // we delete the item so the result should be undefined
+    expect(result).toBe(undefined);
+  });
+
   it('should return undefined if the collection doesnt exist', () => {
     const spy = jest.fn();
     let result;
