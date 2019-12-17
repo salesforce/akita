@@ -18,6 +18,6 @@ export function createEntityStore<State extends EntityState>(initialState: Parti
   return new EntityStore<State>(initialState, options);
 }
 
-export function createEntityQuery<State extends EntityState>(store: EntityStore<State>, options: QueryConfigOptions) {
+export function createEntityQuery<State extends EntityState>(store: EntityStore<State>, options: QueryConfigOptions = {}) {
   return new QueryEntity<State>(store, options);
 }
