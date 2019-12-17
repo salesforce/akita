@@ -1,4 +1,4 @@
-import { IDS, ItemPredicate } from './types';
+import { ID, IDS, ItemPredicate } from './types';
 import { coerceArray } from './coerceArray';
 import { DEFAULT_ID_KEY } from './defaultIDKey';
 import { distinctUntilChanged, map } from 'rxjs/operators';
@@ -85,7 +85,7 @@ export function arrayFind<T>(ids: ItemPredicate<T>, idKey?: never): (source: Obs
  *   arrayFind(3)
  * )
  */
-export function arrayFind<T>(ids: number, idKey?: string): (source: Observable<T[]>) => Observable<T>;
+export function arrayFind<T>(ids: ID, idKey?: string): (source: Observable<T[]>) => Observable<T>;
 /**
  * @example
  *
@@ -93,8 +93,8 @@ export function arrayFind<T>(ids: number, idKey?: string): (source: Observable<T
  *   arrayFind([1, 2, 3])
  * )
  */
-export function arrayFind<T>(ids: number[], idKey?: string): (source: Observable<T[]>) => Observable<T[]>;
-export function arrayFind<T>(idsOrPredicate: number[] | number | ItemPredicate<T>, idKey?: string): (source: Observable<T[]>) => Observable<T[] | T> {
+export function arrayFind<T>(ids: ID[], idKey?: string): (source: Observable<T[]>) => Observable<T[]>;
+export function arrayFind<T>(idsOrPredicate: ID[] | ID | ItemPredicate<T>, idKey?: string): (source: Observable<T[]>) => Observable<T[] | T> {
   return function(source: Observable<T[]>) {
     return source.pipe(
       map((collection: T[] | undefined | null) => {
