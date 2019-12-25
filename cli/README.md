@@ -17,6 +17,7 @@ By default, the prompt is set to the current directory.
 To change it, add to the root `package.json` the following config:
 ```
 "akitaCli": {
+  "idKey": "_id", //default is id
   "customFolderName": "true",
   "template": "js|angular|ts", // default is js
   "basePath": "./playground/src/app/"
