@@ -64,7 +64,6 @@ module.exports = function(plop) {
       data.isStore = storeType === 'Store';
       data.isEntityStore = storeType === 'Entity Store';
       if (idKey) data.idKey = idKey;
-      console.log('idkey', idKey)
       const templateBase = template;
 
       const extension = template === 'js' ? 'js' : 'ts';
