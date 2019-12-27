@@ -7,8 +7,9 @@ let userPath,
   template = 'js';
 
 module.exports = function(plop) {
-  userPath = (pjson.akitaCli && pjson.akitaCli.basePath) || '';
-  customFolderName = (pjson.akitaCli && pjson.akitaCli.customFolderName) || false;
+  var userPath = (pjson.akitaCli && pjson.akitaCli.basePath) || '';
+  var customFolderName = (pjson.akitaCli && pjson.akitaCli.customFolderName) || false;
+  var idKey = pjson.akitaCli && pjson.akitaCli.idKey;
 
   if (pjson.akitaCli && 'template' in pjson.akitaCli) {
     template = pjson.akitaCli.template;
@@ -62,6 +63,7 @@ module.exports = function(plop) {
       const { storeType, directory, folderName } = data;
       data.isStore = storeType === 'Store';
       data.isEntityStore = storeType === 'Entity Store';
+      if (idKey) data.idKey = idKey;
       const templateBase = template;
 
       const extension = template === 'js' ? 'js' : 'ts';

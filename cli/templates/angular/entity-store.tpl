@@ -5,7 +5,10 @@ import { {{singular (pascalCase name)}} } from './{{singular (dashCase name)}}.m
 export interface {{ pascalCase name }}State extends EntityState<{{singular (pascalCase name)}}> {}
 
 @Injectable({ providedIn: 'root' })
-@StoreConfig({ name: '{{name}}' })
+@StoreConfig({
+  name: '{{name}}'{{#if idKey}},
+  idKey: '{{idKey}}'{{/if}}
+})
 export class {{pascalCase name}}Store extends EntityStore<{{ pascalCase name }}State> {
 
   constructor() {
@@ -13,4 +16,3 @@ export class {{pascalCase name}}Store extends EntityStore<{{ pascalCase name }}S
   }
 
 }
-
