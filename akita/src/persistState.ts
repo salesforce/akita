@@ -180,7 +180,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
           return setValue(state, path, preStoreUpdate(storeName, storageState[storeName]));
         });
         const hasCache = storageState['$cache'] ? storageState['$cache'][storeName] : false;
-        __stores__[storeName].setHasCache(hasCache);
+        __stores__[storeName].setHasCache(hasCache, { restartTTL: true });
       }
     }
 
