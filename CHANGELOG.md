@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.17.2](https://github.com/datorama/akita/compare/v4.17.1...v4.17.2) (2020-01-08)
+
+
+### Bug Fixes
+
+* 🐛 persist state should reset ttl ([d106bd1](https://github.com/datorama/akita/commit/d106bd1))
+
+
+
 ### [4.17.1](https://github.com/datorama/akita/compare/v4.17.0...v4.17.1) (2019-12-17)
 
 
