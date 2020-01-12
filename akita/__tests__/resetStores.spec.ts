@@ -1,8 +1,8 @@
+import { akitaConfig, getAkitaConfig } from '../src/config';
 import { EntityStore } from '../src/entityStore';
-import { Store } from '../src/store';
 import { resetStores } from '../src/resetStores';
+import { Store } from '../src/store';
 import { StoreConfig } from '../src/storeConfig';
-import { akitaConfig } from '../src/config';
 
 akitaConfig({
   resettable: true
@@ -31,8 +31,19 @@ class AuthStore extends Store<any> {
   }
 }
 
+@StoreConfig({ name: 'ui', resettable: false })
+class UiStore extends Store {
+  constructor() {
+    super({
+      isChecked: false,
+      category: 'Category'
+    });
+  }
+}
+
 const todos = new TodosStore();
 const auth = new AuthStore();
+const uiStore = new UiStore();
 
 todos.add([{ id: 1 }]);
 auth._setState(() => {
@@ -100,5 +111,19 @@ describe('Reset store', () => {
     };
     resetStores({ exclude: ['auth'] });
     expect({ todos: todos._value(), auth: auth._value() }).toEqual(expected);
+  });
+
+  it('should not reset store if resettable = true in global and false on decorator', () => {
+    uiStore.update(state => ({
+      isChecked: true,
+      category: 'New Category'
+    }));
+
+    resetStores();
+
+    expect(uiStore.getValue()).toEqual({
+      isChecked: true,
+      category: 'New Category'
+    });
   });
 });

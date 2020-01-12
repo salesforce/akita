@@ -1,18 +1,19 @@
-import { StoreCache, UpdateStateCallback } from './types';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
-import { assertStoreHasName } from './errors';
-import { commit, isTransactionInProcess } from './transaction';
-import { deepFreeze } from './deepFreeze';
-import { configKey, StoreConfigOptions, UpdatableStoreConfigOptions } from './storeConfig';
-import { getAkitaConfig } from './config';
-import { isPlainObject } from './isPlainObject';
-import { isFunction } from './isFunction';
-import { dispatchAdded, dispatchDeleted, dispatchUpdate } from './dispatchers';
-import { __stores__ } from './stores';
 import { resetCustomAction, setAction } from './actions';
-import { isBrowser } from './root';
+import { getAkitaConfig } from './config';
+import { deepFreeze } from './deepFreeze';
+import { dispatchAdded, dispatchDeleted, dispatchUpdate } from './dispatchers';
 import { __DEV__, isDev } from './env';
+import { assertStoreHasName } from './errors';
+import { isFunction } from './isFunction';
+import { isPlainObject } from './isPlainObject';
+import { isBrowser } from './root';
+import { configKey, StoreConfigOptions, UpdatableStoreConfigOptions } from './storeConfig';
+import { __stores__ } from './stores';
+import { toBoolean } from './toBoolean';
+import { commit, isTransactionInProcess } from './transaction';
+import { StoreCache, UpdateStateCallback } from './types';
 
 /**
  *
@@ -161,7 +162,7 @@ export class Store<S = any> {
 
   // @internal
   get resettable() {
-    return this.config.resettable || this.options.resettable;
+    return toBoolean(this.config.resettable) || toBoolean(this.options.resettable);
   }
 
   // @internal
