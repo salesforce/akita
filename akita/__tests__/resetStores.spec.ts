@@ -119,7 +119,6 @@ describe('Reset store', () => {
       category: 'New Category'
     }));
 
-    console.log(getAkitaConfig());
     resetStores();
 
     expect(uiStore.getValue()).toEqual({
