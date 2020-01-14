@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.17.4](https://github.com/datorama/akita/compare/v4.17.3...v4.17.4) (2020-01-14)
+
+
+### Bug Fixes
+
+* **store:** fix resettable to not return always false, closes [#3](https://github.com/datorama/akita/issues/3)… ([#360](https://github.com/datorama/akita/issues/360)) ([22840ce](https://github.com/datorama/akita/commit/22840ce))
+
+
+
 ### [4.17.3](https://github.com/datorama/akita/compare/v4.17.2...v4.17.3) (2020-01-12)
 
 
