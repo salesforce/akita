@@ -6,6 +6,7 @@ import { deepFreeze } from './deepFreeze';
 import { dispatchAdded, dispatchDeleted, dispatchUpdate } from './dispatchers';
 import { __DEV__, isDev } from './env';
 import { assertStoreHasName } from './errors';
+import { isDefined } from './isDefined';
 import { isFunction } from './isFunction';
 import { isPlainObject } from './isPlainObject';
 import { isBrowser } from './root';
@@ -162,7 +163,7 @@ export class Store<S = any> {
 
   // @internal
   get resettable() {
-    return toBoolean(this.config.resettable) || toBoolean(this.options.resettable);
+    return isDefined(this.config.resettable) ? this.config.resettable : this.options.resettable;
   }
 
   // @internal
