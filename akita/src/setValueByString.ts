@@ -8,7 +8,7 @@ export function setValue(obj: any, prop: string, val: any) {
   const split = prop.split('.');
 
   if (split.length === 1) {
-    return val;
+    return { ...obj, ...val };
   }
 
   obj = { ...obj };
