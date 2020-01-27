@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.18.0](https://github.com/datorama/akita/compare/v4.17.5...v4.18.0) (2020-01-27)
+
+
+### Features
+
+* 🎸 add support for producer fn for immer ([5820703](https://github.com/datorama/akita/commit/5820703))
+
+
+
 ### [4.17.5](https://github.com/datorama/akita/compare/v4.17.4...v4.17.5) (2020-01-21)
 
 
