@@ -9,10 +9,11 @@ export type UpdateEntitiesParams<State, Entity> = {
   idKey: string;
   newStateOrFn: UpdateStateCallback<Entity> | Partial<Entity> | Partial<State>;
   preUpdateEntity: PreUpdateEntity<Entity>;
+  producerFn;
 };
 
 // @internal
-export function updateEntities<S extends EntityState<E>, E>({ state, ids, idKey, newStateOrFn, preUpdateEntity }: UpdateEntitiesParams<S, E>) {
+export function updateEntities<S extends EntityState<E>, E>({ state, ids, idKey, newStateOrFn, preUpdateEntity, producerFn }: UpdateEntitiesParams<S, E>) {
   const updatedEntities = {};
 
   let isUpdatingIdKey = false;
@@ -25,7 +26,12 @@ export function updateEntities<S extends EntityState<E>, E>({ state, ids, idKey,
     }
 
     const oldEntity = state.entities[id];
-    const newState = isFunction(newStateOrFn) ? newStateOrFn(oldEntity) : newStateOrFn;
+    let newState;
+    if (isFunction(newStateOrFn)) {
+      newState = isFunction(producerFn) ? producerFn(oldEntity, newStateOrFn) : newStateOrFn(oldEntity);
+    } else {
+      newState = newStateOrFn;
+    }
 
     const isIdChanged = newState.hasOwnProperty(idKey) && newState[idKey] !== oldEntity[idKey];
     let newEntity: E;

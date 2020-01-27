@@ -1,4 +1,4 @@
-import { akitaConfig, getAkitaConfig } from '../src/config';
+import { akitaConfig } from '../src/config';
 import { EntityStore } from '../src/entityStore';
 import { resetStores } from '../src/resetStores';
 import { Store } from '../src/store';

@@ -183,7 +183,8 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
         ids,
         preUpdateEntity: this.akitaPreUpdateEntity,
         state,
-        newStateOrFn
+        newStateOrFn,
+        producerFn: this._producerFn
       })
     );
 

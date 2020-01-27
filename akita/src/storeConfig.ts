@@ -1,9 +1,12 @@
+import { AkitaConfig } from './config';
+
 export type StoreConfigOptions = {
   name: string;
-  resettable?: boolean;
+  resettable?: AkitaConfig['resettable'];
   cache?: { ttl: number };
   deepFreezeFn?: (o: any) => any;
   idKey?: string;
+  producerFn?: AkitaConfig['producerFn'];
 };
 
 export type UpdatableStoreConfigOptions = {

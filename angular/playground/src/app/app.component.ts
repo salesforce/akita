@@ -23,15 +23,9 @@ export class AppComponent {
       // storage: localForage,
       preStorageUpdateOperator: () => debounceTime(300),
       preStorageUpdate: function(storeName, state) {
-        console.log(`preStorageUpdate`, storeName, state);
-        if (storeName == 'todos') {
-          const { ui, ...stateWithoutUi } = state;
-          return stateWithoutUi;
-        }
         return state;
       },
       preStoreUpdate(storeName: string, state: any) {
-        console.log(`preStoreUpdate`, storeName, state);
         return state;
       }
     });

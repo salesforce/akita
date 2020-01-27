@@ -33,8 +33,8 @@ export interface SelectOptions<E> extends SortByOptions<E> {
 }
 
 export type StateWithActive<State> = State & (ActiveState | MultiActiveState);
-export type UpdateStateCallback<State> = (state: Readonly<State>) => Partial<State>;
-export type UpdateEntityPredicate<E> = (entity: Readonly<E>) => boolean;
+export type UpdateStateCallback<State> = (state: State) => Partial<State> | void;
+export type UpdateEntityPredicate<E> = (entity: E) => boolean;
 export type ID = number | string;
 export type IDS = ID | ID[];
 export type PreAddEntity<Entity> = (entity: Entity) => Entity;

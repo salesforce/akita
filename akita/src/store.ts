@@ -1,7 +1,7 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { resetCustomAction, setAction } from './actions';
-import { getAkitaConfig } from './config';
+import { getAkitaConfig, getGlobalProducerFn } from './config';
 import { deepFreeze } from './deepFreeze';
 import { dispatchAdded, dispatchDeleted, dispatchUpdate } from './dispatchers';
 import { __DEV__, isDev } from './env';
@@ -12,7 +12,6 @@ import { isPlainObject } from './isPlainObject';
 import { isBrowser } from './root';
 import { configKey, StoreConfigOptions, UpdatableStoreConfigOptions } from './storeConfig';
 import { __stores__ } from './stores';
-import { toBoolean } from './toBoolean';
 import { commit, isTransactionInProcess } from './transaction';
 import { StoreCache, UpdateStateCallback } from './types';
 
@@ -161,14 +160,23 @@ export class Store<S = any> {
     return this.config.cache || this.options.cache;
   }
 
+  get _producerFn() {
+    return this.config.producerFn || this.options.producerFn || getGlobalProducerFn();
+  }
+
   // @internal
   get resettable() {
     return isDefined(this.config.resettable) ? this.config.resettable : this.options.resettable;
   }
 
   // @internal
-  _setState(newStateFn: (state: Readonly<S>) => S, _dispatchAction = true) {
-    this.storeValue = __DEV__ ? this.deepFreeze(newStateFn(this._value())) : newStateFn(this._value());
+  _setState(newState: ((state: Readonly<S>) => S) | S, _dispatchAction = true) {
+    if (isFunction(newState)) {
+      const _newState = newState(this._value());
+      this.storeValue = __DEV__ ? this.deepFreeze(_newState) : _newState;
+    } else {
+      this.storeValue = newState;
+    }
 
     if (!this.store) {
       this.store = new BehaviorSubject(this.storeValue);
@@ -223,11 +231,17 @@ export class Store<S = any> {
   update(stateOrCallback: Partial<S> | UpdateStateCallback<S>) {
     isDev() && setAction('Update');
 
-    this._setState(state => {
-      const newState = isFunction(stateOrCallback) ? stateOrCallback(state) : stateOrCallback;
-      const merged = this.akitaPreUpdate(state, { ...state, ...newState } as S);
-      return isPlainObject(state) ? merged : new (state as any).constructor(merged);
-    });
+    let newState;
+    const currentState = this._value();
+    if (isFunction(stateOrCallback)) {
+      newState = isFunction(this._producerFn) ? this._producerFn(currentState, stateOrCallback) : stateOrCallback(currentState);
+    } else {
+      newState = stateOrCallback;
+    }
+
+    const withHook = this.akitaPreUpdate(currentState, { ...currentState, ...newState } as S);
+    const resolved = isPlainObject(currentState) ? withHook : new (currentState as any).constructor(withHook);
+    this._setState(resolved);
   }
 
   updateStoreConfig(newOptions: UpdatableStoreConfigOptions) {

@@ -4,11 +4,13 @@ export interface AkitaConfig {
    */
   resettable?: boolean;
   ttl?: number;
+  producerFn?: (state: any, fn: any) => any;
 }
 
 let CONFIG: AkitaConfig = {
   resettable: false,
-  ttl: null
+  ttl: null,
+  producerFn: undefined
 };
 
 export function akitaConfig(config: AkitaConfig) {
@@ -18,4 +20,8 @@ export function akitaConfig(config: AkitaConfig) {
 // @internal
 export function getAkitaConfig() {
   return CONFIG;
+}
+
+export function getGlobalProducerFn() {
+  return CONFIG.producerFn;
 }
