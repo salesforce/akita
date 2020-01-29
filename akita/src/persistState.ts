@@ -88,7 +88,9 @@ export function persistState(params?: Partial<PersistStateParams>) {
     deserialize: JSON.parse,
     serialize: JSON.stringify,
     include: [],
-    // @deprecated
+    /**
+     * @deprecated use include with a callback
+     */
     exclude: [],
     persistOnDestroy: false,
     preStorageUpdate: function(storeName, state) {
@@ -198,7 +200,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
 
     subscriptions.push(
       $$addStore.subscribe(storeName => {
-        if (hasExclude && exclude.includes(storeName)) {
+        if (storeName === 'router' || (hasExclude && exclude.includes(storeName))) {
           return;
         }
 
