@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.18.1](https://github.com/datorama/akita/compare/v4.18.0...v4.18.1) (2020-01-29)
+
+
+### Bug Fixes
+
+* 🐛 persist state should not persist the router store ([b858cf5](https://github.com/datorama/akita/commit/b858cf5))
+
+
+
 ## [4.18.0](https://github.com/datorama/akita/compare/v4.17.5...v4.18.0) (2020-01-27)
 
 
