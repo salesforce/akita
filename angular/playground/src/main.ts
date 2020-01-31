@@ -2,7 +2,7 @@ import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
-import { enableAkitaProdMode } from '@datorama/akita';
+import { enableAkitaProdMode, persistState } from '@datorama/akita';
 import * as localForage from 'localforage';
 
 // localForage.config({
@@ -17,6 +17,11 @@ if (environment.production) {
   enableAkitaProdMode();
 }
 
-platformBrowserDynamic()
+const storage = persistState({
+  key: 'akitaPlayground',
+  include: ['auth.token', 'todos']
+});
+
+platformBrowserDynamic([{ provide: 'persistStorage', useValue: storage }])
   .bootstrapModule(AppModule)
   .catch(err => console.log(err));
