@@ -1,23 +1,23 @@
 import { Observable, of } from 'rxjs';
 import { distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
-import { isDefined } from './isDefined';
-import { EntityStore } from './entityStore';
-import { Query } from './query';
-import { EntityState, HashMap, ID, ItemPredicate, OrArray, SelectOptions, getEntityType, getIDType } from './types';
-import { isFunction } from './isFunction';
-import { toBoolean } from './toBoolean';
-import { sortByOptions } from './sortByOptions';
+import { distinctUntilArrayItemChanged } from './arrayFind';
 import { entitiesToArray } from './entitiesToArray';
 import { entitiesToMap } from './entitiesToMap';
-import { SelectAllOptionsA, SelectAllOptionsB, SelectAllOptionsC, SelectAllOptionsD, SelectAllOptionsE } from './selectAllOverloads';
-import { isArray } from './isArray';
-import { isNil } from './isNil';
-import { findEntityByPredicate, getEntity } from './getEntity';
 import { EntityAction, EntityActions } from './entityActions';
+import { EntityStore } from './entityStore';
+import { findEntityByPredicate, getEntity } from './getEntity';
+import { isArray } from './isArray';
+import { isDefined } from './isDefined';
+import { isFunction } from './isFunction';
+import { isNil } from './isNil';
 import { isUndefined } from './isUndefined';
-import { QueryConfigOptions } from './queryConfig';
-import { distinctUntilArrayItemChanged } from './arrayFind';
 import { mapSkipUndefined } from './mapSkipUndefined';
+import { Query } from './query';
+import { QueryConfigOptions } from './queryConfig';
+import { SelectAllOptionsA, SelectAllOptionsB, SelectAllOptionsC, SelectAllOptionsD, SelectAllOptionsE } from './selectAllOverloads';
+import { sortByOptions } from './sortByOptions';
+import { toBoolean } from './toBoolean';
+import { EntityState, getEntityType, getIDType, HashMap, ItemPredicate, OrArray, SelectOptions } from './types';
 
 /**
  *
@@ -354,13 +354,14 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    */
   hasActive(id?: IDType): boolean {
     const active = this.getValue().active;
+    const isIdProvided = isDefined(id);
     if (Array.isArray(active)) {
-      if (isDefined(id)) {
+      if (isIdProvided) {
         return active.includes(id);
       }
       return active.length > 0;
     }
-    return isDefined(active);
+    return (isIdProvided && active === id) || isDefined(active);
   }
 
   /**
