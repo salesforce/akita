@@ -230,6 +230,14 @@ describe('Entities Query', () => {
       store.setActive(undefined);
       expect(query.hasActive()).toBeFalsy();
     });
+
+    it('should have single active entity', () => {
+      let todo = cot();
+      store.add(todo);
+      store.setActive(1);
+      expect(query.hasActive()).toBeTruthy();
+      expect(query.hasActive(1)).toBeTruthy();
+    });
   });
 
   describe('selectCount', () => {
