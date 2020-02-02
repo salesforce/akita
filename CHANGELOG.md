@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.19.0](https://github.com/datorama/akita/compare/v4.18.1...v4.19.0) (2020-02-02)
+
+
+### Bug Fixes
+
+* 🐛 snapshot manager should ignore the router store ([f6c6ca2](https://github.com/datorama/akita/commit/f6c6ca2))
+
+
+### Features
+
+* **query-entity:** support single active state ([#367](https://github.com/datorama/akita/issues/367)) ([32be83e](https://github.com/datorama/akita/commit/32be83e))
+
+
+
 ### [4.18.1](https://github.com/datorama/akita/compare/v4.18.0...v4.18.1) (2020-01-29)
 
 
