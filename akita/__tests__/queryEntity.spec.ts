@@ -237,6 +237,7 @@ describe('Entities Query', () => {
       store.setActive(1);
       expect(query.hasActive()).toBeTruthy();
       expect(query.hasActive(1)).toBeTruthy();
+      expect(query.hasActive(2)).toBeFalsy();
     });
   });
 

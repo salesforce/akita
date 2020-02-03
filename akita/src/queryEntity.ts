@@ -361,7 +361,7 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
       }
       return active.length > 0;
     }
-    return (isIdProvided && active === id) || isDefined(active);
+    return isIdProvided ? active === id : isDefined(active);
   }
 
   /**
