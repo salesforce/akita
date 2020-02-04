@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.19.1](https://github.com/datorama/akita/compare/v4.19.0...v4.19.1) (2020-02-04)
+
+
+### Bug Fixes
+
+* **has-active:** fix condition when id provided ([#368](https://github.com/datorama/akita/issues/368)) ([8476eef](https://github.com/datorama/akita/commit/8476eef))
+
+
+
 ## [4.19.0](https://github.com/datorama/akita/compare/v4.18.1...v4.19.0) (2020-02-02)
 
 
