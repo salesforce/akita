@@ -19,7 +19,7 @@ if (environment.production) {
 
 const storage = persistState({
   key: 'akitaPlayground',
-  include: ['auth.token', 'todos']
+  include: ['auth.token']
 });
 
 platformBrowserDynamic([{ provide: 'persistStorage', useValue: storage }])
