@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.19.2](https://github.com/datorama/akita/compare/v4.19.1...v4.19.2) (2020-02-06)
+
+
+### Bug Fixes
+
+* 🐛 snapshot manager should support lazy stores ([94a084c](https://github.com/datorama/akita/commit/94a084c))
+
+
+
 ### [4.19.1](https://github.com/datorama/akita/compare/v4.19.0...v4.19.1) (2020-02-04)
 
 
