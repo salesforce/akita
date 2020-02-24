@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.19.3](https://github.com/datorama/akita/compare/v4.19.2...v4.19.3) (2020-02-24)
+
+
+### Bug Fixes
+
+* **ng-entity-service:** remove duplicated file ([#357](https://github.com/datorama/akita/issues/357)) ([9cb190b](https://github.com/datorama/akita/commit/9cb190b))
+* **state-history:** fix jump past and future ([#375](https://github.com/datorama/akita/issues/375)) ([2f532aa](https://github.com/datorama/akita/commit/2f532aa))
+
+
+
 ### [4.19.2](https://github.com/datorama/akita/compare/v4.19.1...v4.19.2) (2020-02-06)
 
 
