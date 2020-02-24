@@ -109,6 +109,43 @@ describe('PersistForm - key based', () => {
   });
 });
 
+describe('PersistForm - key based nested key', () => {
+  @StoreConfig({ name: 'stories' })
+  class StoriesStore extends EntityStore<any, any> {
+    constructor() {
+      super({ config: { form: { name: '', isAdmin: false, type: 'type' } } });
+    }
+  }
+
+  class StoriesQuery extends QueryEntity<any, Story> {
+    constructor(protected store) {
+      super(store);
+    }
+  }
+
+  const store = new StoriesStore();
+  const query = new StoriesQuery(store);
+
+  const formGroup = formFactory();
+
+  const persistForm = new PersistNgFormPlugin(query, 'config.form').setForm(formGroup);
+
+  it('should persist only present in the form value properties', () => {
+    const patch = {
+      name: 'Ivan',
+      isAdmin: true
+    };
+
+    formGroup.patchValue(patch);
+    jest.runAllTimers();
+
+    expect(query.getValue().config.form.name).toEqual('Ivan');
+    expect(query.getValue().config.form.isAdmin).toEqual(true);
+    expect(query.getValue().config.form.type).not.toBeUndefined();
+    expect(query.getValue().config.form.type).toEqual('type');
+  });
+});
+
 describe('PersistForm - root key', () => {
   @StoreConfig({ name: 'stories' })
   class StoriesStore extends EntityStore<any, any> {
