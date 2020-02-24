@@ -141,15 +141,15 @@ describe('StateHistory', () => {
     expect(stateHistory.history).toEqual({
       past: [{ counter: 0 }],
       present: { counter: 1 },
-      future: [{ counter: 2 }, { counter: 3 }, { counter: 4 }]
+      future: [{ counter: 2 }, { counter: 3 }, { counter: 4 }, { counter: 5 }]
     });
 
     stateHistory.jumpToFuture(1);
 
     expect(stateHistory.history).toEqual({
-      past: [{ counter: 0 }, { counter: 2 }],
+      past: [{ counter: 0 }, { counter: 1 }, { counter: 2 }],
       present: { counter: 3 },
-      future: [{ counter: 4 }]
+      future: [{ counter: 4 }, { counter: 5 }]
     });
 
     stateHistory.ignoreNext();
@@ -161,9 +161,9 @@ describe('StateHistory', () => {
     });
 
     expect(stateHistory.history).toEqual({
-      past: [{ counter: 0 }, { counter: 2 }],
+      past: [{ counter: 0 }, { counter: 1 }, { counter: 2 }],
       present: { counter: 3 },
-      future: [{ counter: 4 }]
+      future: [{ counter: 4 }, { counter: 5 }]
     });
 
     store._setState(state => {
@@ -173,17 +173,17 @@ describe('StateHistory', () => {
     });
 
     expect(stateHistory.history).toEqual({
-      past: [{ counter: 0 }, { counter: 2 }, { counter: 4 }],
+      past: [{ counter: 0 }, { counter: 1 }, { counter: 2 }, { counter: 4 }],
       present: { counter: 5 },
-      future: [{ counter: 4 }]
+      future: [{ counter: 4 }, { counter: 5 }]
     });
 
     stateHistory.ignoreNext();
 
     expect(stateHistory.history).toEqual({
-      past: [{ counter: 0 }, { counter: 2 }, { counter: 4 }],
+      past: [{ counter: 0 }, { counter: 1 }, { counter: 2 }, { counter: 4 }],
       present: { counter: 5 },
-      future: [{ counter: 4 }]
+      future: [{ counter: 4 }, { counter: 5 }]
     });
 
     stateHistory.clear(history => {
@@ -195,7 +195,7 @@ describe('StateHistory', () => {
     });
 
     expect(stateHistory.history).toEqual({
-      past: [{ counter: 0 }, { counter: 2 }, { counter: 4 }],
+      past: [{ counter: 0 }, { counter: 1 }, { counter: 2 }, { counter: 4 }],
       present: { counter: 5 },
       future: []
     });

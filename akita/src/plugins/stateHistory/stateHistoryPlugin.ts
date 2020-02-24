@@ -137,18 +137,21 @@ export class StateHistoryPlugin<State = any> extends AkitaPlugin<State> {
   jumpToPast(index: number) {
     if (index < 0 || index >= this.history.past.length) return;
 
-    const { past, future } = this.history;
+    const { past, future, present } = this.history;
     /**
      *
      * const past = [1, 2, 3, 4, 5];
+     * const present = 6;
+     * const future = [7, 8, 9];
+     * const index = 2;
      *
-     * newPast = past.slice(0, 2) = [1, 2];
-     * present = past[index] = 3;
-     * [...past.slice(2 + 1), ...future] = [4, 5];
+     * newPast = past.slice(0, index) = [1, 2];
+     * newPresent = past[index] = 3;
+     * newFuture = [...past.slice(index + 1),present, ...future] = [4, 5, 6, 7, 8, 9];
      *
      */
     const newPast = past.slice(0, index);
-    const newFuture = [...past.slice(index + 1), ...future];
+    const newFuture = [...past.slice(index + 1), present, ...future];
     const newPresent = past[index];
     this.history.past = newPast;
     this.history.present = newPresent;
@@ -159,12 +162,23 @@ export class StateHistoryPlugin<State = any> extends AkitaPlugin<State> {
   jumpToFuture(index: number) {
     if (index < 0 || index >= this.history.future.length) return;
 
-    const { past, future } = this.history;
+    const { past, future, present } = this.history;
+    /**
+     *
+     * const past = [1, 2, 3, 4, 5];
+     * const present = 6;
+     * const future = [7, 8, 9, 10]
+     * const index = 1
+     *
+     * newPast = [...past, present, ...future.slice(0, index) = [1, 2, 3, 4, 5, 6, 7];
+     * newPresent = future[index] = 8;
+     * newFuture = futrue.slice(index+1) = [9, 10];
+     *
+     */
 
-    const newPast = [...past, ...future.slice(0, index)];
+    const newPast = [...past, present, ...future.slice(0, index)];
     const newPresent = future[index];
     const newFuture = future.slice(index + 1);
-
     this.history.past = newPast;
     this.history.present = newPresent;
     this.history.future = newFuture;
