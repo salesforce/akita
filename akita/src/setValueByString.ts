@@ -1,3 +1,5 @@
+import { isObject } from './isObject';
+
 /**
  * @internal
  *
@@ -18,7 +20,11 @@ export function setValue(obj: any, prop: string, val: any) {
 
   removeStoreName.reduce((acc, part, index) => {
     if (index === lastIndex) {
-      acc[part] = val;
+      if (isObject(acc[part])) {
+        acc[part] = { ...acc[part], ...val };
+      } else {
+        acc[part] = val;
+      }
     } else {
       acc[part] = { ...acc[part] };
     }
