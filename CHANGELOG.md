@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.19.4](https://github.com/datorama/akita/compare/v4.19.3...v4.19.4) (2020-02-25)
+
+
+### Bug Fixes
+
+* 🐛 persist form should merge the state ([#377](https://github.com/datorama/akita/issues/377)) ([0ab7e2e](https://github.com/datorama/akita/commit/0ab7e2e))
+
+
+
 ### [4.19.3](https://github.com/datorama/akita/compare/v4.19.2...v4.19.3) (2020-02-24)
 
 
