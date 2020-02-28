@@ -1,17 +1,16 @@
-import {
-  AddEntitiesOptions,
-  EntityService,
-  EntityState,
-  EntityStore,
-  getEntityType,
-  getIDType,
-  isDefined
-} from '@datorama/akita';
+import { EntityService, EntityState, EntityStore, getEntityType, getIDType, isDefined } from '@datorama/akita';
 import { Observable, throwError } from 'rxjs';
 import { inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError, finalize, map, tap } from 'rxjs/operators';
-import { HttpConfig, Msg, NgEntityServiceParams } from './types';
+import {
+  HttpConfig,
+  HttpAddConfig,
+  HttpGetConfig,
+  HttpDeleteConfig,
+  HttpUpdateConfig,
+  NgEntityServiceParams
+} from './types';
 import { EntityServiceAction, HttpMethod, NgEntityServiceNotifier } from './ng-entity-service-notifier';
 import { NgEntityServiceLoader } from './ng-entity-service.loader';
 import {
@@ -23,44 +22,57 @@ import {
 import { isID } from './helpers';
 import { errorAction, successAction } from './action-factory';
 
-export const mapResponse = (config: HttpConfig) =>
-  map(res => ((config || {}).mapResponseFn ? config.mapResponseFn(res) : res));
+export const mapResponse = <T>(config?: HttpConfig<T>) =>
+  map(res => (config && !!config.mapResponseFn ? config.mapResponseFn(res) : res));
 
 export class NgEntityService<S extends EntityState = any> extends EntityService<S> {
-  baseUrl: string;
+  baseUrl: string | undefined;
   loader: NgEntityServiceLoader;
 
-  private http: HttpClient;
-  private notifier: NgEntityServiceNotifier;
-  private globalConfig: NgEntityServiceGlobalConfig = {};
-  private mergedConfig: NgEntityServiceParams & NgEntityServiceGlobalConfig;
+  private readonly http: HttpClient;
+  private readonly notifier: NgEntityServiceNotifier;
+  private readonly mergedConfig: NgEntityServiceParams & NgEntityServiceGlobalConfig;
+  private readonly httpMethodMap:
+    | Partial<{
+        GET: HttpMethod;
+        POST: HttpMethod;
+        PATCH: HttpMethod;
+        PUT: HttpMethod;
+        DELETE: HttpMethod;
+      }>
+    | undefined;
 
-  private dispatchSuccess: (action: Partial<EntityServiceAction>) => void;
-  private dispatchError: (action: Partial<EntityServiceAction>) => void;
+  private readonly dispatchSuccess: (action: Partial<EntityServiceAction>) => void;
+  private readonly dispatchError: (action: Partial<EntityServiceAction>) => void;
 
-  constructor(protected store: EntityStore<S>, private config: NgEntityServiceParams = {}) {
+  constructor(protected readonly store: EntityStore<S>, readonly config: NgEntityServiceParams = {}) {
     super();
     this.http = inject(HttpClient);
     this.loader = inject(NgEntityServiceLoader);
     this.notifier = inject(NgEntityServiceNotifier);
-    this.globalConfig = inject(NG_ENTITY_SERVICE_CONFIG);
-
-    this.mergedConfig = mergeDeep(defaultConfig, this.globalConfig, config);
+    const globalConfig = inject(NG_ENTITY_SERVICE_CONFIG);
+    this.mergedConfig = mergeDeep({}, defaultConfig, globalConfig, this.getDecoratorConfig(), config);
+    this.baseUrl = this.mergedConfig.baseUrl;
+    this.httpMethodMap = this.mergedConfig.httpMethods;
 
     this.dispatchSuccess = successAction(this.store.storeName, this.notifier);
     this.dispatchError = errorAction(this.store.storeName, this.notifier);
   }
 
   get api() {
-    return `${this.baseUrl || this.getConfigValue('baseUrl')}/${this.resourceName}`;
+    if (!this.baseUrl) {
+      throw new Error(`baseUrl of ${this.constructor.name} is not defined.`);
+    }
+
+    return `${this.baseUrl}/${this.resourceName}`;
   }
 
   get resourceName() {
-    return this.getConfigValue('resourceName') || this.store.storeName;
+    return this.mergedConfig.resourceName || this.store.storeName;
   }
 
-  setBaseUrl(api: string) {
-    this.baseUrl = api;
+  setBaseUrl(baseUrl: string) {
+    this.baseUrl = baseUrl;
   }
 
   getHttp() {
@@ -72,81 +84,79 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
   }
 
   /**
+   * Get one entity - Creates a GET request
    *
-   * Get all or one entity - Creates a GET request
-   *
-   * service.get().subscribe()
-   * service.get({ headers, params, url })
-   *
-   * service.get(id)
-   * service.get(id, { headers, params, url })
-   *
+   * @example
+   * service.get(id).subscribe()
+   * service.get(id, { headers, params, url }).subscribe()
    */
-  get<T>(id?: getIDType<S>, config?: HttpConfig & { append?: boolean } & Msg): Observable<T>;
-  get<T>(config?: HttpConfig & { append?: boolean } & Msg): Observable<T>;
-  get<T>(
-    idOrConfig?: getIDType<S> | HttpConfig,
-    config?: HttpConfig & { append?: boolean; upsert?: boolean } & Msg
-  ): Observable<T> {
-    let url: string;
-    const isSingle = isID(idOrConfig);
-    const _config: HttpConfig & { append?: boolean; upsert?: boolean } & Msg = (isSingle ? config : idOrConfig) || {};
+  get<T>(id?: getIDType<S>, config?: HttpGetConfig<T>): Observable<T>;
+  /**
+   * Get all entities - Creates a GET request
+   *
+   * @example
+   * service.get().subscribe()
+   * service.get({ headers, params, url }).subscribe()
+   */
+  get<T>(config?: HttpGetConfig<T>): Observable<T>;
+  get<T>(idOrConfig?: getIDType<S> | HttpGetConfig<T>, config?: HttpGetConfig<T>): Observable<T> {
     const method = this.getHttpMethod(HttpMethod.GET);
-
-    if (_config.url) {
-      url = _config.url;
-    } else {
-      url = isSingle ? `${this.api}/${idOrConfig}` : this.api;
-    }
+    const isSingle = isID(idOrConfig);
+    const entityId = isSingle ? (idOrConfig as getIDType<S>) : undefined;
+    const conf = (!isSingle ? (idOrConfig as HttpGetConfig<T>) : config) || {};
+    const url = this.resolveUrl(conf, entityId);
 
     this.loader.dispatch({
       method,
       loading: true,
-      entityId: isSingle ? idOrConfig : null,
+      entityId,
       storeName: this.store.storeName
     });
 
-    return this.http[method.toLowerCase()](url, _config).pipe(
-      mapResponse(_config),
+    return this.http.request(method, url, conf).pipe(
+      mapResponse(conf),
       tap((data: any) => {
-        if (isSingle) {
-          this.store.upsert(idOrConfig as getIDType<S>, data);
-        } else {
-          if (_config.append) {
-            this.store.add(data);
-          } else if (_config.upsert) {
-            this.store.upsertMany(data);
+        if (!conf.skipWrite) {
+          if (isSingle) {
+            this.store.upsert(entityId, data);
           } else {
-            this.store.set(data);
+            if (conf.append) {
+              this.store.add(data);
+            } else if (conf.upsert) {
+              this.store.upsertMany(data);
+            } else {
+              this.store.set(data);
+            }
           }
         }
 
         this.dispatchSuccess({
           method,
           payload: data,
-          successMsg: _config.successMsg
+          successMsg: conf.successMsg
         });
       }),
-      catchError(error => this.handleError(method, error, _config.errorMsg)),
+      catchError(error => this.handleError(method, error, conf.errorMsg)),
       finalize(() => {
         this.loader.dispatch({
           method,
           loading: false,
+          entityId,
           storeName: this.store.storeName
         });
       })
-    ) as Observable<T>;
+    );
   }
 
   /**
-   *
    * Add a new entity - Creates a POST request
    *
-   * service.add(entity)
-   * service.add(entity, config)
-   *
+   * @example
+   * service.add(entity).subscribe()
+   * service.add(entity, config).subscribe()
    */
-  add<T>(entity: getEntityType<S>, config?: HttpConfig & Pick<AddEntitiesOptions, 'prepend'> & Msg): Observable<T> {
+  add<T>(entity: getEntityType<S>, config?: HttpAddConfig<T>): Observable<T> {
+    const url = this.resolveUrl(config);
     const method = this.getHttpMethod(HttpMethod.POST);
 
     this.loader.dispatch({
@@ -154,13 +164,18 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
       loading: true,
       storeName: this.store.storeName
     });
-    return this.http[method.toLowerCase()](this.resolveUrl(config), entity, config).pipe(
+
+    const configWithBody = { ...config, ...{ body: entity } };
+
+    return this.http.request(method, url, configWithBody).pipe(
       mapResponse(config),
-      tap((entity: any) => {
-        this.store.add(entity, config);
+      tap((responseEntity: any) => {
+        if (!config || (config && !config.skipWrite)) {
+          this.store.add(responseEntity, config);
+        }
         this.dispatchSuccess({
           method,
-          payload: entity,
+          payload: responseEntity,
           successMsg: config && config.successMsg
         });
       }),
@@ -172,23 +187,19 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
           storeName: this.store.storeName
         });
       })
-    ) as Observable<T>;
+    );
   }
 
   /**
-   *
    * Update an entity - Creates a PUT/PATCH request
    *
-   * service.update(id, entity)
-   * service.update(id, entity, config)
-   *
+   * @example
+   * service.update(id, entity).subscribe()
+   * service.update(id, entity, config).subscribe()
    */
-  update<T>(
-    id: getIDType<S>,
-    entity: Partial<getEntityType<S>>,
-    config?: HttpConfig & { method: HttpMethod.PUT | HttpMethod.PATCH } & Msg
-  ): Observable<T> {
-    const method = config && config.method ? config.method : this.getHttpMethod(HttpMethod.PUT);
+  update<T>(id: getIDType<S>, entity: Partial<getEntityType<S>>, config?: HttpUpdateConfig<T>): Observable<T> {
+    const url = this.resolveUrl(config, id);
+    const method = (config && config.method) || this.getHttpMethod(HttpMethod.PUT);
 
     this.loader.dispatch({
       method,
@@ -197,13 +208,17 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
       storeName: this.store.storeName
     });
 
-    return this.http[method.toLocaleLowerCase()](this.resolveUrl(config, id), entity, config).pipe(
+    const configWithBody = { ...config, ...{ body: entity } };
+
+    return this.http.request(method, url, configWithBody).pipe(
       mapResponse(config),
-      tap(entity => {
-        this.store.update(id, entity as any);
+      tap(responseEntity => {
+        if (!config || (config && !config.skipWrite)) {
+          this.store.update(id, responseEntity);
+        }
         this.dispatchSuccess({
           method,
-          payload: entity,
+          payload: responseEntity,
           successMsg: config && config.successMsg
         });
       }),
@@ -220,14 +235,14 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
   }
 
   /**
-   *
    * Delete an entity - Creates a DELETE request
    *
-   * service.delete(id)
-   * service.delete(id, config)
-   *
+   * @example
+   * service.delete(id).subscribe()
+   * service.delete(id, config).subscribe()
    */
-  delete<T>(id: getIDType<S>, config?: HttpConfig & Msg): Observable<T> {
+  delete<T>(id: getIDType<S>, config?: HttpDeleteConfig<T>): Observable<T> {
+    const url = this.resolveUrl(config, id);
     const method = this.getHttpMethod(HttpMethod.DELETE);
 
     this.loader.dispatch({
@@ -237,10 +252,12 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
       storeName: this.store.storeName
     });
 
-    return this.http[method.toLowerCase()](this.resolveUrl(config, id), config).pipe(
+    return this.http.request(method, url, config).pipe(
       mapResponse(config),
       tap(res => {
-        this.store.remove(id);
+        if (!config || (config && !config.skipWrite)) {
+          this.store.remove(id);
+        }
         this.dispatchSuccess({
           method,
           payload: res,
@@ -259,24 +276,78 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
     ) as Observable<T>;
   }
 
+  /**
+   * Gets the mapped HttpMethod.
+   *
+   * The default HttpMethod can be changed like so:
+   * ```ts
+   * {
+   *   provide: NG_ENTITY_SERVICE_CONFIG,
+   *   useValue: {
+   *     httpMethods: {
+   *       PUT: HttpMethod.PATCH,
+   *     },
+   *   } as NgEntityServiceGlobalConfig,
+   * }
+   * ```
+   *
+   * @param type HttpMethod to get the user configured HttpMethod for
+   * @returns User configured HttpMethod for the method, else the default HttpMethod
+   */
   private getHttpMethod(type: HttpMethod) {
-    return this.mergedConfig.httpMethods[type];
-  }
-
-  private getConfigValue(key: string) {
-    return this.constructor[key] || this.mergedConfig[key];
-  }
-
-  private resolveUrl(config: HttpConfig, id?: any) {
-    const customUrl = (config || {}).url;
-    if (isDefined(id)) {
-      return customUrl || `${this.api}/${id}`;
+    let httpMethod: HttpMethod;
+    if (this.httpMethodMap) {
+      httpMethod = this.httpMethodMap[type];
+    }
+    if (!httpMethod) {
+      throw new Error('Unknown HttpMethod');
     }
 
-    return customUrl || this.api;
+    return httpMethod;
   }
 
-  private handleError(method: HttpMethod, error: any, errorMsg: string) {
+  /**
+   * Gets the value given via the NgEntityServiceConfig decorator
+   *
+   * ```ts
+   * @NgEntityServiceConfig({
+   *   baseUrl: 'foo',
+   *   resourceName: 'bar',
+   * })
+   * ```
+   *
+   * @param key The property key
+   * @returns The value of the given decorator key
+   */
+  private getDecoratorValue(key: keyof NgEntityServiceParams): string | undefined {
+    return (this.constructor as any)[key];
+  }
+
+  private getDecoratorConfig() {
+    const config: NgEntityServiceParams = {};
+
+    const baseUrl = this.getDecoratorValue('baseUrl');
+    if (baseUrl) {
+      config.baseUrl = baseUrl;
+    }
+
+    const resourceName = this.getDecoratorValue('resourceName');
+    if (resourceName) {
+      config.resourceName = resourceName;
+    }
+
+    return config;
+  }
+
+  private resolveUrl(config?: HttpConfig, id?: any) {
+    if (config && config.url) {
+      return config.url;
+    }
+
+    return isDefined(id) ? `${this.api}/${id}` : this.api;
+  }
+
+  private handleError(method: HttpMethod, error: any, errorMsg?: string) {
     this.dispatchError({
       method,
       errorMsg,
