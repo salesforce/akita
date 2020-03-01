@@ -27,7 +27,7 @@ import { AkitaNgDevtools } from '@datorama/akita-ng-devtools';
     CartModule,
     AuthModule,
     AkitaNgRouterStoreModule,
-    AkitaNgDevtools.forRoot()
+    AkitaNgDevtools
   ],
   providers: [
     AuthGuard,
