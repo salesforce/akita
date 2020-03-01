@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.20.0](https://github.com/datorama/akita/compare/v4.19.4...v4.20.0) (2020-03-01)
+
+
+### Features
+
+* 🎸 add support for passing active id in store set ([31c46b4](https://github.com/datorama/akita/commit/31c46b4))
+
+
+
 ### [4.19.4](https://github.com/datorama/akita/compare/v4.19.3...v4.19.4) (2020-02-25)
 
 
