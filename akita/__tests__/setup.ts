@@ -29,7 +29,7 @@ export const initialState: State = {
   name: 'todos'
 })
 export class TodosStore extends EntityStore<State, Todo> {
-  constructor(options) {
+  constructor(options?) {
     super(initialState, options);
   }
 }

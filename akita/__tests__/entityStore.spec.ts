@@ -92,7 +92,7 @@ describe('EntitiesStore', () => {
       store.add(new Todo({ id: 1 }));
       store.add(new Todo({ id: 2 }));
       store.replace(2, { title: 'replaced' });
-      expect(store._value().entities[2]).toEqual({ id: 2, title: 'replaced'});
+      expect(store._value().entities[2]).toEqual({ id: 2, title: 'replaced' });
     });
   });
 
@@ -378,7 +378,6 @@ describe('EntitiesStore', () => {
   });
 
   describe('cache', () => {
-
     describe('With TTL', () => {
       const ttl = 100;
 
@@ -427,7 +426,6 @@ describe('EntitiesStore', () => {
     });
 
     describe('Without TTL', () => {
-
       it('should init with false', () => {
         expect(store.cache.active.value).toBe(false);
         expect(store.cache.ttl).toBe(null);
@@ -468,5 +466,21 @@ describe('Custom ID', () => {
     expect(store2._value().entities[1]).toBeDefined();
     expect(store2._value().entities[2]).toBeDefined();
     expect(store2._value().entities[2].title).toEqual('2');
+  });
+});
+
+describe('Store set options', () => {
+  let store = new TodosStore();
+
+  it('should support passing active id', () => {
+    store.set([new Todo({ id: 1 })], { activeId: 1 });
+    expect(store.getValue().active).toEqual(1);
+    store.set([new Todo({ id: 1 })]);
+    // should persist the id because it's in the store
+    expect(store.getValue().active).toEqual(1);
+    store.remove();
+    expect(store.getValue().active).toEqual(null);
+    store.set([new Todo({ id: 2 })], { activeId: 2 });
+    expect(store.getValue().active).toEqual(2);
   });
 });

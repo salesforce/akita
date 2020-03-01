@@ -1,7 +1,7 @@
 import { isEmpty } from './isEmpty';
 import { SetEntities, setEntities } from './setEntities';
 import { Store } from './store';
-import { Constructor, EntityState, EntityUICreateFn, ID, IDS, OrArray, StateWithActive, UpdateEntityPredicate, UpdateStateCallback, getEntityType, getIDType } from './types';
+import { Constructor, EntityState, EntityUICreateFn, IDS, OrArray, StateWithActive, UpdateEntityPredicate, UpdateStateCallback, getEntityType, getIDType } from './types';
 import { getActiveEntities, SetActiveOptions } from './getActiveEntities';
 import { addEntities, AddEntitiesOptions } from './addEntities';
 import { coerceArray } from './coerceArray';
@@ -67,21 +67,28 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
    * this.store.set({ 1: {}, 2: {}})
    *
    */
-  set(entities: SetEntities<EntityType>) {
+  set(entities: SetEntities<EntityType>, options: { activeId?: IDType | null } = {}) {
     if (isNil(entities)) return;
 
     isDev() && setAction('Set Entity');
 
     const isNativePreAdd = this.akitaPreAddEntity === EntityStore.prototype.akitaPreAddEntity;
-    this._setState(state =>
-      setEntities({
+
+    this._setState(state => {
+      const newState = setEntities({
         state,
         entities,
         idKey: this.idKey,
         preAddEntity: this.akitaPreAddEntity,
         isNativePreAdd
-      })
-    );
+      });
+
+      if (isUndefined(options.activeId) === false) {
+        (newState as any).active = options.activeId;
+      }
+
+      return newState;
+    });
 
     this.setHasCache(true, { restartTTL: true });
 
