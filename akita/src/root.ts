@@ -10,7 +10,7 @@ export const hasLocalStorage = () => {
 }
 export const hasSessionStorage = () => {
   try {
-    return typeof localStorage !== 'undefined';
+    return typeof sessionStorage !== 'undefined';
   } catch (error) {
     return false;
   }
