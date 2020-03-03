@@ -10,7 +10,7 @@ import { setValue } from './setValueByString';
 import { $$addStore, $$deleteStore } from './dispatchers';
 import { isNil } from './isNil';
 import { isObject } from './isObject';
-import { isNotBrowser } from './root';
+import { isNotBrowser, hasLocalStorage, hasSessionStorage } from './root';
 
 let skipStorageUpdate = false;
 
@@ -84,7 +84,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
   const defaults: PersistStateParams = {
     key: 'AkitaStores',
     enableInNonBrowser: false,
-    storage: typeof localStorage === 'undefined' ? params.storage : localStorage,
+    storage: !hasLocalStorage() ? params.storage : localStorage,
     deserialize: JSON.parse,
     serialize: JSON.stringify,
     include: [],
@@ -148,7 +148,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
   }
 
   // when we use the local/session storage we perform the serialize, otherwise we let the passed storage implementation to do it
-  const isLocalStorage = typeof localStorage !== 'undefined' && (storage === localStorage || storage === sessionStorage);
+  const isLocalStorage = (hasLocalStorage() && storage === localStorage) || (hasSessionStorage() && storage === sessionStorage);
 
   observify(storage.getItem(key)).subscribe((value: any) => {
     let storageState = isObject(value) ? value : deserialize(value || '{}');
