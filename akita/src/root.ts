@@ -4,14 +4,14 @@ export const isNativeScript = typeof global !== 'undefined' && (<any>global).__r
 export const hasLocalStorage = () => {
   try {
     return typeof localStorage !== 'undefined';
-  } catch (error) {
+  } catch {
     return false;
   }
 }
 export const hasSessionStorage = () => {
   try {
     return typeof sessionStorage !== 'undefined';
-  } catch (error) {
+  } catch {
     return false;
   }
 }
