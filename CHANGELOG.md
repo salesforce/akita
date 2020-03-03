@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.20.1](https://github.com/datorama/akita/compare/v4.20.0...v4.20.1) (2020-03-03)
+
+
+### Bug Fixes
+
+* **persist-state:** localStorage security errors ([#384](https://github.com/datorama/akita/issues/384)) ([f8646df](https://github.com/datorama/akita/commit/f8646df))
+
+
+
 ## [4.20.0](https://github.com/datorama/akita/compare/v4.19.4...v4.20.0) (2020-03-01)
 
 
