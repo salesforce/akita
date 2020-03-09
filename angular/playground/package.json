@@ -5,6 +5,7 @@
   "scripts": {
     "build:akita": "cd ../../ && npm run build",
     "build:ng-entity-service": "node ./build.js ng-entity-service",
+    "test:ng-entity-service": "ng test ng-entity-service",
     "build:ng-router-store": "node ./build.js ng-router-store",
     "build:ng-devtools": "node ./build.js ng-devtools",
     "build:ng-forms-manager": "node ./build.js ng-forms-manager",
