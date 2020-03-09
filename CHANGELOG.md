@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.21.0](https://github.com/datorama/akita/compare/v4.20.1...v4.21.0) (2020-03-09)
+
+
+### Bug Fixes
+
+* **persist-state:** ignore storage if not defined ([#385](https://github.com/datorama/akita/issues/385)) ([381433e](https://github.com/datorama/akita/commit/381433e))
+
+
+### Features
+
+* **entity-service:** added skip flag to skip store writes ([#379](https://github.com/datorama/akita/issues/379)) ([62741bb](https://github.com/datorama/akita/commit/62741bb))
+
+
+
 ### [4.20.1](https://github.com/datorama/akita/compare/v4.20.0...v4.20.1) (2020-03-03)
 
 
