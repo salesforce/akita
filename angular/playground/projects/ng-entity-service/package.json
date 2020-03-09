@@ -1,7 +1,7 @@
 {
   "name": "@datorama/akita-ng-entity-service",
   "description": "Akita entity service",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "license": "Apache License 2.0",
   "author": {
     "name": "Netanel Basal"
