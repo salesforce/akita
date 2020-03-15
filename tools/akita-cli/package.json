@@ -1,0 +1,35 @@
+{
+  "name": "@datorama/akita-cli",
+  "version": "6.1.0",
+  "description": "Akita CLI",
+  "homepage": "https://github.com/datorama/akita/tree/master/tools/akita-cli#readme",
+  "bugs": {
+    "url": "https://github.com/datorama/akita/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/datorama/akita",
+    "directory": "tools/akita-cli"
+  },
+  "license": "Apache-2.0",
+  "author": "Netanel Basal",
+  "main": "index.js",
+  "bin": {
+    "akita": "index.js"
+  },
+  "scripts": {
+    "plop": "plop"
+  },
+  "dependencies": {
+    "find-package-json": "1.2.0",
+    "inquirer-fuzzy-path": "2.0.3",
+    "npm-run": "5.0.1",
+    "pkg-dir": "2.0.0",
+    "plop": "2.3.0",
+    "pluralize": "7.0.0",
+    "shelljs": "0.8.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

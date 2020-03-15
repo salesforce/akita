@@ -1,6 +1,0 @@
-{
-  "dest": "../../dist/ng-devtools",
-  "lib": {
-    "entryFile": "src/public-api.ts"
-  }
-}

@@ -1,0 +1,899 @@
+{
+  "version": 1,
+  "projects": {
+    "akita": {
+      "root": "libs/akita",
+      "sourceRoot": "libs/akita/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:lint",
+          "options": {
+            "linter": "eslint",
+            "config": "libs/akita/.eslintrc",
+            "tsConfig": ["libs/akita/tsconfig.lib.json", "libs/akita/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "!libs/akita/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/akita/jest.config.js",
+            "tsConfig": "libs/akita/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "libs/akita/src/test-setup.ts"
+          }
+        },
+        "build": {
+          "builder": "@nrwl/angular:package",
+          "options": {
+            "tsConfig": "libs/akita/tsconfig.lib.json",
+            "project": "libs/akita/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/akita/tsconfig.lib.prod.json"
+            }
+          }
+        }
+      }
+    },
+    "akita-ng-entity-service": {
+      "projectType": "library",
+      "root": "libs/akita-ng-entity-service",
+      "sourceRoot": "libs/akita-ng-entity-service/src",
+      "prefix": "datorama",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/angular:package",
+          "options": {
+            "tsConfig": "libs/akita-ng-entity-service/tsconfig.lib.json",
+            "project": "libs/akita-ng-entity-service/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/akita-ng-entity-service/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["libs/akita-ng-entity-service/tsconfig.lib.json", "libs/akita-ng-entity-service/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "!libs/akita-ng-entity-service/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/akita-ng-entity-service/jest.config.js",
+            "tsConfig": "libs/akita-ng-entity-service/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "libs/akita-ng-entity-service/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {}
+    },
+    "angular-store-app": {
+      "projectType": "application",
+      "schematics": {
+        "@nrwl/angular:component": {
+          "inlineStyle": true
+        }
+      },
+      "root": "apps/angular-store-app",
+      "sourceRoot": "apps/angular-store-app/src",
+      "prefix": "datorama",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/angular-store-app",
+            "index": "apps/angular-store-app/src/index.html",
+            "main": "apps/angular-store-app/src/main.ts",
+            "polyfills": "apps/angular-store-app/src/polyfills.ts",
+            "tsConfig": "apps/angular-store-app/tsconfig.app.json",
+            "aot": true,
+            "assets": ["apps/angular-store-app/src/favicon.ico", "apps/angular-store-app/src/assets"],
+            "styles": ["apps/angular-store-app/src/styles.css"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/angular-store-app/src/environments/environment.ts",
+                  "with": "apps/angular-store-app/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "angular-store-app:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "angular-store-app:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "angular-store-app:build"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["apps/angular-store-app/tsconfig.app.json", "apps/angular-store-app/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "!apps/angular-store-app/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/angular-store-app/jest.config.js",
+            "tsConfig": "apps/angular-store-app/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "apps/angular-store-app/src/test-setup.ts"
+          }
+        }
+      }
+    },
+    "angular-store-app-e2e": {
+      "root": "apps/angular-store-app-e2e",
+      "sourceRoot": "apps/angular-store-app-e2e/src",
+      "projectType": "application",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/angular-store-app-e2e/cypress.json",
+            "tsConfig": "apps/angular-store-app-e2e/tsconfig.e2e.json",
+            "devServerTarget": "angular-store-app:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "angular-store-app:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["apps/angular-store-app-e2e/tsconfig.e2e.json"],
+            "exclude": ["**/node_modules/**", "!apps/angular-store-app-e2e/**"]
+          }
+        }
+      }
+    },
+    "akita-ng-router-store": {
+      "projectType": "library",
+      "root": "libs/akita-ng-router-store",
+      "sourceRoot": "libs/akita-ng-router-store/src",
+      "prefix": "datorama",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/angular:package",
+          "options": {
+            "tsConfig": "libs/akita-ng-router-store/tsconfig.lib.json",
+            "project": "libs/akita-ng-router-store/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/akita-ng-router-store/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["libs/akita-ng-router-store/tsconfig.lib.json", "libs/akita-ng-router-store/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "!libs/akita-ng-router-store/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/akita-ng-router-store/jest.config.js",
+            "tsConfig": "libs/akita-ng-router-store/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "libs/akita-ng-router-store/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {}
+    },
+    "akita-ng-devtools": {
+      "projectType": "library",
+      "root": "libs/akita-ng-devtools",
+      "sourceRoot": "libs/akita-ng-devtools/src",
+      "prefix": "datorama",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/angular:package",
+          "options": {
+            "tsConfig": "libs/akita-ng-devtools/tsconfig.lib.json",
+            "project": "libs/akita-ng-devtools/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/akita-ng-devtools/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["libs/akita-ng-devtools/tsconfig.lib.json", "libs/akita-ng-devtools/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "!libs/akita-ng-devtools/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/akita-ng-devtools/jest.config.js",
+            "tsConfig": "libs/akita-ng-devtools/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "libs/akita-ng-devtools/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {}
+    },
+    "akita-ng-forms-manager": {
+      "projectType": "library",
+      "root": "libs/akita-ng-forms-manager",
+      "sourceRoot": "libs/akita-ng-forms-manager/src",
+      "prefix": "datorama",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/angular:package",
+          "options": {
+            "tsConfig": "libs/akita-ng-forms-manager/tsconfig.lib.json",
+            "project": "libs/akita-ng-forms-manager/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/akita-ng-forms-manager/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["libs/akita-ng-forms-manager/tsconfig.lib.json", "libs/akita-ng-forms-manager/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "!libs/akita-ng-forms-manager/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/akita-ng-forms-manager/jest.config.js",
+            "tsConfig": "libs/akita-ng-forms-manager/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "libs/akita-ng-forms-manager/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {}
+    },
+    "akita-schematics": {
+      "root": "libs/akita-schematics",
+      "sourceRoot": "libs/akita-schematics/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:lint",
+          "options": {
+            "linter": "eslint",
+            "config": "libs/akita-schematics/.eslintrc",
+            "tsConfig": ["libs/akita-schematics/tsconfig.schematics.json"],
+            "exclude": ["**/node_modules/**", "!libs/akita-schematics/**"]
+          }
+        }
+      }
+    },
+    "angular-akita-server-side-pagination": {
+      "projectType": "application",
+      "schematics": {
+        "@nrwl/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "apps/angular-akita-server-side-pagination",
+      "sourceRoot": "apps/angular-akita-server-side-pagination/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/angular-akita-server-side-pagination",
+            "index": "apps/angular-akita-server-side-pagination/src/index.html",
+            "main": "apps/angular-akita-server-side-pagination/src/main.ts",
+            "polyfills": "apps/angular-akita-server-side-pagination/src/polyfills.ts",
+            "tsConfig": "apps/angular-akita-server-side-pagination/tsconfig.app.json",
+            "aot": true,
+            "assets": ["apps/angular-akita-server-side-pagination/src/favicon.ico", "apps/angular-akita-server-side-pagination/src/assets"],
+            "styles": ["apps/angular-akita-server-side-pagination/src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/angular-akita-server-side-pagination/src/environments/environment.ts",
+                  "with": "apps/angular-akita-server-side-pagination/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "angular-akita-server-side-pagination:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "angular-akita-server-side-pagination:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "angular-akita-server-side-pagination:build"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["apps/angular-akita-server-side-pagination/tsconfig.app.json", "apps/angular-akita-server-side-pagination/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "!apps/angular-akita-server-side-pagination/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/angular-akita-server-side-pagination/jest.config.js",
+            "tsConfig": "apps/angular-akita-server-side-pagination/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "apps/angular-akita-server-side-pagination/src/test-setup.ts"
+          }
+        }
+      }
+    },
+    "angular-akita-server-side-pagination-e2e": {
+      "root": "apps/angular-akita-server-side-pagination-e2e",
+      "sourceRoot": "apps/angular-akita-server-side-pagination-e2e/src",
+      "projectType": "application",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/angular-akita-server-side-pagination-e2e/cypress.json",
+            "tsConfig": "apps/angular-akita-server-side-pagination-e2e/tsconfig.e2e.json",
+            "devServerTarget": "angular-akita-server-side-pagination:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "angular-akita-server-side-pagination:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["apps/angular-akita-server-side-pagination-e2e/tsconfig.e2e.json"],
+            "exclude": ["**/node_modules/**", "!apps/angular-akita-server-side-pagination-e2e/**"]
+          }
+        }
+      }
+    },
+    "angular-twitter-like": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "apps/angular-twitter-like",
+      "sourceRoot": "apps/angular-twitter-like/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/angular-twitter-like",
+            "index": "apps/angular-twitter-like/src/index.html",
+            "main": "apps/angular-twitter-like/src/main.ts",
+            "polyfills": "apps/angular-twitter-like/src/polyfills.ts",
+            "tsConfig": "apps/angular-twitter-like/tsconfig.app.json",
+            "aot": true,
+            "assets": ["apps/angular-twitter-like/src/favicon.ico", "apps/angular-twitter-like/src/assets"],
+            "styles": ["apps/angular-twitter-like/src/styles.css"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/angular-twitter-like/src/environments/environment.ts",
+                  "with": "apps/angular-twitter-like/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "angular-twitter-like:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "angular-twitter-like:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "angular-twitter-like:build"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["apps/angular-twitter-like/tsconfig.app.json", "apps/angular-twitter-like/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "!apps/angular-twitter-like/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/angular-twitter-like/jest.config.js",
+            "tsConfig": "apps/angular-twitter-like/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "apps/angular-twitter-like/src/test-setup.ts"
+          }
+        }
+      }
+    },
+    "angular-twitter-like-e2e": {
+      "root": "apps/angular-twitter-like-e2e",
+      "sourceRoot": "apps/angular-twitter-like-e2e/src",
+      "projectType": "application",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/angular-twitter-like-e2e/cypress.json",
+            "tsConfig": "apps/angular-twitter-like-e2e/tsconfig.e2e.json",
+            "devServerTarget": "angular-twitter-like:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "angular-twitter-like:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["apps/angular-twitter-like-e2e/tsconfig.e2e.json"],
+            "exclude": ["**/node_modules/**", "!apps/angular-twitter-like-e2e/**"]
+          }
+        }
+      }
+    },
+    "angular-ecommerce": {
+      "projectType": "application",
+      "schematics": {},
+      "root": "apps/angular-ecommerce",
+      "sourceRoot": "apps/angular-ecommerce/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/angular-ecommerce",
+            "index": "apps/angular-ecommerce/src/index.html",
+            "main": "apps/angular-ecommerce/src/main.ts",
+            "polyfills": "apps/angular-ecommerce/src/polyfills.ts",
+            "tsConfig": "apps/angular-ecommerce/tsconfig.app.json",
+            "aot": true,
+            "assets": ["apps/angular-ecommerce/src/favicon.ico", "apps/angular-ecommerce/src/assets"],
+            "styles": ["apps/angular-ecommerce/src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/angular-ecommerce/src/environments/environment.ts",
+                  "with": "apps/angular-ecommerce/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "angular-ecommerce:build",
+            "proxyConfig": "apps/angular-ecommerce/proxy.conf.json"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "angular-ecommerce:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "angular-ecommerce:build"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["apps/angular-ecommerce/tsconfig.app.json", "apps/angular-ecommerce/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "!apps/angular-ecommerce/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/angular-ecommerce/jest.config.js",
+            "tsConfig": "apps/angular-ecommerce/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "apps/angular-ecommerce/src/test-setup.ts"
+          }
+        }
+      }
+    },
+    "angular-ecommerce-e2e": {
+      "root": "apps/angular-ecommerce-e2e",
+      "sourceRoot": "apps/angular-ecommerce-e2e/src",
+      "projectType": "application",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/angular-ecommerce-e2e/cypress.json",
+            "tsConfig": "apps/angular-ecommerce-e2e/tsconfig.e2e.json",
+            "devServerTarget": "angular-ecommerce:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "angular-ecommerce:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["apps/angular-ecommerce-e2e/tsconfig.e2e.json"],
+            "exclude": ["**/node_modules/**", "!apps/angular-ecommerce-e2e/**"]
+          }
+        }
+      }
+    },
+    "angular-ecommerce-server": {
+      "root": "apps/angular-ecommerce-server",
+      "sourceRoot": "apps/angular-ecommerce-server/src",
+      "projectType": "application",
+      "prefix": "angular-ecommerce-server",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "@nrwl/node:build",
+          "options": {
+            "outputPath": "dist/apps/angular-ecommerce-server",
+            "main": "apps/angular-ecommerce-server/src/main.ts",
+            "tsConfig": "apps/angular-ecommerce-server/tsconfig.app.json",
+            "assets": ["apps/angular-ecommerce-server/src/assets"]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/angular-ecommerce-server/src/environments/environment.ts",
+                  "with": "apps/angular-ecommerce-server/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "angular-ecommerce-server:build"
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:lint",
+          "options": {
+            "linter": "eslint",
+            "config": "apps/angular-ecommerce-server/.eslintrc",
+            "tsConfig": ["apps/angular-ecommerce-server/tsconfig.app.json", "apps/angular-ecommerce-server/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "!apps/angular-ecommerce-server/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/angular-ecommerce-server/jest.config.js",
+            "tsConfig": "apps/angular-ecommerce-server/tsconfig.spec.json",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "react-akita-app": {
+      "root": "apps/react-akita-app",
+      "sourceRoot": "apps/react-akita-app/src",
+      "projectType": "application",
+      "schematics": {},
+      "architect": {
+        "build": {
+          "builder": "@nrwl/web:build",
+          "options": {
+            "outputPath": "dist/apps/react-akita-app",
+            "index": "apps/react-akita-app/src/index.html",
+            "main": "apps/react-akita-app/src/main.tsx",
+            "polyfills": "apps/react-akita-app/src/polyfills.ts",
+            "tsConfig": "apps/react-akita-app/tsconfig.app.json",
+            "assets": ["apps/react-akita-app/src/favicon.ico", "apps/react-akita-app/src/assets"],
+            "styles": ["apps/react-akita-app/src/styles.css"],
+            "scripts": [],
+            "webpackConfig": "@nrwl/react/plugins/webpack"
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/react-akita-app/src/environments/environment.ts",
+                  "with": "apps/react-akita-app/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@nrwl/web:dev-server",
+          "options": {
+            "buildTarget": "react-akita-app:build"
+          },
+          "configurations": {
+            "production": {
+              "buildTarget": "react-akita-app:build:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:lint",
+          "options": {
+            "linter": "eslint",
+            "config": "apps/react-akita-app/.eslintrc",
+            "tsConfig": ["apps/react-akita-app/tsconfig.app.json", "apps/react-akita-app/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "!apps/react-akita-app/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/react-akita-app/jest.config.js",
+            "tsConfig": "apps/react-akita-app/tsconfig.spec.json",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "react-akita-app-e2e": {
+      "root": "apps/react-akita-app-e2e",
+      "sourceRoot": "apps/react-akita-app-e2e/src",
+      "projectType": "application",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/react-akita-app-e2e/cypress.json",
+            "tsConfig": "apps/react-akita-app-e2e/tsconfig.e2e.json",
+            "devServerTarget": "react-akita-app:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "react-akita-app:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@nrwl/linter:lint",
+          "options": {
+            "linter": "eslint",
+            "config": "apps/react-akita-app-e2e/.eslintrc",
+            "tsConfig": ["apps/react-akita-app-e2e/tsconfig.e2e.json"],
+            "exclude": ["**/node_modules/**", "!apps/react-akita-app-e2e/**"]
+          }
+        }
+      }
+    }
+  },
+  "cli": {
+    "defaultCollection": "@nrwl/angular"
+  },
+  "schematics": {
+    "@nrwl/workspace": {
+      "library": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/cypress": {
+      "cypress-project": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/react": {
+      "application": {
+        "style": "css",
+        "linter": "eslint",
+        "babel": true
+      },
+      "component": {
+        "style": "css"
+      },
+      "library": {
+        "style": "css",
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/next": {
+      "application": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/web": {
+      "application": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/node": {
+      "application": {
+        "linter": "eslint"
+      },
+      "library": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/nx-plugin": {
+      "plugin": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/nest": {
+      "application": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/express": {
+      "application": {
+        "linter": "eslint"
+      }
+    },
+    "@nrwl/angular:application": {
+      "unitTestRunner": "jest",
+      "e2eTestRunner": "cypress"
+    },
+    "@nrwl/angular:library": {
+      "unitTestRunner": "jest"
+    }
+  },
+  "defaultProject": "akita"
+}

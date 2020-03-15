@@ -1,6 +1,0 @@
-{
-  "dest": "../../dist/ng-entity-service",
-  "lib": {
-    "entryFile": "src/public-api.ts"
-  }
-}

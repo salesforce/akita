@@ -1,12 +1,13 @@
 ![Akita](https://s8.postimg.cc/d4m3fc9tx/image.png)
-> *State Management Tailored-Made for JS Applications*
+
+> _State Management Tailored-Made for JS Applications_
 
 Whether it be Angular, React, Vue, Web Components or plain old vanilla JS, Akita can do the heavy lifting and serve as a useful tool for maintaining clean, boilerplate-free, and scalable applications.
 
 <hr />
 
 [![Downloads](https://img.shields.io/npm/dt/@datorama/akita.svg?style=flat-square)]()
-[![Build Status](https://img.shields.io/travis/datorama/akita.svg?style=flat-square)](https://travis-ci.org/datorama/akita)
+[![Build Status](https://img.shields.io/github/workflow/status/datorama/akita/Build%20Master?style=flat-square)](https://github.com/datorama/akita/actions?query=workflow%3A%22Build%20Master%22)
 [![All Contributors](https://img.shields.io/badge/all_contributors-44-orange.svg?style=flat-square)](#contributors)
 [![commitizen](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square)]()
 [![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)]()
@@ -27,7 +28,16 @@ Akita encourages simplicity. It saves you the hassle of creating boilerplate cod
 - 📖 Read the blog [posts](https://netbasal.gitbook.io/akita/general/blog-posts)
 - 🍄 Join Akita's [Gitter](https://gitter.im/akita-state-management/Lobby#) room
 
-## Contributors 
+## Packages
+
+- [@datorama/akita](libs/akita)
+- [@datorama/akita-ngdevtools](libs/akita-ng-devtools)
+- [@datorama/akita-ng-entity-service](libs/akita-ng-entity-service)
+- [@datorama/akita-ng-forms-manager](libs/akita-ng-forms-manager)
+- [@datorama/akita-ng-router-store](libs/akita-ng-router-store)
+- [@datorama/akita-cli](tools/akita-cli)
+
+## Contributors
 
 Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
 
@@ -38,4 +48,3 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification. Contributions of any kind welcome!
-

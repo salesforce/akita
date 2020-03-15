@@ -1,17 +1,27 @@
 {
+  "compileOnSave": false,
   "compilerOptions": {
-    "module": "es2015",
-    "target": "es5",
-    "noImplicitAny": false,
+    "rootDir": ".",
     "sourceMap": true,
-    "experimentalDecorators": true,
+    "declaration": false,
+    "moduleResolution": "node",
     "emitDecoratorMetadata": true,
-    "declaration": true,
-    "esModuleInterop": true,
-    "lib": [
-      "dom",
-      "es2015",
-      "es2017"
-    ]
-  }
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "esnext",
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2018", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@datorama/akita": ["libs/akita/src/index.ts"],
+      "@datorama/akita-ng-entity-service": ["libs/akita-ng-entity-service/src/index.ts"],
+      "@datorama/akita-ng-router-store": ["libs/akita-ng-router-store/src/index.ts"],
+      "@datorama/akita-ngdevtools": ["libs/akita-ng-devtools/src/index.ts"],
+      "@datorama/akita-ng-forms-manager": ["libs/akita-ng-forms-manager/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
 }

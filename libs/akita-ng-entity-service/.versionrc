@@ -1,0 +1,5 @@
+{
+  "path": ".",
+  "tag-prefix": "akita-ng-entity-service-v",
+  "releaseCommitMessageFormat": "chore(release): akita-ng-entity-service@{{currentTag}}"
+}
