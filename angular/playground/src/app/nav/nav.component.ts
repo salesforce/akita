@@ -19,7 +19,7 @@ import { CartQuery } from '../cart/state/cart.query';
             <a routerLinkActive="blue-text text-lighten-2" [routerLink]="item.toLowerCase()">{{ item }}</a>
           </li>
           <li>
-            <a routerLinkActive="blue-text text-lighten-2" routerLink="cart"
+            <a routerLinkActive="blue-text text-lighten-2" routerLink="cart" [state]="{ hello: 'world' }"
               >Cart <span class="new badge">{{ count$ | async }}</span></a
             >
           </li>

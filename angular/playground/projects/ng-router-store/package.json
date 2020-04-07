@@ -1,7 +1,7 @@
 {
   "name": "@datorama/akita-ng-router-store",
   "description": "Bindings to connect the Angular Router with Akita store",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "keywords": [
     "angular",
     "akita router",

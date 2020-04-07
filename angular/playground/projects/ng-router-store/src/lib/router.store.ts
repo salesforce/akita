@@ -1,9 +1,18 @@
 import { Injectable } from '@angular/core';
-import { RouterStateSnapshot } from '@angular/router';
-import { Store, StoreConfig } from '@datorama/akita';
+import { Store, StoreConfig, HashMap } from '@datorama/akita';
 
-export type RouterState<T = RouterStateSnapshot> = {
-  state: T | null;
+export type ActiveRouteState = {
+  url: string;
+  urlAfterRedirects: string;
+  fragment: string;
+  params: HashMap<any>;
+  queryParams: HashMap<any>;
+  data: HashMap<any>;
+  navigationExtras: HashMap<any> | undefined;
+};
+
+export type RouterState = {
+  state: ActiveRouteState | null;
   navigationId: number | null;
 };
 

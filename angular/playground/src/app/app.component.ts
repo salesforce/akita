@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { RouterQuery } from '@datorama/akita-ng-router-store';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +7,8 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  constructor(r: RouterQuery) {
+    // r.select().subscribe(console.log);
+  }
   ngOnInit() {}
 }

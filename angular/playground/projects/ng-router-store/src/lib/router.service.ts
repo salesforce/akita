@@ -3,12 +3,11 @@ import {
   ActivatedRouteSnapshot,
   NavigationCancel,
   NavigationError,
+  ResolveEnd,
   Router,
-  RouterStateSnapshot,
   RoutesRecognized
 } from '@angular/router';
-import { of } from 'rxjs';
-import { RouterStore } from './router.store';
+import { ActiveRouteState, RouterStore } from './router.store';
 import { RouterQuery } from './router.query';
 import { action, setSkipAction } from '@datorama/akita';
 
@@ -42,7 +41,6 @@ export class RouterService {
   }
 
   init() {
-    this.setUpRouterHook();
     this.setUpStoreListener();
     this.setUpStateRollbackEvents();
   }
@@ -58,21 +56,6 @@ export class RouterService {
     });
     this.dispatchTriggeredByRouter = false;
     this.navigationTriggeredByDispatch = false;
-  }
-
-  /**
-   * Hook into the angular router before each navigation action is performed
-   * since the route tree can be large, we serialize it into something more manageable
-   */
-  private setUpRouterHook(): void {
-    (this.router as any).hooks.beforePreactivation = (routerStateSnapshot: RouterStateSnapshot) => {
-      this.routerStateSnapshot = {
-        root: this.serializeRoute(routerStateSnapshot.root),
-        url: routerStateSnapshot.url
-      };
-      if (this.shouldDispatchRouterNavigation()) this.dispatchRouterNavigation();
-      return of(true);
-    };
   }
 
   private setUpStoreListener(): void {
@@ -106,6 +89,8 @@ export class RouterService {
     this.router.events.subscribe(e => {
       if (e instanceof RoutesRecognized) {
         this.lastRoutesRecognized = e;
+      } else if (e instanceof ResolveEnd) {
+        this.resolveEnd(e);
       } else if (e instanceof NavigationCancel) {
         this.dispatchRouterCancel(e);
       } else if (e instanceof NavigationError) {
@@ -114,21 +99,32 @@ export class RouterService {
     });
   }
 
-  private serializeRoute(route: ActivatedRouteSnapshot): Partial<ActivatedRouteSnapshot> {
-    let state: ActivatedRouteSnapshot = route.root;
+  /**
+   * The `ResolveEnd` event is always triggered after running all resolvers
+   * that are linked to some route and child routes
+   */
+  private resolveEnd(routerStateSnapshot: ResolveEnd): void {
+    this.routerStateSnapshot = this.serializeRoute(routerStateSnapshot);
+    if (this.shouldDispatchRouterNavigation()) {
+      this.dispatchRouterNavigation();
+    }
+  }
+
+  private serializeRoute(route: ResolveEnd): ActiveRouteState {
+    let state: ActivatedRouteSnapshot = route.state.root;
     while (state.firstChild) {
       state = state.firstChild;
     }
-    const { params, data, paramMap, queryParamMap, queryParams, fragment } = state;
+    const { params, data, queryParams, fragment } = state;
 
     return {
       url: route.url,
+      urlAfterRedirects: route.urlAfterRedirects,
       params,
       queryParams,
       fragment,
       data,
-      paramMap,
-      queryParamMap
+      navigationExtras: this.router.getCurrentNavigation().extras.state
     };
   }
 }
