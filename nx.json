@@ -1,0 +1,71 @@
+{
+  "npmScope": "datorama",
+  "implicitDependencies": {
+    "workspace.json": "*",
+    "package.json": {
+      "dependencies": "*",
+      "devDependencies": "*"
+    },
+    "tsconfig.json": "*",
+    "tslint.json": "*",
+    "nx.json": "*"
+  },
+  "projects": {
+    "akita": {
+      "tags": ["core"]
+    },
+    "akita-ng-entity-service": {
+      "tags": ["plugin"]
+    },
+    "akita-ng-router-store": {
+      "tags": ["plugin"]
+    },
+    "akita-ng-devtools": {
+      "tags": ["plugin"]
+    },
+    "akita-ng-forms-manager": {
+      "tags": ["plugin"]
+    },
+    "akita-schematics": {
+      "tags": ["schematics"]
+    },
+    "angular-store-app": {
+      "tags": ["playground"]
+    },
+    "angular-store-app-e2e": {
+      "tags": [],
+      "implicitDependencies": ["angular-store-app"]
+    },
+    "angular-akita-server-side-pagination": {
+      "tags": ["playground"]
+    },
+    "angular-akita-server-side-pagination-e2e": {
+      "tags": [],
+      "implicitDependencies": ["angular-akita-server-side-pagination"]
+    },
+    "angular-twitter-like": {
+      "tags": ["playground"]
+    },
+    "angular-twitter-like-e2e": {
+      "tags": [],
+      "implicitDependencies": ["angular-twitter-like"]
+    },
+    "angular-ecommerce": {
+      "tags": ["playground"]
+    },
+    "angular-ecommerce-e2e": {
+      "tags": [],
+      "implicitDependencies": ["angular-ecommerce"]
+    },
+    "angular-ecommerce-server": {
+      "tags": []
+    },
+    "react-akita-app": {
+      "tags": ["playground"]
+    },
+    "react-akita-app-e2e": {
+      "tags": [],
+      "implicitDependencies": ["react-akita-app"]
+    }
+  }
+}

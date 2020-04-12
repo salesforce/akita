@@ -1,0 +1,37 @@
+{
+  "name": "@datorama/akita",
+  "version": "4.22.0",
+  "description": "State Management Tailored-Made for JS Applications",
+  "keywords": [
+    "angular",
+    "state management",
+    "react",
+    "vue",
+    "typescript",
+    "javascript",
+    "rxjs",
+    "angular store",
+    "store",
+    "observable data stores",
+    "redux"
+  ],
+  "homepage": "https://github.com/datorama/tree/master/libs/akita#readme",
+  "bugs": {
+    "url": "https://github.com/datorama/akita/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/datorama/akita",
+    "directory": "libs/akita"
+  },
+  "license": "Apache-2.0",
+  "author": "Netanel Basal",
+  "dependencies": {
+    "schematics-utilities": "^2.0.1"
+  },
+  "peerDependencies": {
+    "rxjs": ">= 6.1.0 < 7",
+    "tslib": ">= 1.7.0 < 2"
+  },
+  "schematics": "./schematics/collection.json"
+}

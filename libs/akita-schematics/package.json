@@ -1,0 +1,15 @@
+{
+  "name": "akita-schematics",
+  "version": "0.0.1",
+  "private": true,
+  "license": "Apache-2.0",
+  "scripts": {
+    "prebuild": "yarn run clean",
+    "build": "yarn run tsc -p tsconfig.schematics.json",
+    "postbuild": "yarn run copy:build && yarn run copy:json && yarn run copy:files",
+    "clean": "yarn run rimraf ../../dist/libs/akita/schematics",
+    "copy:build": "yarn run copyfiles -u 5 \"../../dist/out-tsc/akita-schematics/**/*\"  ../../dist/libs/akita/schematics",
+    "copy:files": "yarn run copyfiles -u 1 \"src/**/files/**/*\" ../../dist/libs/akita/schematics",
+    "copy:json": "yarn run copyfiles -u 1 \"src/**/*.json\" ../../dist/libs/akita/schematics"
+  }
+}

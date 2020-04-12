@@ -1,0 +1,5 @@
+{
+  "path": ".",
+  "tag-prefix": "akita-v",
+  "releaseCommitMessageFormat": "chore(release): akita@{{currentTag}}"
+}

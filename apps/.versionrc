@@ -1,0 +1,28 @@
+{
+  "path": ".",
+  "skip": {
+    "tag": true
+  },
+  "bumpFiles": [
+    {
+      "filename": "VERSION",
+      "type": "plain-text"
+    }
+  ],
+  "types": [
+    {
+      "type": "refactor",
+      "hidden": false
+    },
+    {
+      "type": "perf",
+      "hidden": false
+    },
+    {
+      "type": "test",
+      "section": "Tests",
+      "hidden": false
+    }
+  ],
+  "releaseCommitMessageFormat": "chore: updated apps changelog"
+}
