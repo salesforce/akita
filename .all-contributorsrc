@@ -432,6 +432,17 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "snebjorn",
+      "name": "snebjorn",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/1266245?v=4",
+      "profile": "https://github.com/snebjorn",
+      "contributions": [
+        "code",
+        "ideas",
+        "infra"
+      ]
     }
   ]
 }
