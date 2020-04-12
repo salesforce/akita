@@ -1,7 +1,7 @@
-name: Tests
+name: Build
 
 on:
-  pull_request:
+  push:
     branches:
       - master
 
@@ -26,8 +26,8 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn install --frozen-lockfile
 
-  test:
-    name: Test libs
+  build:
+    name: Build applications & libraries
     runs-on: ubuntu-latest
     needs: [dependencies]
     steps:
@@ -43,5 +43,5 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-yarn-
 
-      - name: Run tests
-        run: yarn test:all
+      - name: Run builders
+        run: yarn nx run-many --target=build --configuration=production --all
