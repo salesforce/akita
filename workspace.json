@@ -681,7 +681,8 @@
             "outputPath": "dist/apps/angular-ecommerce-server",
             "main": "apps/angular-ecommerce-server/src/main.ts",
             "tsConfig": "apps/angular-ecommerce-server/tsconfig.app.json",
-            "assets": ["apps/angular-ecommerce-server/src/assets"]
+            "assets": ["apps/angular-ecommerce-server/src/assets"],
+            "buildLibsFromSource": true
           },
           "configurations": {
             "production": {
@@ -739,7 +740,8 @@
             "assets": ["apps/react-akita-app/src/favicon.ico", "apps/react-akita-app/src/assets"],
             "styles": ["apps/react-akita-app/src/styles.css"],
             "scripts": [],
-            "webpackConfig": "@nrwl/react/plugins/webpack"
+            "webpackConfig": "@nrwl/react/plugins/webpack",
+            "buildLibsFromSource": true
           },
           "configurations": {
             "production": {

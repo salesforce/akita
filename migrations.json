@@ -1,0 +1,32 @@
+{
+  "migrations": [
+    {
+      "version": "9.2.0-beta.1",
+      "description": "Add cacheable operations to nx.json",
+      "factory": "./src/migrations/update-9-2-0/update-9-2-0",
+      "package": "@nrwl/workspace",
+      "name": "update-9-2-0"
+    },
+    {
+      "version": "9.2.0-beta.3",
+      "description": "Update jest to v25",
+      "factory": "./src/migrations/update-9-2-0/update-9-2-0",
+      "package": "@nrwl/jest",
+      "name": "update-9.2.0"
+    },
+    {
+      "version": "9.2.0-beta.1",
+      "description": "Set buildLibsFromSource property to true to not break existing projects.",
+      "factory": "./src/migrations/update-9-2-0/set-build-libs-from-source",
+      "package": "@nrwl/node",
+      "name": "set-build-libs-from-source"
+    },
+    {
+      "version": "9.2.0-beta.1",
+      "description": "Set buildLibsFromSource property to true to not break existing projects.",
+      "factory": "./src/migrations/update-9-2-0/set-build-libs-from-source",
+      "package": "@nrwl/web",
+      "name": "set-build-libs-from-source"
+    }
+  ]
+}
