@@ -7,7 +7,8 @@ Whether it be Angular, React, Vue, Web Components or plain old vanilla JS, Akita
 <hr />
 
 [![Downloads](https://img.shields.io/npm/dt/@datorama/akita.svg?style=flat-square)]()
-[![Build Status](https://img.shields.io/github/workflow/status/datorama/akita/Build%20Master?style=flat-square)](https://github.com/datorama/akita/actions?query=workflow%3A%22Build%20Master%22)
+[![Build Status](https://github.com/datorama/akita/workflows/Build/badge.svg)](https://github.com/datorama/akita/actions?query=workflow%3A%22Build%22)
+[![Tests](https://github.com/datorama/akita/workflows/Tests/badge.svg)](https://github.com/datorama/akita/actions?query=workflow%3A%22Tests%22)
 [![All Contributors](https://img.shields.io/badge/all_contributors-45-orange.svg?style=flat-square)](#contributors)
 [![commitizen](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square)]()
 [![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)]()
