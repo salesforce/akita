@@ -14,12 +14,12 @@ import { CartQuery } from '../cart/state/cart.query';
           <img src="/assets/akita.svg" class="logo" />
         </a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-          <li *ngIf="(isLoggedIn$ | async)"><a (click)="logout()">Logout</a></li>
+          <li *ngIf="isLoggedIn$ | async"><a (click)="logout()">Logout</a></li>
           <li *ngFor="let item of navItems">
             <a routerLinkActive="blue-text text-lighten-2" [routerLink]="item.toLowerCase()">{{ item }}</a>
           </li>
           <li>
-            <a routerLinkActive="blue-text text-lighten-2" routerLink="cart"
+            <a routerLinkActive="blue-text text-lighten-2" routerLink="cart" [state]="{ hello: 'world' }"
               >Cart <span class="new badge">{{ count$ | async }}</span></a
             >
           </li>
@@ -33,12 +33,7 @@ export class NavComponent {
   count$: Observable<number>;
   isLoggedIn$: Observable<boolean>;
 
-  constructor(
-    private cartQuery: CartQuery,
-    private authService: AuthService,
-    private authQuery: AuthQuery,
-    private router: Router
-  ) {
+  constructor(private cartQuery: CartQuery, private authService: AuthService, private authQuery: AuthQuery, private router: Router) {
     this.count$ = this.cartQuery.selectCount();
     this.isLoggedIn$ = this.authQuery.isLoggedIn$;
   }

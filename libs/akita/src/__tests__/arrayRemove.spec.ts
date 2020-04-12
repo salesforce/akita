@@ -116,4 +116,50 @@ describe('arrayRemove', () => {
 
     expect(store._value().names).toEqual([]);
   });
+
+  it('should remove by index', () => {
+    const article: Article = {
+      id: 1,
+      title: '',
+      comments: [
+        { id: 1, text: '' },
+        { id: 2, text: '' }
+      ]
+    };
+
+    store.add(article);
+    store.update(1, state => ({
+      comments: arrayRemove(state.comments, (_, index) => index === 0)
+    }));
+
+    const storeValue = store._value().entities[1];
+    expect(storeValue.comments.length).toBe(1);
+    expect(storeValue.comments[1]).toBeUndefined();
+    expect(storeValue.comments[0].id).toBe(2);
+    store.remove();
+  });
+
+  it('should remove by indexes', () => {
+    const article: Article = {
+      id: 1,
+      title: '',
+      comments: [
+        { id: 1, text: '' },
+        { id: 2, text: '' },
+        { id: 3, text: '' }
+      ]
+    };
+
+    store.add(article);
+    store.update(1, state => ({
+      comments: arrayRemove(state.comments, (_, index) => [0, 1].includes(index))
+    }));
+
+    const storeValue = store._value().entities[1];
+    expect(storeValue.comments.length).toBe(1);
+    expect(storeValue.comments[1]).toBeUndefined();
+    expect(storeValue.comments[2]).toBeUndefined();
+    expect(storeValue.comments[0].id).toBe(3);
+    store.remove();
+  });
 });

@@ -45,7 +45,7 @@ export type StoreCache = {
   ttl: number;
 };
 export type ArrayProperties<T> = { [K in keyof T]: T[K] extends any[] ? K : never }[keyof T];
-export type ItemPredicate<Item = any> = (item: Item) => boolean;
+export type ItemPredicate<Item = any> = (item: Item, index?: number) => boolean;
 export type MaybeAsync<T = any> = Promise<T> | Observable<T> | T;
 export type EntityUICreateFn<EntityUI = any, Entity = any> = EntityUI | ((entity: Entity) => EntityUI);
 export type Constructor<T = any> = new (...args: any[]) => T;
