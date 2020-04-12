@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "license": "Apache-2.0",
+  "engines": {
+    "npm": "please-use-yarn",
+    "yarn": ">= 1.22.0"
+  },
   "scripts": {
     "affected": "nx affected",
     "affected:apps": "nx affected:apps",
