@@ -17,7 +17,7 @@ import { Store } from './store';
  *   }
  * }
  */
-export function cacheable<T>(store: Store, request$: Observable<T>, options: { emitNext: boolean } = { emitNext: false }) {
+export function cacheable<T>(store: Store, request$: Observable<T>, options: { emitNext: boolean } = { emitNext: false }): Observable<T | undefined | never> {
   if (store._cache().value) {
     return options.emitNext ? of(undefined) : EMPTY;
   }
