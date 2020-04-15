@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.22.2](https://github.com/datorama/akita/compare/akita-v4.22.1...akita-v4.22.2) (2020-04-15)
+
 ### [4.22.1](https://github.com/datorama/akita/compare/akita-v4.22.0...akita-v4.22.1) (2020-04-14)
 
 ## [4.22.0](https://github.com/datorama/akita/compare/v4.21.0...v4.22.0) (2020-03-26)
