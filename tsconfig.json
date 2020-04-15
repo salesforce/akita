@@ -23,5 +23,8 @@
       "@datorama/akita-ng-forms-manager": ["libs/akita-ng-forms-manager/src/index.ts"]
     }
   },
+  "angularCompilerOptions": {
+    "disableTypeScriptVersionCheck": true
+  },
   "exclude": ["node_modules", "tmp"]
 }

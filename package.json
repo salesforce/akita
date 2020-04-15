@@ -128,8 +128,8 @@
     "react-loadable": "^5.5.0",
     "react-router-dom": "5.1.2",
     "recompose": "^0.30.0",
-    "rxjs": "6.5.5",
-    "schematics-utilities": "^2.0.1",
+    "rxjs": "6.4.0",
+    "schematics-utilities": "1.1.1",
     "tslib": "^1.11.1",
     "zone.js": "^0.10.3"
   },
