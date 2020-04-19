@@ -15,7 +15,7 @@ export { compareValues, Order } from './sort';
 export { AkitaPlugin, Queries } from './plugins/plugin';
 export { PaginationResponse, Paginator, PaginatorConfig, PaginatorPlugin } from './plugins/paginator/paginatorPlugin';
 export { AkitaFormProp, ArrayControlFactory, FormGroupLike, PersistFormParams, PersistNgFormPlugin } from './plugins/persistForm/persistNgFormPlugin';
-export { persistState, PersistStateParams, selectPersistStateInit } from './persistState';
+export { persistState, PersistState, PersistStateParams, selectPersistStateInit } from './persistState';
 export { akitaDevtools, DevtoolsOptions, NgZoneLike } from './devtools';
 export { EntityCollectionPlugin, RebaseActions } from './plugins/entityCollectionPlugin';
 export { StateHistoryParams, StateHistoryPlugin } from './plugins/stateHistory/stateHistoryPlugin';

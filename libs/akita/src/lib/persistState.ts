@@ -80,7 +80,13 @@ export interface PersistStateParams {
   persistOnDestroy: boolean;
 }
 
-export function persistState(params?: Partial<PersistStateParams>) {
+export interface PersistState {
+  destroy(): void;
+  clear(): void;
+  clearStore(storeName?: string): void;
+}
+
+export function persistState(params?: Partial<PersistStateParams>): PersistState {
   const defaults: PersistStateParams = {
     key: 'AkitaStores',
     enableInNonBrowser: false,
@@ -93,14 +99,14 @@ export function persistState(params?: Partial<PersistStateParams>) {
      */
     exclude: [],
     persistOnDestroy: false,
-    preStorageUpdate: function(storeName, state) {
+    preStorageUpdate: function (storeName, state) {
       return state;
     },
-    preStoreUpdate: function(storeName, state) {
+    preStoreUpdate: function (storeName, state) {
       return state;
     },
     skipStorageUpdate: getSkipStorageUpdate,
-    preStorageUpdateOperator: () => source => source
+    preStorageUpdateOperator: () => (source) => source,
   };
 
   const { storage, enableInNonBrowser, deserialize, serialize, include, exclude, key, preStorageUpdate, persistOnDestroy, preStorageUpdateOperator, preStoreUpdate, skipStorageUpdate } = Object.assign(
@@ -163,13 +169,13 @@ export function persistState(params?: Partial<PersistStateParams>) {
 
     function subscribe(storeName, path) {
       stores[storeName] = __stores__[storeName]
-        ._select(state => getValue(state, path))
+        ._select((state) => getValue(state, path))
         .pipe(
           skip(1),
           filter(() => skipStorageUpdate() === false),
           preStorageUpdateOperator()
         )
-        .subscribe(data => {
+        .subscribe((data) => {
           acc[storeName] = preStorageUpdate(storeName, data);
           Promise.resolve().then(() => save({ [storeName]: __stores__[storeName]._cache().getValue() }));
         });
@@ -178,7 +184,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
     function setInitial(storeName, store, path) {
       if (storeName in storageState) {
         setAction('@PersistState');
-        store._setState(state => {
+        store._setState((state) => {
           return setValue(state, path, preStoreUpdate(storeName, storageState[storeName]));
         });
         const hasCache = storageState['$cache'] ? storageState['$cache'][storeName] : false;
@@ -187,7 +193,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
     }
 
     subscriptions.push(
-      $$deleteStore.subscribe(storeName => {
+      $$deleteStore.subscribe((storeName) => {
         if (stores[storeName]) {
           if (persistOnDestroy === false) {
             save({ [storeName]: false });
@@ -199,7 +205,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
     );
 
     subscriptions.push(
-      $$addStore.subscribe(storeName => {
+      $$addStore.subscribe((storeName) => {
         if (storeName === 'router' || (hasExclude && exclude.includes(storeName))) {
           return;
         }
@@ -209,7 +215,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
           let path = includeStores[storeName];
 
           if (!path) {
-            const passPredicate = includeStores.fns.some(fn => fn(storeName));
+            const passPredicate = includeStores.fns.some((fn) => fn(storeName));
             if (passPredicate) {
               path = storeName;
             } else {
@@ -230,7 +236,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
 
   return {
     destroy() {
-      subscriptions.forEach(s => s.unsubscribe());
+      subscriptions.forEach((s) => s.unsubscribe());
       for (let i = 0, keys = Object.keys(stores); i < keys.length; i++) {
         const storeName = keys[i];
         stores[storeName].unsubscribe();
@@ -247,7 +253,7 @@ export function persistState(params?: Partial<PersistStateParams>) {
         return;
       }
       const value = storage.getItem(key);
-      observify(value).subscribe(v => {
+      observify(value).subscribe((v) => {
         const storageState = deserialize(v || '{}');
 
         if (storageState[storeName]) {
@@ -256,6 +262,6 @@ export function persistState(params?: Partial<PersistStateParams>) {
           value.subscribe();
         }
       });
-    }
+    },
   };
 }
