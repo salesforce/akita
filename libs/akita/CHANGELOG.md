@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [4.23.0](https://github.com/datorama/akita/compare/akita-v4.22.1...akita-v4.23.0) (2020-04-19)
+
+### Features
+
+- **persist-state:** expose `persistState` return type ([#414](https://github.com/datorama/akita/issues/414)) ([111251f](https://github.com/datorama/akita/commit/111251fb14b887a3451fea0847dcd5feb24fc4f1))
+
 ### [4.22.2](https://github.com/datorama/akita/compare/akita-v4.22.1...akita-v4.22.2) (2020-04-15)
 
 ### [4.22.1](https://github.com/datorama/akita/compare/akita-v4.22.0...akita-v4.22.1) (2020-04-14)
