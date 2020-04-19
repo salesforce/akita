@@ -10,7 +10,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     const dependencies: NodeDependency[] = [
       {
         type: NodeDependencyType.Default,
-        version: '^4.0.0',
+        version: '^4.22.3',
         name: '@datorama/akita',
       },
     ];
@@ -18,7 +18,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     if (options.withRouter || options.router) {
       dependencies.push({
         type: NodeDependencyType.Dev,
-        version: '^3.1.3',
+        version: '^5.0.0',
         name: '@datorama/akita-ng-router-store',
       });
     }
@@ -26,7 +26,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     if (options.devtools) {
       dependencies.push({
         type: NodeDependencyType.Dev,
-        version: '^3.0.2',
+        version: '^4.0.0',
         name: '@datorama/akita-ngdevtools',
       });
     }
@@ -34,7 +34,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     if (options.httpEntityService) {
       dependencies.push({
         type: NodeDependencyType.Default,
-        version: '^1.0.0',
+        version: '^2.0.0',
         name: '@datorama/akita-ng-entity-service',
       });
     }
@@ -42,7 +42,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     if (options.firebaseEntityService) {
       dependencies.push({
         type: NodeDependencyType.Default,
-        version: '^1.0.0',
+        version: '^1.5.13',
         name: 'akita-ng-fire',
       });
     }
@@ -159,11 +159,11 @@ function addModuleToImports(options: Schema): Rule {
     let provideEntityServiceConfig = '';
 
     if ((options.withRouter || options.router) && options.devtools) {
-      importRouter = `AkitaNgRouterStoreModule.forRoot()`;
+      importRouter = `AkitaNgRouterStoreModule`;
     }
 
     if (options.devtools) {
-      importDevtools = `environment.production ? [] : AkitaNgDevtools.forRoot()`;
+      importDevtools = `environment.production ? [] : AkitaNgDevtools`;
     }
 
     if (options.httpEntityService) {

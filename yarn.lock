@@ -126,7 +126,7 @@
     rxjs "6.5.4"
     source-map "0.7.3"
 
-"@angular-devkit/schematics@9.1.1", "@angular-devkit/schematics@~9.1.0":
+"@angular-devkit/schematics@9.1.1", "@angular-devkit/schematics@^9.1.1", "@angular-devkit/schematics@~9.1.0":
   version "9.1.1"
   resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-9.1.1.tgz#8ee93a6297416271002986dbf48f08ad0911a47e"
   integrity sha512-6wx2HcvafHvEjEa1tjDzW2hXrOiSE8ALqJUArb3+NoO1BDM42aGcqyPo0ODzKtDk12CgSsFXdNKRpQ5AmpSPtw==
