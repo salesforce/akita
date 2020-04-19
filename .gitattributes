@@ -1,11 +1,8 @@
-# https://rehansaeed.com/gitattributes-best-practices/
-###############################
-# Git Line Endings            #
-###############################
+# prettier v2 dictates LF
+# https://prettier.io/docs/en/options.html#end-of-line
+* text=auto eol=lf
 
-# Set default behavior to automatically normalize line endings.
-* text=auto
-
-# Force bash scripts to always use lf line endings so that if a repo is accessed
-# in Unix via a file share from Windows, the scripts will work.
-*.sh text eol=lf
+.vscode/*.json linguist-language=jsonc
+tslint.json linguist-language=jsonc
+tsconfig.json linguist-language=jsonc
+tsconfig.*.json linguist-language=jsonc
