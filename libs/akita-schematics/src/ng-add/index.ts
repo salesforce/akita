@@ -1,9 +1,9 @@
-import { Rule, SchematicContext, Tree, noop, chain, SchematicsException } from '@angular-devkit/schematics';
-import { NodeDependency, addPackageJsonDependency, NodeDependencyType, getWorkspace, getProjectFromWorkspace, addModuleImportToRootModule, getAppModulePath, InsertChange } from 'schematics-utilities';
+import { chain, noop, Rule, SchematicContext, SchematicsException, Tree } from '@angular-devkit/schematics';
 import { NodePackageInstallTask } from '@angular-devkit/schematics/tasks';
-import { Schema } from './schema';
+import { addModuleImportToRootModule, addPackageJsonDependency, getAppModulePath, getProjectFromWorkspace, getWorkspace, InsertChange, NodeDependency, NodeDependencyType } from 'schematics-utilities';
 import * as ts from 'typescript';
-import { isImported, insertImport, addProviderToModule, getModuleFile, applyChanges } from './utils';
+import { Schema } from './schema';
+import { addProviderToModule, applyChanges, getModuleFile, insertImport, isImported } from './utils';
 
 function addPackageJsonDependencies(options: Schema): Rule {
   return (host: Tree, context: SchematicContext) => {
@@ -11,15 +11,15 @@ function addPackageJsonDependencies(options: Schema): Rule {
       {
         type: NodeDependencyType.Default,
         version: '^4.0.0',
-        name: '@datorama/akita'
-      }
+        name: '@datorama/akita',
+      },
     ];
 
     if (options.withRouter || options.router) {
       dependencies.push({
         type: NodeDependencyType.Dev,
         version: '^3.1.3',
-        name: '@datorama/akita-ng-router-store'
+        name: '@datorama/akita-ng-router-store',
       });
     }
 
@@ -27,7 +27,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
       dependencies.push({
         type: NodeDependencyType.Dev,
         version: '^3.0.2',
-        name: '@datorama/akita-ngdevtools'
+        name: '@datorama/akita-ngdevtools',
       });
     }
 
@@ -35,7 +35,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
       dependencies.push({
         type: NodeDependencyType.Default,
         version: '^1.0.0',
-        name: '@datorama/akita-ng-entity-service'
+        name: '@datorama/akita-ng-entity-service',
       });
     }
 
@@ -43,11 +43,11 @@ function addPackageJsonDependencies(options: Schema): Rule {
       dependencies.push({
         type: NodeDependencyType.Default,
         version: '^1.0.0',
-        name: 'akita-ng-fire'
+        name: 'akita-ng-fire',
       });
     }
 
-    dependencies.forEach(dependency => {
+    dependencies.forEach((dependency) => {
       addPackageJsonDependency(host, dependency);
       context.logger.log('info', `✅️ Added "${dependency.name}" into ${dependency.type}`);
     });
@@ -89,9 +89,9 @@ function injectImports(options: Schema): Rule {
     );
     const modulePath = getAppModulePath(host, (project as any).architect.build.options.main);
 
-    let moduleSource = getTsSourceFile(host, modulePath);
-    let importModule = 'environment';
-    let importPath = '../environments/environment';
+    const moduleSource = getTsSourceFile(host, modulePath);
+    const importModule = 'environment';
+    const importPath = '../environments/environment';
 
     if (!isImported(moduleSource, importModule, importPath)) {
       const change = insertImport(moduleSource, modulePath, importModule, importPath);
@@ -216,6 +216,6 @@ export function akitaNgAdd(options: Schema): Rule {
     addModuleToImports(options),
     injectImports(options),
     setSchematicsAsDefault(),
-    log()
+    log(),
   ]);
 }
