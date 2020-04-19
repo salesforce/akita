@@ -1,0 +1,148 @@
+---
+title: State History
+---
+
+The `StateHistoryPlugin` provides a convenient way for `undo` and `redo` functionality, saving you the trouble of maintaining a history in the app yourself. 
+To use it you should instantiate a new `StateHistoryPlugin` object, passing the `Query`:
+
+```ts title="todos.component.ts"
+import { StateHistoryPlugin } from '@datorama/akita';
+
+export class TodosPageComponent {
+  private stateHistory: StateHistoryPlugin;
+
+  constructor(private todosQuery: TodosQuery) {}
+
+  ngOnInit() {
+    this.stateHistory = new StateHistoryPlugin(this.todosQuery);
+  }
+}
+```
+
+From the moment you call it, Akita's `StateHistory` tracks the history of the store and gives you the following functionality:
+
+## API
+
+### `undo()` 
+undo the last change.
+### `redo()` 
+redo the last change.
+### `jump()`
+jump n steps in the past or forward.
+### `jumpToPast(index: number)` 
+jump to the provided index in the past (assuming index is valid).
+### `jumpToFuture(index: number)` 
+jump to the provided index in the future (assuming index is valid).
+### `clear()` 
+clear the history. 
+### `ignoreNext()` 
+ignores the next store's update call. You should call it before updating the store. 
+### `destroy(clearHistory = false)` 
+unsubscribe and optionally clear the history.
+
+### `hasPast()`
+A boolean flag that returns whether the history is not empty.
+### `hasFuture()`
+A boolean flag that returns whether you're not in the latest step in the history.
+### `hasPast$`
+An observable that returns whether the history is not empty.
+### `hasFuture$`
+An observable that returns whether you're not in the latest step in the history.
+
+## Options
+### `maxAge`
+Maximum amount of changes to be stored in the history (default: 10):
+```ts
+const options = { maxAge: 3 };
+stateHistory = new StateHistoryPlugin(todosQuery, options);
+```
+
+### `watchProperty`
+Watch a specific property:
+```ts
+const options = { watchProperty: 'editorText' };
+stateHistory = new StateHistoryPlugin(editorQuery, options);
+```
+
+## EntityStateHistoryPlugin
+In addition to the general history functionality,  Akita also provides a powerful API to help keep track of one or many entities, instead of the entire store. 
+
+A good example is when you have a table or a list of entities that the users can modify, and you want to give them a way to undo/redo their changes per entity. Here is how you can do it:
+
+```ts
+import { EntityStateHistoryPlugin } from '@datorama/akita';
+
+export class TodosPageComponent {
+  private collection: EntityStateHistoryPlugin;
+
+  constructor(private todosQuery: TodosQuery) {}
+
+  ngOnInit() {
+    this.collection = new EntityStateHistoryPlugin(this.todosQuery);
+  }
+}
+```
+
+With this setup you will get the following functionality:
+
+### API
+`type IDS = ID | ID[]`;
+
+### `undo(entityId?: IDS)`
+undo the last change.
+### `redo(entityId?: IDS)`
+redo the last change.
+### `jumpToPast(entityId?: IDS, index: number)`
+jump to the provided index in the past (assuming index is valid).
+### `jumpToFuture(entityId?: IDS, index: number)`
+jump to the provided index in the future (assuming index is valid).
+### `clear(entityId?: IDS)` 
+clear the history. 
+### `destroy(entityId?: IDS, clearHistory = false)`
+unsubscribe and optionally clear the history. 
+
+### `hasPast(entityId: ID)`
+A boolean flag that returns whether the history is not empty.
+### `hasFuture(entityId: ID)`
+A boolean flag that returns whether you're not in the latest step in the history.
+
+## Options
+### `maxAge`
+Maximum amount of changes to be stored in the history (default: 10):
+```ts
+const options = { maxAge: 3 };
+stateHistory = new StateHistoryEntityPlugin(todosQuery, options);
+```
+
+### `entityIds`
+A single id or an array of entity ids (default: all).
+```ts
+const options = { entityIds: [1, 2] };
+stateHistory = new StateHistoryEntityPlugin(editorQuery, options);
+```
+
+Here's a complete example:
+
+```html title="todos.component.html"
+<table>
+  <tbody>
+    <tr *ngFor="let todo of todos$ | async">
+      <td>{{todo.title}}</td>
+      <td>
+        <input type="checkbox" [checked]="todo.completed" 
+        (change)="update($event, todo)"/>
+      </td>
+      <td>
+        <i 
+        [class.disabled]="!stateHistoryEntity.hasPast(todo.id)"
+        (click)="stateHistoryEntity.undo(todo.id)">undo</i>
+      </td>
+      <td>
+        <i 
+        [class.disabled]="!stateHistoryEntity.hasFuture(todo.id)"
+        (click)="stateHistoryEntity.redo(todo.id)">redo</i>
+      </td>
+    </tr>
+  </tbody>
+</table>
+```

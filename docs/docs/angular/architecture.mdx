@@ -1,0 +1,408 @@
+---
+title: Architecture
+---
+
+Let's say we are building from scratch an e-commerce  application. We start by creating a new project with Angular CLI:
+
+```bash
+npx @angular/cli new e-commerce
+```
+
+Next, we'll add Akita by using schematics:
+
+```bash
+ng add @datorama/akita
+```
+
+## Session Feature
+
+Now, we want to add a session module to our application, so we'll create a `SessionModule`:
+
+```bash
+ng g m session
+```
+
+Inside the `session` module we can create components such as `LoginComponent` and `SignupComponent`:
+
+```bash
+ng g c session/login
+ng g c session/signup
+```
+
+Now, it's time to choose our Store. The rule is simple. If you don't need to manage a collection of entities, you should go with the basic store. In this case, we only have one user, so we need to create the basic store:
+
+```bash
+ng g af session/session --plain
+```
+
+The above command creates a `SessionStore`, `SessionQuery`, and a `SessionService`. So now our application tree is:
+
+```
+📦app
+ ┣ 📂session
+ ┃ ┣ 📂login
+ ┃ ┃ ┣ 📜login.component.css
+ ┃ ┃ ┣ 📜login.component.html
+ ┃ ┃ ┣ 📜login.component.spec.ts
+ ┃ ┃ ┗ 📜login.component.ts
+ ┃ ┣ 📂state
+ ┃ ┃ ┣ 📜session.query.ts
+ ┃ ┃ ┣ 📜session.service.ts
+ ┃ ┃ ┗ 📜session.store.ts
+ ┃ ┗ 📜session.module.ts
+ ┣ 📜app-routing.module.ts
+ ┣ 📜app.component.css
+ ┣ 📜app.component.html
+ ┣ 📜app.component.spec.ts
+ ┣ 📜app.component.ts
+ ┗ 📜app.module.ts
+```
+
+Let's see each one of the files inside the `state` folder: 
+
+```ts title="session.store.ts"
+import { Injectable } from '@angular/core';
+import { Store, StoreConfig } from '@datorama/akita';
+
+export interface SessionState {
+   key: string;
+}
+
+export function createInitialState(): SessionState {
+  return {
+    key: ''
+  };
+}
+
+@Injectable({ providedIn: 'root' })
+@StoreConfig({ name: 'session' })
+export class SessionStore extends Store<SessionState> {
+
+  constructor() {
+    super(createInitialState());
+  }
+}
+```
+
+
+```ts title="session.query.ts"
+import { Injectable } from '@angular/core';
+import { Query } from '@datorama/akita';
+import { SessionStore, SessionState } from './session.store';
+
+@Injectable({ providedIn: 'root' })
+export class SessionQuery extends Query<SessionState> {
+
+  constructor(protected store: SessionStore) {
+    super(store);
+  }
+
+}
+```
+
+```ts title="session.service.ts"
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { SessionStore } from './session.store';
+
+@Injectable({ providedIn: 'root' })
+export class SessionService {
+
+  constructor(private sessionStore: SessionStore,
+              private http: HttpClient) {
+  }
+}
+```
+
+Each one of the providers is marked as `@Injectable({ providedIn: 'root' })` . It means that the store, the query, and the service are **app-wide** singletons, and therefore can be accessed everywhere in our application. For example, in components, directives, services, and queries.
+
+Let's modify our `session.store` file and add the relevant properties:
+
+```ts title="session.store.ts"
+import { Injectable } from '@angular/core';
+import { Store, StoreConfig } from '@datorama/akita';
+
+export interface SessionState {
+   name: string | null;
+   token: string | null;
+}
+
+export function createInitialState(): SessionState {
+  return {
+    name: null,
+    token: null
+  };
+}
+
+@Injectable({ providedIn: 'root' })
+@StoreConfig({ name: 'session' })
+export class SessionStore extends Store<SessionState> {
+
+  constructor() {
+    super(createInitialState());
+  }
+}
+```
+
+We recommend placing the logic for underlying queries inside the query class so it can be more readable and reusable:
+
+```ts title="session.query.ts"
+import { Injectable } from '@angular/core';
+import { Query } from '@datorama/akita';
+import { SessionStore, SessionState } from './session.store';
+
+@Injectable({ providedIn: 'root' })
+export class SessionQuery extends Query<SessionState> {
+  selectIsLogin$ = this.select('token');
+  selectName$ = this.select('name');
+  
+  constructor(protected store: SessionStore) {
+    super(store);
+  }
+}
+```
+
+In the `service`, we'll make our server calls, and update the store:
+
+```ts title="session.service.ts"
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { SessionStore } from './session.store';
+import { tap } from 'rxjs/operators';
+
+@Injectable({ providedIn: 'root' })
+export class SessionService {
+
+  constructor(private sessionStore: SessionStore,
+              private http: HttpClient) {
+  }
+  
+  login(creds) {
+    return this.http(endpoint).pipe(
+      tap(user => this.sessionStore.update(user))
+    )
+  }
+}
+```
+
+
+## Products Feature
+First, we need to create the `ProductsModule` and a `ProductsPageComponent`:
+
+```bash
+ng g m products
+ng g c products/products-page
+```
+
+Next, we want to maintain a **collection** of products so we need to create an `EntityStore`:
+```bash
+ng g af products/products
+```
+
+The above command creates a `ProductsStore`, `ProductsQuery`, `Product`, and a `ProductsService`. So now our application tree is:
+
+```
+📦app
+ ┣ 📂products
+ ┃ ┣ 📂products-page
+ ┃ ┃ ┣ 📜products-page.component.css
+ ┃ ┃ ┣ 📜products-page.component.html
+ ┃ ┃ ┣ 📜products-page.component.spec.ts
+ ┃ ┃ ┗ 📜products-page.component.ts
+ ┃ ┣ 📂state
+ ┃ ┃ ┣ 📜product.model.ts
+ ┃ ┃ ┣ 📜products.query.ts
+ ┃ ┃ ┣ 📜products.service.ts
+ ┃ ┃ ┗ 📜products.store.ts
+ ┃ ┗ 📜products.module.ts
+ ┣ 📂session
+ ┃ ┣ 📂login
+ ┃ ┃ ┣ 📜login.component.css
+ ┃ ┃ ┣ 📜login.component.html
+ ┃ ┃ ┣ 📜login.component.spec.ts
+ ┃ ┃ ┗ 📜login.component.ts
+ ┃ ┣ 📂state
+ ┃ ┃ ┣ 📜session.query.ts
+ ┃ ┃ ┣ 📜session.service.ts
+ ┃ ┃ ┗ 📜session.store.ts
+ ┃ ┗ 📜session.module.ts
+ ┣ 📜app-routing.module.ts
+ ┣ 📜app.component.css
+ ┣ 📜app.component.html
+ ┣ 📜app.component.spec.ts
+ ┣ 📜app.component.ts
+ ┗ 📜app.module.ts
+```
+
+Let's see each one of the files inside the state folder: 
+
+```ts title="products.store.ts"
+import { Injectable } from '@angular/core';
+import { Product } from './product.model';
+import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
+
+export interface ProductsState extends EntityState<Product, number> {}
+
+@Injectable({ providedIn: 'root' })
+@StoreConfig({ name: 'products' })
+export class ProductsStore extends EntityStore<ProductsState> {
+
+  constructor() {
+    super();
+  }
+}
+```
+
+```ts title="products.model.ts"
+export interface Product {
+  id: number;
+}
+
+export function createProduct(params: Partial<Product>) {
+  return {} as Product;
+}
+```
+
+```ts title="products.query.ts"
+import { Injectable } from '@angular/core';
+import { QueryEntity } from '@datorama/akita';
+import { ProductsStore, ProductsState } from './products.store';
+
+@Injectable({ providedIn: 'root' })
+export class ProductsQuery extends QueryEntity<ProductsState> {
+
+  constructor(protected store: ProductsStore) {
+    super(store);
+  }
+}
+import { ID } from '@datorama/akita';
+```
+
+```ts title="products.service.ts"
+import { Injectable } from '@angular/core';
+import { ID } from '@datorama/akita';
+import { HttpClient } from '@angular/common/http';
+import { tap } from 'rxjs/operators';
+import { Product } from './product.model';
+import { ProductsStore } from './products.store';
+
+@Injectable({ providedIn: 'root' })
+export class ProductsService {
+
+  constructor(private productsStore: ProductsStore,
+              private http: HttpClient) {}
+
+  get() {
+    return this.http.get<Product[]>('https://api.com')
+     .pipe(
+       tap(entities => this.productsStore.set(entities))
+      );
+  }
+
+  add(product: Product) {
+    this.productsStore.add(product);
+  }
+
+  update(id, product: Partial<Product>) {
+    this.productsStore.update(id, product);
+  }
+
+  remove(id: ID) {
+    this.productsStore.remove(id);
+  }
+}
+```
+
+You should follow the same principles as with the `Session` feature.
+
+:::tip
+Angular providers don't have to be wide app singletons, for more information read [this](https://netbasal.com/angular-services-do-not-have-to-be-singletons-ffa879e62082) article.
+:::
+
+## Join Queries
+Queries can talk to other queries, join entities from different stores, etc. Let's say we have a `products` store and a `cart` store:
+
+
+```ts title="products.store.ts"
+import { EntityState, EntityStore } from '@datorama/akita';
+import { Product } from './products.model';
+
+export interface ProductsState extends EntityState<Product, number> {}
+
+@Injectable({ providedIn: 'root' })
+@StoreConfig({ name: 'products' })
+export class ProductsStore extends EntityStore<ProductsState> {
+  constructor() {
+    super();
+  }
+}
+```
+
+```ts title="product.model.ts"
+export type Product = {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+};
+```
+
+```ts title="cart.store.ts"
+export interface CartState extends EntityState<CartItem, number> {}
+
+@Injectable({ providedIn: 'root' })
+@StoreConfig({
+  name: 'cart',
+  idKey: 'productId'
+})
+export class CartStore extends EntityStore<CartState> {
+  constructor() {
+    super();
+  }
+}
+```
+
+```ts title="cart-item.model.ts"
+export type CartItem = {
+  productId: Product['id'];
+  quantity: number;
+  total: number;
+};
+```
+
+We need to show the list of cart items and the total amount, but we also need some information from the `product`, like the `title` and the `price`. Therefore we need to join the `CartStore` with the `ProductsStore`:
+
+```ts title="cart.query.ts"
+import { combineLatest } from 'rxjs';
+import { map } from 'rxjs/operators';
+
+@Injectable({ providedIn: 'root' })
+export class CartQuery extends QueryEntity<CartState> {
+  constructor(protected store: CartStore, 
+              private productsQuery: ProductsQuery) {
+    super(store);
+  }
+
+  selectItems$ = combineLatest([
+     this.selectAll(), 
+     this.productsQuery.selectAll({ asObject: true })
+   ]
+  ).pipe(map(joinItems));
+}
+
+function joinItems([cartItems, products]: [CartItem[], Product[]]) {
+  return cartItems.map(item => {
+    const product = products[item.productId];
+    return {
+      ...item,
+      ...product,
+      total: item.quantity * product.price
+    };
+  });
+}
+```
+
+We’re using the `combineLatest()` observable to get both the list of cart items and the products. Then we are mapping over them, merging a cart item with the corresponding product based on the `productId`.
+
+You can find the complete tutorial [here](https://engineering.datorama.com/building-a-shopping-cart-in-angular-using-akita-c41f6a6f7255).
+

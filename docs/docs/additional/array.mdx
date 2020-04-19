@@ -1,0 +1,142 @@
+---
+title: Array Utils
+---
+
+# Entity Store Usage
+
+Let’s say we have the following `EntityStore`:
+
+```ts title="articles.store.ts"
+interface Comment {
+  id: ID;
+  text: string;
+}
+
+interface Article {
+  id: ID;
+  comments: Comment[];
+  title: string;
+}
+
+interface ArticlesState extends EntityState<Article, number> {}
+
+@StoreConfig({ name: 'articles' })
+class ArticlesStore extends EntityStore<ArticlesState> {}
+```
+
+We have an `EntityStore` which holds a collection of articles. Each `article` holds an array of `comments`. Akita provides helper methods that take care of the grunt work.
+
+## API
+
+### `arrayAdd`
+
+```ts
+import { arrayAdd } from '@datorama/akita'; 
+
+articlesStore.update(1, ({ comments }) => ({
+  comments: arrayAdd(comments, newComments)
+}));
+```
+
+### `arrayRemove`
+
+```ts
+import { arrayRemove } from '@datorama/akita'; 
+
+articlesStore.update(1, ({ comments }) => ({
+  comments: arrayRemove(comments, ids)
+}));
+
+// Remove by predicate
+articlesStore.update(1, ({ comments }) => ({
+  comments: arrayRemove(comments, predicateFn)
+}));
+```
+
+### `arrayUpdate`
+
+```ts
+import { arrayUpdate } from '@datorama/akita'; 
+
+articlesStore.update(1, ({ comments }) => ({
+  comments: arrayUpdate(comments, id/s, { text: 'New text' })
+}));
+
+// Update by predicate
+articlesStore.update(1, ({ comments }) => ({
+  comments: arrayUpdate(comments, predicateFn, { text: 'New text' })
+}));
+```
+
+### `arrayUpsert`
+
+```ts
+import { arrayUpsert } from '@datorama/akita'; 
+
+articlesStore.update(1, ({ comments }) => ({
+  comments: arrayUpsert(comments, id, { text: 'New text' })
+}));
+```
+
+:::tip
+The first parameter is **typed**, so you’ll get intelligent code completion suggesting only keys that are typed as `Array`.
+:::
+
+Each function takes an optional `idKey` which defaults to `id`:
+
+```ts
+articlesStore.update(1, ({ comments }) => ({
+  comments: arrayUpdate(comments, 3, { text: 'New text' }, 'comment_id')
+}));
+```
+
+## Store Usage
+We can use the same helpers for properties belongs to a `Store`. For example:
+```ts title="auth.store.ts"
+import { arrayAdd } from '@datorama/akita';
+
+export interface AuthState {
+  permissions: string[];
+}
+
+@StoreConfig({ name: 'auth' })
+export class AuthStore extends Store<AuthState> {
+   constructor() {
+     super({ permissions: [] });
+   }
+
+   addPermission(permission: string) {
+     this.update(({ permissions }) => ({
+       names: arrayAdd(permissions, 'ADMIN')
+     }));
+   }
+}
+```
+
+## Query Helper
+That takes care of the CRUD operations, but we also have some good stuff added to the `Query`; Akita now provides a special operator to query specific items from a collection - `arrayFind`:
+
+```ts
+import { arrayFind } from '@datorama/akita';
+
+const selectComment$ = this.articlesQuery
+ .selectEntity(1, 'comments')
+ .pipe(arrayFind(commentId))
+
+const selectComments$ = this.articlesQuery
+ .selectEntity(1, 'comments')
+ .pipe(arrayFind([id, id, id]))
+
+const selectCommentsByPredicate$ = this.articlesQuery
+  .selectEntity(1, 'comments')
+  .pipe(arrayFind(comment => comment.text.includes(..)))
+
+const admins$ = authQuery
+   .select('permissions')
+   .pipe(arrayFind(permission => permission === 'ADMIN'));
+```
+
+
+The added advantage is that these observables **will only fire if one of the items in the resulting collection has been modified**, via an update, add or delete operation.
+
+

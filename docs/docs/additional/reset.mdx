@@ -1,0 +1,40 @@
+---
+title: Reset Stores
+---
+
+Akita's provides `resetStores()` method that reset all the stores back to their initial state. It can be useful when you want to clean the store's data upon user logout.
+
+ In order to enable it globally, you should set the `resettable` option to `true`:
+
+ ```ts
+import { akitaConfig } from '@datorama/akita';
+
+akitaConfig({ resettable: true });
+ ```
+
+Now you can call the global `resetStores()` method:
+
+```ts
+import { resetStores } from "@datorama/akita";
+
+class AuthService {
+  logout() {
+    resetStores(); 
+
+    // Optionally exclude stores
+    resetStores({ exclude: ['storeName'] }) 
+  }
+}
+```
+
+In addition to that, you can set a specific store to be `resettable`:
+```ts title="todos.store.ts"
+@StoreConfig({ name: 'todos', resettable: true })
+export class TodosStore extends EntityStore<TodosState> {
+  constructor() {
+    super();
+  }
+}
+```
+
+Now, you can call the store's `reset()` method.

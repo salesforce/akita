@@ -1,0 +1,61 @@
+---
+title: Snapshot Manager
+---
+
+There are times when saving the local state in the server becomes useful. For example, you may want to give the user a PDF representing their local state.
+For such cases, Akita provides the `snapshotManager` API.
+
+To get a snapshot of the whole application state, you can call the `getStoresSnapshot()` method:
+
+```ts title="todos.service.ts"
+import { snapshotManager } from '@datorama/akita';
+
+export class TodosService {
+  saveState() {
+    this.http.post('/url', snapshotManager.getStoresSnapshot());
+  }
+}
+```
+
+The `getStoresSnapshot()` returns an object containing the whole application state. For example:
+
+```json
+{
+  "todos": {
+     "entities": { ... }
+   },
+   "cart": {
+     "entities": { ... }
+   },
+   "session": {
+     "firstName": "",
+     ...
+   }
+}
+```
+
+If you don't need the whole application state, you can pass the specific stores that you need:
+```ts title="todos.service.ts"
+import { snapshotManager } from '@datorama/akita';
+
+export class TodosService {
+  saveState() {
+    const stores = ['todos', 'widgets'];
+    this.http.post('/url', snapshotManager.getStoresSnapshot(stores));
+  }
+}
+```
+
+It also works the other way around, when you get the snapshot from the server you can save it by calling the `setStoresSnapshot() `method and passing the snapshot:
+```ts title="todos.service.ts"
+import { snapshotManager } from '@datorama/akita';
+
+export class TodosService {
+  setSnapshotFromServer(snapshotFromServer) {
+    snapshotManager.setStoresSnapshot(snapshotFromServer);
+
+    // Support lazy stores
+    setStoresSnapshot(snapshotFromServer, { lazy: true } );
+  }
+}
+```

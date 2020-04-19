@@ -1,0 +1,104 @@
+---
+title: The Query
+---
+
+A `Query` is a class offering functionality responsible for querying the store. You can think of the query as being similar to database queries. Its `constructor` function receives as parameters its own `store` and possibly other query classes. 
+ 
+Queries can talk to other queries, join entities from different stores, etc. To create a `Query`, you need to extend the `Query` class from Akita:
+
+
+```ts title="session.query.ts"
+import { Query } from '@datorama/akita';
+import { SessionState } from './session.store';
+
+export class SessionQuery extends Query<SessionState> {  
+  constructor(protected store: SessionStore) {
+    super(store);
+  }
+}
+```
+
+With this setup you get a `Query` with the following methods:
+
+## API
+
+### `select()`
+
+Select a slice from the store:
+
+```ts title="session.query.ts"
+
+import { Query } from '@datorama/akita';
+import { SessionState } from './session.store';
+
+export class SessionQuery extends Query<SessionState> {
+  allState$ = this.select();
+  isLoggedIn$ = this.select(state => !!state.token);
+  selectName$ = this.select('name');
+
+  // Returns { name, age }
+  multiProps$ = this.select(['name', 'age']);
+
+  // Returns [name, age]
+  multiPropsCallback$ = this.select(
+    [state => state.name, state => state.age]
+  )
+  
+  constructor(protected store: SessionStore) {
+    super(store);
+  }
+}
+```
+
+The `select()` method returns an `observable` that calls `distinctUntilChanged()` internally, meaning it will **only** fire when the state changes, i.e., when there is a new reference.
+
+:::info
+The Query `select` methods always returns an `observable` which pushes the initial value first.
+:::
+
+
+### `getValue()`
+The `getValue()` method returns the _raw_ value of the store.
+
+```ts title="session.query.ts"
+
+import { Query } from '@datorama/akita';
+import { SessionState } from './session.store';
+
+export class SessionQuery extends Query<SessionState> {
+
+  constructor(protected store: SessionStore) {
+    super(store);
+  }
+
+  get isLoggedIn() {
+    return !!this.getValue().token;
+  }
+}
+```
+
+### `selectLoading()`
+Subscribes to the store's `loading` state:
+
+```ts title="login.components.ts"
+
+@Component({})
+export class LoginComponent {
+  isLoading$ = this.sessionQuery.selectLoading();
+
+  constructor(private sessionQuery: SessionQuery) {}
+}
+```
+
+### `selectError()`
+Subscribes to the store's `error` state:
+
+```ts title="login.components.ts"
+
+@Component({})
+export class LoginComponent {
+  error$ = this.sessionQuery.selectError();
+
+  constructor(private sessionQuery: SessionQuery) {}
+}
+```

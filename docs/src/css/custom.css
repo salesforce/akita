@@ -1,0 +1,136 @@
+/* stylelint-disable docusaurus/copyright-header */
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-font-size-base: 16px;
+  --ifm-color-primary: #8c7db6;
+  --ifm-color-primary-dark: rgb(33, 175, 144);
+  --ifm-color-primary-darker: rgb(31, 165, 136);
+  --ifm-color-primary-darkest: rgb(26, 136, 112);
+  --ifm-color-primary-light: rgb(70, 203, 174);
+  --ifm-color-primary-lighter: rgb(102, 212, 189);
+  --ifm-color-primary-lightest: rgb(146, 224, 208);
+  --ifm-code-font-size: 95%;
+}
+
+.docusaurus-highlight-code-line {
+  background-color: rgb(216, 220, 232);
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+}
+
+code {
+  background-color: rgba(255, 229, 100, 0.2);
+  color: #1a1a1a;
+  padding: 5px 8px;
+}
+
+[data-theme="dark"] code {
+  background-color: rgba(115, 124, 153, 0.2);
+  color: #e6e6e6;
+}
+
+[data-theme="dark"] .main-wrapper {
+  background-color: #282c35;
+}
+
+.description {
+  padding: 30px 0px;
+  font-size: 22px;
+  background-color: #20232a;
+  color: #fff;
+  font-weight: 400;
+}
+
+.container img {
+  width: 100px !important;
+  margin-bottom: 27px !important;
+  height: auto !important;
+}
+
+.container img.gif {
+  width: 700px !important;
+}
+
+iframe {
+  border: none;
+  height: 30px;
+  margin-left: 20px;
+}
+
+.arc {
+  text-align: center;
+}
+
+.arc img {
+  width: 80% !important;
+  margin-bottom: 0 !important;
+}
+
+.app-header {
+  background-color: #2b3137 !important;
+  padding: 48px !important;
+}
+
+.app-header img {
+  width: 200px !important;
+  margin-top: 70px;
+}
+
+.app-header h1 {
+  font-size: 60px;
+  color: #fff;
+}
+
+@media screen and (max-width: 700px) {
+  .app-header {
+    padding: 20px !important;
+  }
+
+  .app-header img {
+    display: none;
+  }
+
+  .app-header iframe {
+    display: none;
+  }
+
+  .app-header .container {
+    padding: 0;
+  }
+
+  .app-header h1 {
+    font-size: 30px;
+    width: 100%;
+  }
+
+  .description {
+    font-size: 16px;
+  }
+}
+
+.app-header a {
+  color: #d3afd3 !important;
+}
+
+header h1 {
+  width: 70%;
+}
+
+.flex {
+  display: flex;
+}
+
+.c {
+  color: #d3afd3 !important;
+}
+
+.bold {
+  font-weight: 700;
+}

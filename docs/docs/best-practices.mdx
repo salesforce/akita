@@ -1,0 +1,65 @@
+---
+title: Best Practices
+---
+
+### The Query
+
+Avoid creating selectors in your components:
+
+```ts title="nav.component.ts"
+@Component({})
+class NavComponent {
+  isLoggedIn$ = this.authQuery.select(state => !!state.token);
+  
+  constructor(private authQuery: AuthQuery) {
+  }
+}
+```
+
+Instead, create them in the query:
+
+```ts title="auth.query.ts"
+export class AuthQuery extends Query<AuthState> {
+  isLoggedIn$ = this.select(state => !!state.token);
+  
+  constructor(protected store: AuthStore) {
+    super(store);
+  }
+}
+```
+
+This makes your components cleaner and the selectors reusable across the application.
+
+### Data Storage Types
+Store only plain objects in the store, avoid storing `Map` or `Set`. It's more efficient to perform immutable operations (which are required for updating the store) with plain objects rather than with complex ones such as `Map` or `Set`.
+Moreover, it's harder to serialize this types of objects.
+
+### UI State
+Keep the UI data separated from the model data. Read more about this topic [here](ui).
+
+
+### Keep It Simple
+Avoid over-engineering. Don't create a separate store for any entity you may have. For example, you might have a list of articles where each article contains a list of comments:
+
+```ts title="articles.store.ts"
+interface Article {
+  id: ID;
+  comments: Comment[];
+  title: string;
+}
+
+interface ArticlesState extends EntityState<Article> {
+}
+
+@StoreConfig({ name: 'articles' })
+class ArticlesStore extends EntityStore<ArticlesState> {
+  constructor() {
+    super();
+  }
+}
+```
+
+In most cases, there is no need to create a separate entity store for the `comments`. Instead use Akita's [Array Utils](additional/array). This will keep your store easier to maintain and use. If you still require a separate store, check out this article for tips on how to combine their data:
+
+- [Working with Normalized Data in Akita and Angular](https://netbasal.com/working-with-normalized-data-in-akita-e626d4c67ca4)
+- [Introducing One To Many Relationship in Angular & Akita](https://dev.to/arielgueta/introducing-one-to-many-relationship-in-angular-akita-37me)

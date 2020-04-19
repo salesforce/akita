@@ -1,0 +1,265 @@
+---
+title: Server Side Pagination
+---
+
+In many cases - for example, when working with very large data-sets - we don't want to work with the full collection in memory. Instead server-side paging is used, where the server sends just a single page at a time.
+
+Usually, we also want to cache pages that already have been fetched, in order to spare the need for an additional request.
+
+The Paginator API provides two useful features:
+
+1. Caching of pages which have already been fetched. 
+2. A pagination functionally, which gives you all the things you need to manage pagination in the application.
+
+## Basic Pagination
+
+First, we need to create a new provider, let’s say we need paginator for our contacts page:
+
+```ts title="contacts-paginator.ts"
+import { InjectionToken } from '@angular/core';
+import { PaginatorPlugin } from '@datorama/akita';
+import { ContactsQuery } from './contacts.query';
+
+export const CONTACTS_PAGINATOR = 
+new InjectionToken('CONTACTS_PAGINATOR', {
+  providedIn: 'root',
+  factory: () => {
+    const contactsQuery = inject(ContactsQuery);
+    return new PaginatorPlugin(contactsQuery)
+            .withControls()
+            .withRange();
+  }
+});
+```
+
+You should already be familiar with the above code. This is the regular process of creating a `factory` provider in Angular. We are creating a new `Paginator()`, passing the `Query` we want to use in our pagination.
+
+:::info
+Non-Angular applications can export the plugin without using DI. For example:
+```ts
+export const contactsPaginator= new PaginatorPlugin(contactsQuery)
+                      .withControls().withRange();
+```
+:::
+
+We call `withControls()`, which will give us an array of pages so we `*ngFor` on them and `withRange()` which will give us the `from` and `to` values to display to the user. Now, we can use it in our component:
+
+
+```ts title="contacts.component.ts"
+import { PaginationResponse } from '@datorama/akita';
+import { CONTACTS_PAGINATOR } from './contacts-paginator';
+
+@Component({})
+export class ContactsPageComponent {
+  pagination$: Observable<PaginationResponse<ContactsState>>;
+  
+  constructor(@Inject(CONTACTS_PAGINATOR) 
+              public paginatorRef: PaginatorPlugin<ContactsState>, 
+              private contactsService: ContactsService) {}
+
+  ngOnInit() {
+     this.pagination$ = this.paginatorRef.pageChanges.pipe(
+       switchMap(( page ) => {
+         const reqFn = () => this.contactsService.getPage({
+           page,
+           perPage: 10
+         });
+
+         return this.paginator.getPage(reqFn);
+       })
+     );
+  }
+
+  ngOnDestroy() {
+    this.paginatorRef.destroy();
+  }
+}
+```
+
+`Paginator` provides you with a `pageChanges` observable so you can listen to page changes and call the `getPage()` method, passing the request function. `Paginator` expects to get the following fields as part of the `response` from the server:
+
+```json title="response.json"
+{
+  "perPage": 10,
+  "lastPage": "10",
+  "currentPage": "3",
+  "total": 150,
+  "data": [...]
+}
+```
+
+:::info
+If you didn't provide the total property it will default to: `response.perPage * response.lastPage`
+:::
+
+`Paginator` also exposes all the data that you need to display as well as methods for controlling the page from the UI:
+
+```html title="contacts.component.html"
+<section>
+  <h1>Contacts</h1>
+  <loader *ngIf="paginatorRef.isLoading$ | async"><loader>
+
+  <section *ngIf="(pagination$ | async) as pagination">
+    <table>
+      <thead>
+        ..
+      </thead>
+      <tbody>
+        <tr *ngFor="let contact of pagination.data">
+          <td>{{contact.name}}</td>
+          ...
+        </tr>
+      </tbody>
+    </table>
+
+    <p>{{pagination.from}} - {{pagination.to}} of {{pagination.total}}</p>
+
+    <ul>
+      <li [class.disabled]="paginatorRef.isFirst" 
+         (click)="paginatorRef.setFirstPage()">
+         First page
+      </li>
+      
+      <li [class.disabled]="paginatorRef.isFirst" (click)="paginatorRef.prevPage()">
+         Prev
+      </li>
+      
+      <li *ngFor="let page of pagination.pageControls"
+          (click)="paginatorRef.setPage(page)"
+          [class.active]="paginatorRef.isPageActive(page)">
+          {{page}}
+      </li>
+      
+      <li [class.disabled]="paginatorRef.isLast" (click)="paginatorRef.nextPage()">
+         Next
+      </li>
+      
+      <li [class.disabled]="paginatorRef.isLast" (click)="paginatorRef.setLastPage()">
+         Last
+      </li>
+    </ul>
+  </section>
+
+</section>
+```
+
+That's all you need in order to get fully working pagination including caching.
+
+:::tip
+If you don't want Paginator to be a singleton you can skip the provider part and just create new instance directly in the component.
+:::
+
+## Advanced Pagination
+There are times where we want to give our users the ability to filter the data, sort it, or change the number of entries per page. The vital step here is that when we change a filter, sort etc., we want to invalidate the cache, because it may alter the server response. Here is a fully working example of this type of functionality:
+
+```ts title="contacts.component.ts"
+import { PaginationResponse } from '@datorama/akita';
+import { CONTACTS_PAGINATOR } from './contacts-paginator';
+
+@Component({})
+export class ContactsPageComponent {
+  pagination$: Observable<PaginationResponse<ContactsState>>;
+  sortByControl: FormControl;
+  perPageControl: FormControl;
+
+  constructor(@Inject(CONTACTS_PAGINATOR) 
+              public paginatorRef: PaginatorPlugin<ContactsState>, 
+              private contactsService: ContactsService) {}
+
+  ngOnInit() {
+    this.sortByControl = new FormControl('price');
+    this.perPageControl = new FormControl(10);
+
+    const sort = this.sortByControl.valueChanges.pipe(startWith('price'));
+    const perPage = this.perPageControl.valueChanges.pipe(startWith(10));
+
+    this.pagination$ = combineLatest(
+        this.paginatorRef.pageChanges, 
+        combineLatest(sort, perPage).pipe(
+           tap(_ => this.paginatorRef.clearCache()
+       ))).pipe(
+        switchMap(([page, [sortBy, perPage]]) => {
+          const req = () => this.contactsService.getPage({ page, sortBy, perPage });
+          return this.paginatorRef.getPage(req);
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.paginatorRef.destroy();
+  }
+}
+```
+
+When each filter emits a new value, we need to invalidate the cache, so that the `Paginator` will know that it needs to re-fetch the data from the server.
+
+
+## Pagination Metadata
+
+Sometimes you want to save the current filters, so if the user navigates from the current route and comes back you want the filter values to persist. Paginator exposes a `metadata` property where you can set these values. For example:
+
+```ts title="contacts.component.ts"
+import { PaginationResponse } from '@datorama/akita';
+import { CONTACTS_PAGINATOR } from './contacts-paginator';
+
+@Component({})
+export class ContactsPageComponent {
+  pagination$: Observable<PaginationResponse<ContactsState>>;
+  
+  constructor(@Inject(CONTACTS_PAGINATOR) 
+              public paginatorRef: PaginatorPlugin<ContactsState>, 
+              private contactsService: ContactsService) {}
+
+  ngOnInit() {
+    const sortByInit = this.paginatorRef.metadata.get('sortBy') || 'name';
+    const perPageInit = this.paginatorRef.metadata.get('perPage') || 10;
+    
+    this.sortByControl = new FormControl(sortByInit);
+    this.perPageControl = new FormControl(perPageInit);
+    
+   const sort = this.sortByControl.valueChanges.pipe(startWith(sortByInit));
+    const perPage = this.perPageControl.valueChanges.pipe(startWith(perPageInit));
+
+    this.pagination$ = combineLatest(
+        this.paginatorRef.pageChanges, 
+        combineLatest(sort, perPage).pipe(
+           tap(_ => this.paginatorRef.clearCache()
+       ))).pipe(
+        switchMap(([page, [sortBy, perPage]]) => {
+          const req = () => this.contactsService.getPage({ page, sortBy, perPage });
+          this.paginatorRef.metadata.set('sortBy', sortBy);
+          this.paginatorRef.metadata.set('perPage', perPage);
+          
+          return this.paginatorRef.getPage(req);
+      })
+    );
+  }
+
+  ngOnDestroy() {
+    this.paginatorRef.destroy();
+  }
+}
+```
+
+## API
+
+### `pagesControls`
+Whether to generate page controls
+
+### `range`
+Whether to generate range (from, to)
+
+### `startWith`
+Page to start with
+
+### `cacheTimeout`
+Observable that'll invalidate the cache when emits. For example, `interval(10000)`
+
+```ts
+new PaginatorPlugin({
+  pagesControls: false,
+  range: false,
+  startWith: 1,
+  cacheTimeout: Observable<any>
+})
+```

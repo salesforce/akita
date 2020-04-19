@@ -1,0 +1,171 @@
+---
+title: Dirty Check
+---
+
+The `DirtyCheckPlugin` is useful for cases when you want an indication whether the state is dirty (data in the store has been modified). For example, you may want to display a save button only if the user changes something.
+
+To activate the plugin you need to create a new instance of `DirtyCheckPlugin`, providing it with the `Query`:
+
+```ts title="widgets.component.ts"
+import { DirtyCheckPlugin } from '@datorama/akita';
+
+export class WidgetsComponent {
+  widgets$ = this.widgetsQuery.selectAll();
+  private dirtyCheck: DirtyCheckPlugin;
+
+  constructor(private widgetsQuery: WidgetsQuery) {}
+
+  ngOnInit() {
+    this.dirtyCheck = new DirtyCheckPlugin(this.widgetsQuery).setHead();
+  }
+
+  reset() {
+    this.dirtyCheck.reset();
+  }
+  
+  ngOnDestroy() {
+    this.dirtyCheck.destroy();
+  }
+}
+```
+
+From the moment you call `setHead()`, Akita's `DirtyCheckPlugin` takes the current store snapshot and saves it as the head (the value that we compare against). With every change to the store the plugin will compare it to the head value and notify you whether the state is dirty.
+
+```html title="widgets.component.html"
+<button
+    [disabled]="!(dirtyCheck.isDirty$| async)" 
+    (click)="save()">
+  Save Changes
+</button>
+```
+
+By calling `reset()` you are telling the plugin to update the store with the `head` value. The plugin also provides a special method called isPathDirty() that checks whether a given `path` is `dirty`. For example:
+
+```ts
+const dirtyCheck = new DirtyCheckPlugin(widgetsQuery).setHead();
+dirtyCheck.isPathDirty('check.this.path');
+```
+
+## Options
+
+### `comparator`
+The default `comparator` compares the object by using the native `JSON.stringify()` method, but you can pass a custom `comparator`, for example:
+
+```ts
+import { isEqual } from 'lodash.isequal';
+
+const options = { comparator: (a, b) => !isEqual(a, b) };
+const dirtyCheck = new DirtyCheckPlugin(widgetsQuery, options);
+```
+
+### `watchProperty`
+The dirty check plugin can watch specific properties in your store's state and not just the entire store, this can be achieved by passing the properties keys to `DirtyCheckPlugin`, for example:
+```ts
+// Tracks the entire store
+new DirtyCheckPlugin(widgetsQuery);
+
+// Tracks the store's state name property
+new DirtyCheckPlugin(widgetsQuery, { watchProperty: 'name' }); 
+
+// Tracks a set of properties
+new DirtyCheckPlugin(widgetsQuery, { watchProperty: ['name', 'color'] });
+
+// In case of an EntityStore we can also track all the entities
+new DirtyCheckPlugin(widgetsQuery, { watchProperty: 'entities' });
+```
+
+After the first time you call `setHead()`, each subsequent call to this method will re-set the current store value as the `head` and update the dirtiness to `false`.
+
+## EntityDirtyCheckPlugin
+
+In addition to the general dirty check functionality,  Akita also provides a powerful API to help keep track of one or many entities, instead of the entire store. 
+
+A good example is when you have a table or a list of entities that the users can modify, and you want to give them a way to revert it per entity. Here is how you can do it:
+
+```ts title="widgets.component.ts"
+import { EntityDirtyCheckPlugin } from '@datorama/akita';
+
+export class WidgetsComponent {
+  widgets$ = this.widgetsQuery.selectAll();
+  private collection: EntityDirtyCheckPlugin;
+
+  constructor(private widgetsQuery: WidgetsQuery) {}
+
+  ngOnInit() {
+    this.collection = new EntityDirtyCheckPlugin(this.widgetsQuery);
+    this.collection.setHead();
+  }
+
+  updateWidget(id: ID, name: string) {
+    this.widgetService.updateWidget(id, name);
+  }
+
+  reset(ids) {
+    this.collection.reset(ids);
+  }
+  
+  ngOnDestroy() {
+    this.collection.destroy();
+  }
+}
+```
+
+With this setup you can track the dirtiness per entity and revert it. 
+
+
+```html title="widgets.component.html"
+<tbody>
+  <tr *ngFor="let widget of widgets$ | async">
+    <td>
+      <input [value]="widget.name" #name>
+    </td>
+    <td>
+      <button (click)="updateWidget(widget.id, name.value)">
+        Save
+      </button>
+    </td>
+    <td>
+      <button (click)="revert(widget.id)"
+              [disabled]="!(collection.isDirty(widget.id) | async)">
+        Revert
+      </button>
+    </td>
+  </tr>
+</tbody>
+```
+
+:::tip
+`EntityDirtyCheckPlugin` doesn't track the entities count. It only tracks changes on the entities themselves. If you want to track the addition or removal of entities, you can do so by using the `DirtyCheckPlugin` and watch the `entities` property.
+:::
+
+Sometimes it's useful to partially reset the entity value when clicking on revert. The `revert()` method can accept a custom `update` function which receives as parameters the current `head` and the current entity `value`, and returns the modified entity. For example:
+
+```ts
+const updateFn = (head, current) => {
+  return {
+    ...head,
+    title: current.title
+  };
+};
+
+collection.reset(entityId, { updateFn });
+```
+
+In the above example we are reverting the whole entity except for the `title` (note that this will still mark the entity as dirty).
+
+Sometimes it's also useful to check whether at least one of the entities is dirty. For this you can use the `someDirty()` method:
+```ts
+collection.someDirty().subscribe(console.log);
+```
+
+### Options
+
+### `entityIds`
+A single id or an array of entity ids (default: all).
+
+```ts
+const options = { entityIds: [1, 2] };
+stateHistory = new EntityDirtyCheckPlugin(widgetsQuery, options);
+```
+
+

@@ -1,0 +1,70 @@
+---
+title: Store Middleware
+---
+
+It’s possible to define middleware functions both for a `Store` and `EntityStore`. For example, in `EntityStore` we can add the following methods:
+
+```ts title="books.store.ts"
+@StoreConfig({ name: 'books' })
+export class BooksStore extends EntityStore<BooksState> {
+  constructor() {
+    super();
+  }
+  
+  akitaPreAddEntity(book: Book) {
+    if(book.price === 100) {
+      return {
+        ...book,
+        price: limitedPrice
+      }                    
+    }
+  
+    return book;
+  }
+  
+  akitaPreUpdateEntity(prevBook: Book, nextBook: Book) {
+    // return the same entity or modify it
+  }
+}
+```
+
+The `preAddEntity()` middleware is called when we invoke the `EntityStore.set()` or `EntityStore.add()` methods with the newly added entity, and gives you the possibility to modify it before inserting it into the store.
+
+The `preUpdateEntity()` middleware is called with the previous entity’s data, as well as the updated version of it, whenever we call any `EntityStore` method that updates an entity, for instance, `EntityStore.update(1)` , `EntityStore.updateActive()`.
+
+In addition to that, we’ve added the `preUpdate()` middleware that’s supported in both stores, and is called with the previous and the current state. 
+
+This middleware is called whenever we call `Store.update()`. For example:
+
+```ts title="auth.store.ts"
+@StoreConfig({ name: 'auth' })
+export class AuthStore extends Store<AuthState> {
+  constructor() {
+    super();
+  }
+  
+  akitaPreUpdate(prevState: AuthState, nextState: AuthState) {
+    // return the same state or modify it
+  }
+}
+```
+
+These can also be useful for debugging purposes. For example, logging who's updating the store.
+
+## Using this
+In case you want to use the this context inside the hook, you need to use the `bind` function:
+
+```ts title="auth.store.ts"
+@StoreConfig({ name: 'auth' })
+export class AuthStore extends Store<AuthState> {
+  constructor(private someService: SomeService) {
+    super();
+    this.akitaPreUpdate = this.akitaPreUpdate.bind(this);
+  }
+  
+  akitaPreUpdate(prevState: AuthState, nextState: AuthState) {
+    this.someService.getData();
+    // return the same state or modify it
+  }
+}
+```

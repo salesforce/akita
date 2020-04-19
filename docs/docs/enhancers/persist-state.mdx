@@ -1,0 +1,156 @@
+---
+title: Persist State
+---
+
+The `persistState()` function gives you the ability to persist some of the app’s state, by saving it to localStorage/sessionStorage or anything that implements the `StorageEngine` API, and restore it after a refresh.
+
+To use it you should call the `persistState()` function. Here's an example of Angular's main file:
+
+```ts title="main.ts"
+import { persistState } from '@datorama/akita';
+
+const persistState = persistState();
+
+const providers = [{ provide: 'persistStorage', useValue: storage }];
+
+platformBrowserDynamic(providers)
+  .bootstrapModule(AppModule)
+  .catch(err => console.log(err));
+```
+
+## API
+### `clearStore`
+Clear the provided store from storage:
+
+```ts
+export class TodosService {
+  constructor(@Inject('persistStorage') private persistStorage) {
+    persistStorage.clearStore('todos');
+    // Clear all
+    persistStorage.clearStore();
+  }
+}
+```
+
+### `destroy`
+Stop sync the state:
+
+```ts
+import { PersistState } from '@datorama/akita';
+
+export class TodosService {
+  constructor(@Inject('persistStorage') private persistStorage: PersistState) {
+  }
+
+  stopSync() {
+    this.persistStorage.destroy();
+  }
+}
+```
+
+## Options
+### `storage`
+storage strategy to use. This defaults to localStorage but you can pass sessionStorage or anything that implements the StorageEngine API.
+
+### `key`
+The key by which the state is saved.
+
+### `include` 
+by default the whole state is saved to storage, use this param to include only the stores you need. It can be a store name or a predicate callback.
+
+### `deserialize` 
+Custom deserializer. Defaults to JSON.parse
+
+### `serialize`
+Custom serializer, defaults to JSON.stringify
+
+### `preStorageUpdateOperator`
+Custom operators that will run before storage update
+
+### `enableInNonBrowser`
+Whether to enable persistState in a non-browser environment 
+
+### `persistOnDestroy`
+Whether to persist the `cache` value of dynamic store upon destroy
+
+
+You can also track a specific store's key. For example:
+```ts
+persistState({ include: ['auth.token'] });
+```
+
+## Custom Hooks
+You can use the `preStorageUpdate`, and `preStoreUpdate` hooks to get more control on the state. 
+For example, here is how we can save only specific keys from the `auth` state:
+
+```ts
+persistState({
+  include: ['auth', 'todos'],
+  preStorageUpdate(storeName, state) {
+    if(storeName === 'auth') {
+      return {
+        token: state.token,
+        expired: state.expired
+      }
+    }
+    return state;
+  },
+  preStoreUpdate(storeName, state) {
+    return state;
+  }
+});
+```
+
+## Async Support
+This gives you the option to save a store’s value to a persistent storage, such as indexDB, websql, or any other asynchronous API. Here’s an example that leverages [localForage](https://github.com/localForage/localForage):
+```ts
+import * as localForage from 'localforage';
+
+localForage.config({
+  driver: localForage.INDEXEDDB,
+  name: 'Akita',
+  version: 1.0,
+  storeName: 'akita-storage'
+});
+
+persistState({ include: ['auth.token', 'todos'], storage: localForage });
+```
+
+## selectPersistStateInit
+Akita also exposes the `selectPersistStateInit` observable. This observable emits after Akita initialized the stores based on the storage's value. For example:
+
+```ts
+import { selectPersistStateInit } from '@datorama/akita';
+
+export class AuthGuard {
+  constructor(private router: Router, private authQuery: AuthQuery) {}
+
+  canActivate() {
+    return combineLatest([
+      this.authQuery.isLoggedIn$,
+      selectPersistStateInit(),
+    ]).pipe(
+      map(([isAuth]) => {
+        if(isAuth) return true;
+        this.router.navigateByUrl('login');
+        return false;
+      }),
+      take(1)
+    );
+  }
+}
+```
+
+## Performance Optimization
+By default, the plugin will update the storage upon each store's change. Some applications perform multiple updates in a second, and update the storage on each change can be costly. 
+
+For such cases, it's recommended to use the `preStorageUpdateOperator` option and add a `debounce`. For example:
+
+```ts
+import { debounceTime } from 'rxjs/operators';
+
+persistState({
+  include: ['auth.token', 'todos'],
+  preStorageUpdateOperator: () => debounceTime(2000)
+});
+```

@@ -1,0 +1,210 @@
+---
+title: Entity Store
+---
+
+For the most part, the stores you'll require in your applications will be entity stores. You can think of an entity store as a table in a database, where each table represents a flat collection of entities. 
+Akita's `EntityStore` simplifies the process, giving you everything you need to manage it.
+
+Let's see how we can use it to create a `todos` table, i.e., an `EntityStore` managing a `Todo` object:
+
+```ts title="todos.store.ts"
+import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
+import { Todo } from './todo.model';
+
+export interface TodosState extends EntityState<Todo, number> { }
+
+@StoreConfig({ name: 'todos' })
+export class TodosStore extends EntityStore<TodosState> {
+  constructor() { 
+    super() ;
+  }
+}
+```
+
+First, we need to define the store's interface. In our case, we can make do with extending the `EntityState` from Akita, providing it with the `Todo` Entity type and the `id` type, which in our case is a `number`.
+
+:::info
+`EntityState` has the following signature:
+
+```typescript
+export interface EntityState<Entity = any, IDType = any> {
+  entities: HashMap<Entity>;
+  ids: IDType[];
+  loading: boolean;
+  error: any;
+}
+```
+:::
+
+## Extend the Entity Store
+Sometimes it's useful to extend the store and add more properties to it, for example, you might want to save the todos active filter.
+To do so, first, we need to update our interface with the `property` type:
+
+```ts {5} title="todos.store.ts"
+import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
+import { Todo } from './todo.model';
+
+export interface TodosState extends EntityState<Todo, number> {
+  filter: string;
+}
+```
+
+Next, if we want to pass an initial state for this property, we can do it in the constructor as we did with a Store:
+```ts {11} title="todos.store.ts"
+import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
+import { Todo } from './todo.model';
+
+export interface TodosState extends EntityState<Todo, number> {
+  filter: string;
+}
+
+@StoreConfig({ name: 'todos' })
+export class TodosStore extends EntityStore<TodosState> {
+  constructor() {
+    super({ filter: 'ALL' });
+  }
+}
+```
+
+Now we can update the property by using the `update()` method. For example:
+
+```ts
+store.update({ filter: 'COMPLETED' });
+```
+
+## Entity Id
+By default, Akita takes the `id` key from the entity `id` field. To change it, you can pass the `idKey` option to the store config:
+```ts title="todos.store.ts"
+export interface TodosState extends EntityState<Todo, number> {}
+
+@StoreConfig({ name: 'todos', idKey: '_id' })
+export class TodosStore extends EntityStore<TodosState> {
+  constructor() {
+    super();
+  }
+}
+```
+
+
+By using this model, you will receive a lot of built-in functionality from Akita:
+
+## API
+
+### `set()`
+Replace current collection with the provided collection, and **resets** the active entity:
+
+```ts
+// Pass an array
+store.set([ Entity, Entity ]);
+// Pass an object
+store.set({ 1: Entity, 2: Entity });
+// Set the active id
+store.set([ Entity, Entity ], { activeId: 1 });
+```
+
+:::info
+If you pass an object, Akita doesn't guarantee the order of the data received.
+:::
+
+### `add()`
+Add an entity or entities to the store:
+
+```ts
+// Add multiple
+store.add([Entity, Entity]);
+// Add one 
+store.add(Entity);
+
+// Prepend
+store.add([Entity, Entity], { prepend: true });
+store.add(Entity, { prepend: true })
+```
+
+### `update()`
+Update an entity or entities in the store:
+
+```ts
+// Update one
+store.update(entityId, { name: 'New Name' ));
+
+// Use a predicate function
+store.update(({ name }) => name === 'John', {
+  name: 'New Name'
+});
+
+// Use a callback function
+store.update(entityId, entity => {
+  return {
+    config: {
+      ...entity.config,
+      date
+    }
+  }
+});
+
+// Update multiple
+store.update([id, id, id], { count: 5 });
+
+// Update all
+store.update(null, { name: 'New Name' });
+```
+
+### `remove()`
+Remove one or more entities from the store:
+
+```ts
+// Remove one
+store.remove(5);
+
+// Remove multiple
+store.remove([1,2,3]);
+
+// Remove by predicate
+store.remove(({ name }) => name === 'John');
+
+// Remove all
+store.remove();
+```
+
+### `upsert()`
+Insert or update an entity. Creates a new entity when no entity matches the `id`; otherwise, it performs an update:
+
+```ts
+store.upsert(id, { isOpen: true });
+```
+
+### `upsertMany()`
+Insert or update multiple entities. Creates a new entity when no entity matches the `id`; otherwise, it performs an update:
+
+```ts
+store.upsertMany([entity, entity]);
+```
+
+### `replace()`
+Replace an entity (except the `id`):
+
+```ts
+store.replace(id, newEntity);
+store.replace([id, id, id], newEntity);
+```
+
+### `move()`
+Move an entity from the current `index` to a new `index`:
+
+```ts
+store.move(fromIndex, toIndex);
+```
+
+### `setLoading()`
+Update the store's `loading` state. The initial value is set to `true` and is switched to `false` when you call `store.set()`. This can come in handy for indicating `loading`:
+
+```ts
+store.setLoading(true);
+```
+
+### `setError()`
+Update the store's `error` state:
+
+```ts
+store.setError(error);
+```

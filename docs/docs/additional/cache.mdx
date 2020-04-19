@@ -1,0 +1,71 @@
+---
+title: Caching Support
+---
+
+Akita has built-in cache support that will provide information about whether you already have data in the store. For example, in many cases we want to perform an HTTP request only once, and from that point on, to get the cached data from the store.
+
+Now, when we call `EntityStore.set()`, Akita internally marks the store as `cached`. We can also manually mark the store as cached by calling the `Store.setHasCache(boolean)` method.
+
+Akita exposes two query methods that you can use to query the `cache` value - `selectHasCache()` and `getHasCache()`.
+
+In addition to that, it exposes the `cacheable` function. 
+This method takes a `Store` and an `observable`.
+When we call it, it'll subscribe to the `observable` only if the `cache` value is currently `false`.
+Otherwise, it'll return `EMPTY` observable.
+
+```ts title="products.service.ts"
+import { cacheable } from '@datorama/akita';
+
+export class ProductsService { 
+  constructor(private productsStore: ProductsStore,
+              private http: Http) {}
+
+  getProducts() {
+    const request$ = this.http.get().pipe(
+      tap(products) => productsStore.set(products)
+    );
+    
+    return cacheable(this.productsStore, request$);
+  }
+}
+```
+
+But that’s not all — we can also define a `ttl` (time to live) which when expires will automatically invalidate the cache for you. For example:
+
+```ts title="products.store.ts"
+@StoreConfig({
+  name: 'products',
+  cache: {
+    ttl: 3600000
+  }
+})
+export class ProductsStore extends EntityStore<ProductsState> {
+  constructor() {
+    super();
+  }
+}
+```
+
+```ts title="products.service.ts"
+import { EMPTY } from 'rxjs';
+
+export class ProductsService { 
+  constructor(private productsStore: ProductsStore, 
+              private productsQuery: ProductsQuery, 
+              private http: Http) {}
+
+  getProducts() {
+    return this.productsQuery.selectHasCache().pipe(
+      switchMap(hasCache => {
+         const apiCall = this.http.get(..).pipe(
+           tap(products) => productsStore.set(products))
+         );
+         
+         return hasCache ? EMPTY : apiCall;
+      })
+    )
+  }
+}
+```
+
+In the code above, every hour Akita invalidates the cache, which causes the `selectHasCache()` stream to fire, causing the products to be fetched again from the server.

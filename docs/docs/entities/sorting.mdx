@@ -1,0 +1,49 @@
+---
+title: Sorting
+---
+
+By default, the store returns entities in the order in which they arrived from the server. The entities you add are pushed to the end of the collection.
+You may prefer getting the entities from the store in some other order. You can provide a `sortBy` option which could be based on an entity `key` or a `comparer` function.
+
+Akita will keep the collection in the order prescribed by your `key` or `comparer`. You can set it once for the entire Query:
+
+```ts title="products.query.ts"
+import { QueryConfig, Order } from '@datorama/akita';
+ 
+@QueryConfig({
+  sortBy: 'price',
+  sortByOrder: Order.ASC
+})
+export class ProductsQuery extends QueryEntity<ProductsState> {
+  constructor(protected store: ProductsStore) {
+    super(store);
+  }
+}
+```
+
+Or you can set it per `selectAll()`:
+
+```ts
+const products$ = sortControl.valueChanges.pipe(
+   startWith('title'),
+   switchMap((sortBy) => productsQuery.selectAll({
+     sortBy
+   }))
+ );
+ ```
+
+The query `sortBy` function also passes the whole `state` as the third argument, give you the ability to return a different `sortBy` function based on your current `state`. For example:
+
+```ts
+const sortBy = (a, b, state) => (
+    state.sortyByPrice ? 
+    sortByPrice(a, b) : 
+    sortById(a, b)
+);
+
+// With QueryConfig
+@QueryConfig({ sortBy })
+
+// With selectAll
+queryTodos.selectAll({ sortBy });
+```

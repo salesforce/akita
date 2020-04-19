@@ -1,0 +1,157 @@
+---
+title: Transactions
+---
+
+Transactions are an optimization for performing multiple operations on the store. Let's say we have the following store and query:
+
+```ts title="auth.store.ts"
+function createInitialState(): AuthState {
+  return {
+    firstName: '',
+    token: ''
+  };
+}
+
+@StoreConfig({ name: 'auth' })
+class AuthStore extends Store<AuthState> {
+
+  constructor() {
+    super(createInitialState());
+  }
+}
+```
+
+```ts title="auth.query.ts"
+export class AuthQuery extends query<AuthState> {
+
+  constructor(protected store: AuthStore) {
+    super(store);
+  }
+}
+```
+
+And we want to query the entire state:
+```ts
+const authState$ = authQuery.select().subscribe();
+```
+
+Now let's say we need to update the same store a couple of times on the same `tick`:
+
+```ts
+update(token: string) {
+  this.store.update({ token });
+  this.store.setLoading(false);
+}
+```
+
+This will trigger the `authState$` subscriber `twice`, something we want to avoid. In cases like these Akita's `transactions` come in handy - they ensures that a dispatch occurs only after all the store actions defined in the transaction have been called. 
+
+We can use them as decorators, functions or operators:
+
+```ts
+import { 
+  transaction, 
+  applyTransaction, 
+  withTransaction } 
+from '@datorama/akita';
+
+@transaction()
+update() {
+   this.store.update();
+   this.store.setLoading(true);
+}
+
+update() {
+  applyTransaction(() => {
+    this.store.update();
+    this.store.setActive(1);
+  });
+}
+
+update() {
+  return http.get().pipe(
+    withTransaction(response => {
+       this.store.update(response);
+       this.store.setActive(1);
+    })
+  )
+}
+```
+
+Now the store will dispatch the new values only **once**, after the final update has finished.
+
+:::tip
+Transaction also works when updating multiple stores. For example:
+
+```ts
+queryOne.select().subscribe(value => {
+  const fromOtherQuery = queryTwo.getValue();
+})
+```
+
+When updating both stores inside a `transaction`, you'll have a guarantee that the value of both will be up to date inside the query selector.
+:::
+
+## combineQueries
+Akita provides the `combineQueries` observable, which is useful in cases where we need to return data from our store, combined with data arriving from additional queries, like `combineLatest`. One example of this is combining data from other stores:
+
+```ts title="movies.query.ts"
+import { combineQueries } from '@datorama/akita';
+
+export class MoviesQuery extends QueryEntity<MoviesState> {
+
+  constructor(protected store: MoviesStore, 
+              private actorsQuery: ActorsQuery, 
+              private genresQuery: GenresQ
+uery) {
+    super(store);
+  }
+
+  selectMovies() {
+    return combineQueries([
+      this.selectAll(), 
+      this.actorsQuery.selectAll({ asObject: true }), 
+      this.genresQuery.selectAll({ asObject: true })
+     ]
+    )
+    .pipe(
+      map(([movies, actors, genres]) => {
+        return movies.map(movie => {
+          return {
+            ...movie,
+            actors: movie.actors.map(actorId => actors[actorId]),
+            genres: movie.genres.map(genreId => genres[genreId])
+          };
+        });
+      })
+    );
+  }
+}
+```
+
+```ts title="movies.service.ts"
+import { withTransaction } from '@datorama/akita';
+
+export class MoviesService {
+  constructor(private moviesStore: MoviesStore,
+              private actorsStore: ActorsStore, 
+              private genresStore: GenresStore) {}
+
+  getMovies() {
+    return http.get().pipe(
+      withTransaction(response => {
+        this.actorsStore.set(response.entities.actors);
+        this.genresStore.set(response.entities.genres);
+        const movies = {
+          entities: response.entities.movies,
+          ids: response.result
+        };
+        this.moviesStore.set(movies);
+      })
+    );
+  }
+}
+```
+
+In our service, when we fetch the `movies` and update the store, we wrap it in a `transaction`, and in the query, when selecting the movies, we use the `combineQueries` operator in order to combine the movie data with the actors & genres data from the other stores. This will make sure that our subscribers will receive a `single` notification, instead of one per update.
+

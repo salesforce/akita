@@ -1,7 +1,7 @@
 {
   "name": "@datorama/akita",
   "version": "4.22.2",
-  "description": "State Management Tailored-Made for JS Applications",
+  "description": "A Reactive State Management Tailored-Made for JS Applications",
   "keywords": [
     "angular",
     "state management",
@@ -13,7 +13,8 @@
     "angular store",
     "store",
     "observable data stores",
-    "redux"
+    "redux",
+    "reactive"
   ],
   "homepage": "https://github.com/datorama/tree/master/libs/akita#readme",
   "bugs": {

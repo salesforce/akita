@@ -1,0 +1,101 @@
+---
+title: Angular Schematics
+---
+
+> Scaffolding library for Angular applications using Akita.
+
+Schematics provides CLI commands for generating files when building new features with Akita. Built on top of Schematics, this tool integrates with the Angular CLI.
+
+```ts
+ng add @datorama/akita
+```
+
+## Default Schematics Collection
+
+To use `@datorama/akita` as the default collection in your Angular CLI project, add it to your `angular.json`:
+
+```bash
+ng config cli.defaultCollection @datorama/akita
+```
+
+The package extend the default `@schematics/angular` collection. If you want to set defaults for schematics such as generating components with `scss` file, you must change the schematics package name from `@schematics/angular` to `@datorama/akita` in `angular.json`:
+```json title="angular.json"
+"schematics": {
+  "@datorama/akita:component": {
+    "styleext": "scss"
+  }
+}
+```
+
+## Create a New Feature
+```bash
+ng g @datorama/akita:feature todos/todos
+```
+
+The defauls feature will output an entity feature, you can choose between different kind of `EntityService`:
+
+- Default: A regular service with CRUD boilerplate.
+- Http: A `NgEntityService` powered by the HttpClient (requires [@datorama/akita-ng-entity-service](entity-service)).
+- Firebase: A `CollectionService` powered by AngularFirestore (requires [akita-ng-fire](https://github.com/dappsnation/akita-ng-fire)).
+
+You can also generate the normal feature with the `plain` option:
+
+```bash
+ng g @datorama/akita:feature auth/auth --plain
+```
+
+:::tip
+The akita-schematics: prefix is only needed when the default collection isn't set to akita-schematics
+:::
+
+### Generate a Store
+```bash
+ng g @datorama/akita:as todos
+ng g @datorama/akita:aes todos // entity store
+```
+
+### Generate a Query
+```bash
+ng g @datorama/akita:query todos
+ng g @datorama/akita:entity-query todos
+
+Alias:
+ng g @datorama/akita:aq todos
+ng g @datorama/akita:aeq todos // entity query
+```
+
+### Generate a Model
+```bash
+ng g @datorama/akita:model todo
+
+Alias:
+ng g @datorama/akita:am todo
+```
+
+### Generate a Service
+```bash
+ng g @datorama/akita:service todos
+
+Alias:
+ng g @datorama/akita:asr todos
+```
+
+### Generate an NgEntityService
+```bash
+ng g @datorama/akita:http-entity-service todos
+
+Alias:
+ng g @datorama/akita:ahes todos
+```
+
+### Generate Tests
+Add the `--spec` option. For example:
+
+```bash
+ng g af products/products --spec
+```
+
+### Generate Module
+
+Add the `--withModule` to generate module and Akita component. (only for entity store)
+

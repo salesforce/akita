@@ -1,0 +1,139 @@
+---
+title: Active Entity
+---
+
+The store supports having an `active` property, holding the active entity's `id`. This can prove to be very useful in cases where you want to interact with the entity that is currently active.
+  
+Here's how to set it up:
+
+```ts {3} title="todos.store.ts"
+import { EntityState, ActiveState, StoreConfig } from '@datorama/akita';
+
+export interface TodosState extends EntityState<Todo, number>, ActiveState {
+}
+
+@StoreConfig({ name: 'todos' })
+export class TodosStore extends EntityStore<TodosState> {
+  constructor() {
+    super();
+  }
+}
+```
+
+The Store provides the following methods to update and query the `active` state:
+
+## API
+
+### `setActive`
+Set the given entity `id` as active:
+
+```ts
+store.setActive(entityId);
+store.setActive(null);
+```
+
+### `updateActive`
+
+Update the active entity:
+```ts
+store.updateActive({ name: newName });
+
+store.updateActive(active => {
+  return {
+    config: {
+      ...active.config,
+      date
+    }
+  }
+});
+```
+
+It’s possible to set the `next` or `previous` entity as `active`. For example:
+
+```ts
+store.setActive({ prev: true }); 
+store.setActive({ next: true } );
+```
+
+By default, if the active entity is the last one and you select to activate the next entity, it will loop to the beginning and make the first one active. If you want to disable this behavior set the `wrap` parameter to `false`:
+```ts
+store.setActive({ next: true, wrap: false });
+```
+
+### `selectActiveId`
+Select the `active` entity's `id`:
+```ts
+activeId$ = query.selectActiveId();
+```
+
+### `selectActive`
+Select the `active` entity:
+```ts
+activeEntity$ = query.selectActive();
+activeTitle$ = query.selectActive(({ title }) => title);
+```
+
+### `getActiveId`
+Get the `active` entity `id`:
+```ts
+const activeId = query.getActiveId();
+```
+
+### `getActive`
+Get the `active` entity:
+```ts
+const active = query.getActive();
+```
+
+### `hasActive`
+Whether an active entity is set:
+
+```ts
+if(this.query.hasActive()) { }
+if(this.query.hasActive(id)) { }
+```
+
+## Multiple Active Entities
+In addition to having one active entity, there are times when we need to manage multiple active entities. Here is how to do it with Akita:
+```ts {3} title="todos.store.ts"
+import { EntityState, MultiActiveState, StoreConfig } from '@datorama/akita';
+
+export interface TodosState extends EntityState<Todo, number>, MultiActiveState {
+}
+
+const initialState = {
+  active: []
+};
+
+@StoreConfig({ name: 'todos' })
+export class TodosStore extends EntityStore<TodosState> {
+  constructor() {
+    super(initialState);
+  }
+}
+```
+
+Unlike working with a single active entity, we've added the `MultiActiveState` interface and set the initial state of the `active` property to an empty array.
+
+In addition to the methods of working with a single active entity, we will also receive the following methods:
+
+
+### `setActive`
+```ts
+store.setActive([id, id, id]);
+```
+
+### `addActive`
+```ts
+store.addActive(id);
+```
+
+### `removeActive`
+```ts
+store.removeActive(id);
+```
+
+### `toggleActive`
+```ts
+store.toggleActive(id);
+```

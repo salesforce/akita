@@ -1,0 +1,111 @@
+---
+title: The Store
+---
+
+The `Store` is a single object which contains the store state and serves as the _single source of truth_.
+
+To create a store, you need to extend Akita's `Store`, passing the type as well as its initial state:
+
+```ts title="session.store.ts"
+import { Store, StoreConfig } from '@datorama/akita';
+
+export interface SessionState {
+   token: string;
+   name: string;
+}
+
+export function createInitialState(): SessionState {
+  return {
+    token: '',
+    name: ''
+  };
+}
+
+@StoreConfig({ name: 'session' })
+export class SessionStore extends Store<SessionState> {
+  constructor() {
+    super(createInitialState());
+  }
+}
+```
+
+With this setup you get a `Store` with the following methods:
+
+### `update()`
+
+When you want to update the store, you can call the `update()` method passing the new `state`:
+
+```ts title="session.service.ts"
+import { SessionStore } from './session.store';
+ 
+export class SessionService {
+  constructor(private sessionStore: SessionStore) {}
+
+  updateUserName(newName: string) {
+    this.sessionStore.update({ name: newName });
+  }  
+}
+```
+
+The second `update()` option gives you more control. It receives a `callback` function, which gets the current state, and returns a new **immutable** state, which will be the new value of the store. For example:
+
+```ts title="session.service.ts"
+import { SessionStore } from './session.store';
+ 
+export class SessionService {
+  constructor(private sessionStore: SessionStore) {}
+
+  updateUserName(newName: string) {
+    this.sessionStore.update(state => ({
+      name: newName
+    }));
+  }  
+}
+```
+
+### `setLoading()`
+
+Set the `loading` state:
+```ts title="session.service.ts"
+import { SessionStore } from './session.store';
+ 
+export class SessionService {
+  constructor(private sessionStore: SessionStore, 
+              private http: HttpClient) {}
+
+  async updateUserName(newName: string) {
+    this.sessionStore.setLoading(true);
+    await this.http(...).toPromise();
+    this.sessionStore.update({ name: newName});
+    this.sessionStore.setLoading(false);
+  }  
+}
+```
+
+### `setError()`
+Set the `error` state:
+
+```ts title="session.service.ts"
+import { SessionStore } from './session.store';
+ 
+export class SessionService {
+  constructor(private sessionStore: SessionStore, 
+              private http: HttpClient) {}
+
+  async updateUserName(newName: string) {
+    try {
+      await this.http(...).toPromise();
+    } catch(error) {
+      this.sessionStore.setError(error);
+    }
+  }  
+}
+```
+
+### `destroy()`
+Destroyes the store:
+```ts
+sessionStore.destroy();
+```
+
+

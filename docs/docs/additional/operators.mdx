@@ -1,0 +1,30 @@
+---
+title: Custom Operators
+---
+
+### `filterNil`
+Filters `undefined` or `null` values:
+
+```ts
+import { filterNil } from '@datorama/akita';
+
+query.selectEnitity(1).pipe(filterNil).subscribe();
+```
+
+### `setLoading`
+set the `loading` property to `true` and change it to `false` when the request completed or there was an error:
+
+```ts title="products.service.ts"
+import { setLoading } from '@datorama/akita';
+
+export class ProductsService {
+  constructor(private productsStore: ProductsStore) {}
+
+  getProducts() {
+    return this.http.get(url).pipe(
+      setLoading(store),
+      tap(response => this.productsStore.set(response))
+    );
+  }
+}
+```

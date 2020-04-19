@@ -1,0 +1,61 @@
+---
+title: Using Immer
+---
+
+As you know, when working with immutable objects you often get to what’s called a “spread hell” situations. If you prefer working with immutable objects in an mutable fashion, you can use [immer](https://github.com/immerjs/immer) with Akita.
+
+The only thing you need to do is pass the `produce` function from `immer` to your store:
+
+```ts title="todos.store.ts"
+import { produce } from 'immer';
+
+export interface TodosState extends EntityState<Todo> {
+  ui: {
+    filter: VISIBILITY_FILTER
+  };
+}
+
+const initialState = {
+  ui: { filter: VISIBILITY_FILTER.SHOW_ALL }
+};
+
+@StoreConfig({ name: 'todos', producerFn: produce })
+export class TodosStore extends EntityStore<TodosState> {
+  constructor() {
+    super(initialState);
+  }
+}
+```
+
+Now when you use the store's `update` function, you'll get the `draft` version, which you can mutate:
+
+```ts title="todos.service.ts"
+export class TodosService {
+
+  constructor(private todosStore: TodosStore) { }
+
+  updateFilter(filter: VISIBILITY_FILTER) {
+    this.todosStore.update(state => {
+      state.ui.filter = filter;
+    })
+  }
+
+  complete({ id, completed }: Todo) {
+    this.todosStore.update(id, entity => {
+      entity.completed = completed;
+    });
+  }
+}
+```
+
+:::warning
+When you choose to work with `immer`, you can't return a new value from the callback function:
+:::
+
+```ts
+todosStore.update(id, entity => entity.completed = completed);
+```
+
+This will cause `immer` to throw. Here's a [live](https://stackblitz.com/edit/akita-todos-immer) example you can play with.
+
+

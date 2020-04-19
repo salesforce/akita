@@ -1,6 +1,6 @@
 ![Akita](https://s8.postimg.cc/d4m3fc9tx/image.png)
 
-> _State Management Tailored-Made for JS Applications_
+> A Reactive State Management Tailored-Made for JS Applications
 
 Whether it be Angular, React, Vue, Web Components or plain old vanilla JS, Akita can do the heavy lifting and serve as a useful tool for maintaining clean, boilerplate-free, and scalable applications.
 
@@ -22,7 +22,7 @@ Akita encourages simplicity. It saves you the hassle of creating boilerplate cod
 
 👉 [10 Reasons Why You Should Start Using Akita as Your State Management Solution](https://engineering.datorama.com/10-reasons-why-you-should-start-using-akita-as-your-state-management-solution-66b63d033fec)
 
-- 🤓 Learn about it on the [docs site](https://netbasal.gitbook.io/akita/)
+- 🤓 Learn about it on the [docs site](https://datorama.github.io/akita/)
 - 🚀 See it in action on [StackBlitz](https://stackblitz.com/edit/akita-todos-app)
 - 😎 Use the [CLI](https://github.com/datorama/akita/tree/master/cli)
 - 👉 Checkout the [sample application](http://akita.surge.sh/)

@@ -1,0 +1,30 @@
+---
+title: Plain JS Usage
+---
+
+Akita can work with any framework and can be used with plain JS. Here's an [example](https://github.com/datorama/akita/tree/master/apps/svelte-todo) that uses [Svelte](https://github.com/sveltejs/svelte) and Akita functional creation methods:
+
+```js
+import { createStore, createQuery } from '@datorama/akita';
+
+export const store = createStore({ count: 0 }, { name: 'counter' });
+export const query = createQuery(store);
+
+export const selectCount = query.select('count');
+```
+
+```js
+<script>
+  import { store, selectCount } from './count.state';
+
+  function handleClick() {
+    store.update(state => ({ count: state.count + 1 }));
+  }
+</script>
+
+<button on:click={handleClick}>Clicks: {$selectCount} </button>
+```
+
+For `Entity` feature use `createEntityStore` and `createQueryEntity` functions.
+
+You can read more about it in [this](https://netbasal.com/supercharge-your-svelte-state-management-with-akita-f1f9de5ef43d) article.

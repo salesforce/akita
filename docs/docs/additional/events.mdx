@@ -1,0 +1,55 @@
+---
+title: Event-based APIs
+---
+
+One of the recurring requests we got, was to simplify and improve the experience of working with event-based APIs such as web-sockets.
+
+To make it easier for you, we’ve added a new API method — `runStoreAction`:
+
+```ts
+import { runStoreAction, StoreActions } from '@datorama/akita';
+
+runStoreAction('books', StoreActions.Update, {
+  payload: {
+    data: { filter: 'New filter' }
+  }
+});
+
+runStoreAction('books', StoreActions.UpdateEntities, {
+  payload: {
+    data: { title: 'New title' },
+    entityIds: 2
+  }
+});
+
+runStoreAction('books', StoreActions.SetEntities, {
+  payload: {
+    data: [{ id: 1 }, { id: 2 }]
+  }
+});
+
+runStoreAction('books', StoreActions.AddEntities, {
+  payload: {
+    data: { id: 1 }
+  }
+});
+
+runStoreAction('books', StoreActions.UpsertEntities, {
+  payload: {
+    data: { title: 'Another title' },
+    entityIds: [2, 3]
+  }
+});
+
+runStoreAction('books', StoreActions.UpsertEntities, {
+  payload: {
+    data: [
+     { id: 3, title: 'Updated title' },
+     { id: 4, title: 'Original title' }
+    ]
+  }
+});
+```
+
+The `runStoreAction()` takes the store’s name, an action and a payload, and updates the store based on that information. So now, for example, you can get these parameters from your socket connection and update any store you want.
+

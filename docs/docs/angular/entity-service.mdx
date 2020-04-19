@@ -1,0 +1,248 @@
+---
+title: Ng Entity Service
+---
+
+There’s even more boilerplate we can save you, by creating an Akita entity service, which follows the standard [RESTful naming conventions](https://restfulapi.net/resource-naming/) by default.
+
+Specifically, this service can be extremely useful in systems that use strict url patterns, such as CMS, admin dashboards, etc.
+
+## Getting Started
+After installing Akita, we simply run:
+
+```bash
+npm install @datorama/akita-ng-entity-service
+```
+
+Let’s use [JSONPlaceholder](https://jsonplaceholder.typicode.com/) as our REST API and quickly scaffold a feature for Posts. To get started we run:
+
+```bash
+ng g af posts
+```
+
+This schematics command generates an Akita `PostsStore`, `PostsQuery`, and `PostsService`. First we need to define the base api url that will be used for each request. This is done when adding the service configuration to the module:
+
+```ts title="app.module.ts"
+import { 
+  HttpMethod, 
+  NG_ENTITY_SERVICE_CONFIG, 
+  NgEntityServiceGlobalConfig 
+} from '@datorama/akita-ng-entity-service';
+
+@NgModule({
+  ...
+  providers: [
+    {
+      provide: NG_ENTITY_SERVICE_CONFIG,
+      useValue: {
+        baseUrl: 'https://jsonplaceholder.typicode.com'
+      }
+    }
+  ],
+  bootstrap: [AppComponent]
+})
+export class AppModule {}
+
+```
+
+Note that if you have server calls that use a different base url than the one you defined in the above setting, you can modify the url per service, or use a factory if you dynamically generate the url based on other providers’ data. Our service looks like this:
+```ts title="posts.service.ts"
+import { Injectable } from '@angular/core';
+import { NgEntityService } from '@datorama/akita-ng-entity-service';
+import { PostsState, PostsStore } from './posts.store';
+
+@Injectable({ providedIn: 'root' })
+export class PostsService extends NgEntityService<PostsState> {
+  constructor(protected store: PostsStore) {
+    super(store);
+  }
+}
+```
+
+This ensures that the service will automatically perform its CRUD operations on the `PostsStore` we’ve generated. By extending `NgEntityService`, we get a several built-in API calls without the need to add them ourselves: `get()`, `add()`, `update()` and `delete()`. Next, let’s create a component that uses those calls:
+
+```ts title="posts.component.ts"
+@Component()
+export class PostsPageComponent {
+  posts$ = this.postsQuery.selectAll();
+
+  constructor(
+    private postsQuery: PostsQuery,
+    private postsService: PostsService
+  ) {}
+
+  ngOnInit() {
+    this.postsService.get().subscribe();
+  }
+
+  gethOne(id) {
+    this.postsService.get(id).subscribe();
+  }
+
+  add() {
+    this.postsService.add({ title: 'New Post', body: '' }).subscribe();
+  }
+
+  update(id) {
+    this.postsService.update(id, { title: 'New title' }).subscribe({
+      error: (error) => {
+        this.error = error;
+      }
+    });
+  }
+
+  remove(id) {
+    this.postsService.delete(id).subscribe();
+  }
+}
+```
+
+As you can see, since all the tasks of initalizing the requests and updating the store are all baked in to the entity service, all we need to do is call the relevant methods. Additionally, each method takes a config object where we can pass some or all of the following parameters:
+
+```ts
+{
+  params?: HttpParams;
+  headers?: HttpHeaders;
+  url?: string;
+  mapResponseFn?: (res) => Entity | Entity[];
+}
+```
+
+The `resourceName` used in the urls is by default identical to the store name, but we can easily configure it. For instance, if we want our posts service to fetch its posts from the articles url we can set it in the service config:
+
+```ts title="posts.service.ts"
+@NgEntityServiceConfig({
+  resourceName: 'articles',
+  baseUrl: 'customBaseUrl'
+})
+@Injectable({ providedIn: 'root' })
+export class PostsService extends NgEntityService<PostsState> {
+  constructor(protected store: PostsStore) {
+    super(store);
+  }
+}
+```
+
+Alternatively, we can pass the config as the second parameter in the `super()` call in the service’s constructor.
+
+## Entity Service Loader
+Loading indication is a very common scenario — we often need to display to the user an indication that the server call has been made, and our app is currently in the process of loading the resulting data.
+
+Akita’s Entity Service comes with a built-in solution for these cases; The `NgEntityServiceLoader` can listen to any entity service’s built-in method and give us an indication of its loading status:
+
+
+```ts title="posts.component.ts"
+import { 
+  NgEntityServiceLoader 
+} from '@datorama/akita-ng-entity-service';
+
+@Component()
+export class PostsPageComponent {
+  posts$ = this.postsQuery.selectAll();
+  loaders = this.loader.loadersFor('posts');
+
+  constructor(
+    private postsQuery: PostsQuery,
+    private postsService: PostsService,
+    private loader: NgEntityServiceLoader
+  ) {}
+
+  ngOnInit() {
+    this.postsService.get().subscribe();
+  }
+}
+```
+
+The `loaders` object now contains loading indicators for each of the `PostsService` methods; Each one holding an `observable` boolean value, indicating the method’s loading status. Thanks to that we can create customized gui in the component’s template, based on those indicators :
+
+```ts title="posts.component.html"
+<ng-template #idle>Idle</ng-template>
+
+<h5>Loaders</h5>
+
+<p>Get => 
+  <span *ngIf="(loaders.get$ | async); else idle">Loading...</span>
+</p>
+
+<p>POST => 
+  <span *ngIf="(loaders.add$ | async); else idle">Loading...</span>
+</p>
+
+<p>PUT => <
+  span *ngIf="(loaders.update$ | async); else idle">Loading...</span>
+</p>
+
+<p>DELETE => 
+  <span *ngIf="(loaders.delete$ | async); else idle">Loading...</span>
+ </p>
+```
+
+We can also get indicators for a specific entity being updated or deleted by calling `loaders.updateEntity(id)` and `loaders.deleteEntity(id)`, respectively.
+
+## Entity Service Notifier
+In addition to that there are cases when we need to know whether certain operation has succeded or failed. For example, a global component that displays toast notifications to the user.
+
+For this purpose the Entity Service package provides the `NgEntityServiceNotifier` service, which we can subscribe to and get the status of any HTTP call that was made:
+
+```ts title="notification.service.ts"
+import { 
+  NgEntityServiceNotifier 
+} from '@datorama/akita-ng-entity-service';
+
+class NotificationService {
+
+  constructor(
+    private notifier: NgEntityServiceNotifier
+  ) {}
+
+  listen() {
+    this.notifier.action$.subscribe(action => {
+      // show toast
+    });
+  }
+}
+```
+
+The resulting data looks like this:
+```ts
+{
+  storeName: string;
+  type: ActionType; // success/error
+  payload: any; // response from the server
+  method: HttpMethod;
+  successMsg?: string;
+  errorMsg?: string;
+}
+```
+
+The package also exposes built-in operators, which allow us to filter the `type`, `store`, and `HTTP` method. For example:
+
+```ts
+import { 
+ NgEntityServiceNotifier,
+ filterMethod, 
+ ofType, 
+ filterStore 
+} from '@datorama/akita-ng-entity-service';
+
+this.notifier.action$.pipe(
+  filterStore('posts'),
+  ofType('success'),
+  filterMethod('DELETE'),
+)
+```
+
+## Options
+The global `config` provide takes the following object:
+```ts
+{
+  provide: NG_ENTITY_SERVICE_CONFIG,
+  useValue: {
+    return {
+      baseUrl: 'https://jsonplaceholder.typicode.com',
+      httpMethods: {
+        PUT: HttpMethod.PATCH
+      }
+    } as NgEntityServiceGlobalConfig;
+  }
+}
+```

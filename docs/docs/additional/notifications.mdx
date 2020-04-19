@@ -1,0 +1,93 @@
+---
+title: Success/Error Handling
+---
+
+When we perform an HTTP request, we want to notify the user whether it succeeded or not. There are several methodologies you can use to do that:
+
+## Local Component State
+
+A local component state is useful when only the current component needs to know about the request's `status`, so we can set it once in the component and forget about it:
+
+```ts title="todos.service.ts"
+class TodosService {
+  updateTodo() {
+    return this.http.post().pipe(
+      tap(() => this.store.updateEntity()
+    )
+  }
+}
+```
+
+```ts title="todos.component.ts"
+@Component({
+  template: `
+    <div *ngIf="error">{{ error }}</div>
+    <div *ngIf="success">Success!!</div>
+  `
+})
+class TodosComponent {
+  updateTodo() {
+    this.todosService.updateTodo().subscribe({
+      next: () => (this.success = true),
+      error: error => (this.error = `🤷🏻‍♂️`)
+    })
+  }
+}
+```
+
+The benefit is that we don't need to save the `status` in the store and `reset` it on destroy.
+
+A different case is when you don't need to show the `state` in the component because you're using a global `alert` design, for example. In such a case, you can handle it directly on the service:
+```ts title="todos.service.ts"
+import { throwError } from 'rxjs';
+
+class TodosService {
+  constructor(private toaster: Toaster) {}
+  
+  updateTodo() {
+    return this.http.post().pipe(
+      tap(() => {
+        this.store.updateEntity();
+        this.toaster.success(`🦄`);
+      }),
+      catchError((err) => {
+        this.toaster.error(`🤷🏻‍♂️`);
+        return throwError(err);  
+      })
+    )
+  }
+}
+```
+
+## Store's State
+If you want to communicate the error to other components or services you can save the `error` in the store:
+```ts title="todos.service.ts"
+class TodosService {
+  constructor(private toaster: Toaster) {}
+  
+  updateTodo() {
+    return this.http.post().pipe(
+      tap(() => this.store.updateEntity()),
+      catchError((err) => {
+        this.store.setError(`🤷🏻‍♂️`);
+        return throwError(err); 
+      })
+    )
+  }
+}
+```
+
+```ts title="todos.component.ts"
+@Component({
+  template: `<div *ngIf="error$ | async as err">{{ err }}</div>`
+})
+class TodosComponent {
+  error$ = this.todosQuery.selectError();
+  
+  updateTodo() {
+    this.todosService.updateTodo().subscribe();
+  }
+}
+```
+
+

@@ -1,0 +1,223 @@
+---
+title: Angular Router Store
+---
+
+> Bindings to connect Angular router to Akita store.
+
+To get started, install the `@datorama/akita-ng-router-store` package and add to the `AppModule` the Akita’s devtools modules:
+
+```ts title="app.module.ts"
+import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
+import { 
+  AkitaNgRouterStoreModule 
+} from '@datorama/akita-ng-router-store';
+
+​@NgModule({ 
+imports: [
+  AkitaNgRouterStoreModule,
+  environment.production ? [] : AkitaNgDevtools
+})
+export class AppModule {
+}
+```
+
+With this setup, you'll get two things:
+1. You'll see the Router actions in Redux devtools.
+2.  A unique queries selectors to query the router state:
+
+### `selectParams`
+```ts
+import { RouterQuery } from '@datorama/akita-ng-router-store';
+
+export class ArticlesQuery extends QueryEntity<ArticlesState> {
+   constructor(protected store: ArticlesStore, 
+              private routerQuery: RouterQuery) {
+     routerQuery.selectParams().subscribe();
+     routerQuery.selectParams('id').subscribe();
+     routerQuery.selectParams(['id', 'type']).subscribe();
+   }
+ }
+```
+
+### `getParams`
+```ts
+import { RouterQuery } from '@datorama/akita-ng-router-store';
+
+export class ArticlesQuery extends QueryEntity<ArticlesState> {
+   constructor(protected store: ArticlesStore, 
+              private routerQuery: RouterQuery) {
+     const params = routerQuery.getParams();
+   }
+ }
+```
+
+### `selectQueryParams`
+
+```ts
+import { RouterQuery } from '@datorama/akita-ng-router-store';
+
+export class ArticlesQuery extends QueryEntity<ArticlesState> {
+   constructor(protected store: ArticlesStore, 
+              private routerQuery: RouterQuery) {
+     routerQuery.selectQueryParams().subscribe();
+     routerQuery.selectQueryParams('id').subscribe();
+     routerQuery.selectQueryParams(['id', 'type']).subscribe();
+   }
+ }
+```
+
+### `getQueryParams`
+```ts
+import { RouterQuery } from '@datorama/akita-ng-router-store';
+
+export class ArticlesQuery extends QueryEntity<ArticlesState> {
+   constructor(protected store: ArticlesStore, 
+              private routerQuery: RouterQuery) {
+     const params = routerQuery.getQueryParams();
+   }
+ }
+```
+
+### `selectFragment`
+
+```ts
+import { RouterQuery } from '@datorama/akita-ng-router-store';
+
+export class ArticlesQuery extends QueryEntity<ArticlesState> {
+   constructor(protected store: ArticlesStore, 
+              private routerQuery: RouterQuery) {
+     routerQuery.selectFragment().subscribe();
+     routerQuery.selectFragment('id').subscribe();
+     routerQuery.selectFragment(['id', 'type']).subscribe();
+   }
+ }
+```
+
+### `getFragment`
+```ts
+import { RouterQuery } from '@datorama/akita-ng-router-store';
+
+export class ArticlesQuery extends QueryEntity<ArticlesState> {
+   constructor(protected store: ArticlesStore, 
+              private routerQuery: RouterQuery) {
+     const fragment = routerQuery.getFragment();
+   }
+ }
+```
+
+### `selectData`
+
+```ts
+import { RouterQuery } from '@datorama/akita-ng-router-store';
+
+export class ArticlesQuery extends QueryEntity<ArticlesState> {
+   constructor(protected store: ArticlesStore, 
+              private routerQuery: RouterQuery) {
+     routerQuery.selectData().subscribe();
+     routerQuery.selectData('id').subscribe();
+     routerQuery.selectData(['id', 'type']).subscribe();
+   }
+ }
+```
+
+### `getData`
+```ts
+import { RouterQuery } from '@datorama/akita-ng-router-store';
+
+export class ArticlesQuery extends QueryEntity<ArticlesState> {
+   constructor(protected store: ArticlesStore, 
+              private routerQuery: RouterQuery) {
+     const data = routerQuery.getData();
+   }
+ }
+```
+
+### `selectNavigationExtras`
+
+```ts
+import { RouterQuery } from '@datorama/akita-ng-router-store';
+
+export class ArticlesQuery extends QueryEntity<ArticlesState> {
+   constructor(protected store: ArticlesStore, 
+              private routerQuery: RouterQuery) {
+     routerQuery.selectNavigationExtras().subscribe();
+   }
+ }
+```
+
+### `getNavigationExtras`
+```ts
+import { RouterQuery } from '@datorama/akita-ng-router-store';
+
+export class ArticlesQuery extends QueryEntity<ArticlesState> {
+   constructor(protected store: ArticlesStore, 
+              private routerQuery: RouterQuery) {
+     const extras = routerQuery.getNavigationExtras();
+   }
+ }
+```
+
+### `selectNavigationCancel`
+
+```ts
+import { RouterQuery } from '@datorama/akita-ng-router-store';
+
+export class ArticlesQuery extends QueryEntity<ArticlesState> {
+   constructor(protected store: ArticlesStore, 
+              private routerQuery: RouterQuery) {
+     routerQuery.selectNavigationCancel().subscribe();
+   }
+ }
+```
+
+
+### `selectNavigationError`
+
+```ts
+import { RouterQuery } from '@datorama/akita-ng-router-store';
+
+export class ArticlesQuery extends QueryEntity<ArticlesState> {
+   constructor(protected store: ArticlesStore, 
+              private routerQuery: RouterQuery) {
+     routerQuery.selectNavigationError().subscribe();
+   }
+ }
+```
+
+For example, we can create a query that maps an id from the URL to an entity in the store:
+
+```ts title="articles.query.ts"
+export class ArticlesQuery extends QueryEntity<ArticlesState> {
+  selectArticle$ = this.routerQuery.selectParams('id').pipe(
+     switchMap(id => this.selectEntity(id))
+  );
+
+  constructor(protected store: ArticlesStore, 
+              private routerQuery: RouterQuery) {
+    super(store);
+  }
+}
+```
+
+And use it in the component:
+```ts title="articles.component.ts"
+@Component()
+export class ArticleComponent {
+  article$ = this.articlesQuery.selectArticle$;
+  
+  constructor(private articlesQuery: ArticlesQuery) {}
+}
+```
+
+## Lazy Load Modules
+To get the lazy modules routing params, add the following option to the `RouterModule.forRoot` method:
+
+```ts title="main.ts"
+{
+  imports: [
+    RouterModule.forRoot(routes, { 
+      paramsInheritanceStrategy: 'always' 
+    })
+  ]
+}
+```

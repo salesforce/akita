@@ -1,0 +1,178 @@
+---
+title: Query Entity
+---
+
+The Entity Query is similar to the general `Query`, with additional functionality tailored for `EntityStores`.
+
+Let's see how we can use it to create a `todos` query:
+
+```ts title="todos.query.ts"
+import { QueryEntity } from '@datorama/akita';
+import { TodosStore, TodosState } from './todos.store';
+
+export class TodosQuery extends QueryEntity<TodosState> {
+  constructor(protected store: TodosStore) {
+    super(store);
+  }
+}
+```
+
+The query has two notations - one for getting the data as an `observable`, which is prefixed with `select`, and one for getting the _raw_ value, which is prefixed with `get`. For example:
+
+```ts
+const todos$ = query.selectAll();
+const todos = query.getAll();
+```
+
+By using this model, you will receive a lot of built-in functionality from Akita:
+
+## API
+
+### `selectAll`
+
+Select the entire store's entity collection:
+```ts
+const todos$ = query.selectAll();
+
+const todos$ = query.selectAll({ asObject: true });
+
+const completedTodos$ = query.selectAll({
+  filterBy: ({ completed }) => !!completed
+});
+
+// This will perform AND logic
+const completedTodos$ = query.selectAll({  
+   filterBy: [   
+    (entity, index) => index % 2 === 0,   
+    ({ completed }) => !!completed  
+  ]
+});
+
+todos$ = query.selectAll({ limitTo: 5 });
+```
+
+### `selectMany`
+
+Select multiple entities from the store:
+
+```ts
+const todos$ = query.selectMany([id, id, id]);
+
+// Select the name property from each
+const todos$ = query.selectMany([id, id, id], ({ name }) => name);
+```
+
+### `selectEntity`
+
+Select an entity or a slice of an entity:
+
+```ts
+const todo$ = query.selectEntity(id);
+const completed$ = query.selectEntity(1, 'completed');
+const title$ = query.selectEntity(1, ({ title }) => title);
+
+// For performance reasons we expect the entity to be in the store.
+// If you need something dynamic use selectAll with filterBy.
+const entity$ = query.selectEntity(({ title }) => title === slug);
+```
+
+### `selectFirst`
+
+Select the first entity from the store:
+
+```ts
+const firstTodo$ = query.selectFirst();
+const firstTodoTitle$ = query.selectFirst(({ title }) => title);
+```
+
+### `selectLast`
+
+Select the last entity from the store:
+
+```ts
+const lastTodo$ = query.selectLast();
+const lastTodoTitle$ = query.selectLast(({ title }) => title);
+```
+
+### `selectCount`
+
+Select the store's entity collection `size`:
+
+```ts
+const count$ = query.selectCount();
+const completedCount$ = query.selectCount(({ completed }) => completed);
+```
+
+### `selectLoading`
+
+Select the store's `loading` state:
+
+```ts
+const loading$ = query.selectLoading();
+```
+
+### `selectError`
+
+Select the store's error state:
+
+```ts
+const error$ = this.query.selectError();
+```
+
+### `getAll`
+
+Get the entire store's entity collection:
+
+```ts
+const todos = query.getAll();
+const todos = query.getAll({ asObject: true });
+```
+
+### `getEntity`
+
+Get an entity by id:
+
+```ts
+const todo = query.getEntity(id);
+```
+
+### `hasEntity`
+
+Returns whether an entity exists:
+
+```ts
+// The store is empty when it returns false
+if(query.hasEntity()) { } 
+  
+if(query.hasEntity(id)) { }
+ 
+if(query.hasEntity(({ completed }) => completed)) { }
+ 
+if(query.hasEntity([id, id, id])) { }
+```
+
+### `getCount`
+
+Get the store's entity collection length:
+
+```ts
+const count = query.getCount();
+const completedCount = query.getCount(({ completed }) => completed);
+```
+
+### `Entity Actions`
+
+Listen for any store action:
+
+```ts
+import { EntityActions } from '@datorama/akita';
+
+// Listen for a specific action
+query.selectEntityAction(EntityActions.Set).subscribe(newIds => {})
+query.selectEntityAction(EntityActions.Add).subscribe(addedIds => {});
+query.selectEntityAction(EntityActions.Update).subscribe(updatedIds => {});
+query.selectEntityAction(EntityActions.Remove).subscribe(removedIds => {});
+
+// listen for all actions
+query.selectEntityAction().subscribe(action => {});
+```

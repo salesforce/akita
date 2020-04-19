@@ -1,0 +1,124 @@
+---
+title: UI State
+---
+
+Akita recommends separating the Domain State from the UI State. Domain State is the state of your application in the server side, while the UI state is more along the lines of the current time based on the user’s machine, which tab is active tab, or whether a drop-down is open.
+
+Here are two ways to manage the UI state:
+
+## Global UI State 
+
+When you have a global UI state for a specific store, you can put the state under a ui key. 
+
+```ts title="todos.store.ts"
+export interface TodosState extends EntityState<Todo, number> {
+  ui: {
+    filter: VISIBILITY_FILTER;
+  };
+}
+
+const initialState = {
+  ui: { filter: VISIBILITY_FILTER.SHOW_ALL }
+};
+
+@StoreConfig({ name: 'todos' })
+export class TodosStore extends EntityStore<TodosState> {
+  constructor() {
+    super(initialState);
+  }
+  
+  updateFilter(filter: VISIBILITY_FILTER) {
+    this.update({ ui: { filter } } )
+  }
+}
+```
+
+And create a selector in the query:
+
+```ts title="todos.query.ts"
+export class TodosQuery extends QueryEntity<TodosState> {
+  selectVisibilityFilter$ = this.select(state => state.ui.filter);
+  
+  constructor(protected store: TodosStore) {
+    super(store);
+  }
+}
+```
+
+## Entity UI State
+There are times when we need to have an entity-based UI state. For example, we need to know if the current entity is open or loading, etc. For such cases, we've added a built-in UI store and an accompanying UI query that you can create on demand.
+
+```ts title="movies.store.ts"
+import { 
+  EntityState, 
+  EntityStore, 
+  EntityUIStore, 
+  StoreConfig } 
+from '@datorama/akita';
+
+export type MovieUI {
+  isOpen: boolean;
+  isLoading: boolean;
+}
+
+export type Movie = { id: number, title: string }
+
+export interface MoviesState extends EntityState<Movie> {}
+export interface MoviesUIState extends EntityState<MovieUI> {}
+
+@StoreConfig({ name: 'movies' })
+export class MoviesStore extends EntityStore<MoviesState> {
+  ui: EntityUIStore<MoviesUIState>;
+
+  constructor() {
+    super();
+    this.createUIStore();
+  }
+}
+```
+
+```ts title="movies.query.ts"
+import { EntityUIQuery, ID, QueryEntity } from '@datorama/akita';
+
+export class MoviesQuery extends QueryEntity<MoviesState> {
+  ui: EntityUIQuery<MoviesUIState>;
+
+  constructor(protected store: MoviesStore) {
+    super(store);
+    this.createUIQuery();
+  }
+}
+```
+
+The only thing we need to do is to add the ui property, passing the entity UI interface, and call the `createUIStore()` in the store and `createUIQuery()` in the query.
+
+With this setup, Akita will instantiate a new `EntityStore` and `EntityQuery` under the `ui` property, that will be responsible for managing the entity UI state.
+
+:::tip
+If you’re working with Akita’s dev-tools, you’ll see the new store prefixed with the UI keyword.
+:::
+
+### Initial Entity State
+It's possible to pass an initial entity state in the UI store:
+
+```ts {8,12} title="movies.store.ts"
+@StoreConfig({ name: 'movies' })
+export class MoviesStore extends EntityStore<MoviesState> {
+  ui: EntityUIStore<MoviesUIState>;
+
+  constructor() {
+    super();
+    const defaults = { isLoading: false, isOpen: true };
+    this.createUIStore().setInitialEntityState(defaults);
+    
+    // Or if you need the entity object
+    const defaults = entity => ({ isLoading: false, isOpen: true });
+    this.createUIStore().setInitialEntityState(defaults);
+  }
+}
+```
+
+With this setup, each time we create a new entity for the encompassing entity store, by calling the `set()` or `add()` methods, Akita automatically generates an accompanying UI entity for this entity with the values we specified. 
+
+In addition, whenever we `remove` the related entity from the model, Akita automatically removes the UI entity associated with it.
+
