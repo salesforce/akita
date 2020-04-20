@@ -1,0 +1,127 @@
+---
+title: Local Component State
+---
+
+We can manage a local component state using Akita and Angular. When we provide a `store` in the component's [providers](https://netbasal.com/angular-services-do-not-have-to-be-singletons-ffa879e62082), it enables us to get a new store instance for each component we create.
+
+For example:
+
+```ts {7} title="counter.state.ts"
+import { guid, Store, StoreConfig } from '@datorama/akita';
+
+type State = { counter: number };
+
+class CounterStore extends Store<State> {
+  constructor() { 
+    super({ counter: 0 }, { name: `Counter-${guid()}` }) 
+  }
+}
+
+@Injectable()
+class CounterQuery extends Query<State> {
+  constructor(protected store: CounterStore) { super(store); }
+}
+```
+ 
+```ts {7} title="counter.component.ts"
+@Component({
+  selector: 'counter',
+  template: `
+    {{ counter$ | async }}
+    <button (click)="increment()">Increment</button>
+  `,
+  providers: [CounterStore, CounterQuery]
+})
+export class CounterComponent {
+  counter$ = this.query.select('counter');
+  @Output() update = this.counter$.pipe(skip(1));
+
+  constructor(
+    private store: CounterStore,
+    private query: CounterQuery
+  ) { }
+
+  increment() {
+    this.store.update(({ counter }) => ({ counter: counter + 1 }));
+  }
+}
+```
+
+## Counter State Provider
+
+You can also take a different approach and create a counter state provider:
+
+```ts title="counter.state"
+type State = { counter: number };
+
+class CounterState {
+  store: Store<State>;
+  query: Query<State>;
+}
+
+function counterStateFactory(element: ElementRef<Element>) {
+  const name = element.nativeElement.getAttribute('name');
+  const store = new Store<State>({ counter: 0 }, { name });
+  const query = new Query<State>(store);
+
+  return {
+    store,
+    query
+  }
+}
+```
+
+```ts {7} title="counter.component.ts"
+@Component({
+  selector: 'counter',
+  template: `
+    {{ counter$ | async }}
+    <button (click)="increment()">Increment</button>
+  `,
+  providers: [CounterState]
+})
+export class CounterComponent {
+  counter$ = this.state.query.select('counter');
+  @Output() update = this.counter$.pipe(skip(1));
+
+  constructor(
+    private state: CounterState
+  ) { }
+
+  increment() {
+    this.state.store.update(({ counter }) => ({ counter: counter + 1 }));
+  }
+}
+```
+
+Open the Redux devtools, and you'll see the magic. You can play with the code [here](https://ng-run.com/edit/tgmNS28x8z5UpWcyh7GN?open=app%2Fcounter%2Fcounter.component.ts).
+
+```html title="app.component.html"
+<counter (update)="onUpdate($event)" name="one"></counter>
+<counter (update)="onUpdate($event)" name="two"></counter>
+<counter (update)="onUpdate($event)" name="three"></counter>
+```
+
+## Dynamic Stores
+You can also manage a collection of stores in a service. For example:
+
+```ts counters.service.ts
+@Injectable({ providedIn: 'root })
+export class CountersService {
+  private stores = new Map();
+
+  createState(name: string) {
+    const store = new Store({ counter: 0 }, { name });
+    const query = new Query(store);
+
+    const state = { store, query };
+    this.stores.set(name, state);
+
+    return state
+  } 
+
+  getState(name: string) {
+    return this.stores.get(name);
+  } 
+}
+```
