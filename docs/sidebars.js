@@ -73,7 +73,7 @@ module.exports = {
         {
           type: 'link',
           label: 'Akita Firbase',
-          href: 'https://github.com/dappsnation/akita-ng`-fire',
+          href: 'https://github.com/dappsnation/akita-ng-fire',
         },
         'angular/router',
         'angular/forms-manager',
