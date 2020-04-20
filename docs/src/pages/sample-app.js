@@ -21,7 +21,7 @@ function SampleApp() {
     >
       <main>
         <iframe
-          src="http://akita.surge.sh/"
+          src="https://akita.surge.sh/"
           width="100%"
           frameBorder="0"
           style={iframeStyle}
