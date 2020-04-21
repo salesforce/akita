@@ -24,7 +24,7 @@ jobs:
 
       - name: Yarn Install
         if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
+        run: yarn install
 
   test:
     name: Test applications & libraries
