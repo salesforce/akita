@@ -1884,6 +1884,20 @@
     tsconfig-paths-webpack-plugin "3.2.0"
     webpack-node-externals "1.7.2"
 
+"@nrwl/cypress@9.2.3":
+  version "9.2.3"
+  resolved "https://registry.yarnpkg.com/@nrwl/cypress/-/cypress-9.2.3.tgz#17b925184859e9d0d22914d88dd2a84da9e65fac"
+  integrity sha512-pgNUg1lrZOycYInJ20EoPFz4ZkO4X11KnKBrVH+H+nN62WRbi23tBHcFR+wjwMaOkfwl4Lnx5egr+ONItdlseg==
+  dependencies:
+    "@angular-devkit/architect" "~0.901.0"
+    "@angular-devkit/core" "~9.1.0"
+    "@cypress/webpack-preprocessor" "~4.1.2"
+    fork-ts-checker-webpack-plugin "^3.1.1"
+    tree-kill "1.2.2"
+    ts-loader "^5.3.1"
+    tsconfig-paths-webpack-plugin "3.2.0"
+    webpack-node-externals "1.7.2"
+
 "@nrwl/eslint-plugin-nx@9.2.2":
   version "9.2.2"
   resolved "https://registry.yarnpkg.com/@nrwl/eslint-plugin-nx/-/eslint-plugin-nx-9.2.2.tgz#df0bfba21d8bb03882762496f36abe2d296183ae"
@@ -1909,10 +1923,26 @@
     "@angular-devkit/core" "~9.1.0"
     "@angular-devkit/schematics" "~9.1.0"
 
+"@nrwl/jest@9.2.3":
+  version "9.2.3"
+  resolved "https://registry.yarnpkg.com/@nrwl/jest/-/jest-9.2.3.tgz#15c2d3e28b3a2aec6f55a307d2da45d0736b3cae"
+  integrity sha512-2br+bz/RJ7JTULHOpm+Fkn1qjKy+s7Lx6IKfDA5wBR5Ys/9MITTyAuDN0TIGSJmkjrouHjek3DUdjcgwLBPMiQ==
+  dependencies:
+    "@angular-devkit/architect" "~0.901.0"
+    "@angular-devkit/core" "~9.1.0"
+    "@angular-devkit/schematics" "~9.1.0"
+
 "@nrwl/linter@9.2.2":
   version "9.2.2"
   resolved "https://registry.yarnpkg.com/@nrwl/linter/-/linter-9.2.2.tgz#464929b18a2f979669a0b64e7b50e410f1b3c37c"
   integrity sha512-FLhF9sc/ErORdNmZCxjbLzQ3g3rMxo7L8Pud5QHupF/drcEHfEkIisWmbIwcLKRn91XtVmz5GA29OUypwAOxjg==
+  dependencies:
+    "@angular-devkit/architect" "~0.901.0"
+
+"@nrwl/linter@9.2.3":
+  version "9.2.3"
+  resolved "https://registry.yarnpkg.com/@nrwl/linter/-/linter-9.2.3.tgz#218b214a280d3dd66796091330fdde1f5e319207"
+  integrity sha512-u/WyA4PiIAvkzAez8KN67Q2mPYQzgOiCcbQHyESce8xZ0oF3W83k+qL5zkrZfoX75o0g+Xlbw/diQ49o9/kw0g==
   dependencies:
     "@angular-devkit/architect" "~0.901.0"
 
@@ -1940,17 +1970,17 @@
     webpack-merge "4.2.1"
     webpack-node-externals "1.7.2"
 
-"@nrwl/react@9.2.2":
-  version "9.2.2"
-  resolved "https://registry.yarnpkg.com/@nrwl/react/-/react-9.2.2.tgz#7bd31ff12b8320dd349173686673e6cc2920c651"
-  integrity sha512-TnZ1M6HfsVrTJSvSbeXuSvN9Z6TdwFRJoPxfeK+TPyiaEearzg4Y/6L94jLze2JyE06ZkIBEx/qJwTfW5fgGRQ==
+"@nrwl/react@^9.2.3":
+  version "9.2.3"
+  resolved "https://registry.yarnpkg.com/@nrwl/react/-/react-9.2.3.tgz#c72df3b0558d17dc2bbbba422c4ae98475cce833"
+  integrity sha512-dwLcsLJRPGu3TxDrqBSZuS/WGmnXdsNElQKqhW7tZ68j8+ykLD6zB912b6RnYYziCwjZHkJe8DWOaESJNYA1bA==
   dependencies:
     "@angular-devkit/schematics" "~9.1.0"
     "@babel/core" "^7.8.4"
     "@babel/preset-react" "^7.8.3"
-    "@nrwl/cypress" "9.2.2"
-    "@nrwl/jest" "9.2.2"
-    "@nrwl/web" "9.2.2"
+    "@nrwl/cypress" "9.2.3"
+    "@nrwl/jest" "9.2.3"
+    "@nrwl/web" "9.2.3"
     "@svgr/webpack" "^5.2.0"
     babel-plugin-emotion "^10.0.29"
     babel-plugin-styled-components "^1.10.7"
@@ -1992,6 +2022,95 @@
     "@nrwl/cypress" "9.2.2"
     "@nrwl/jest" "9.2.2"
     "@nrwl/linter" "9.2.2"
+    "@rollup/plugin-commonjs" "11.0.2"
+    "@rollup/plugin-image" "2.0.4"
+    "@rollup/plugin-node-resolve" "7.1.1"
+    ajv "6.10.2"
+    autoprefixer "9.7.4"
+    babel-loader "8.0.6"
+    babel-plugin-const-enum "0.0.5"
+    babel-plugin-macros "2.6.1"
+    babel-plugin-transform-async-to-promises "0.8.15"
+    browserslist "4.8.7"
+    cacache "12.0.2"
+    caniuse-lite "^1.0.30001030"
+    circular-dependency-plugin "5.2.0"
+    clean-css "4.2.1"
+    copy-webpack-plugin "5.1.1"
+    core-js "^3.2.1"
+    css-loader "3.4.2"
+    file-loader "4.2.0"
+    find-cache-dir "3.0.0"
+    fork-ts-checker-webpack-plugin "^3.1.1"
+    glob "7.1.4"
+    identity-obj-proxy "3.0.0"
+    jest-worker "25.1.0"
+    karma-source-map-support "1.4.0"
+    less "3.11.1"
+    less-loader "5.0.0"
+    license-webpack-plugin "2.1.2"
+    loader-utils "1.2.3"
+    mini-css-extract-plugin "0.8.0"
+    minimatch "3.0.4"
+    open "6.4.0"
+    parse5 "4.0.0"
+    postcss "7.0.27"
+    postcss-import "12.0.1"
+    postcss-loader "3.0.0"
+    raw-loader "3.1.0"
+    regenerator-runtime "0.13.3"
+    rollup "1.31.1"
+    rollup-plugin-babel "4.3.3"
+    rollup-plugin-filesize "6.2.1"
+    rollup-plugin-local-resolve "1.0.7"
+    rollup-plugin-peer-deps-external "2.2.2"
+    rollup-plugin-postcss "2.1.1"
+    rollup-plugin-typescript2 "0.26.0"
+    rxjs "^6.5.4"
+    sass "1.22.9"
+    sass-loader "7.2.0"
+    semver "6.3.0"
+    source-map "0.7.3"
+    source-map-loader "0.2.4"
+    source-map-support "0.5.16"
+    speed-measure-webpack-plugin "1.3.1"
+    style-loader "1.0.0"
+    stylus "0.54.5"
+    stylus-loader "3.0.2"
+    terser "4.3.8"
+    terser-webpack-plugin "2.3.1"
+    tree-kill "1.2.2"
+    ts-loader "5.4.5"
+    tsconfig-paths-webpack-plugin "3.2.0"
+    url-loader "^3.0.0"
+    webpack "4.42.0"
+    webpack-dev-middleware "3.7.0"
+    webpack-dev-server "3.9.0"
+    webpack-merge "4.2.1"
+    webpack-node-externals "1.7.2"
+    webpack-sources "1.4.3"
+    webpack-subresource-integrity "1.1.0-rc.6"
+    worker-plugin "3.2.0"
+
+"@nrwl/web@9.2.3":
+  version "9.2.3"
+  resolved "https://registry.yarnpkg.com/@nrwl/web/-/web-9.2.3.tgz#5b2856583fe35db1efa229c685070a71a766a796"
+  integrity sha512-DREYh/hGykgpTf2gH45/e1UO8d/iA/yr++6xMOPrgMfPOcsxQ3ouEYTfNbkVmrK5nivhPVgcgY54+ObGkzKJCw==
+  dependencies:
+    "@angular-devkit/architect" "~0.901.0"
+    "@angular-devkit/build-optimizer" "~0.901.0"
+    "@angular-devkit/build-webpack" "~0.901.0"
+    "@angular-devkit/core" "~9.1.0"
+    "@angular-devkit/schematics" "~9.1.0"
+    "@babel/core" "^7.8.4"
+    "@babel/plugin-proposal-class-properties" "^7.8.3"
+    "@babel/plugin-proposal-decorators" "^7.8.3"
+    "@babel/plugin-transform-regenerator" "^7.8.3"
+    "@babel/preset-env" "^7.8.4"
+    "@babel/preset-typescript" "^7.8.3"
+    "@nrwl/cypress" "9.2.3"
+    "@nrwl/jest" "9.2.3"
+    "@nrwl/linter" "9.2.3"
     "@rollup/plugin-commonjs" "11.0.2"
     "@rollup/plugin-image" "2.0.4"
     "@rollup/plugin-node-resolve" "7.1.1"

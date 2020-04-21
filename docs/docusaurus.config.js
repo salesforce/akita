@@ -7,6 +7,11 @@ module.exports = {
   organizationName: 'datorama',
   projectName: 'akita',
   themeConfig: {
+    algolia: {
+      appId: 'BH4D9OD16A',
+      apiKey: 'f79cabde48ffb620e6351ab4b158559f',
+      indexName: 'akita',
+    },
     navbar: {
       title: 'Home',
       logo: {

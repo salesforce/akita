@@ -66,6 +66,13 @@
     "react-akita-app-e2e": {
       "tags": [],
       "implicitDependencies": ["react-akita-app"]
+    },
+    "react-hooks": {
+      "tags": []
+    },
+    "react-hooks-e2e": {
+      "tags": [],
+      "implicitDependencies": ["react-hooks"]
     }
   },
   "tasksRunnerOptions": {
