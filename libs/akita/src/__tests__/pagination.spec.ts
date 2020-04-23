@@ -1,10 +1,10 @@
-import { Todo, TodosStore } from './setup';
-import { QueryEntity } from '../lib/queryEntity';
-import { PaginationResponse, PaginatorPlugin } from '../lib/plugins/paginator/paginatorPlugin';
+import { BehaviorSubject, combineLatest, interval, Observable, of } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
-import { BehaviorSubject, combineLatest, interval, Observable, of, timer } from 'rxjs';
+import { PaginationResponse, PaginatorPlugin } from '../lib/plugins/paginator/paginatorPlugin';
+import { QueryEntity } from '../lib/queryEntity';
+import { Todo, TodosStore } from './setup';
 
-let store = new TodosStore();
+const store = new TodosStore();
 
 class TodosQuery extends QueryEntity<any, Todo> {
   constructor() {
@@ -21,11 +21,11 @@ const data = [];
 for (let i = 0; i < count; i++) {
   data.push({
     id: i + 1,
-    email: `email ${i + 1}`
+    email: `email ${i + 1}`,
   });
 }
 
-export function getData(params = { sortBy: 'email', perPage: 10, page: 1, filterEnabled: false }) {
+function getData(params = { sortBy: 'email', perPage: 10, page: 1, filterEnabled: false }) {
   const localData = params.filterEnabled ? data.slice(0, 50) : data;
   const page = params.filterEnabled ? 1 : params.page;
   const offset = (page - 1) * +params.perPage;
@@ -36,11 +36,11 @@ export function getData(params = { sortBy: 'email', perPage: 10, page: 1, filter
     perPage: +params.perPage,
     total: localData.length,
     lastPage: Math.ceil(localData.length / +params.perPage),
-    data: paginatedItems
+    data: paginatedItems,
   };
 }
 
-const getContacts = function(params): Observable<PaginationResponse<any>> {
+const getContacts = function (params): Observable<PaginationResponse<any>> {
   return of(getData(params));
 };
 
@@ -50,18 +50,18 @@ describe('Paginator', () => {
 
   paginator.pageChanges
     .pipe(
-      switchMap(page => {
+      switchMap((page) => {
         const req = requestFunc.mockReturnValue(
           getContacts({
             page,
-            perPage: 10
+            perPage: 10,
           })
         );
 
         return paginator.getPage(req);
       })
     )
-    .subscribe(v => {
+    .subscribe((v) => {
       res = v;
     });
 
@@ -118,8 +118,8 @@ describe('Paginator', () => {
         { id: 7, email: 'email 7' },
         { id: 8, email: 'email 8' },
         { id: 9, email: 'email 9' },
-        { id: 10, email: 'email 10' }
-      ]
+        { id: 10, email: 'email 10' },
+      ],
     });
   });
 
@@ -264,15 +264,15 @@ describe('Paginator', () => {
     it('it should not clear the store when explicit stated', () => {
       store.set(data);
       expect(query.getAll().length).toBeGreaterThan(0);
-      let initialLength = query.getAll().length;
+      const initialLength = query.getAll().length;
       paginator.clearCache({ clearStore: false });
-      let lengthAfterCacheClear = query.getAll().length;
+      const lengthAfterCacheClear = query.getAll().length;
       expect(initialLength).toEqual(lengthAfterCacheClear);
     });
   });
 });
 
-let store2 = new TodosStore();
+const store2 = new TodosStore();
 
 class Todos2Query extends QueryEntity<any, Todo> {
   constructor() {
@@ -288,11 +288,11 @@ describe('cacheTimeout', () => {
 
   paginator2.pageChanges
     .pipe(
-      switchMap(page => {
+      switchMap((page) => {
         const req = requestFunc.mockReturnValue(
           getContacts({
             page,
-            perPage: 10
+            perPage: 10,
           })
         );
         return paginator2.getPage(req);
@@ -314,7 +314,7 @@ describe('cacheTimeout', () => {
   });
 });
 
-let store3 = new TodosStore();
+const store3 = new TodosStore();
 
 class Todos3Query extends QueryEntity<any, Todo> {
   constructor() {
@@ -330,11 +330,11 @@ describe('cacheTimeout and clearStoreWithCache false', () => {
 
   paginator3.pageChanges
     .pipe(
-      switchMap(page => {
+      switchMap((page) => {
         const req = requestFunc.mockReturnValue(
           getContacts({
             page,
-            perPage: 10
+            perPage: 10,
           })
         );
         return paginator3.getPage(req);
@@ -359,23 +359,14 @@ describe('cacheTimeout and clearStoreWithCache false', () => {
   });
 });
 
-let store4 = new TodosStore();
-
-class Todos4Query extends QueryEntity<any, Todo> {
-  constructor() {
-    super(store4);
-  }
-}
-
 describe('Server-side pagination with filter', () => {
-  let res;
   const requestFunc = jest.fn();
-  let filterEnabled$ = new BehaviorSubject(false);
+  const filterEnabled$ = new BehaviorSubject(false);
 
   it('should reset page to 1 when filters applied', () => {
-    combineLatest(paginator.pageChanges, filterEnabled$)
+    combineLatest([paginator.pageChanges, filterEnabled$])
       .pipe(
-        tap(_ => {
+        tap(() => {
           paginator.clearCache();
         }),
         switchMap(([page, filterEnabled]) => {
@@ -383,16 +374,14 @@ describe('Server-side pagination with filter', () => {
             getContacts({
               page,
               perPage: 10,
-              filterEnabled: filterEnabled
+              filterEnabled,
             })
           );
 
           return paginator.getPage(req);
         })
       )
-      .subscribe(v => {
-        res = v;
-      });
+      .subscribe();
 
     paginator.setPage(6);
     filterEnabled$.next(true);

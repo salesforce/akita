@@ -1,6 +1,6 @@
-import { ID, EntityState } from '../lib/types';
-import { StoreConfig } from '../lib/storeConfig';
 import { EntityStore } from '../lib/entityStore';
+import { StoreConfig } from '../lib/storeConfig';
+import { EntityState, ID } from '../lib/types';
 
 interface Article {
   id?: ID;
@@ -11,7 +11,7 @@ interface Article {
   };
 }
 
-interface ArticlesState extends EntityState<Article> {}
+type ArticlesState = EntityState<Article>;
 
 @StoreConfig({ name: 'articles' })
 class ArticlesStore extends EntityStore<ArticlesState, Article> {}
@@ -53,14 +53,14 @@ describe('upsert', () => {
         {
           id: 2,
           title: '2',
-          moreInfo: { description: 'desc2' }
-        }
+          moreInfo: { description: 'desc2' },
+        },
       ];
       store.set(data);
       expect(store._value().ids.length).toBe(2);
       const baseData: Article[] = [
         { id: 1, title: '1' },
-        { id: 2, title: '2' }
+        { id: 2, title: '2' },
       ];
 
       store.upsertMany(baseData);
@@ -68,34 +68,34 @@ describe('upsert', () => {
       expect(store._value().entities[1]).toEqual({
         id: 1,
         title: '1',
-        moreInfo: { description: 'desc1' }
+        moreInfo: { description: 'desc1' },
       });
       store.upsertMany([{ id: 1, title: '12', moreInfo: { description: 'desc1' } }]);
       expect(store._value().entities[1]).toEqual({
         id: 1,
         title: '12',
-        moreInfo: { description: 'desc1' }
+        moreInfo: { description: 'desc1' },
       });
       store.remove();
     });
 
     it('should support hooks', () => {
-      ArticlesStore.prototype.akitaPreCheckEntity = function(entity: Article) {
+      ArticlesStore.prototype.akitaPreCheckEntity = function (entity: Article) {
         return {
           ...entity,
-          id: 11
+          id: 11,
         };
       };
-      ArticlesStore.prototype.akitaPreAddEntity = function(entity: Article) {
+      ArticlesStore.prototype.akitaPreAddEntity = function (entity: Article) {
         return {
           ...entity,
-          addedAt: '2019-05-04'
+          addedAt: '2019-05-04',
         };
       };
-      ArticlesStore.prototype.akitaPreUpdateEntity = function(pre: Article, next: Article) {
+      ArticlesStore.prototype.akitaPreUpdateEntity = function (pre: Article, next: Article) {
         return {
           ...next,
-          title: 'BLA!!'
+          title: 'BLA!!',
         };
       };
 
@@ -103,14 +103,14 @@ describe('upsert', () => {
       expect(store._value().entities[11]).toEqual({
         id: 11,
         title: '1',
-        addedAt: '2019-05-04'
+        addedAt: '2019-05-04',
       });
       store.upsertMany([{ title: '1', moreInfo: { description: 'bla bla' } }]);
       expect(store._value().entities[11]).toEqual({
         id: 11,
         title: 'BLA!!',
         addedAt: '2019-05-04',
-        moreInfo: { description: 'bla bla' }
+        moreInfo: { description: 'bla bla' },
       });
     });
   });

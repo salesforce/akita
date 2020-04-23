@@ -1,9 +1,10 @@
+import { Subscription } from 'rxjs';
 import { currentAction, setSkipAction } from './actions';
-import { isDefined } from './isDefined';
-import { $$addStore, $$deleteStore, $$updateStore } from './dispatchers';
-import { __stores__ } from './stores';
 import { capitalize } from './captialize';
+import { $$addStore, $$deleteStore, $$updateStore } from './dispatchers';
+import { isDefined } from './isDefined';
 import { isNotBrowser } from './root';
+import { __stores__ } from './store';
 
 export type DevtoolsOptions = {
   /** instance name visible in devtools */
@@ -20,63 +21,71 @@ export type DevtoolsOptions = {
   shallow: boolean;
   sortAlphabetically: boolean;
 };
-let subs = [];
+const subs: Subscription[] = [];
 
-export type NgZoneLike = { run: any };
+export type NgZoneLike = { run: <T>(fn: (...args: any[]) => T) => T };
 
-export function akitaDevtools(ngZone: NgZoneLike, options?: Partial<DevtoolsOptions>);
-export function akitaDevtools(options?: Partial<DevtoolsOptions>);
-export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOptions>, options: Partial<DevtoolsOptions> = {}) {
+/** @internal */
+function isNgZone(option: NgZoneLike | Partial<DevtoolsOptions>): option is NgZoneLike {
+  return !!(option as NgZoneLike).run;
+}
+
+export function akitaDevtools(ngZone: NgZoneLike, options?: Partial<DevtoolsOptions>): void;
+export function akitaDevtools(options?: Partial<DevtoolsOptions>): void;
+export function akitaDevtools(ngZoneOrOptions: NgZoneLike | Partial<DevtoolsOptions> = {}, options: Partial<DevtoolsOptions> = {}): void {
   if (isNotBrowser) return;
 
   if (!(window as any).__REDUX_DEVTOOLS_EXTENSION__) {
     return;
   }
 
-  subs.length &&
-    subs.forEach(s => {
-      if (s.unsubscribe) {
+  if (subs.length) {
+    subs.forEach((s) => {
+      // extra-boolean-cast is the correct way to check for function
+      // eslint-disable-next-line no-extra-boolean-cast, @typescript-eslint/unbound-method
+      if (!!s.unsubscribe) {
         s.unsubscribe();
-      } else {
-        s && s();
+      } else if (s) {
+        // TODO no idea what `s` is
+        (s as any)();
       }
     });
+  }
 
-  const isAngular = ngZoneOrOptions && ngZoneOrOptions['run'];
-
-  if (!isAngular) {
-    ngZoneOrOptions = ngZoneOrOptions || {};
-    (ngZoneOrOptions as any).run = cb => cb();
-    options = ngZoneOrOptions as Partial<DevtoolsOptions>;
+  let ngZoneLikeOptions: NgZoneLike & Partial<DevtoolsOptions>;
+  if (isNgZone(ngZoneOrOptions)) {
+    ngZoneLikeOptions = { run: ngZoneOrOptions.run, ...options };
+  } else {
+    ngZoneLikeOptions = { run: <T>(cb): T => cb(), ...ngZoneOrOptions };
   }
 
   const defaultOptions: Partial<DevtoolsOptions> & { name: string } = { name: 'Akita', shallow: true, storesWhitelist: [] };
-  const merged = Object.assign({}, defaultOptions, options);
-  const storesWhitelist = merged.storesWhitelist;
+  const merged = { ...defaultOptions, ...ngZoneLikeOptions };
+  const { storesWhitelist } = merged;
   const devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__.connect(merged);
   let appState = {};
 
-  const isAllowed = storeName => {
+  const isAllowed = (storeName): boolean => {
     if (!storesWhitelist.length) {
       return true;
     }
 
-    return storesWhitelist.indexOf(storeName) > -1;
+    return storesWhitelist.includes(storeName);
   };
 
   subs.push(
-    $$addStore.subscribe(storeName => {
+    $$addStore.subscribe((storeName) => {
       if (isAllowed(storeName) === false) return;
       appState = {
         ...appState,
-        [storeName]: __stores__[storeName]._value()
+        [storeName]: __stores__[storeName]._value(),
       };
       devTools.send({ type: `[${capitalize(storeName)}] - @@INIT` }, appState);
     })
   );
 
   subs.push(
-    $$deleteStore.subscribe(storeName => {
+    $$deleteStore.subscribe((storeName) => {
       if (isAllowed(storeName) === false) return;
       delete appState[storeName];
       devTools.send({ type: `[${storeName}] - Delete Store` }, appState);
@@ -84,7 +93,7 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
   );
 
   subs.push(
-    $$updateStore.subscribe(storeName => {
+    $$updateStore.subscribe((storeName) => {
       if (isAllowed(storeName) === false) return;
       const { type, entityIds, skip } = currentAction;
 
@@ -105,11 +114,11 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
 
       appState = {
         ...appState,
-        [storeName]: store._value()
+        [storeName]: store._value(),
       };
 
       const normalize = capitalize(storeName);
-      let msg = isDefined(entityIds) ? `[${normalize}] - ${type} (ids: ${entityIds})` : `[${normalize}] - ${type}`;
+      const msg = isDefined(entityIds) ? `[${normalize}] - ${type} (ids: ${entityIds})` : `[${normalize}] - ${type}`;
 
       if (options.logTrace) {
         console.group(msg);
@@ -120,8 +129,8 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
       if (options.sortAlphabetically) {
         const sortedAppState = Object.keys(appState)
           .sort()
-          .reduce((acc, storeName) => {
-            acc[storeName] = appState[storeName];
+          .reduce((acc, curStoreName) => {
+            acc[curStoreName] = appState[curStoreName];
             return acc;
           }, {});
 
@@ -134,7 +143,7 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
   );
 
   subs.push(
-    devTools.subscribe(message => {
+    devTools.subscribe((message) => {
       if (message.type === 'DISPATCH') {
         const payloadType = message.payload.type;
 
@@ -148,7 +157,7 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
           for (let i = 0, keys = Object.keys(rootState); i < keys.length; i++) {
             const storeName = keys[i];
             if (__stores__[storeName]) {
-              (ngZoneOrOptions as NgZoneLike).run(() => {
+              merged.run(() => {
                 __stores__[storeName]._setState(() => rootState[storeName], false);
               });
             }

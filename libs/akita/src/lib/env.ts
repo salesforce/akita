@@ -1,10 +1,10 @@
-export let __DEV__ = true;
+let __DEV__ = true;
 
-export function enableAkitaProdMode() {
+export function enableAkitaProdMode(): void {
   __DEV__ = false;
 }
 
-// @internal
-export function isDev() {
+/** @internal */
+export function isDev(): boolean {
   return __DEV__;
 }

@@ -6,14 +6,10 @@ interface Article {
   title: string;
 }
 
-interface ArticlesState extends EntityState<Article> {}
+type ArticlesState = EntityState<Article>;
 
 @StoreConfig({ name: 'articles' })
-class ArticlesStore extends EntityStore<ArticlesState, Article> {
-  constructor() {
-    super();
-  }
-}
+class ArticlesStore extends EntityStore<ArticlesState, Article> {}
 
 class ArticlesQuery extends QueryEntity<ArticlesState, Article> {}
 
@@ -33,7 +29,7 @@ describe('Entity Actions', () => {
     // set
     store.set([
       { id: 1, title: '1' },
-      { id: 2, title: '2 ' }
+      { id: 2, title: '2 ' },
     ]);
     expect(spy).toHaveBeenCalledTimes(1);
     expect(spy).toHaveBeenCalledWith([1, 2]);
@@ -46,7 +42,7 @@ describe('Entity Actions', () => {
     // add
     store.add([
       { id: 3, title: '3' },
-      { id: 4, title: '4' }
+      { id: 4, title: '4' },
     ]);
     expect(spy).toHaveBeenCalledTimes(3);
     expect(spy).toHaveBeenCalledWith([3, 4]);
@@ -65,7 +61,7 @@ describe('Entity Actions', () => {
     query.selectEntityAction().subscribe(spy);
     store.set([
       { id: 1, title: '1' },
-      { id: 2, title: '2 ' }
+      { id: 2, title: '2 ' },
     ]);
     expect(spy).toHaveBeenCalledWith({ type: 0, ids: [1, 2] });
   });

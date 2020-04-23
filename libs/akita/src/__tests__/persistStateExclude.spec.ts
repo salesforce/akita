@@ -5,34 +5,22 @@ import { StoreConfig } from '../lib/storeConfig';
 import { tick } from './setup';
 
 @StoreConfig({
-  name: 'todos'
+  name: 'todos',
 })
-class TodosStore extends EntityStore<any, any> {
-  constructor() {
-    super();
-  }
-}
+class TodosStore extends EntityStore<any, any> {}
 
 @StoreConfig({
-  name: 'products'
+  name: 'products',
 })
-class ProductsStore extends EntityStore<any, any> {
-  constructor() {
-    super();
-  }
-}
+class ProductsStore extends EntityStore<any, any> {}
 
 @StoreConfig({
-  name: 'cart'
+  name: 'cart',
 })
-class CartStore extends EntityStore<any, any> {
-  constructor() {
-    super();
-  }
-}
+class CartStore extends EntityStore<any, any> {}
 
 @StoreConfig({
-  name: 'auth'
+  name: 'auth',
 })
 class AuthStore extends Store<any> {
   constructor() {
@@ -42,7 +30,7 @@ class AuthStore extends Store<any> {
 
 describe('persistState - Exclude', () => {
   const storage = persistState({
-    exclude: ['cart', 'products']
+    exclude: ['cart', 'products'],
   });
 
   afterAll(() => storage.destroy());
@@ -71,7 +59,7 @@ describe('persistState - Exclude', () => {
         id: 1,
         firstName: 'Netanel',
         lastName: 'Basal',
-        token: 'token'
+        token: 'token',
       };
     });
     await tick();
@@ -80,13 +68,13 @@ describe('persistState - Exclude', () => {
       todos: {
         entities: {
           '1': {
-            id: 1
-          }
+            id: 1,
+          },
         },
         error: null,
         ids: [1],
-        loading: false
-      }
+        loading: false,
+      },
     });
   });
 });

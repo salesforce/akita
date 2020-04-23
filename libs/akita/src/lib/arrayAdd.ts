@@ -1,7 +1,7 @@
-import { ArrayProperties, OrArray } from './types';
-import { coerceArray } from './coerceArray';
 import { AddEntitiesOptions } from './addEntities';
+import { coerceArray } from './coerceArray';
 import { isArray } from './isArray';
+import { ArrayProperties, OrArray } from './types';
 
 /**
  * Add item to a collection
@@ -19,18 +19,18 @@ export function arrayAdd<Root extends any[], Entity = any>(keyOrRoot: Root, newE
  * @deprecated
  */
 export function arrayAdd<Root, Entity = any>(keyOrRoot: ArrayProperties<Root>, newEntity: OrArray<Entity>, options?: AddEntitiesOptions): (state: Root) => Root;
-export function arrayAdd<Root, Entity = any>(keyOrRoot: ArrayProperties<Root> | Root, newEntity: OrArray<Entity>, options: AddEntitiesOptions = {}) {
+export function arrayAdd<Root, Entity = any>(keyOrRoot: ArrayProperties<Root> | Root, newEntity: OrArray<Entity>, options: AddEntitiesOptions = {}): any {
   const newEntities = coerceArray(newEntity);
 
-  const addFn = state => (options.prepend ? [...newEntities, ...(state || [])] : [...(state || []), ...newEntities]);
+  const addFn = (state): any => (options.prepend ? [...newEntities, ...(state || [])] : [...(state || []), ...newEntities]);
 
   if (isArray(keyOrRoot)) {
     return addFn(keyOrRoot);
   }
 
-  return state => {
+  return (state): any => {
     return {
-      [keyOrRoot as ArrayProperties<Root>]: addFn(state[keyOrRoot])
+      [keyOrRoot as ArrayProperties<Root>]: addFn(state[keyOrRoot]),
     };
   };
 }

@@ -1,19 +1,11 @@
-import { __stores__ } from './stores';
-import { IDS } from './types';
 import { AddEntitiesOptions } from './addEntities';
 import { EntityStore } from './entityStore';
-import { SetEntities } from './setEntities';
-import { isNil } from './isNil';
 import { AkitaError } from './errors';
-
-export enum StoreActions {
-  Update,
-  AddEntities,
-  SetEntities,
-  UpdateEntities,
-  RemoveEntities,
-  UpsertEntities
-}
+import { isNil } from './isNil';
+import { SetEntities } from './setEntities';
+import { __stores__ } from './store';
+import { StoreActions } from './storeActions';
+import { IDS } from './types';
 
 interface RunStoreActionSetEntities<Entity = any> {
   payload: {
@@ -63,7 +55,7 @@ interface RunStoreActionUpdate<State = any> {
  *   }
  * });
  */
-export function runStoreAction<State = any>(storeName: string, action: StoreActions.Update, params: RunStoreActionUpdate<State>);
+export function runStoreAction<State = any>(storeName: string, action: StoreActions.Update, params: RunStoreActionUpdate<State>): void;
 /**
  * @example
  *
@@ -73,7 +65,7 @@ export function runStoreAction<State = any>(storeName: string, action: StoreActi
  *   }
  * });
  */
-export function runStoreAction<Entity = any>(storeName: string, action: StoreActions.RemoveEntities, params: RunStoreActionRemoveEntities<Entity>);
+export function runStoreAction<Entity = any>(storeName: string, action: StoreActions.RemoveEntities, params: RunStoreActionRemoveEntities<Entity>): void;
 /**
  * @example
  *
@@ -84,7 +76,7 @@ export function runStoreAction<Entity = any>(storeName: string, action: StoreAct
  *   }
  * });
  */
-export function runStoreAction<Entity = any>(storeName: string, action: StoreActions.UpdateEntities, params: RunStoreActionUpdateEntities<Entity>);
+export function runStoreAction<Entity = any>(storeName: string, action: StoreActions.UpdateEntities, params: RunStoreActionUpdateEntities<Entity>): void;
 /**
  * @example
  *
@@ -94,7 +86,7 @@ export function runStoreAction<Entity = any>(storeName: string, action: StoreAct
  *   }
  * });
  */
-export function runStoreAction<Entity = any>(storeName: string, action: StoreActions.SetEntities, params: RunStoreActionSetEntities<Entity>);
+export function runStoreAction<Entity = any>(storeName: string, action: StoreActions.SetEntities, params: RunStoreActionSetEntities<Entity>): void;
 /**
  * @example
  *
@@ -104,7 +96,7 @@ export function runStoreAction<Entity = any>(storeName: string, action: StoreAct
  *   }
  * });
  */
-export function runStoreAction<Entity = any>(storeName: string, action: StoreActions.AddEntities, params: RunStoreActionAddEntities<Entity>);
+export function runStoreAction<Entity = any>(storeName: string, action: StoreActions.AddEntities, params: RunStoreActionAddEntities<Entity>): void;
 /**
  * @example
  *
@@ -120,7 +112,7 @@ export function runStoreAction<Entity = any>(storeName: string, action: StoreAct
  *   }
  * });
  */
-export function runStoreAction<Entity = any>(storeName: string, action: StoreActions.UpsertEntities, params: RunStoreActionUpsertEntities<Entity>);
+export function runStoreAction<Entity = any>(storeName: string, action: StoreActions.UpsertEntities, params: RunStoreActionUpsertEntities<Entity>): void;
 export function runStoreAction<EntityOrState = any>(
   storeName: string,
   action: StoreActions,
@@ -130,7 +122,7 @@ export function runStoreAction<EntityOrState = any>(
     | RunStoreActionRemoveEntities<EntityOrState>
     | RunStoreActionUpdateEntities<EntityOrState>
     | RunStoreActionUpsertEntities<EntityOrState>
-) {
+): void {
   const store = __stores__[storeName];
 
   if (isNil(store)) {
@@ -141,24 +133,25 @@ export function runStoreAction<EntityOrState = any>(
     case StoreActions.SetEntities: {
       const { payload } = params as RunStoreActionSetEntities;
       (store as EntityStore).set(payload.data);
-      return;
+      break;
     }
+
     case StoreActions.AddEntities: {
       const { payload } = params as RunStoreActionAddEntities;
       (store as EntityStore).add(payload.data, payload.params);
-      return;
+      break;
     }
 
     case StoreActions.UpdateEntities: {
       const { payload } = params as RunStoreActionUpdateEntities;
       (store as EntityStore).update(payload.entityIds, payload.data);
-      return;
+      break;
     }
 
     case StoreActions.RemoveEntities: {
       const { payload } = params as RunStoreActionRemoveEntities;
       (store as EntityStore).remove(payload.entityIds);
-      return;
+      break;
     }
 
     case StoreActions.UpsertEntities: {
@@ -170,13 +163,17 @@ export function runStoreAction<EntityOrState = any>(
       } else {
         (store as EntityStore).upsertMany([payload.data]);
       }
-      return;
+      break;
     }
 
     case StoreActions.Update: {
       const { payload } = params as RunStoreActionUpdate;
       (store as EntityStore).update(payload.data);
-      return;
+      break;
+    }
+
+    default: {
+      throw new AkitaError('Unknown action');
     }
   }
 }

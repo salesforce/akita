@@ -1,5 +1,5 @@
-import { SortByOptions } from './queryConfig';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { SortByOptions } from './queryConfig';
 
 export interface HashMap<T> {
   [id: string]: T;

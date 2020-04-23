@@ -1,9 +1,9 @@
-import { ArrayProperties, IDS, ItemPredicate } from './types';
-import { DEFAULT_ID_KEY } from './defaultIDKey';
 import { coerceArray } from './coerceArray';
-import { isObject } from './isObject';
+import { DEFAULT_ID_KEY } from './defaultIDKey';
 import { isFunction } from './isFunction';
+import { isObject } from './isObject';
 import { not } from './not';
+import { ArrayProperties, IDS, ItemPredicate } from './types';
 
 /**
  * Remove item from collection
@@ -20,26 +20,22 @@ export function arrayRemove<Root extends any[], Entity = Root[0]>(keyOrRoot: Roo
  * @deprecated
  */
 export function arrayRemove<Root, Entity = any>(keyOrRoot: ArrayProperties<Root>, identifier: IDS | ItemPredicate<Entity>, idKey?: string): (state: Root) => Root;
-export function arrayRemove<Root, Entity = any>(keyOrRoot: ArrayProperties<Root> | Root, identifier: IDS | ItemPredicate<Entity>, idKey = DEFAULT_ID_KEY) {
+export function arrayRemove<Root, Entity = any>(keyOrRoot: ArrayProperties<Root> | Root, identifier: IDS | ItemPredicate<Entity>, idKey = DEFAULT_ID_KEY): any {
   let identifiers;
   let filterFn;
 
   if (isFunction(identifier)) {
     filterFn = not(identifier);
   } else {
-    identifiers = coerceArray(identifier as IDS);
-    filterFn = current => {
-      return identifiers.includes(isObject(current) ? current[idKey] : current) === false;
-    };
+    identifiers = coerceArray(identifier);
+    filterFn = (current): boolean => identifiers.includes(isObject(current) ? current[idKey] : current) === false;
   }
 
   if (Array.isArray(keyOrRoot)) {
     return keyOrRoot.filter(filterFn);
   }
 
-  return state => {
-    return {
-      [keyOrRoot as string]: state[keyOrRoot].filter(filterFn)
-    };
-  };
+  return (state): { [keyOrRoot: string]: any } => ({
+    [keyOrRoot as string]: state[keyOrRoot].filter(filterFn),
+  });
 }

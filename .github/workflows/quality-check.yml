@@ -64,8 +64,9 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Run linting
-        continue-on-error: true # temporary measurements until linting errors are fixed, see https://github.com/datorama/akita/issues/401
-        run: yarn nx run-many --target=lint --all
+        # temporary measurements until linting errors are fixed, see https://github.com/datorama/akita/issues/401
+        # yarn nx run-many --target=lint --all
+        run: yarn nx run-many --target=lint --projects=akita,akita-ng-devtools,akita-ng-entity-service,akita-ng-forms-manager,akita-ng-router-store,akita-schematics
 
   test:
     name: Test applications & libraries

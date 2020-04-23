@@ -2,7 +2,7 @@ export enum EntityActions {
   Set,
   Add,
   Update,
-  Remove
+  Remove,
 }
 
 export interface EntityAction<IDType> {

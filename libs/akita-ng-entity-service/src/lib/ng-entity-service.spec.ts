@@ -1,22 +1,23 @@
-import { TestBed, inject, fakeAsync, tick } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { fakeAsync, inject, TestBed, tick } from '@angular/core/testing';
+import { NgEntityServiceNotifier } from './ng-entity-service-notifier';
+import { defaultConfig, NgEntityServiceGlobalConfig, NG_ENTITY_SERVICE_CONFIG } from './ng-entity-service.config';
+import { NgEntityServiceLoader } from './ng-entity-service.loader';
 import {
-  TestStore,
-  TestServiceWithDecoratorConfig,
-  TestServiceWithDecoratorAndInlineConfig,
+  storeName,
+  TestEntity,
   TestService,
+  TestServiceWithDecoratorAndInlineConfig,
+  TestServiceWithDecoratorConfig,
   TestServiceWithInlineConfig,
   TestServiceWithMixedConfig,
-  storeName,
-  TestEntity
+  TestStore,
 } from './setup';
-import { NgEntityServiceGlobalConfig, NG_ENTITY_SERVICE_CONFIG, defaultConfig } from './ng-entity-service.config';
-import { HttpMethod, NgEntityServiceNotifier } from './ng-entity-service-notifier';
-import { NgEntityServiceLoader } from './ng-entity-service.loader';
+import { HttpMethod } from './types';
 
 describe('NgEntityService', () => {
   describe('should merge config in order...', () => {
-    describe('', () => {
+    describe(undefined, () => {
       beforeEach(() => {
         TestBed.configureTestingModule({
           providers: [
@@ -24,10 +25,10 @@ describe('NgEntityService', () => {
             TestService,
             {
               provide: NG_ENTITY_SERVICE_CONFIG,
-              useValue: {} as NgEntityServiceGlobalConfig
-            }
+              useValue: {} as NgEntityServiceGlobalConfig,
+            },
           ],
-          imports: [HttpClientTestingModule]
+          imports: [HttpClientTestingModule],
         });
       });
 
@@ -37,7 +38,7 @@ describe('NgEntityService', () => {
       }));
     });
 
-    describe('', () => {
+    describe(undefined, () => {
       beforeEach(() => {
         TestBed.configureTestingModule({
           providers: [
@@ -48,12 +49,12 @@ describe('NgEntityService', () => {
               useValue: {
                 baseUrl: 'base-url',
                 httpMethods: {
-                  PUT: HttpMethod.PATCH
-                }
-              } as NgEntityServiceGlobalConfig
-            }
+                  PUT: HttpMethod.PATCH,
+                },
+              } as NgEntityServiceGlobalConfig,
+            },
           ],
-          imports: [HttpClientTestingModule]
+          imports: [HttpClientTestingModule],
         });
       });
 
@@ -66,13 +67,13 @@ describe('NgEntityService', () => {
             POST: HttpMethod.POST,
             PATCH: HttpMethod.PATCH,
             PUT: HttpMethod.PATCH,
-            DELETE: HttpMethod.DELETE
-          }
+            DELETE: HttpMethod.DELETE,
+          },
         });
       }));
     });
 
-    describe('', () => {
+    describe(undefined, () => {
       beforeEach(() => {
         TestBed.configureTestingModule({
           providers: [
@@ -83,12 +84,12 @@ describe('NgEntityService', () => {
               useValue: {
                 baseUrl: 'base-url',
                 httpMethods: {
-                  PUT: HttpMethod.PATCH
-                }
-              } as NgEntityServiceGlobalConfig
-            }
+                  PUT: HttpMethod.PATCH,
+                },
+              } as NgEntityServiceGlobalConfig,
+            },
           ],
-          imports: [HttpClientTestingModule]
+          imports: [HttpClientTestingModule],
         });
       });
 
@@ -101,14 +102,14 @@ describe('NgEntityService', () => {
             POST: HttpMethod.POST,
             PATCH: HttpMethod.PATCH,
             PUT: HttpMethod.PATCH,
-            DELETE: HttpMethod.DELETE
+            DELETE: HttpMethod.DELETE,
           },
-          resourceName: 'decorator-res'
+          resourceName: 'decorator-res',
         });
       }));
     });
 
-    describe('', () => {
+    describe(undefined, () => {
       beforeEach(() => {
         TestBed.configureTestingModule({
           providers: [
@@ -119,12 +120,12 @@ describe('NgEntityService', () => {
               useValue: {
                 baseUrl: 'base-url',
                 httpMethods: {
-                  PUT: HttpMethod.PATCH
-                }
-              } as NgEntityServiceGlobalConfig
-            }
+                  PUT: HttpMethod.PATCH,
+                },
+              } as NgEntityServiceGlobalConfig,
+            },
           ],
-          imports: [HttpClientTestingModule]
+          imports: [HttpClientTestingModule],
         });
       });
 
@@ -137,14 +138,14 @@ describe('NgEntityService', () => {
             POST: HttpMethod.POST,
             PATCH: HttpMethod.PATCH,
             PUT: HttpMethod.PATCH,
-            DELETE: HttpMethod.DELETE
+            DELETE: HttpMethod.DELETE,
           },
-          resourceName: 'inline-res'
+          resourceName: 'inline-res',
         });
       }));
     });
 
-    describe('', () => {
+    describe(undefined, () => {
       beforeEach(() => {
         TestBed.configureTestingModule({
           providers: [
@@ -153,11 +154,11 @@ describe('NgEntityService', () => {
             {
               provide: NG_ENTITY_SERVICE_CONFIG,
               useValue: {
-                baseUrl: 'base-url'
-              } as NgEntityServiceGlobalConfig
-            }
+                baseUrl: 'base-url',
+              } as NgEntityServiceGlobalConfig,
+            },
           ],
-          imports: [HttpClientTestingModule]
+          imports: [HttpClientTestingModule],
         });
       });
 
@@ -170,14 +171,14 @@ describe('NgEntityService', () => {
             POST: HttpMethod.POST,
             PATCH: HttpMethod.PATCH,
             PUT: HttpMethod.PUT,
-            DELETE: HttpMethod.DELETE
+            DELETE: HttpMethod.DELETE,
           },
-          resourceName: 'inline-res'
+          resourceName: 'inline-res',
         });
       }));
     });
 
-    describe('', () => {
+    describe(undefined, () => {
       beforeEach(() => {
         TestBed.configureTestingModule({
           providers: [
@@ -188,12 +189,12 @@ describe('NgEntityService', () => {
               useValue: {
                 baseUrl: 'base-url',
                 httpMethods: {
-                  GET: HttpMethod.POST
-                }
-              } as NgEntityServiceGlobalConfig
-            }
+                  GET: HttpMethod.POST,
+                },
+              } as NgEntityServiceGlobalConfig,
+            },
           ],
-          imports: [HttpClientTestingModule]
+          imports: [HttpClientTestingModule],
         });
       });
 
@@ -206,9 +207,9 @@ describe('NgEntityService', () => {
             POST: HttpMethod.POST,
             PATCH: HttpMethod.PATCH,
             PUT: HttpMethod.PUT,
-            DELETE: HttpMethod.DELETE
+            DELETE: HttpMethod.DELETE,
           },
-          resourceName: 'inline-res'
+          resourceName: 'inline-res',
         });
       }));
     });
@@ -223,10 +224,10 @@ describe('NgEntityService', () => {
           TestServiceWithDecoratorConfig,
           {
             provide: NG_ENTITY_SERVICE_CONFIG,
-            useValue: { baseUrl: 'base-url' } as NgEntityServiceGlobalConfig
-          }
+            useValue: { baseUrl: 'base-url' } as NgEntityServiceGlobalConfig,
+          },
         ],
-        imports: [HttpClientTestingModule]
+        imports: [HttpClientTestingModule],
       });
     });
 
@@ -248,10 +249,10 @@ describe('NgEntityService', () => {
           TestServiceWithDecoratorConfig,
           {
             provide: NG_ENTITY_SERVICE_CONFIG,
-            useValue: { baseUrl: 'base-url' } as NgEntityServiceGlobalConfig
-          }
+            useValue: { baseUrl: 'base-url' } as NgEntityServiceGlobalConfig,
+          },
         ],
-        imports: [HttpClientTestingModule]
+        imports: [HttpClientTestingModule],
       });
     });
 
@@ -264,6 +265,7 @@ describe('NgEntityService', () => {
     }));
 
     it('should throw when no baseUrl is configured', inject([TestService], (service: TestService) => {
+      // eslint-disable-next-line no-param-reassign
       service.baseUrl = undefined;
       expect(() => service.api).toThrowError();
     }));
@@ -277,10 +279,10 @@ describe('NgEntityService', () => {
           TestServiceWithInlineConfig,
           {
             provide: NG_ENTITY_SERVICE_CONFIG,
-            useValue: {} as NgEntityServiceGlobalConfig
-          }
+            useValue: {} as NgEntityServiceGlobalConfig,
+          },
         ],
-        imports: [HttpClientTestingModule]
+        imports: [HttpClientTestingModule],
       });
     });
 
@@ -297,7 +299,7 @@ describe('NgEntityService', () => {
         method: HttpMethod.GET,
         loading: true,
         entityId: undefined,
-        storeName: storeName
+        storeName,
       });
     }));
 
@@ -311,7 +313,7 @@ describe('NgEntityService', () => {
           method: HttpMethod.GET,
           loading: true,
           entityId,
-          storeName: storeName
+          storeName,
         });
       }
     ));
@@ -323,7 +325,7 @@ describe('NgEntityService', () => {
         const entityId = 123;
         const dummyData = {
           id: entityId,
-          foo: 'bar'
+          foo: 'bar',
         };
         service.get(entityId).subscribe(() => {
           expect(store.upsert).toHaveBeenCalledWith(entityId, dummyData);
@@ -363,7 +365,7 @@ describe('NgEntityService', () => {
         jest.spyOn(store, 'set');
         const dummyData = [
           { id: 1, foo: 'bar' },
-          { id: 2, foo: 'baz' }
+          { id: 2, foo: 'baz' },
         ];
         service.get().subscribe(() => {
           expect(store.set).toHaveBeenCalledWith(dummyData);
@@ -380,7 +382,7 @@ describe('NgEntityService', () => {
         jest.spyOn(store, 'add');
         const dummyData = [
           { id: 1, foo: 'bar' },
-          { id: 2, foo: 'baz' }
+          { id: 2, foo: 'baz' },
         ];
         service.get({ append: true }).subscribe(() => {
           expect(store.add).toHaveBeenCalledWith(dummyData);
@@ -397,7 +399,7 @@ describe('NgEntityService', () => {
         jest.spyOn(store, 'upsertMany');
         const dummyData = [
           { id: 1, foo: 'bar' },
-          { id: 2, foo: 'baz' }
+          { id: 2, foo: 'baz' },
         ];
         service.get({ upsert: true }).subscribe(() => {
           expect(store.upsertMany).toHaveBeenCalledWith(dummyData);
@@ -418,7 +420,7 @@ describe('NgEntityService', () => {
         jest.spyOn(store, 'replace');
         const dummyData = [
           { id: 1, foo: 'bar' },
-          { id: 2, foo: 'baz' }
+          { id: 2, foo: 'baz' },
         ];
         service.get({ skipWrite: true }).subscribe(() => {
           expect(store.upsert).toHaveBeenCalledTimes(0);
@@ -436,9 +438,9 @@ describe('NgEntityService', () => {
     it('should return result from request', inject([TestServiceWithInlineConfig, HttpTestingController], (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
       const dummyData = [
         { id: 1, foo: 'bar' },
-        { id: 2, foo: 'baz' }
+        { id: 2, foo: 'baz' },
       ];
-      service.get().subscribe(result => {
+      service.get().subscribe((result) => {
         expect(result).toEqual(dummyData);
       });
 
@@ -451,12 +453,12 @@ describe('NgEntityService', () => {
       (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
         const dummyData = [
           { id: 1, foo: 'bar' },
-          { id: 2, foo: 'baz' }
+          { id: 2, foo: 'baz' },
         ];
-        service.get({ mapResponseFn: res => res.map(x => ({ entityId: x.id, test: x.foo })) }).subscribe(result => {
+        service.get({ mapResponseFn: (res) => res.map((x) => ({ entityId: x.id, test: x.foo })) }).subscribe((result) => {
           expect(result).toEqual([
             { entityId: 1, test: 'bar' },
-            { entityId: 2, test: 'baz' }
+            { entityId: 2, test: 'baz' },
           ]);
         });
 
@@ -473,6 +475,10 @@ describe('NgEntityService', () => {
 
         const req = httpMock.expectOne(dummyUrl);
         req.flush([]);
+
+        expect(() => {
+          httpMock.verify();
+        }).not.toThrow();
       }
     ));
 
@@ -484,6 +490,10 @@ describe('NgEntityService', () => {
 
         const req = httpMock.expectOne(dummyUrl);
         req.flush([]);
+
+        expect(() => {
+          httpMock.verify();
+        }).not.toThrow();
       }
     ));
 
@@ -517,7 +527,7 @@ describe('NgEntityService', () => {
       (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
         service.get({ params: { foo: 'foo', bar: 'bar' } }).subscribe();
 
-        const req = httpMock.expectOne(x => x.url === service.api);
+        const req = httpMock.expectOne((x) => x.url === service.api);
         expect(req.request.params.get('foo')).toEqual('foo');
         expect(req.request.params.get('bar')).toEqual('bar');
         req.flush([]);
@@ -530,7 +540,7 @@ describe('NgEntityService', () => {
         const entityId = 123;
         service.get(entityId, { params: { foo: 'foo', bar: 'bar' } }).subscribe();
 
-        const req = httpMock.expectOne(x => x.url === `${service.api}/${entityId}`);
+        const req = httpMock.expectOne((x) => x.url === `${service.api}/${entityId}`);
         expect(req.request.params.get('foo')).toEqual('foo');
         expect(req.request.params.get('bar')).toEqual('bar');
         req.flush([]);
@@ -543,7 +553,7 @@ describe('NgEntityService', () => {
         jest.spyOn(notifier, 'dispatch');
         const dummyData = [
           { id: 1, foo: 'bar' },
-          { id: 2, foo: 'baz' }
+          { id: 2, foo: 'baz' },
         ];
         service.get().subscribe(() => {
           expect(notifier.dispatch).toHaveBeenCalledWith({
@@ -551,7 +561,7 @@ describe('NgEntityService', () => {
             type: 'success',
             payload: dummyData,
             method: HttpMethod.GET,
-            successMsg: undefined
+            successMsg: undefined,
           });
         });
 
@@ -566,7 +576,7 @@ describe('NgEntityService', () => {
         jest.spyOn(notifier, 'dispatch');
         const dummyData = [
           { id: 1, foo: 'bar' },
-          { id: 2, foo: 'baz' }
+          { id: 2, foo: 'baz' },
         ];
         const successMsg = 'Success test message...';
         service.get({ successMsg }).subscribe(() => {
@@ -575,7 +585,7 @@ describe('NgEntityService', () => {
             type: 'success',
             payload: dummyData,
             method: HttpMethod.GET,
-            successMsg
+            successMsg,
           });
         });
 
@@ -595,9 +605,9 @@ describe('NgEntityService', () => {
                 storeName,
                 type: 'error',
                 method: HttpMethod.GET,
-                errorMsg: undefined
+                errorMsg: undefined,
               })
-            )
+            ),
         });
 
         const req = httpMock.expectOne(service.api);
@@ -617,9 +627,9 @@ describe('NgEntityService', () => {
                 storeName,
                 type: 'error',
                 method: HttpMethod.GET,
-                errorMsg
+                errorMsg,
               })
-            )
+            ),
         });
 
         const req = httpMock.expectOne(service.api);
@@ -640,8 +650,8 @@ describe('NgEntityService', () => {
             storeName,
             loading: false,
             entityId: undefined,
-            method: HttpMethod.GET
-          }
+            method: HttpMethod.GET,
+          },
         ]);
       })
     ));
@@ -660,8 +670,8 @@ describe('NgEntityService', () => {
             storeName,
             loading: false,
             entityId,
-            method: HttpMethod.GET
-          }
+            method: HttpMethod.GET,
+          },
         ]);
       })
     ));
@@ -675,10 +685,10 @@ describe('NgEntityService', () => {
           TestServiceWithInlineConfig,
           {
             provide: NG_ENTITY_SERVICE_CONFIG,
-            useValue: {} as NgEntityServiceGlobalConfig
-          }
+            useValue: {} as NgEntityServiceGlobalConfig,
+          },
         ],
-        imports: [HttpClientTestingModule]
+        imports: [HttpClientTestingModule],
       });
     });
 
@@ -696,7 +706,7 @@ describe('NgEntityService', () => {
       expect(loader.dispatch).toHaveBeenCalledWith({
         method: HttpMethod.POST,
         loading: true,
-        storeName: storeName
+        storeName,
       });
     }));
 
@@ -738,7 +748,7 @@ describe('NgEntityService', () => {
 
     it('should return result from request', inject([TestServiceWithInlineConfig, HttpTestingController], (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
       const dummyEntity: TestEntity = { id: 1, foo: 'foo', bar: 123 };
-      service.add(dummyEntity).subscribe(result => {
+      service.add(dummyEntity).subscribe((result) => {
         expect(result).toEqual(dummyEntity);
       });
 
@@ -750,7 +760,7 @@ describe('NgEntityService', () => {
       [TestServiceWithInlineConfig, HttpTestingController],
       (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
         const dummyEntity: TestEntity = { id: 1, foo: 'foo', bar: 123 };
-        service.add(dummyEntity, { mapResponseFn: x => ({ entityId: x.id, test: x.foo }) }).subscribe(result => {
+        service.add(dummyEntity, { mapResponseFn: (x) => ({ entityId: x.id, test: x.foo }) }).subscribe((result) => {
           expect(result).toEqual({ entityId: 1, test: 'foo' });
         });
 
@@ -768,6 +778,10 @@ describe('NgEntityService', () => {
 
         const req = httpMock.expectOne(dummyUrl);
         req.flush([]);
+
+        expect(() => {
+          httpMock.verify();
+        }).not.toThrow();
       }
     ));
 
@@ -790,7 +804,7 @@ describe('NgEntityService', () => {
         const dummyEntity: TestEntity = { id: 1, foo: 'foo', bar: 123 };
         service.add(dummyEntity, { params: { foo: 'foo', bar: 'bar' } }).subscribe();
 
-        const req = httpMock.expectOne(x => x.url === service.api);
+        const req = httpMock.expectOne((x) => x.url === service.api);
         expect(req.request.params.get('foo')).toEqual('foo');
         expect(req.request.params.get('bar')).toEqual('bar');
         req.flush([]);
@@ -808,7 +822,7 @@ describe('NgEntityService', () => {
             type: 'success',
             payload: dummyEntity,
             method: HttpMethod.POST,
-            successMsg: undefined
+            successMsg: undefined,
           });
         });
 
@@ -829,7 +843,7 @@ describe('NgEntityService', () => {
             type: 'success',
             payload: dummyEntity,
             method: HttpMethod.POST,
-            successMsg
+            successMsg,
           });
         });
 
@@ -850,9 +864,9 @@ describe('NgEntityService', () => {
                 storeName,
                 type: 'error',
                 method: HttpMethod.POST,
-                errorMsg: undefined
+                errorMsg: undefined,
               })
-            )
+            ),
         });
 
         const req = httpMock.expectOne(service.api);
@@ -873,9 +887,9 @@ describe('NgEntityService', () => {
                 storeName,
                 type: 'error',
                 method: HttpMethod.POST,
-                errorMsg
+                errorMsg,
               })
-            )
+            ),
         });
 
         const req = httpMock.expectOne(service.api);
@@ -896,8 +910,8 @@ describe('NgEntityService', () => {
           {
             storeName,
             loading: false,
-            method: HttpMethod.POST
-          }
+            method: HttpMethod.POST,
+          },
         ]);
       })
     ));
@@ -911,10 +925,10 @@ describe('NgEntityService', () => {
           TestServiceWithInlineConfig,
           {
             provide: NG_ENTITY_SERVICE_CONFIG,
-            useValue: {} as NgEntityServiceGlobalConfig
-          }
+            useValue: {} as NgEntityServiceGlobalConfig,
+          },
         ],
-        imports: [HttpClientTestingModule]
+        imports: [HttpClientTestingModule],
       });
     });
 
@@ -935,7 +949,7 @@ describe('NgEntityService', () => {
         method: HttpMethod.PUT,
         loading: true,
         entityId,
-        storeName: storeName
+        storeName,
       });
     }));
 
@@ -974,7 +988,7 @@ describe('NgEntityService', () => {
     it('should return result from request', inject([TestServiceWithInlineConfig, HttpTestingController], (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
       const entityId = 1;
       const dummyEntity: Partial<TestEntity> = { foo: 'foo', bar: 123 };
-      service.update(entityId, dummyEntity).subscribe(result => {
+      service.update(entityId, dummyEntity).subscribe((result) => {
         expect(result).toEqual(dummyEntity);
       });
 
@@ -987,7 +1001,7 @@ describe('NgEntityService', () => {
       (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
         const entityId = 1;
         const dummyEntity: Partial<TestEntity> = { foo: 'foo', bar: 123 };
-        service.update(entityId, dummyEntity, { mapResponseFn: x => ({ test: x.foo, test2: x.bar }) }).subscribe(result => {
+        service.update(entityId, dummyEntity, { mapResponseFn: (x) => ({ test: x.foo, test2: x.bar }) }).subscribe((result) => {
           expect(result).toEqual({ test: 'foo', test2: 123 });
         });
 
@@ -1006,6 +1020,10 @@ describe('NgEntityService', () => {
 
         const req = httpMock.expectOne(dummyUrl);
         req.flush([]);
+
+        expect(() => {
+          httpMock.verify();
+        }).not.toThrow();
       }
     ));
 
@@ -1030,7 +1048,7 @@ describe('NgEntityService', () => {
         const dummyEntity: Partial<TestEntity> = { foo: 'foo', bar: 123 };
         service.update(entityId, dummyEntity, { params: { foo: 'foo', bar: 'bar' } }).subscribe();
 
-        const req = httpMock.expectOne(x => x.url === `${service.api}/${entityId}`);
+        const req = httpMock.expectOne((x) => x.url === `${service.api}/${entityId}`);
         expect(req.request.params.get('foo')).toEqual('foo');
         expect(req.request.params.get('bar')).toEqual('bar');
         req.flush([]);
@@ -1049,7 +1067,7 @@ describe('NgEntityService', () => {
             type: 'success',
             payload: dummyEntity,
             method: HttpMethod.PUT,
-            successMsg: undefined
+            successMsg: undefined,
           });
         });
 
@@ -1071,7 +1089,7 @@ describe('NgEntityService', () => {
             type: 'success',
             payload: dummyEntity,
             method: HttpMethod.PUT,
-            successMsg
+            successMsg,
           });
         });
 
@@ -1093,9 +1111,9 @@ describe('NgEntityService', () => {
                 storeName,
                 type: 'error',
                 method: HttpMethod.PUT,
-                errorMsg: undefined
+                errorMsg: undefined,
               })
-            )
+            ),
         });
 
         const req = httpMock.expectOne(`${service.api}/${entityId}`);
@@ -1117,9 +1135,9 @@ describe('NgEntityService', () => {
                 storeName,
                 type: 'error',
                 method: HttpMethod.PUT,
-                errorMsg
+                errorMsg,
               })
-            )
+            ),
         });
 
         const req = httpMock.expectOne(`${service.api}/${entityId}`);
@@ -1141,9 +1159,9 @@ describe('NgEntityService', () => {
           {
             storeName,
             loading: false,
-            entityId, // !WARN this is inconsistant with the stop loading event in both get & add, as they don't include entityId
-            method: HttpMethod.PUT
-          }
+            entityId, // !WARN this is inconsistent with the stop loading event in both get & add, as they don't include entityId
+            method: HttpMethod.PUT,
+          },
         ]);
       })
     ));
@@ -1157,10 +1175,10 @@ describe('NgEntityService', () => {
           TestServiceWithInlineConfig,
           {
             provide: NG_ENTITY_SERVICE_CONFIG,
-            useValue: {} as NgEntityServiceGlobalConfig
-          }
+            useValue: {} as NgEntityServiceGlobalConfig,
+          },
         ],
-        imports: [HttpClientTestingModule]
+        imports: [HttpClientTestingModule],
       });
     });
 
@@ -1179,7 +1197,7 @@ describe('NgEntityService', () => {
         method: HttpMethod.DELETE,
         loading: true,
         entityId,
-        storeName: storeName
+        storeName,
       });
     }));
 
@@ -1214,7 +1232,7 @@ describe('NgEntityService', () => {
     it('should return result from request', inject([TestServiceWithInlineConfig, HttpTestingController], (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
       const entityId = 1;
       const deleteResponse = { id: entityId, message: 'deleted' };
-      service.delete(entityId).subscribe(result => {
+      service.delete(entityId).subscribe((result) => {
         expect(result).toEqual(deleteResponse);
       });
 
@@ -1227,7 +1245,7 @@ describe('NgEntityService', () => {
       (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
         const entityId = 1;
         const deleteResponse = { id: entityId, message: 'deleted' };
-        service.delete(entityId, { mapResponseFn: x => ({ test: x.id, test2: x.message }) }).subscribe(result => {
+        service.delete(entityId, { mapResponseFn: (x) => ({ test: x.id, test2: x.message }) }).subscribe((result) => {
           expect(result).toEqual({ test: entityId, test2: 'deleted' });
         });
 
@@ -1245,6 +1263,10 @@ describe('NgEntityService', () => {
 
         const req = httpMock.expectOne(dummyUrl);
         req.flush([]);
+
+        expect(() => {
+          httpMock.verify();
+        }).not.toThrow();
       }
     ));
 
@@ -1267,7 +1289,7 @@ describe('NgEntityService', () => {
         const entityId = 1;
         service.delete(entityId, { params: { foo: 'foo', bar: 'bar' } }).subscribe();
 
-        const req = httpMock.expectOne(x => x.url === `${service.api}/${entityId}`);
+        const req = httpMock.expectOne((x) => x.url === `${service.api}/${entityId}`);
         expect(req.request.params.get('foo')).toEqual('foo');
         expect(req.request.params.get('bar')).toEqual('bar');
         req.flush([]);
@@ -1286,7 +1308,7 @@ describe('NgEntityService', () => {
             type: 'success',
             payload: deleteResponse,
             method: HttpMethod.DELETE,
-            successMsg: undefined
+            successMsg: undefined,
           });
         });
 
@@ -1308,7 +1330,7 @@ describe('NgEntityService', () => {
             type: 'success',
             payload: deleteResponse,
             method: HttpMethod.DELETE,
-            successMsg
+            successMsg,
           });
         });
 
@@ -1329,9 +1351,9 @@ describe('NgEntityService', () => {
                 storeName,
                 type: 'error',
                 method: HttpMethod.DELETE,
-                errorMsg: undefined
+                errorMsg: undefined,
               })
-            )
+            ),
         });
 
         const req = httpMock.expectOne(`${service.api}/${entityId}`);
@@ -1352,9 +1374,9 @@ describe('NgEntityService', () => {
                 storeName,
                 type: 'error',
                 method: HttpMethod.DELETE,
-                errorMsg
+                errorMsg,
               })
-            )
+            ),
         });
 
         const req = httpMock.expectOne(`${service.api}/${entityId}`);
@@ -1375,9 +1397,9 @@ describe('NgEntityService', () => {
           {
             storeName,
             loading: false,
-            entityId, // !WARN this is inconsistant with the stop loading event in both get & add, as they don't include entityId
-            method: HttpMethod.DELETE
-          }
+            entityId, // !WARN this is inconsistent with the stop loading event in both get & add, as they don't include entityId
+            method: HttpMethod.DELETE,
+          },
         ]);
       })
     ));

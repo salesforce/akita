@@ -1,31 +1,31 @@
+import { from, isObservable, Observable, of, OperatorFunction, ReplaySubject, Subscription } from 'rxjs';
 import { filter, skip } from 'rxjs/operators';
-import { from, isObservable, of, OperatorFunction, ReplaySubject, Subscription } from 'rxjs';
-import { HashMap, MaybeAsync } from './types';
-import { isFunction } from './isFunction';
-import { AkitaError } from './errors';
-import { __stores__ } from './stores';
-import { getValue } from './getValueByString';
 import { setAction } from './actions';
-import { setValue } from './setValueByString';
 import { $$addStore, $$deleteStore } from './dispatchers';
+import { AkitaError } from './errors';
+import { getValue } from './getValueByString';
+import { isFunction } from './isFunction';
 import { isNil } from './isNil';
 import { isObject } from './isObject';
-import { isNotBrowser, hasLocalStorage, hasSessionStorage } from './root';
+import { hasLocalStorage, hasSessionStorage, isNotBrowser } from './root';
+import { setValue } from './setValueByString';
+import { __stores__ } from './store';
+import { HashMap, MaybeAsync } from './types';
 
-let skipStorageUpdate = false;
+let skipStorageUpdateState = false;
 
 const _persistStateInit = new ReplaySubject(1);
 
-export function selectPersistStateInit() {
+export function selectPersistStateInit(): Observable<unknown> {
   return _persistStateInit.asObservable();
 }
 
-export function setSkipStorageUpdate(skip: boolean) {
-  skipStorageUpdate = skip;
+export function setSkipStorageUpdate(skipUpdate: boolean): void {
+  skipStorageUpdateState = skipUpdate;
 }
 
-export function getSkipStorageUpdate() {
-  return skipStorageUpdate;
+export function getSkipStorageUpdate(): boolean {
+  return skipStorageUpdateState;
 }
 
 export interface PersistStateStorage {
@@ -36,11 +36,11 @@ export interface PersistStateStorage {
   clear(): void;
 }
 
-function isPromise(v: any) {
+function isPromise(v: any): boolean {
   return v && isFunction(v.then);
 }
 
-function observify(asyncOrValue: any) {
+function observify(asyncOrValue: any): Observable<unknown> {
   if (isPromise(asyncOrValue) || isObservable(asyncOrValue)) {
     return from(asyncOrValue);
   }
@@ -70,14 +70,14 @@ export interface PersistStateParams {
    */
   exclude: string[];
 
-  preStorageUpdate(storeName: string, state: any): any;
-
-  preStoreUpdate(storeName: string, state: any): any;
-
   skipStorageUpdate: () => boolean;
   preStorageUpdateOperator: () => OperatorFunction<any, any>;
   /** Whether to persist a dynamic store upon destroy */
   persistOnDestroy: boolean;
+
+  preStorageUpdate(storeName: string, state: any): any;
+
+  preStoreUpdate(storeName: string, state: any): any;
 }
 
 export interface PersistState {
@@ -99,23 +99,22 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
      */
     exclude: [],
     persistOnDestroy: false,
-    preStorageUpdate: function (storeName, state) {
+    preStorageUpdate(storeName, state) {
       return state;
     },
-    preStoreUpdate: function (storeName, state) {
+    preStoreUpdate(storeName, state) {
       return state;
     },
     skipStorageUpdate: getSkipStorageUpdate,
-    preStorageUpdateOperator: () => (source) => source,
+    preStorageUpdateOperator: () => (source): Observable<any> => source,
   };
 
-  const { storage, enableInNonBrowser, deserialize, serialize, include, exclude, key, preStorageUpdate, persistOnDestroy, preStorageUpdateOperator, preStoreUpdate, skipStorageUpdate } = Object.assign(
-    {},
-    defaults,
-    params
-  );
+  const { storage, enableInNonBrowser, deserialize, serialize, include, exclude, key, preStorageUpdate, persistOnDestroy, preStorageUpdateOperator, preStoreUpdate, skipStorageUpdate } = {
+    ...defaults,
+    ...params,
+  };
 
-  if (isNotBrowser && !enableInNonBrowser) return;
+  if (isNotBrowser && !enableInNonBrowser) return undefined;
 
   const hasInclude = include.length > 0;
   const hasExclude = exclude.length > 0;
@@ -127,29 +126,31 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
 
   if (hasInclude) {
     includeStores = include.reduce(
-      (acc, path) => {
+      (accu, path) => {
         if (isFunction(path)) {
-          acc.fns.push(path);
+          accu.fns.push(path);
         } else {
           const storeName = path.split('.')[0];
-          acc[storeName] = path;
+          // reassigning reduce accumulator is perfectly legal
+          // eslint-disable-next-line no-param-reassign
+          accu[storeName] = path;
         }
-        return acc;
+        return accu;
       },
       { fns: [] }
     );
   }
 
   let stores: HashMap<Subscription> = {};
-  let acc = {};
-  let subscriptions: Subscription[] = [];
+  const acc = {};
+  const subscriptions: Subscription[] = [];
 
   const buffer = [];
 
-  function _save(v: any) {
+  function _save(v: any): void {
     observify(v).subscribe(() => {
       const next = buffer.shift();
-      next && _save(next);
+      if (next) _save(next);
     });
   }
 
@@ -159,15 +160,15 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
   observify(storage.getItem(key)).subscribe((value: any) => {
     let storageState = isObject(value) ? value : deserialize(value || '{}');
 
-    function save(storeCache) {
-      storageState['$cache'] = { ...(storageState['$cache'] || {}), ...storeCache };
-      storageState = Object.assign({}, storageState, acc);
+    function save(storeCache): void {
+      storageState.$cache = { ...(storageState.$cache || {}), ...storeCache };
+      storageState = { ...storageState, ...acc };
 
       buffer.push(storage.setItem(key, isLocalStorage ? serialize(storageState) : storageState));
       _save(buffer.shift());
     }
 
-    function subscribe(storeName, path) {
+    function subscribe(storeName, path): void {
       stores[storeName] = __stores__[storeName]
         ._select((state) => getValue(state, path))
         .pipe(
@@ -181,13 +182,13 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
         });
     }
 
-    function setInitial(storeName, store, path) {
+    function setInitial(storeName, store, path): void {
       if (storeName in storageState) {
         setAction('@PersistState');
         store._setState((state) => {
           return setValue(state, path, preStoreUpdate(storeName, storageState[storeName]));
         });
-        const hasCache = storageState['$cache'] ? storageState['$cache'][storeName] : false;
+        const hasCache = storageState.$cache ? storageState.$cache[storeName] : false;
         __stores__[storeName].setHasCache(hasCache, { restartTTL: true });
       }
     }
@@ -235,7 +236,7 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
   });
 
   return {
-    destroy() {
+    destroy(): void {
       subscriptions.forEach((s) => s.unsubscribe());
       for (let i = 0, keys = Object.keys(stores); i < keys.length; i++) {
         const storeName = keys[i];
@@ -243,13 +244,13 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
       }
       stores = {};
     },
-    clear() {
+    clear(): void {
       storage.clear();
     },
-    clearStore(storeName?: string) {
+    clearStore(storeName?: string): void {
       if (isNil(storeName)) {
-        const value = observify(storage.setItem(key, '{}'));
-        value.subscribe();
+        const afterSaved$ = observify(storage.setItem(key, '{}'));
+        afterSaved$.subscribe();
         return;
       }
       const value = storage.getItem(key);
@@ -258,8 +259,8 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
 
         if (storageState[storeName]) {
           delete storageState[storeName];
-          const value = observify(storage.setItem(key, serialize(storageState)));
-          value.subscribe();
+          const afterSaved$ = observify(storage.setItem(key, serialize(storageState)));
+          afterSaved$.subscribe();
         }
       });
     },

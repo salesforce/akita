@@ -1,40 +1,41 @@
 export const currentAction = {
   type: null,
   entityIds: null,
-  skip: false
+  skip: false,
 };
 
 let customActionActive = false;
 
-export function resetCustomAction() {
+export function resetCustomAction(): void {
   customActionActive = false;
 }
 
-// public API for custom actions. Custom action always wins
-export function logAction(type: string, entityIds?) {
-  setAction(type, entityIds);
-  customActionActive = true;
-}
-
-export function setAction(type: string, entityIds?) {
+export function setAction(type: string, entityIds?): void {
   if (customActionActive === false) {
     currentAction.type = type;
     currentAction.entityIds = entityIds;
   }
 }
 
-export function setSkipAction(skip = true) {
+// public API for custom actions. Custom action always wins
+export function logAction(type: string, entityIds?): void {
+  setAction(type, entityIds);
+  customActionActive = true;
+}
+
+export function setSkipAction(skip = true): void {
   currentAction.skip = skip;
 }
 
-export function action(action: string, entityIds?) {
-  return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    const originalMethod = descriptor.value;
-    descriptor.value = function(...args) {
-      logAction(action, entityIds);
-      return originalMethod.apply(this, args);
+export function action(actionName: string, entityIds?) {
+  return (target: any, propertyKey: string, descriptor: PropertyDescriptor): PropertyDescriptor => {
+    const descriptorCopy = { ...descriptor };
+
+    descriptorCopy.value = function transactionWrapper(...args): any {
+      logAction(actionName, entityIds);
+      return descriptor.value.apply(this, args);
     };
 
-    return descriptor;
+    return descriptorCopy;
   };
 }

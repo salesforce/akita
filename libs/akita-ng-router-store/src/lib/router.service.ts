@@ -1,60 +1,62 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, NavigationCancel, NavigationError, ResolveEnd, Router, RoutesRecognized } from '@angular/router';
-import { ActiveRouteState, RouterStore } from './router.store';
-import { RouterQuery } from './router.query';
 import { action, setSkipAction } from '@datorama/akita';
+import { RouterQuery } from './router.query';
+import { ActiveRouteState, RouterStore } from './router.store';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RouterService {
   private routerStateSnapshot: any;
+
   private lastRoutesRecognized: any;
+
   private dispatchTriggeredByRouter = false;
+
   private navigationTriggeredByDispatch = false;
+
   private routerState: any;
 
-  constructor(private routerStore: RouterStore, private routerQuery: RouterQuery, private router: Router) {}
+  constructor(private readonly routerStore: RouterStore, private readonly routerQuery: RouterQuery, private readonly router: Router) {}
 
   @action('Navigation Cancelled')
-  dispatchRouterCancel(event: NavigationCancel) {
+  dispatchRouterCancel(event: NavigationCancel): void {
     this.update();
-    this.routerQuery.__navigationCancel.next(event);
+    this.routerQuery.emitNavigationCancel(event);
   }
 
   @action('Navigation Error')
-  dispatchRouterError(event: NavigationError) {
+  dispatchRouterError(event: NavigationError): void {
     this.update();
-    this.routerQuery.__navigationError.next(event);
+    this.routerQuery.emitNavigationError(event);
   }
 
   @action('Navigation')
-  dispatchRouterNavigation() {
+  dispatchRouterNavigation(): void {
     this.update();
   }
 
-  init() {
+  init(): void {
     this.setUpStoreListener();
     this.setUpStateRollbackEvents();
   }
 
-  private update() {
+  private update(): void {
     this.dispatchTriggeredByRouter = true;
-    this.routerStore.update((state: any) => {
-      return {
-        ...state,
-        state: this.routerStateSnapshot,
-        navigationId: this.lastRoutesRecognized ? this.lastRoutesRecognized.id : null
-      };
-    });
+    this.routerStore.update((state: any) => ({
+      ...state,
+      state: this.routerStateSnapshot,
+      navigationId: this.lastRoutesRecognized ? this.lastRoutesRecognized.id : null,
+    }));
     this.dispatchTriggeredByRouter = false;
     this.navigationTriggeredByDispatch = false;
   }
 
   private setUpStoreListener(): void {
     this.routerQuery
-      .select(state => state)
-      .subscribe(s => {
+      .select((state) => state)
+      .subscribe((s) => {
         this.routerState = s;
         this.navigateIfNeeded();
       });
@@ -79,7 +81,7 @@ export class RouterService {
   }
 
   private setUpStateRollbackEvents(): void {
-    this.router.events.subscribe(e => {
+    this.router.events.subscribe((e) => {
       if (e instanceof RoutesRecognized) {
         this.lastRoutesRecognized = e;
       } else if (e instanceof ResolveEnd) {
@@ -117,7 +119,7 @@ export class RouterService {
       queryParams,
       fragment,
       data,
-      navigationExtras: this.router.getCurrentNavigation().extras.state
+      navigationExtras: this.router.getCurrentNavigation().extras.state,
     };
   }
 }

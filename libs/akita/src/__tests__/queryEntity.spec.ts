@@ -1,19 +1,19 @@
 import { Subscription } from 'rxjs';
+import { getInitialEntitiesState } from '..';
+import { isObject } from '../lib/isObject';
 import { QueryConfig, SortBy } from '../lib/queryConfig';
 import { QueryEntity } from '../lib/queryEntity';
 import { Order } from '../lib/sort';
-import { isObject } from '../lib/isObject';
 import { cot, createTodos, ct, Todo, TodosStore } from './setup';
-import { getInitialEntitiesState } from '..';
-
-let store = new TodosStore({});
-const query = new QueryEntity(store);
 
 function ga(spy, num = 0) {
   return spy.mock.calls[num][0];
 }
 
 describe('Entities Query', () => {
+  const store = new TodosStore({});
+  const query = new QueryEntity(store);
+
   let spy;
   let sub;
 
@@ -22,7 +22,9 @@ describe('Entities Query', () => {
     store.remove();
   });
 
-  afterEach(() => sub && sub.unsubscribe());
+  afterEach(() => {
+    if (sub) sub.unsubscribe();
+  });
 
   it('should set the initial value', () => {
     expect(store._value()).toEqual({ active: null, metadata: { name: 'metadata' }, ...getInitialEntitiesState() });
@@ -30,20 +32,20 @@ describe('Entities Query', () => {
 
   describe('Select', () => {
     it('should select ids', () => {
-      sub = query.select(state => state.ids).subscribe(spy);
+      sub = query.select((state) => state.ids).subscribe(spy);
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith(store._value().ids);
     });
 
     it('should select entities', () => {
-      sub = query.select(state => state.entities).subscribe(spy);
+      sub = query.select((state) => state.entities).subscribe(spy);
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith(store._value().entities);
     });
 
     it('should fire only when updating the state', () => {
-      sub = query.select(state => state.entities).subscribe(spy);
-      let todo = cot();
+      sub = query.select((state) => state.entities).subscribe(spy);
+      const todo = cot();
       store.add(todo);
       expect(store._value().entities[1]).toBe(todo);
       expect(spy).toHaveBeenCalledTimes(2);
@@ -54,7 +56,7 @@ describe('Entities Query', () => {
 
   describe('selectAll', () => {
     it('should select all as array', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
       sub = query.selectAll().subscribe(spy);
       expect(spy).toHaveBeenCalledTimes(1);
@@ -65,7 +67,7 @@ describe('Entities Query', () => {
     });
 
     it('should select all as map', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
       sub = query.selectAll({ asObject: true }).subscribe(spy);
       expect(spy).toHaveBeenCalledTimes(1);
@@ -78,7 +80,7 @@ describe('Entities Query', () => {
 
   describe('getAll', () => {
     it('should get all as array', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
       const todos = query.getAll();
       expect(Array.isArray(todos)).toBe(true);
@@ -87,7 +89,7 @@ describe('Entities Query', () => {
     });
 
     it('should get all as map', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
       const todos = query.getAll({ asObject: true });
       expect(Array.isArray(todos)).toBe(false);
@@ -97,7 +99,7 @@ describe('Entities Query', () => {
 
   describe('selectEntity', () => {
     it('should select entity', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
       sub = query.selectEntity(1).subscribe(spy);
       expect(spy).toHaveBeenCalledTimes(1);
@@ -105,44 +107,43 @@ describe('Entities Query', () => {
     });
 
     it('should select slice from entity', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
-      sub = query.selectEntity(1, entity => entity.title).subscribe(spy);
+      sub = query.selectEntity(1, (entity) => entity.title).subscribe(spy);
       expect(spy).toHaveBeenCalledTimes(1);
       expect(ga(spy)).toBe(todo.title);
     });
 
     it('should not fire when the selected value does not changed', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
-      sub = query.selectEntity(1, entity => entity.title).subscribe(spy);
+      sub = query.selectEntity(1, (entity) => entity.title).subscribe(spy);
       store.update(1, { completed: true });
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
     it('should fire when the selected value changed', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
-      sub = query.selectEntity(1, entity => entity.title).subscribe(spy);
+      sub = query.selectEntity(1, (entity) => entity.title).subscribe(spy);
       store.update(1, { title: 'changed' });
       expect(spy).toHaveBeenCalledTimes(2);
     });
 
     it('should not throw when the entity does not exists', () => {
       sub = query
-        .selectEntity(2, entity => entity.title)
-        .subscribe(entity => {
+        .selectEntity(2, (entity) => entity.title)
+        .subscribe((entity) => {
           expect(entity).toBe(undefined);
         });
     });
 
     it('should select by predicate', () => {
-      let factory = ct();
+      const factory = ct();
       store.add(factory());
       store.add(factory());
-      const spy = jest.fn();
-      query.selectEntity(e => e.id === 1).subscribe(spy);
-      expect(spy).toHaveBeenCalledWith({ complete: false, id: 1, title: 'Todo 1' });
+      query.selectEntity((e) => e.id === 1).subscribe(spy);
+      expect(spy).toHaveBeenCalledWith({ completed: false, id: 1, title: 'Todo 1' });
       store.remove(1);
       expect(spy).toHaveBeenCalledWith(undefined);
     });
@@ -150,7 +151,7 @@ describe('Entities Query', () => {
 
   describe('getEntity', () => {
     it('should get the entity', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
       expect(query.getEntity(1)).toBe(todo);
     });
@@ -158,45 +159,45 @@ describe('Entities Query', () => {
 
   describe('selectActive', () => {
     it('should return undefined when active not exist', () => {
-      let res;
-      query.selectActive().subscribe(active => {
+      let res: Todo;
+      query.selectActive().subscribe((active) => {
         res = active;
       });
       expect(res).toBeUndefined();
     });
 
     it('should select the active id', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
       store.setActive(1);
-      sub = query.selectActiveId().subscribe(activeId => expect(activeId).toBe(1));
+      sub = query.selectActiveId().subscribe((activeId) => expect(activeId).toBe(1));
     });
 
     it('should select the active', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
       store.setActive(1);
-      sub = query.selectActive().subscribe(active => expect(active).toBe(query.getActive()));
+      sub = query.selectActive().subscribe((active) => expect(active).toBe(query.getActive()));
     });
 
     it('should select a slice from the active', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
       store.setActive(1);
-      sub = query.selectActive(entity => entity.title).subscribe(title => expect(title).toBe(query.getActive().title));
+      sub = query.selectActive((entity) => entity.title).subscribe((title) => expect(title).toBe(query.getActive().title));
     });
   });
 
   describe('getActive', () => {
     it('should get the active id', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
       store.setActive(1);
       expect(query.getActiveId()).toBe(1);
     });
 
     it('should get the active', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
       store.setActive(1);
       expect(query.getActive()).toBe(todo);
@@ -205,20 +206,20 @@ describe('Entities Query', () => {
 
   describe('hasActive', () => {
     it('should have active entity', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
       store.setActive(1);
       expect(query.hasActive()).toBeTruthy();
     });
 
     it('should NOT have active entity initially', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
       expect(query.hasActive()).toBeFalsy();
     });
 
     it('should NOT have active entity after unset', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
       store.setActive(1);
       expect(query.hasActive()).toBeTruthy();
@@ -232,7 +233,7 @@ describe('Entities Query', () => {
     });
 
     it('should have single active entity', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
       store.setActive(1);
       expect(query.hasActive()).toBeTruthy();
@@ -243,7 +244,7 @@ describe('Entities Query', () => {
 
   describe('selectCount', () => {
     it('should return the count', () => {
-      let factory = ct();
+      const factory = ct();
       store.add(factory());
       sub = query.selectCount().subscribe(spy);
       expect(spy).toHaveBeenCalledTimes(1);
@@ -253,9 +254,9 @@ describe('Entities Query', () => {
       expect(spy).toHaveBeenCalledWith(2);
     });
     it('should return the count based on the condition', () => {
-      let factory = ct();
+      const factory = ct();
       store.add(factory());
-      sub = query.selectCount(entity => entity.completed).subscribe(spy);
+      sub = query.selectCount((entity) => entity.completed).subscribe(spy);
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith(0);
       store.add(factory());
@@ -267,19 +268,19 @@ describe('Entities Query', () => {
 
   describe('getCount', () => {
     it('should return the count', () => {
-      let factory = ct();
+      const factory = ct();
       store.add(factory());
       expect(query.getCount()).toEqual(1);
     });
 
     it('should return the count based on the condition', () => {
-      let factory = ct();
+      const factory = ct();
       store.add(factory());
-      const initial = query.getCount(entity => entity.completed);
+      const initial = query.getCount((entity) => entity.completed);
       expect(initial).toEqual(0);
       store.add(factory());
       store.update(1, { completed: true });
-      const updated = query.getCount(entity => entity.completed);
+      const updated = query.getCount((entity) => entity.completed);
       expect(updated).toEqual(1);
     });
   });
@@ -302,7 +303,7 @@ describe('Entities Query', () => {
           sub = ttlQuery.selectHasCache().subscribe(spy);
           expect(spy).toHaveBeenCalledTimes(1);
           expect(spy).toHaveBeenCalledWith(false);
-          let factory = ct();
+          const factory = ct();
           storeWithTtl.set(factory());
           expect(spy).toHaveBeenCalledTimes(2);
           expect(spy).toHaveBeenCalledWith(true);
@@ -343,7 +344,7 @@ describe('Entities Query', () => {
         it('should work in a full flow', () => {
           jest.useFakeTimers();
           expect(ttlQuery.getHasCache()).toBe(false);
-          let factory = ct();
+          const factory = ct();
           storeWithTtl.set(factory());
           expect(ttlQuery.getHasCache()).toBe(true);
           jest.advanceTimersByTime(ttl / 2);
@@ -381,7 +382,7 @@ describe('Entities Query', () => {
           sub = query.selectHasCache().subscribe(spy);
           expect(spy).toHaveBeenCalledTimes(1);
           expect(spy).toHaveBeenCalledWith(false);
-          let factory = ct();
+          const factory = ct();
           store.set(factory());
           expect(spy).toHaveBeenCalledTimes(2);
           expect(spy).toHaveBeenCalledWith(true);
@@ -411,7 +412,7 @@ describe('Entities Query', () => {
       describe('getHasCache', () => {
         it('should work in a full flow', () => {
           expect(query.getHasCache()).toBe(false);
-          let factory = ct();
+          const factory = ct();
           store.set(factory());
           expect(query.getHasCache()).toBe(true);
           store.remove();
@@ -433,21 +434,21 @@ describe('Entities Query', () => {
 
   describe('hasEntity', () => {
     it('should have entity', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
       expect(query.hasEntity(1)).toBeTruthy();
     });
 
     it('should have entity - callback', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
-      expect(query.hasEntity(entity => entity.completed)).toBeFalsy();
+      expect(query.hasEntity((entity) => entity.completed)).toBeFalsy();
     });
 
     it('should NOT have entity - callback', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
-      expect(query.hasEntity(entity => entity.title === 'not exists')).toBeFalsy();
+      expect(query.hasEntity((entity) => entity.title === 'not exists')).toBeFalsy();
     });
 
     it('should NOT have entity', () => {
@@ -460,7 +461,7 @@ describe('Entities Query', () => {
     });
 
     it('should return false when store is not empty', () => {
-      let todo = cot();
+      const todo = cot();
       store.add(todo);
       expect(query.hasEntity()).toBeTruthy();
     });
@@ -493,15 +494,15 @@ describe('State', () => {
       entities: {},
       loading: true,
       ids: [],
-      error: null
+      error: null,
     });
   });
 });
 
-const todosStore = new TodosStore();
-const queryTodos = new QueryEntity(todosStore);
-
 describe('getAll', () => {
+  const todosStore = new TodosStore();
+  const queryTodos = new QueryEntity(todosStore);
+
   beforeEach(() => {
     todosStore.remove();
     todosStore.add([new Todo({ id: 1, title: 'aaa' }), new Todo({ id: 2, title: 'bbb' })]);
@@ -514,7 +515,7 @@ describe('getAll', () => {
 
   it('should getAll - asObject', () => {
     const search = queryTodos.getAll({
-      asObject: true
+      asObject: true,
     });
     expect(search[1]).toEqual(new Todo({ id: 1, title: 'aaa' }));
     expect(search[2]).toEqual(new Todo({ id: 2, title: 'bbb' }));
@@ -522,7 +523,7 @@ describe('getAll', () => {
 
   it('should support filter by function', () => {
     const result = queryTodos.getAll({
-      filterBy: entity => entity.title === 'aaa'
+      filterBy: (entity) => entity.title === 'aaa',
     });
     expect(Array.isArray(result)).toBeTruthy();
     expect(result.length).toEqual(1);
@@ -532,7 +533,7 @@ describe('getAll', () => {
   it('should support filter by function - asObject', () => {
     const result = queryTodos.getAll({
       asObject: true,
-      filterBy: entity => entity.title === 'aaa'
+      filterBy: (entity) => entity.title === 'aaa',
     });
     expect(isObject(result)).toBeTruthy();
     expect(Object.keys(result).length).toEqual(1);
@@ -541,7 +542,7 @@ describe('getAll', () => {
 
   it('should support filter by function with index', () => {
     const result = queryTodos.getAll({
-      filterBy: (entity, index) => index % 2 === 0
+      filterBy: (entity, index) => index % 2 === 0,
     });
     expect(Array.isArray(result)).toBeTruthy();
     expect(result.length).toEqual(1);
@@ -550,25 +551,25 @@ describe('getAll', () => {
 
   it('should support filter by multi functions', () => {
     const result = queryTodos.getAll({
-      filterBy: [(entity, index) => index % 2 === 0, entity => entity.completed === false]
+      filterBy: [(entity, index) => index % 2 === 0, (entity) => entity.completed === false],
     });
     expect(Array.isArray(result)).toBeTruthy();
     expect(result.length).toEqual(1);
 
     const result2 = queryTodos.getAll({
-      filterBy: [(entity, index) => index % 2 === 0, entity => entity.completed === true]
+      filterBy: [(entity, index) => index % 2 === 0, (entity) => entity.completed === true],
     });
     expect(result2.length).toEqual(0);
 
     const result3 = queryTodos.getAll({
-      filterBy: [entity => entity.completed === false]
+      filterBy: [(entity) => entity.completed === false],
     });
     expect(result3.length).toEqual(2);
   });
 
   it('should support limitTo', () => {
     const res = queryTodos.getAll({
-      limitTo: 1
+      limitTo: 1,
     });
     expect(res.length).toBe(1);
   });
@@ -576,7 +577,7 @@ describe('getAll', () => {
   it('should support limitTo - asObject', () => {
     const res = queryTodos.getAll({
       limitTo: 1,
-      asObject: true
+      asObject: true,
     });
 
     expect(Object.keys(res).length).toBe(1);
@@ -584,18 +585,20 @@ describe('getAll', () => {
 });
 
 describe('selectAll', () => {
+  const todosStore = new TodosStore();
+  const queryTodos = new QueryEntity(todosStore);
+
   let subscription: Subscription;
-  let spy;
+
   beforeEach(() => {
     todosStore.remove();
     todosStore.add([new Todo({ id: 1, title: 'aaa' }), new Todo({ id: 2, title: 'bbb' })]);
   });
 
-  beforeEach(() => (spy = jest.fn()));
   afterEach(() => subscription && subscription.unsubscribe());
 
   it('should selectAll - asArray', () => {
-    subscription = queryTodos.selectAll().subscribe(result => {
+    subscription = queryTodos.selectAll().subscribe((result) => {
       expect(Array.isArray(result)).toBeTruthy();
       expect(result.length).toEqual(2);
     });
@@ -604,9 +607,9 @@ describe('selectAll', () => {
   it('should selectAll with search by - asArray', () => {
     subscription = queryTodos
       .selectAll({
-        filterBy: entity => entity.title === 'aaa'
+        filterBy: (entity) => entity.title === 'aaa',
       })
-      .subscribe(result => {
+      .subscribe((result) => {
         expect(Array.isArray(result)).toBeTruthy();
         expect(result.length).toEqual(1);
         expect(result[0].title).toEqual('aaa');
@@ -614,7 +617,7 @@ describe('selectAll', () => {
   });
 
   it('should selectAll - asMap', () => {
-    subscription = queryTodos.selectAll({ asObject: true }).subscribe(result => {
+    subscription = queryTodos.selectAll({ asObject: true }).subscribe((result) => {
       expect(isObject(result)).toBeTruthy();
       expect(Object.keys(result).length).toEqual(2);
     });
@@ -624,9 +627,9 @@ describe('selectAll', () => {
     subscription = queryTodos
       .selectAll({
         asObject: true,
-        filterBy: entity => entity.title === 'aaa'
+        filterBy: (entity) => entity.title === 'aaa',
       })
-      .subscribe(result => {
+      .subscribe((result) => {
         expect(isObject(result)).toBeTruthy();
         expect(Object.keys(result).length).toEqual(1);
         expect(result[1].title).toEqual('aaa');
@@ -637,9 +640,9 @@ describe('selectAll', () => {
     let res;
     subscription = queryTodos
       .selectAll({
-        limitTo: 1
+        limitTo: 1,
       })
-      .subscribe(_res => {
+      .subscribe((_res) => {
         res = _res;
       });
     expect(res.length).toBe(1);
@@ -650,9 +653,9 @@ describe('selectAll', () => {
     subscription = queryTodos
       .selectAll({
         limitTo: 1,
-        asObject: true
+        asObject: true,
       })
-      .subscribe(_res => {
+      .subscribe((_res) => {
         res = _res;
       });
     expect(Object.keys(res).length).toBe(1);
@@ -691,7 +694,7 @@ describe('Many', () => {
 
     it('should work with function projection', () => {
       todosStore.add(createTodos(3));
-      queryTodos.selectMany([0, 1], entity => entity.title).subscribe(spy);
+      queryTodos.selectMany([0, 1], (entity) => entity.title).subscribe(spy);
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenCalledWith(['Todo 0', 'Todo 1']);
       todosStore.update(2, { completed: true });
@@ -769,7 +772,7 @@ describe('Sort by', () => {
 
   beforeEach(() => {
     todosStore.remove();
-    sub && sub.unsubscribe();
+    if (sub) sub.unsubscribe();
   });
 
   it('should sort by provided key', () => {
@@ -779,16 +782,18 @@ describe('Sort by', () => {
       {
         id: 2,
         title: 'Todo 2',
-        complete: true
-      }
+        complete: true,
+      },
     ] as any);
 
     todosStore.update(2, { complete: true } as any);
     sub = queryTodos
       .selectAll({
-        sortBy: 'id'
+        sortBy: 'id',
       })
-      .subscribe(_res => (res = _res));
+      .subscribe((_res) => {
+        res = _res;
+      });
 
     expect(res[0].id).toEqual(0);
     expect(res[1].id).toEqual(1);
@@ -802,16 +807,18 @@ describe('Sort by', () => {
         id: 0,
         title: 'Todo 0',
         complete: false,
-        price: 40
+        price: 40,
       },
-      { id: 2, title: 'Todo 2', complete: true, price: 3 }
+      { id: 2, title: 'Todo 2', complete: true, price: 3 },
     ] as any);
 
     sub = queryTodos
       .selectAll({
-        sortBy: 'price'
+        sortBy: 'price',
       })
-      .subscribe(_res => (res = _res));
+      .subscribe((_res) => {
+        res = _res;
+      });
 
     expect(res[0].price).toEqual(3);
     expect(res[1].price).toEqual(10);
@@ -825,17 +832,19 @@ describe('Sort by', () => {
         id: 0,
         title: 'Todo 0',
         complete: false,
-        price: 40
+        price: 40,
       },
-      { id: 2, title: 'Todo 2', complete: true, price: 3 }
+      { id: 2, title: 'Todo 2', complete: true, price: 3 },
     ] as any);
 
     sub = queryTodos
       .selectAll({
         sortBy: 'price',
-        sortByOrder: Order.DESC
+        sortByOrder: Order.DESC,
       })
-      .subscribe(_res => (res = _res));
+      .subscribe((_res) => {
+        res = _res;
+      });
 
     expect(res[0].price).toEqual(40);
     expect(res[1].price).toEqual(10);
@@ -849,9 +858,9 @@ describe('Sort by', () => {
         id: 0,
         title: 'Todo 0',
         completed: false,
-        price: 40
+        price: 40,
       },
-      { id: 2, title: 'Todo 2', completed: true, price: 3 }
+      { id: 2, title: 'Todo 2', completed: true, price: 3 },
     ] as any);
 
     todosStore.update(2, { completed: true } as any);
@@ -859,9 +868,11 @@ describe('Sort by', () => {
       .selectAll({
         asObject: false,
         sortBy: 'completed',
-        sortByOrder: Order.DESC
+        sortByOrder: Order.DESC,
       })
-      .subscribe(_res => (res = _res));
+      .subscribe((_res) => {
+        res = _res;
+      });
 
     expect(res[0].completed).toEqual(true);
     expect(res[1].completed).toEqual(false);
@@ -879,16 +890,18 @@ describe('Sort by', () => {
         id: 0,
         title: 'Todo 0',
         complete: false,
-        price: 40
+        price: 40,
       },
-      { id: 2, title: 'Todo 2', complete: true, price: 3 }
+      { id: 2, title: 'Todo 2', complete: true, price: 3 },
     ] as any);
 
     sub = queryTodos
       .selectAll({
-        sortBy: customSortBy
+        sortBy: customSortBy,
       })
-      .subscribe(_res => (res = _res));
+      .subscribe((_res) => {
+        res = _res;
+      });
 
     expect(res[0].price).toEqual(3);
     expect(res[1].price).toEqual(10);
@@ -910,16 +923,18 @@ describe('Sort by', () => {
         id: 0,
         title: 'Todo 0',
         complete: false,
-        price: 40
+        price: 40,
       },
-      { id: 2, title: 'Todo 2', complete: true, price: 3 }
+      { id: 2, title: 'Todo 2', complete: true, price: 3 },
     ] as any);
 
     todosStore.update({ sortyByPrice: true });
 
     const sortBy: SortBy<any, any> = (a, b, state) => (state.sortyByPrice ? sortByPrice(a, b) : sortById(a, b));
 
-    sub = queryTodos.selectAll({ sortBy }).subscribe(_res => (res = _res));
+    sub = queryTodos.selectAll({ sortBy }).subscribe((_res) => {
+      res = _res;
+    });
 
     expect(res[0].price).toEqual(3);
     expect(res[1].price).toEqual(10);
@@ -936,7 +951,7 @@ describe('Sort by - Query Level', () => {
 
   beforeEach(() => {
     todosStore.remove();
-    sub && sub.unsubscribe();
+    if (sub) sub.unsubscribe();
   });
 
   it('should sort by provided key - number', () => {
@@ -946,12 +961,14 @@ describe('Sort by - Query Level', () => {
         id: 0,
         title: 'Todo 0',
         complete: false,
-        price: 40
+        price: 40,
       },
-      { id: 2, title: 'Todo 2', complete: true, price: 3 }
+      { id: 2, title: 'Todo 2', complete: true, price: 3 },
     ] as any);
 
-    sub = queryTodos.selectAll().subscribe(_res => (res = _res));
+    sub = queryTodos.selectAll().subscribe((_res) => {
+      res = _res;
+    });
 
     expect(res[0].price).toEqual(3);
     expect(res[1].price).toEqual(10);
@@ -965,40 +982,44 @@ describe('Sort by - Query Level', () => {
         id: 0,
         title: 'Todo 0',
         complete: false,
-        price: 40
+        price: 40,
       },
-      { id: 2, title: 'Todo 2', complete: true, price: 3 }
+      { id: 2, title: 'Todo 2', complete: true, price: 3 },
     ] as any);
 
     sub = queryTodos
       .selectAll({
         sortBy: 'price',
-        sortByOrder: Order.DESC
+        sortByOrder: Order.DESC,
       })
-      .subscribe(_res => (res = _res));
+      .subscribe((_res) => {
+        res = _res;
+      });
 
     expect(res[0].price).toEqual(40);
     expect(res[1].price).toEqual(10);
     expect(res[2].price).toEqual(3);
   });
 
-  it('should let selectAll win', () => {
+  it('should let selectAll win (2)', () => {
     todosStore.set([
       { id: 1, title: 'Todo 1', complete: false },
       { id: 0, title: 'Todo 0', complete: false },
       {
         id: 2,
         title: 'Todo 2',
-        complete: true
-      }
+        complete: true,
+      },
     ] as any);
 
     todosStore.update(2, { complete: true } as any);
     sub = queryTodos
       .selectAll({
-        sortBy: 'id'
+        sortBy: 'id',
       })
-      .subscribe(_res => (res = _res));
+      .subscribe((_res) => {
+        res = _res;
+      });
 
     expect(res[0].id).toEqual(0);
     expect(res[1].id).toEqual(1);
@@ -1021,11 +1042,10 @@ describe('selectAll - limit to and filterBy', () => {
     { id: 8, value: 5 },
     { id: 9, value: 5 },
     { id: 10, value: 5 },
-    { id: 11, value: 5 }
+    { id: 11, value: 5 },
   ];
 
   let subscription: Subscription;
-  let spy;
   store.add(elements);
   afterEach(() => subscription && subscription.unsubscribe());
 
@@ -1033,10 +1053,10 @@ describe('selectAll - limit to and filterBy', () => {
     let res;
     subscription = query
       .selectAll({
-        filterBy: el => el.value === 5,
-        limitTo: 5
+        filterBy: (el) => el.value === 5,
+        limitTo: 5,
       })
-      .subscribe(_res => {
+      .subscribe((_res) => {
         res = _res;
       });
     expect(res.length).toBe(5);
@@ -1047,10 +1067,10 @@ describe('selectAll - limit to and filterBy', () => {
     subscription = query
       .selectAll({
         asObject: true,
-        filterBy: el => el.value === 5,
-        limitTo: 5
+        filterBy: (el) => el.value === 5,
+        limitTo: 5,
       })
-      .subscribe(_res => {
+      .subscribe((_res) => {
         res = _res;
       });
     expect(Object.keys(res).length).toBe(5);
@@ -1072,11 +1092,10 @@ describe('selectAll - limit to and filterBy and sorting', () => {
     { id: 8, value: 5 },
     { id: 5, value: 3 },
     { id: 3, value: 5 },
-    { id: 11, value: 5 }
+    { id: 11, value: 5 },
   ];
 
   let subscription: Subscription;
-  let spy;
   store.add(elements);
   afterEach(() => subscription && subscription.unsubscribe());
 
@@ -1084,25 +1103,25 @@ describe('selectAll - limit to and filterBy and sorting', () => {
     let res;
     subscription = query
       .selectAll({
-        filterBy: el => el.value === 5,
+        filterBy: (el) => el.value === 5,
         limitTo: 5,
-        sortBy: 'id'
+        sortBy: 'id',
       })
-      .subscribe(_res => {
+      .subscribe((_res) => {
         res = _res;
       });
     expect(res.length).toBe(5);
   });
 
-  it('should support array', () => {
+  it('should support array (2)', () => {
     let res;
     subscription = query
       .selectAll({
-        filterBy: el => el.value === 5,
+        filterBy: (el) => el.value === 5,
         limitTo: 8,
-        sortBy: 'id'
+        sortBy: 'id',
       })
-      .subscribe(_res => {
+      .subscribe((_res) => {
         res = _res;
       });
     expect(res.length).toBe(7);

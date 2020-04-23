@@ -1,9 +1,8 @@
-import { Rule, apply, branchAndMerge, chain, mergeWith, move, template, url, Tree, SchematicContext } from '@angular-devkit/schematics';
-
-import { getProjectPath, stringUtils, parseName, getProject } from '../utils';
+import { apply, branchAndMerge, chain, mergeWith, move, Rule, SchematicContext, template, Tree, url } from '@angular-devkit/schematics';
+import { getProject, getProjectPath, parseName, stringUtils } from '../utils';
 import { dasherize } from '../utils/string';
 
-function buildSelector(options: any, projectPrefix: string) {
+function buildSelector(options: any, projectPrefix: string): string {
   let selector = dasherize(options.name);
   if (options.prefix) {
     selector = `${options.prefix}-${selector}`;
@@ -14,26 +13,28 @@ function buildSelector(options: any, projectPrefix: string) {
   return selector;
 }
 
-export default function(options: any): Rule {
+export default function (options: any): Rule {
+  const optionsCopy = { ...options };
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   return (host: Tree, context: SchematicContext) => {
-    const project = getProject(host, options.project);
+    const project = getProject(host, optionsCopy.project);
 
-    options.path = getProjectPath(host, options);
+    optionsCopy.path = getProjectPath(host, optionsCopy);
 
-    const parsedPath = parseName(options);
+    const parsedPath = parseName(optionsCopy);
 
-    (parsedPath as any).path = parsedPath.path.replace(`${options.dirName}`, `${parsedPath.name}/`);
+    (parsedPath as any).path = parsedPath.path.replace(`${optionsCopy.dirName}`, `${parsedPath.name}/`);
 
-    options.name = parsedPath.name;
-    options.path = parsedPath.path;
-    options.selector = options.selector || buildSelector(options, project.prefix);
+    optionsCopy.name = parsedPath.name;
+    optionsCopy.path = parsedPath.path;
+    optionsCopy.selector = optionsCopy.selector || buildSelector(optionsCopy, project.prefix);
 
     const templateSource = apply(url('./files'), [
       template({
         ...stringUtils,
-        ...(options as object)
+        ...(optionsCopy as object),
       } as any),
-      move(parsedPath.path)
+      move(parsedPath.path),
     ]);
 
     return chain([branchAndMerge(chain([mergeWith(templateSource)]))])(host, context);

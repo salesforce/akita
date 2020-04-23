@@ -2,7 +2,9 @@ import { EntityStore, ID, StoreConfig } from '..';
 
 class Todo {
   id;
+
   title;
+
   completed;
 
   constructor(params: { id: ID; title: string; completed: boolean }) {
@@ -18,7 +20,7 @@ class TodosStore extends EntityStore<any, Todo> {}
 const store = new TodosStore();
 
 describe('Class Based', () => {
-  it('should instantiate new Todo if not exists', function() {
+  it('should instantiate new Todo if not exists', () => {
     store.upsert(1, { title: 'new title' }, { baseClass: Todo });
     expect(store._value().entities[1]).toBeInstanceOf(Todo);
     expect(store._value().entities[1].title).toBe('new title');

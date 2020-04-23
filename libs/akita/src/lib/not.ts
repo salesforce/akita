@@ -1,6 +1,6 @@
-// @internal
+/** @internal */
 export function not(pred: Function): Function {
-  return function(...args) {
+  return (...args): boolean => {
     return !pred(...args);
   };
 }

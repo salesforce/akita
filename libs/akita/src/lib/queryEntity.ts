@@ -1,3 +1,5 @@
+// TODO fix
+/* eslint-disable max-classes-per-file */
 import { Observable, of } from 'rxjs';
 import { distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
 import { distinctUntilArrayItemChanged } from './arrayFind';
@@ -20,26 +22,24 @@ import { toBoolean } from './toBoolean';
 import { EntityState, getEntityType, getIDType, HashMap, ItemPredicate, OrArray, SelectOptions } from './types';
 
 /**
- *
  *  The Entity Query is similar to the general Query, with additional functionality tailored for EntityStores.
  *
+ * @example
  *  class WidgetsQuery extends QueryEntity<WidgetsState> {
  *     constructor(protected store: WidgetsStore) {
  *       super(store);
  *     }
  *  }
- *
- *
- *
  */
 export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, IDType = getIDType<S>> extends Query<S> {
   ui: EntityUIQuery<any, EntityType>;
+
   protected store: EntityStore<S>;
 
-  // @internal
+  /** @internal */
   __store__;
 
-  constructor(store: EntityStore<S>, private options: QueryConfigOptions = {}) {
+  constructor(store: EntityStore<S>, private readonly options: QueryConfigOptions = {}) {
     super(store);
     this.__store__ = store;
   }
@@ -65,20 +65,25 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    *   sortBy: 'price',
    *   sortByOrder: Order.DESC
    * })
-   *
    */
   selectAll(options: SelectAllOptionsA<EntityType>): Observable<HashMap<EntityType>>;
+
   selectAll(options: SelectAllOptionsB<EntityType>): Observable<EntityType[]>;
+
   selectAll(options: SelectAllOptionsC<EntityType>): Observable<HashMap<EntityType>>;
+
   selectAll(options: SelectAllOptionsD<EntityType>): Observable<EntityType[]>;
+
   selectAll(options: SelectAllOptionsE<EntityType>): Observable<EntityType[]>;
+
   selectAll(): Observable<EntityType[]>;
+
   selectAll(
     options: SelectOptions<EntityType> = {
-      asObject: false
+      asObject: false,
     }
   ): Observable<EntityType[] | HashMap<EntityType>> {
-    return this.select(state => state.entities).pipe(map(() => this.getAll(options)));
+    return this.select((state) => state.entities).pipe(map(() => this.getAll(options)));
   }
 
   /**
@@ -104,18 +109,24 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    * })
    */
   getAll(options: SelectAllOptionsA<EntityType>): HashMap<EntityType>;
+
   getAll(options: SelectAllOptionsB<EntityType>): EntityType[];
+
   getAll(options: SelectAllOptionsC<EntityType>): HashMap<EntityType>;
+
   getAll(options: SelectAllOptionsD<EntityType>): EntityType[];
+
   getAll(options: SelectAllOptionsE<EntityType>): EntityType[];
+
   getAll(): EntityType[];
+
   getAll(options: SelectOptions<EntityType> = { asObject: false, filterBy: undefined, limitTo: undefined }): EntityType[] | HashMap<EntityType> {
     if (options.asObject) {
       return entitiesToMap(this.getValue(), options);
     }
-    sortByOptions(options, this.config || this.options);
 
-    return entitiesToArray(this.getValue(), options);
+    const sortOptions = sortByOptions(options, this.config || this.options);
+    return entitiesToArray(this.getValue(), sortOptions);
   }
 
   /**
@@ -127,12 +138,14 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    * this.query.selectMany([1,2], entity => entity.title)
    */
   selectMany<R>(ids: IDType[]): Observable<EntityType[]>;
+
   selectMany<R>(ids: IDType[], project: (entity: EntityType) => R): Observable<R[]>;
+
   selectMany<R>(ids: IDType[], project?: (entity: EntityType) => R): Observable<EntityType[] | R[]> {
     if (!ids || !ids.length) return of([]);
 
-    return this.select(state => state.entities).pipe(
-      map(entities => mapSkipUndefined(ids, id => getEntity(id, project)(entities))),
+    return this.select((state) => state.entities).pipe(
+      map((entities) => mapSkipUndefined(ids, (id) => getEntity(id, project)(entities))),
       distinctUntilArrayItemChanged()
     );
   }
@@ -149,21 +162,20 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    *
    */
   selectEntity<R>(id: IDType): Observable<EntityType>;
+
   selectEntity<K extends keyof EntityType>(id: IDType, project?: K): Observable<EntityType[K]>;
+
   selectEntity<R>(id: IDType, project: (entity: EntityType) => R): Observable<R>;
+
   selectEntity<R>(predicate: ItemPredicate<EntityType>): Observable<EntityType>;
+
   selectEntity<R>(idOrPredicate: IDType | ItemPredicate<EntityType>, project?: ((entity: EntityType) => R) | keyof EntityType): Observable<R | EntityType> {
-    let id = idOrPredicate;
+    const id = isFunction(idOrPredicate)
+      ? // For performance reason we expect the entity to be in the store
+        findEntityByPredicate(idOrPredicate, this.getValue().entities)
+      : idOrPredicate;
 
-    if (isFunction(idOrPredicate)) {
-      // For performance reason we expect the entity to be in the store
-      (id as any) = findEntityByPredicate(idOrPredicate, this.getValue().entities);
-    }
-
-    return this.select(state => state.entities).pipe(
-      map(getEntity(id, project)),
-      distinctUntilChanged()
-    );
+    return this.select((state) => state.entities).pipe(map(getEntity(id, project)), distinctUntilChanged());
   }
 
   /**
@@ -185,7 +197,7 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    * this.query.selectActiveId()
    */
   selectActiveId(): Observable<S['active']> {
-    return this.select(state => (state as S & { active: S['active'] }).active);
+    return this.select((state) => (state as S & { active: S['active'] }).active);
   }
 
   /**
@@ -208,12 +220,14 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    * this.query.selectActive(entity => entity.title)
    */
   selectActive<R>(): S['active'] extends any[] ? Observable<EntityType[]> : Observable<EntityType>;
+
   selectActive<R>(project?: (entity: EntityType) => R): S['active'] extends any[] ? Observable<R[]> : Observable<R>;
+
   selectActive<R>(project?: (entity: EntityType) => R): Observable<R | EntityType> | Observable<EntityType[] | R[]> {
     if (isArray(this.getActive())) {
-      return this.selectActiveId().pipe(switchMap(ids => this.selectMany(ids, project)));
+      return this.selectActiveId().pipe(switchMap((ids) => this.selectMany(ids, project)));
     }
-    return this.selectActiveId().pipe(switchMap(ids => this.selectEntity(ids, project)));
+    return this.selectActiveId().pipe(switchMap((ids) => this.selectEntity(ids, project)));
   }
 
   /**
@@ -224,10 +238,11 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    * this.query.getActive()
    */
   getActive(): S['active'] extends any[] ? EntityType[] : EntityType;
+
   getActive(): OrArray<EntityType> {
     const activeId = this.getActiveId();
     if (isArray(activeId)) {
-      return activeId.map(id => this.getValue().entities[id as any]);
+      return activeId.map((id) => this.getValue().entities[id]);
     }
     return toBoolean(activeId) ? this.getEntity(activeId) : undefined;
   }
@@ -241,7 +256,7 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    * this.query.selectCount(entity => entity.completed)
    */
   selectCount(predicate?: (entity: EntityType, index: number) => boolean): Observable<number> {
-    return this.select(state => state.entities).pipe(map(() => this.getCount(predicate)));
+    return this.select((state) => state.entities).pipe(map(() => this.getCount(predicate)));
   }
 
   /**
@@ -269,9 +284,11 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    * this.query.selectLast(todo => todo.title)
    */
   selectLast<R>(): Observable<EntityType>;
+
   selectLast<R>(project: (entity: EntityType) => R): Observable<R>;
+
   selectLast<R>(project?: (entity: EntityType) => R): Observable<R | EntityType> {
-    return this.selectAt(ids => ids[ids.length - 1], project);
+    return this.selectAt((ids) => ids[ids.length - 1], project);
   }
 
   /**
@@ -284,9 +301,11 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    * this.query.selectFirst(todo => todo.title)
    */
   selectFirst<R>(): Observable<EntityType>;
+
   selectFirst<R>(project: (entity: EntityType) => R): Observable<R>;
+
   selectFirst<R>(project?: (entity: EntityType) => R): Observable<R | EntityType> {
-    return this.selectAt(ids => ids[0], project);
+    return this.selectAt((ids) => ids[0], project);
   }
 
   /**
@@ -302,14 +321,16 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    *  this.query.selectEntityAction();
    */
   selectEntityAction(action: EntityActions): Observable<IDType[]>;
+
   selectEntityAction(): Observable<EntityAction<IDType>>;
+
   selectEntityAction(action?: EntityActions): Observable<IDType[] | EntityAction<IDType>> {
     if (isUndefined(action)) {
       return this.store.selectEntityAction$;
     }
     return this.store.selectEntityAction$.pipe(
-      filter(ac => ac.type === action),
-      map(action => action.ids)
+      filter((ac) => ac.type === action),
+      map(({ ids }) => ids)
     );
   }
 
@@ -324,9 +345,13 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    *
    */
   hasEntity(id: IDType): boolean;
+
   hasEntity(id: IDType[]): boolean;
+
   hasEntity(project: (entity: EntityType) => boolean): boolean;
+
   hasEntity(): boolean;
+
   hasEntity(projectOrIds?: IDType | IDType[] | ((entity: EntityType) => boolean)): boolean {
     if (isNil(projectOrIds)) {
       return this.getValue().ids.length > 0;
@@ -337,7 +362,7 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
     }
 
     if (isArray(projectOrIds)) {
-      return projectOrIds.every(id => (id as any) in this.getValue().entities);
+      return projectOrIds.every((id) => (id as any) in this.getValue().entities);
     }
 
     return (projectOrIds as any) in this.getValue().entities;
@@ -353,7 +378,7 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    *
    */
   hasActive(id?: IDType): boolean {
-    const active = this.getValue().active;
+    const { active } = this.getValue();
     const isIdProvided = isDefined(id);
     if (Array.isArray(active)) {
       if (isIdProvided) {
@@ -381,12 +406,14 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    *
    * }
    */
-  createUIQuery() {
+  createUIQuery(): void {
+    // TODO EntityUIQuery uses QueryEntity, and QueryEntity uses EntityUIQuery. This is bad, fix!
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     this.ui = new EntityUIQuery(this.__store__.ui);
   }
 
-  private selectAt<R>(mapFn: (ids: IDType[]) => IDType, project?: (entity: EntityType) => R) {
-    return this.select(state => state.ids as any[]).pipe(
+  private selectAt<R>(mapFn: (ids: IDType[]) => IDType, project?: (entity: EntityType) => R): Observable<R> {
+    return this.select((state) => state.ids).pipe(
       map(mapFn),
       distinctUntilChanged(),
       switchMap((id: IDType) => this.selectEntity(id, project))
@@ -394,9 +421,5 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
   }
 }
 
-// @internal
-export class EntityUIQuery<UIState, DEPRECATED = any> extends QueryEntity<UIState> {
-  constructor(store) {
-    super(store);
-  }
-}
+/** @internal */
+export class EntityUIQuery<UIState, DEPRECATED = any> extends QueryEntity<UIState> {}

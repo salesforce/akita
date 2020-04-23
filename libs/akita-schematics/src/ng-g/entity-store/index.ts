@@ -1,8 +1,7 @@
-import { Rule, apply, branchAndMerge, chain, filter, mergeWith, move, noop, template, url, Tree, SchematicContext } from '@angular-devkit/schematics';
+import { apply, branchAndMerge, chain, filter, mergeWith, move, noop, Rule, SchematicContext, template, Tree, url } from '@angular-devkit/schematics';
+import { getProjectPath, parseName, stringUtils } from '../utils';
 
-import { getProjectPath, stringUtils, parseName } from '../utils';
-
-function getExtensionState({ idType, name, withActive }: any) {
+function getExtensionState({ idType, name, withActive }: any): string {
   const isID = idType === 'string' || idType === 'number';
   const entityName = name.split('/').pop();
   const entityType = stringUtils.singular(stringUtils.classify(entityName));
@@ -18,24 +17,26 @@ function getExtensionState({ idType, name, withActive }: any) {
   return extensions.join(', ');
 }
 
-export default function(options: any): Rule {
+export default function (options: any): Rule {
+  const optionsCopy = { ...options };
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   return (host: Tree, context: SchematicContext) => {
-    options.path = getProjectPath(host, options);
+    optionsCopy.path = getProjectPath(host, optionsCopy);
 
     // Build state based on options
-    const extensionState = getExtensionState(options);
+    const extensionState = getExtensionState(optionsCopy);
 
-    const parsedPath = parseName(options);
-    options.name = parsedPath.name;
-    options.path = parsedPath.path;
+    const parsedPath = parseName(optionsCopy);
+    optionsCopy.name = parsedPath.name;
+    optionsCopy.path = parsedPath.path;
     const templateSource = apply(url('./files'), [
-      options.spec ? noop() : filter(path => !path.endsWith('.spec.ts')),
+      optionsCopy.spec ? noop() : filter((path) => !path.endsWith('.spec.ts')),
       template({
         ...stringUtils,
-        ...(options as object),
-        extensionState
+        ...(optionsCopy as object),
+        extensionState,
       } as any),
-      move(parsedPath.path)
+      move(parsedPath.path),
     ]);
 
     return chain([branchAndMerge(chain([mergeWith(templateSource)]))])(host, context);

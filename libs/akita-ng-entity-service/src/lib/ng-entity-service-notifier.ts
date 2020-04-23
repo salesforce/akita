@@ -1,38 +1,21 @@
-import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { MonoTypeOperatorFunction, Subject } from 'rxjs';
 import { filter } from 'rxjs/operators';
-import { Msg } from './types';
+import { ActionType, EntityServiceAction, HttpMethod } from './types';
 
-export enum HttpMethod {
-  GET = 'GET',
-  POST = 'POST',
-  PUT = 'PUT',
-  PATCH = 'PATCH',
-  DELETE = 'DELETE'
-}
+export const ofType = (type: ActionType): MonoTypeOperatorFunction<EntityServiceAction> => filter((action: EntityServiceAction) => action.type === type);
 
-export type ActionType = 'success' | 'error';
+export const filterMethod = (method: HttpMethod | keyof typeof HttpMethod): MonoTypeOperatorFunction<EntityServiceAction> => filter((action: EntityServiceAction) => action.method === method);
 
-export type EntityServiceAction = {
-  storeName: string;
-  type: ActionType;
-  payload: any;
-  method: HttpMethod;
-} & Msg;
-
-export const ofType = (type: ActionType) => filter((action: EntityServiceAction) => action.type === type);
-
-export const filterMethod = (method: HttpMethod | keyof (typeof HttpMethod)) =>
-  filter((action: EntityServiceAction) => action.method === method);
-
-export const filterStore = (name: string) => filter((action: EntityServiceAction) => action.storeName === name);
+export const filterStore = (name: string): MonoTypeOperatorFunction<EntityServiceAction> => filter((action: EntityServiceAction) => action.storeName === name);
 
 @Injectable({ providedIn: 'root' })
 export class NgEntityServiceNotifier {
-  private dispatcher = new Subject<EntityServiceAction>();
+  private readonly dispatcher = new Subject<EntityServiceAction>();
+
   action$ = this.dispatcher.asObservable();
 
-  dispatch(event: EntityServiceAction) {
+  dispatch(event: EntityServiceAction): void {
     this.dispatcher.next(event);
   }
 }

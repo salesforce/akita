@@ -1,5 +1,6 @@
+import { runStoreAction } from '../lib/runStoreAction';
+import { StoreActions } from '../lib/storeActions';
 import { BooksStore, TestBook, TestBooksState } from './booksStore';
-import { runStoreAction, StoreActions } from '../lib/runStoreAction';
 import { createMockEntities } from './mocks';
 
 describe('runStoreAction', () => {
@@ -15,16 +16,16 @@ describe('runStoreAction', () => {
     runStoreAction<TestBook>('books', StoreActions.UpdateEntities, {
       payload: {
         data: { title: 'New title' },
-        entityIds: 2
-      }
+        entityIds: 2,
+      },
     });
     expect(store._value().entities[2].title).toBe('New title');
 
     runStoreAction<TestBook>('books', StoreActions.UpsertEntities, {
       payload: {
         data: { title: 'Another title' },
-        entityIds: [2, 3]
-      }
+        entityIds: [2, 3],
+      },
     });
     expect(store._value().entities[2].title).toBe('Another title');
     expect(store._value().entities[3].title).toBe('Another title');
@@ -34,9 +35,9 @@ describe('runStoreAction', () => {
       payload: {
         data: [
           { id: 2, title: 'New title' },
-          { id: 4, title: 'Another title' }
-        ]
-      }
+          { id: 4, title: 'Another title' },
+        ],
+      },
     });
     expect(store._value().entities[2].title).toBe('New title');
     expect(store._value().ids.length).toBe(6);
