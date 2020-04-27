@@ -1,11 +1,10 @@
 import { APP_BASE_HREF } from '@angular/common';
 import { Component, Injectable, NgZone } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { ActivatedRouteSnapshot, CanActivate, Router, Routes } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, NavigationExtras, Router, Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AkitaNgRouterStoreModule } from '..';
 import { RouterQuery } from './router.query';
-import { RouterStore } from './router.store';
 
 @Component({
   selector: 'test-empty',
@@ -34,7 +33,16 @@ class AuthGuard implements CanActivate {
 
 const routes: Routes = [
   {
+    path: 'simple',
+    component: EmptyComponent,
+  },
+  {
     path: 'test/:someParam/:other',
+    component: EmptyComponent,
+  },
+  {
+    path: 'with-data',
+    data: { actor: 'Brent Spiner' },
     component: EmptyComponent,
   },
   {
@@ -46,7 +54,6 @@ const routes: Routes = [
 
 describe('RouterService', () => {
   let routerQuery: RouterQuery;
-  let routerStore: RouterStore;
   let ngZone: NgZone;
   let router: Router;
 
@@ -58,21 +65,34 @@ describe('RouterService', () => {
     }).compileComponents();
 
     routerQuery = TestBed.inject(RouterQuery);
-    routerStore = TestBed.inject(RouterStore);
     ngZone = TestBed.inject(NgZone);
     router = TestBed.inject(Router);
 
     navigateByUrl('start');
   });
 
-  function navigateByUrl(url: string) {
-    return ngZone.run(() => router.navigateByUrl(url));
+  function navigateByUrl(url: string, navigationExtras?: NavigationExtras) {
+    return ngZone.run(() => router.navigateByUrl(url, navigationExtras));
   }
+
+  it('should update the router state after a successful navigation', async () => {
+    await navigateByUrl('/simple');
+
+    expect(routerQuery.getValue().navigationId).toEqual(2);
+    expect(routerQuery.getValue().state.url).toEqual('/simple');
+  });
+
+  it('should update the router state when only the hash changes', async () => {
+    await navigateByUrl('/start#hashBrowns');
+
+    expect(routerQuery.getValue().navigationId).toEqual(2);
+    expect(routerQuery.getFragment()).toEqual('hashBrowns');
+  });
 
   it('should update the router state when only query parameters change', async () => {
     await navigateByUrl('/start?one=1&two=2');
 
-    expect(routerStore._value().navigationId).toEqual(2);
+    expect(routerQuery.getValue().navigationId).toEqual(2);
     expect(routerQuery.getQueryParams()).toEqual({ one: '1', two: '2' });
   });
 
@@ -84,8 +104,8 @@ describe('RouterService', () => {
 
     await navigateByUrl('fail-auth-guard');
 
-    expect(routerStore._value().navigationId).toEqual(2);
-    expect(routerStore._value().state.url).toEqual('/start');
+    expect(routerQuery.getValue().navigationId).toEqual(2);
+    expect(routerQuery.getValue().state.url).toEqual('/start');
   });
 
   it('should emit a navigationError event when canActivate throws an error', async () => {
@@ -98,8 +118,8 @@ describe('RouterService', () => {
       await navigateByUrl('throw-error');
     } catch {}
 
-    expect(routerStore._value().navigationId).toEqual(2);
-    expect(routerStore._value().state.url).toEqual('/start');
+    expect(routerQuery.getValue().navigationId).toEqual(2);
+    expect(routerQuery.getValue().state.url).toEqual('/start');
   });
 
   it('should not update the state with urls that are never activated due to canActivate redirects', fakeAsync(() => {
@@ -121,10 +141,22 @@ describe('RouterService', () => {
     tick();
   }));
 
-  it('should support selecting route params by name', async () => {
+  it('should support getting route params by name', async () => {
     await navigateByUrl('/test/100/200');
 
     expect(routerQuery.getParams('someParam')).toEqual('100');
     expect(routerQuery.getParams('other')).toEqual('200');
+  });
+
+  it('should support getting state provided in navigationExtras', async () => {
+    await navigateByUrl('/simple', { state: { custom: 'yay' } });
+
+    expect(routerQuery.getNavigationExtras('custom')).toEqual('yay');
+  });
+
+  it('should support getting route data', async () => {
+    await navigateByUrl('with-data');
+
+    expect(routerQuery.getData()).toEqual({ actor: 'Brent Spiner' });
   });
 });
