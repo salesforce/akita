@@ -97,6 +97,7 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds
     <td align="center"><a href="https://github.com/NathanAlcantara"><img src="https://avatars0.githubusercontent.com/u/39138501?v=4" width="100px;" alt=""/><br /><sub><b>Nathan Gabriel</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=NathanAlcantara" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/snebjorn"><img src="https://avatars0.githubusercontent.com/u/1266245?v=4" width="100px;" alt=""/><br /><sub><b>snebjorn</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=snebjorn" title="Code">💻</a> <a href="#ideas-snebjorn" title="Ideas, Planning, & Feedback">🤔</a> <a href="#infra-snebjorn" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
     <td align="center"><a href="https://github.com/orlovskyalex"><img src="https://avatars1.githubusercontent.com/u/21097952?v=4" width="100px;" alt=""/><br /><sub><b>Alex Orlovsky</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=orlovskyalex" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/NickLargen"><img src="https://avatars1.githubusercontent.com/u/1881732?v=4" width="100px;" alt=""/><br /><sub><b>NickLargen</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=NickLargen" title="Code">💻</a> <a href="https://github.com/NetanelBasal/akita/commits?author=NickLargen" title="Tests">⚠️</a></td>
   </tr>
 </table>
 

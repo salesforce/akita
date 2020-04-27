@@ -452,6 +452,16 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "NickLargen",
+      "name": "NickLargen",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1881732?v=4",
+      "profile": "https://github.com/NickLargen",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ]
 }
