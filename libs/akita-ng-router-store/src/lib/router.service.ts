@@ -1,36 +1,34 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, NavigationCancel, NavigationError, ResolveEnd, Router, RoutesRecognized } from '@angular/router';
-import { ActiveRouteState, RouterStore } from './router.store';
+import { ActivatedRouteSnapshot, GuardsCheckEnd, NavigationCancel, NavigationEnd, NavigationError, ResolveEnd, Router, RoutesRecognized } from '@angular/router';
+import { RouterState, RouterStore } from './router.store';
 import { RouterQuery } from './router.query';
 import { action, setSkipAction } from '@datorama/akita';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RouterService {
-  private routerStateSnapshot: any;
-  private lastRoutesRecognized: any;
   private dispatchTriggeredByRouter = false;
   private navigationTriggeredByDispatch = false;
-  private routerState: any;
+  private lastRouterState: RouterState;
 
   constructor(private routerStore: RouterStore, private routerQuery: RouterQuery, private router: Router) {}
 
   @action('Navigation Cancelled')
   dispatchRouterCancel(event: NavigationCancel) {
-    this.update();
+    this.update({ navigationId: event.id });
     this.routerQuery.__navigationCancel.next(event);
   }
 
   @action('Navigation Error')
   dispatchRouterError(event: NavigationError) {
-    this.update();
+    this.update({ navigationId: event.id });
     this.routerQuery.__navigationError.next(event);
   }
 
-  @action('Navigation')
-  dispatchRouterNavigation() {
-    this.update();
+  @action('Navigation Succeeded')
+  dispatchRouterSuccess() {
+    this.update(this.lastRouterState);
   }
 
   init() {
@@ -38,13 +36,12 @@ export class RouterService {
     this.setUpStateRollbackEvents();
   }
 
-  private update() {
+  private update(routerState: Partial<RouterState>) {
     this.dispatchTriggeredByRouter = true;
-    this.routerStore.update((state: any) => {
+    this.routerStore.update((state) => {
       return {
         ...state,
-        state: this.routerStateSnapshot,
-        navigationId: this.lastRoutesRecognized ? this.lastRoutesRecognized.id : null
+        ...routerState,
       };
     });
     this.dispatchTriggeredByRouter = false;
@@ -53,71 +50,57 @@ export class RouterService {
 
   private setUpStoreListener(): void {
     this.routerQuery
-      .select(state => state)
-      .subscribe(s => {
-        this.routerState = s;
+      .select((state) => state)
+      .subscribe((s) => {
+        this.lastRouterState = s;
         this.navigateIfNeeded();
       });
   }
 
-  private shouldDispatchRouterNavigation(): boolean {
-    if (!this.routerState) return true;
-    return !this.navigationTriggeredByDispatch;
-  }
-
   private navigateIfNeeded(): void {
-    if (!this.routerState || !this.routerState.state) {
+    if (!this.lastRouterState || !this.lastRouterState.state || this.dispatchTriggeredByRouter) {
       return;
     }
-    if (this.dispatchTriggeredByRouter) return;
 
-    if (this.router.url !== this.routerState.state.url) {
+    if (this.router.url !== this.lastRouterState.state.url) {
       this.navigationTriggeredByDispatch = true;
       setSkipAction();
-      this.router.navigateByUrl(this.routerState.state.url);
+      this.router.navigateByUrl(this.lastRouterState.state.url);
     }
   }
 
   private setUpStateRollbackEvents(): void {
-    this.router.events.subscribe(e => {
-      if (e instanceof RoutesRecognized) {
-        this.lastRoutesRecognized = e;
-      } else if (e instanceof ResolveEnd) {
-        this.resolveEnd(e);
+    this.router.events.subscribe((e) => {
+      if (e instanceof RoutesRecognized || e instanceof GuardsCheckEnd || e instanceof ResolveEnd) {
+        this.lastRouterState = this.serializeRoute(e);
       } else if (e instanceof NavigationCancel) {
         this.dispatchRouterCancel(e);
       } else if (e instanceof NavigationError) {
         this.dispatchRouterError(e);
+      } else if (e instanceof NavigationEnd && !this.navigationTriggeredByDispatch) {
+        this.dispatchRouterSuccess();
       }
     });
   }
 
-  /**
-   * The `ResolveEnd` event is always triggered after running all resolvers
-   * that are linked to some route and child routes
-   */
-  private resolveEnd(routerStateSnapshot: ResolveEnd): void {
-    this.routerStateSnapshot = this.serializeRoute(routerStateSnapshot);
-    if (this.shouldDispatchRouterNavigation()) {
-      this.dispatchRouterNavigation();
-    }
-  }
-
-  private serializeRoute(route: ResolveEnd): ActiveRouteState {
-    let state: ActivatedRouteSnapshot = route.state.root;
+  private serializeRoute(navigationEvent: RoutesRecognized | GuardsCheckEnd | ResolveEnd): RouterState {
+    let state: ActivatedRouteSnapshot = navigationEvent.state.root;
     while (state.firstChild) {
       state = state.firstChild;
     }
     const { params, data, queryParams, fragment } = state;
 
     return {
-      url: route.url,
-      urlAfterRedirects: route.urlAfterRedirects,
-      params,
-      queryParams,
-      fragment,
-      data,
-      navigationExtras: this.router.getCurrentNavigation().extras.state
+      navigationId: navigationEvent.id,
+      state: {
+        url: navigationEvent.url,
+        urlAfterRedirects: navigationEvent.urlAfterRedirects,
+        params,
+        queryParams,
+        fragment,
+        data,
+        navigationExtras: this.router.getCurrentNavigation().extras.state,
+      },
     };
   }
 }
