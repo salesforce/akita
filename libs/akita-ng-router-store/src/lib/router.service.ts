@@ -5,7 +5,7 @@ import { RouterQuery } from './router.query';
 import { action, setSkipAction } from '@datorama/akita';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RouterService {
   private dispatchTriggeredByRouter = false;
@@ -38,10 +38,10 @@ export class RouterService {
 
   private update(routerState: Partial<RouterState>) {
     this.dispatchTriggeredByRouter = true;
-    this.routerStore.update(state => {
+    this.routerStore.update((state) => {
       return {
         ...state,
-        ...routerState
+        ...routerState,
       };
     });
     this.dispatchTriggeredByRouter = false;
@@ -50,8 +50,8 @@ export class RouterService {
 
   private setUpStoreListener(): void {
     this.routerQuery
-      .select(state => state)
-      .subscribe(s => {
+      .select((state) => state)
+      .subscribe((s) => {
         this.lastRouterState = s;
         this.navigateIfNeeded();
       });
@@ -70,7 +70,7 @@ export class RouterService {
   }
 
   private setUpStateRollbackEvents(): void {
-    this.router.events.subscribe(e => {
+    this.router.events.subscribe((e) => {
       if (e instanceof RoutesRecognized || e instanceof GuardsCheckEnd || e instanceof ResolveEnd) {
         this.lastRouterState = this.serializeRoute(e);
       } else if (e instanceof NavigationCancel) {
@@ -83,7 +83,7 @@ export class RouterService {
     });
   }
 
-  private serializeRoute(navigationEvent: ResolveEnd | GuardsCheckEnd | ResolveEnd): RouterState {
+  private serializeRoute(navigationEvent: RoutesRecognized | GuardsCheckEnd | ResolveEnd): RouterState {
     let state: ActivatedRouteSnapshot = navigationEvent.state.root;
     while (state.firstChild) {
       state = state.firstChild;
@@ -99,8 +99,8 @@ export class RouterService {
         queryParams,
         fragment,
         data,
-        navigationExtras: this.router.getCurrentNavigation().extras.state
-      }
+        navigationExtras: this.router.getCurrentNavigation().extras.state,
+      },
     };
   }
 }
