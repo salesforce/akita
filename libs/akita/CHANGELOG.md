@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.23.1](https://github.com/datorama/akita/compare/akita-v4.23.0...akita-v4.23.1) (2020-05-02)
+
+### Bug Fixes
+
+- **dev:** delete stores and queries in prod mode ([ae2e754](https://github.com/datorama/akita/commit/ae2e754f17c98c0cdb32793160063e37b31d278e)), closes [#416](https://github.com/datorama/akita/issues/416)
+
 ## [4.23.0](https://github.com/datorama/akita/compare/akita-v4.22.1...akita-v4.23.0) (2020-04-19)
 
 ### Features
