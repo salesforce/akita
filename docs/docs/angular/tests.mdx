@@ -1,0 +1,229 @@
+---
+title: Unit Tests
+---
+
+## Testing Components View
+
+Let's create a simple `todos` application so we can have something to work it.
+
+```ts title="todos.store.ts"
+export interface TodosState extends EntityState<Todo, number> {
+  ui: {
+    filter: string;
+  };
+}
+
+@StoreConfig({ name: 'todos' })
+export class TodosStore extends EntityStore<TodosState> {
+  constructor() {
+    super({ ui: { filter: 'active' } });
+  }
+}
+```
+
+```ts title="todos.query.ts"
+export class TodosQuery extends QueryEntity<TodosState> {
+  selectFilter$ = this.select(state => state.ui.filter);
+
+  constructor(protected store: TodosStore) {
+    super(store);
+  }
+}
+```
+
+```ts title="todos-page.components.ts"
+@Component({
+  selector: 'todos-page',
+  template: `
+     <div *ngFor="let todo of todos$ | async" class="todo">
+       {{ todo.title }}
+     </div>
+
+     <div class="no-todos" *ngIf="!(todos$ | async).length">
+       No result
+     </div>
+
+     <div class="filter">{{ selectFilter$ | async }}</div> 
+  `
+})
+export class TodosPageComponent implements OnInit {
+  todos$ = this.todosQuery.selectAll();
+  selectFilter$ = this.todosQuery.selectFilter$;
+
+  constructor(
+    private todosQuery: TodosQuery,
+    private todosService: TodosService
+  ) {}
+
+  ngOnInit() {
+    this.todosService.get().subscribe();
+  }
+}
+```
+
+There are two strategies that we can use to test the component:
+
+### Mocking the Query
+
+We can mock the query and in each spec provide the selector result:
+
+```ts title="todos-page.component.spec.ts"
+
+describe('TodosPageComponent', () => {
+  let component: TodosPageComponent;
+  let todosQuery: jasmine.SpyObj<TodosQuery>;
+  let fixture: ComponentFixture<TodosPageComponent>;
+
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: TodosService,
+          useValue: jasmine.createSpyObj('TodosService', ['get'])
+        },
+        {
+          provide: TodosQuery,
+          useValue: jasmine.createSpyObj('TodosQuery', ['selectAll'])
+        }
+      ],
+      declarations: [TodosComponent]
+    }).compileComponents();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(TodosComponent);
+    component = fixture.componentInstance;
+    todosQuery = TestBed.get(TodosQuery);
+  });
+
+  it('should display no todos message', () => {
+    todosQuery.selectAll.and.returnValue(of([]));
+    fixture.detectChanges();
+    const noMessageElement = fixture.debugElement.query(By.css('.no-todos'));
+    expect(noMessageElement).not.toBeNull();
+  });
+
+  it('should display two todos', () => {
+    todosQuery.selectAll.and.returnValue(of([createTodo(), createTodo()]));
+    fixture.detectChanges();
+    const todos = fixture.debugElement.queryAll(By.css('li'));
+    expect(todos.length).toEqual(2);
+  });
+
+  it('should display the initial filter', () => {
+    todosQuery.selectFilter$ = of('active');
+    fixture.detectChanges();
+    const filter = fixture.debugElement.query(By.css('.filter'));
+    expect(filter.nativeElement.innerText).toEqual('active');
+  });
+
+  it('should display the updated filter', () => {
+    todosQuery.selectFilter$ = of('completed');
+    fixture.detectChanges();
+    const filter = fixture.debugElement.query(By.css('.filter'));
+    expect(filter.nativeElement.innerText).toEqual('completed');
+  });
+});
+```
+
+:::tip
+To simplify your Angular specs, we recommend using [Spectator](https://github.com/ngneat/spectator).
+:::
+
+### Using the Store
+
+We can inject the `store`, update the data, and make our assertions:
+
+```ts title="todos-page.component.spec.ts"
+describe('TodosPageComponent', () => {
+  let component: TodosPageComponent;
+  let todosStore: TodosStore;
+  let fixture: ComponentFixture<TodosPageComponent>;
+
+  beforeEach(async(() => {
+    TestBed.configureTestingModule({
+      providers: [
+        {
+          provide: TodosService,
+          useValue: jasmine.createSpyObj('TodosService', ['get'])
+        }
+      ],
+      declarations: [TodosComponent]
+    }).compileComponents();
+  }));
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(TodosComponent);
+    component = fixture.componentInstance;
+    todosStore = TestBed.get(TodosStore);
+  });
+
+  it('should display no todos message', () => {
+    fixture.detectChanges();
+    const noMessageElement = fixture.debugElement.query(By.css('.no-todos'));
+    expect(noMessageElement).not.toBeNull();
+  });
+
+  it('should display two todos', () => {
+    todosStore.set([createTodo(), createTodo()]);
+    fixture.detectChanges();
+    const todos = fixture.debugElement.queryAll(By.css('li'));
+    expect(todos.length).toEqual(2);
+  });
+
+  it('should display the initial filter', () => {
+    fixture.detectChanges();
+    const filter = fixture.debugElement.query(By.css('.filter'));
+    expect(filter.nativeElement.innerText).toEqual('active');
+  });
+
+  it('should display the updated filter', () => {
+    todosStore.update({ ui: { filter: 'completed ' } });
+    fixture.detectChanges();
+    const filter = fixture.debugElement.query(By.css('.filter'));
+    expect(filter.nativeElement.innerText).toEqual('completed');
+  });
+});
+```
+
+## Testing the Store/Query
+There is no reason to test the built-in Akita's methods because they have been well tested. The only tests you should add are for custom methods that you might have. 
+
+For example:
+
+```ts title="todos.store.ts"
+export interface TodosState extends EntityState<Todo, number> {}
+
+@StoreConfig({ name: 'todos' })
+export class TodosStore extends EntityStore<TodosState> {
+  customUpdateMethod(condition) {
+    if (condition) {
+      this.set([]);
+    }
+  }
+}
+```
+
+We can test the `Store` or the `Query` without using Angular:
+
+```ts title="todos.store.spec.ts"
+describe('TodosStore', () => {
+  let store: TodosStore;
+
+  beforeEach(() => {
+    store = new TodosStore();
+  });
+
+  it('should test custom method', () => {
+    spyOn(store, 'set');
+    store.customUpdateMethod(false);
+    expect(store.set).not.toHaveBeenCalled();
+    store.customUpdateMethod(true);
+    expect(store.set).toHaveBeenCalled();
+  });
+});
+```
+
+:::info
+The same principles also apply to the `Query`
+:::
