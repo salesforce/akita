@@ -1,5 +1,5 @@
 export * from './{{dashCase name}}.query';
-export * from './{{dashCase name}}.store';
+export { {{ pascalCase name }}State, {{pascalCase name}}Store } from './{{dashCase name}}.store';
 export * from './{{dashCase name}}.service';
 {{#switch storeType}}
 {{#case "Entity Store"}}

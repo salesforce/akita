@@ -7,6 +7,7 @@
 
 # dependencies
 /node_modules
+/tools/akita-cli/node_modules
 
 # IDEs and editors
 /.idea
