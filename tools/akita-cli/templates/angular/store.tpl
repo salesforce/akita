@@ -20,4 +20,3 @@ export class {{pascalCase name}}Store extends Store<{{pascalCase name}}State> {
   }
 
 }
-

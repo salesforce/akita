@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { <%= classify(name) %>Store, <%= classify(name) %>State } from './<%= dasherize(name) %>.store';
 import { CollectionConfig, CollectionService } from 'akita-ng-fire';
+import { <%= classify(name) %>Store, <%= classify(name) %>State } from './<%= dasherize(name) %>.store';
 
 @Injectable({ providedIn: 'root' })
 @CollectionConfig({ path: '<%= dasherize(plural(name)) %>' })

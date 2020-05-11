@@ -16,4 +16,3 @@ export class {{pascalCase name}}Store extends EntityStore<{{ pascalCase name }}S
 }
 
 export const {{ camelCase name }}Store = new {{pascalCase name}}Store();
-
