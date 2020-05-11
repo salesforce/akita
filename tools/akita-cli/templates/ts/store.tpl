@@ -20,4 +20,3 @@ export class {{pascalCase name}}Store extends Store<{{pascalCase name}}State> {
 }
 
 export const {{ camelCase name }}Store = new {{pascalCase name}}Store();
-
