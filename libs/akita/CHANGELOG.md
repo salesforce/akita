@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.23.2](https://github.com/datorama/akita/compare/akita-v4.23.1...akita-v4.23.2) (2020-05-15)
+
+### Bug Fixes
+
+- **env:** don't access window outside of browser ([#428](https://github.com/datorama/akita/issues/428)) ([6fdc251](https://github.com/datorama/akita/commit/6fdc25191f7037c67166a44384bcf740ff9be504))
+
 ### [4.23.1](https://github.com/datorama/akita/compare/akita-v4.23.0...akita-v4.23.1) (2020-05-02)
 
 ### Bug Fixes
