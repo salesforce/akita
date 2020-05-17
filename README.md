@@ -100,6 +100,9 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds
     <td align="center"><a href="https://github.com/NickLargen"><img src="https://avatars1.githubusercontent.com/u/1881732?v=4" width="100px;" alt=""/><br /><sub><b>NickLargen</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=NickLargen" title="Code">💻</a> <a href="https://github.com/NetanelBasal/akita/commits?author=NickLargen" title="Tests">⚠️</a></td>
     <td align="center"><a href="https://github.com/mateuszroszczyk"><img src="https://avatars0.githubusercontent.com/u/26057696?v=4" width="100px;" alt=""/><br /><sub><b>mateuszroszczyk</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=mateuszroszczyk" title="Code">💻</a></td>
   </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/aleinin"><img src="https://avatars1.githubusercontent.com/u/25621595?v=4" width="100px;" alt=""/><br /><sub><b>aleinin</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=aleinin" title="Documentation">📖</a></td>
+  </tr>
 </table>
 
 <!-- markdownlint-enable -->
