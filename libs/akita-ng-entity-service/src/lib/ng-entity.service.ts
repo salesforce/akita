@@ -281,7 +281,7 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
    * @param type HttpMethod to get the user configured HttpMethod for
    * @returns User configured HttpMethod for the method, else the default HttpMethod
    */
-  private getHttpMethod(type: HttpMethod) {
+  protected getHttpMethod(type: HttpMethod) {
     let httpMethod: HttpMethod;
     if (this.httpMethodMap) {
       httpMethod = this.httpMethodMap[type];
@@ -310,7 +310,7 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
     return (this.constructor as any)[key];
   }
 
-  private getDecoratorConfig() {
+  protected getDecoratorConfig() {
     const config: NgEntityServiceParams = {};
 
     const baseUrl = this.getDecoratorValue('baseUrl');
@@ -326,7 +326,7 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
     return config;
   }
 
-  private resolveUrl(config?: HttpConfig, id?: any) {
+  protected resolveUrl(config?: HttpConfig, id?: any) {
     if (config && config.url) {
       return config.url;
     }
@@ -334,7 +334,7 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
     return isDefined(id) ? `${this.api}/${id}` : this.api;
   }
 
-  private handleError(method: HttpMethod, error: any, errorMsg?: string) {
+  protected handleError(method: HttpMethod, error: any, errorMsg?: string) {
     this.dispatchError({
       method,
       errorMsg,
