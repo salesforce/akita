@@ -10,7 +10,7 @@ import { defaultConfig, mergeDeep, NG_ENTITY_SERVICE_CONFIG, NgEntityServiceGlob
 import { isID } from './helpers';
 import { errorAction, successAction } from './action-factory';
 
-export const mapResponse = <T>(config?: HttpConfig<T>) => map(res => (config && !!config.mapResponseFn ? config.mapResponseFn(res) : res));
+export const mapResponse = <T>(config?: HttpConfig<T>) => map((res) => (config && !!config.mapResponseFn ? config.mapResponseFn(res) : res));
 
 export class NgEntityService<S extends EntityState = any> extends EntityService<S> {
   baseUrl: string | undefined;
@@ -97,7 +97,7 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
       method,
       loading: true,
       entityId,
-      storeName: this.store.storeName
+      storeName: this.store.storeName,
     });
 
     return this.http.request(method, url, conf).pipe(
@@ -105,7 +105,7 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
       tap((data: any) => {
         if (!conf.skipWrite) {
           if (isSingle) {
-            this.store.upsert(entityId, data);
+            this.store.upsert(entityId, data, (id, newState) => ({ id, ...newState }));
           } else {
             if (conf.append) {
               this.store.add(data);
@@ -120,16 +120,16 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
         this.dispatchSuccess({
           method,
           payload: data,
-          successMsg: conf.successMsg
+          successMsg: conf.successMsg,
         });
       }),
-      catchError(error => this.handleError(method, error, conf.errorMsg)),
+      catchError((error) => this.handleError(method, error, conf.errorMsg)),
       finalize(() => {
         this.loader.dispatch({
           method,
           loading: false,
           entityId,
-          storeName: this.store.storeName
+          storeName: this.store.storeName,
         });
       })
     );
@@ -149,7 +149,7 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
     this.loader.dispatch({
       method,
       loading: true,
-      storeName: this.store.storeName
+      storeName: this.store.storeName,
     });
 
     const configWithBody = { ...config, ...{ body: entity } };
@@ -163,15 +163,15 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
         this.dispatchSuccess({
           method,
           payload: responseEntity,
-          successMsg: config && config.successMsg
+          successMsg: config && config.successMsg,
         });
       }),
-      catchError(error => this.handleError(method, error, config && config.errorMsg)),
+      catchError((error) => this.handleError(method, error, config && config.errorMsg)),
       finalize(() => {
         this.loader.dispatch({
           method,
           loading: false,
-          storeName: this.store.storeName
+          storeName: this.store.storeName,
         });
       })
     );
@@ -192,30 +192,30 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
       method,
       loading: true,
       entityId: id,
-      storeName: this.store.storeName
+      storeName: this.store.storeName,
     });
 
     const configWithBody = { ...config, ...{ body: entity } };
 
     return this.http.request(method, url, configWithBody).pipe(
       mapResponse(config),
-      tap(responseEntity => {
+      tap((responseEntity) => {
         if (!config || (config && !config.skipWrite)) {
           this.store.update(id, responseEntity as any);
         }
         this.dispatchSuccess({
           method,
           payload: responseEntity,
-          successMsg: config && config.successMsg
+          successMsg: config && config.successMsg,
         });
       }),
-      catchError(error => this.handleError(method, error, config && config.errorMsg)),
+      catchError((error) => this.handleError(method, error, config && config.errorMsg)),
       finalize(() => {
         this.loader.dispatch({
           method,
           loading: false,
           entityId: id,
-          storeName: this.store.storeName
+          storeName: this.store.storeName,
         });
       })
     ) as Observable<T>;
@@ -236,28 +236,28 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
       method,
       loading: true,
       entityId: id,
-      storeName: this.store.storeName
+      storeName: this.store.storeName,
     });
 
     return this.http.request(method, url, config).pipe(
       mapResponse(config),
-      tap(res => {
+      tap((res) => {
         if (!config || (config && !config.skipWrite)) {
           this.store.remove(id);
         }
         this.dispatchSuccess({
           method,
           payload: res,
-          successMsg: config && config.successMsg
+          successMsg: config && config.successMsg,
         });
       }),
-      catchError(error => this.handleError(method, error, config && config.errorMsg)),
+      catchError((error) => this.handleError(method, error, config && config.errorMsg)),
       finalize(() => {
         this.loader.dispatch({
           method,
           loading: false,
           entityId: id,
-          storeName: this.store.storeName
+          storeName: this.store.storeName,
         });
       })
     ) as Observable<T>;
@@ -338,7 +338,7 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
     this.dispatchError({
       method,
       errorMsg,
-      payload: error
+      payload: error,
     });
 
     return throwError(error);

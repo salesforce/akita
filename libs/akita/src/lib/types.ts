@@ -34,6 +34,7 @@ export interface SelectOptions<E> extends SortByOptions<E> {
 
 export type StateWithActive<State> = State & (ActiveState | MultiActiveState);
 export type UpdateStateCallback<State> = (state: State) => Partial<State> | void;
+export type CreateStateCallback<State, NewState extends Partial<State>, IDType> = (id: IDType, newState: NewState) => State;
 export type UpdateEntityPredicate<E> = (entity: E) => boolean;
 export type ID = number | string;
 export type IDS = ID | ID[];
