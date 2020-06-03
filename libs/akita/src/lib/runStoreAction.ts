@@ -105,18 +105,6 @@ export declare namespace StoreActions {
     data: Entity[];
   }
 
-  // /**
-  //  * @deprecated
-  //  */
-  // export interface UpsertEntitiesPayloadDeprecated<Entity, NewEntity extends Partial<Entity>> /*extends Discriminant<'UpsertEntitiesPayloadDeprecated'>*/ {
-  //   data: NewEntity;
-  //   entityIds: IDS;
-  // }
-  //
-  // export interface UpsertManyEntitiesPayload<Entity, NewEntity extends Partial<Entity>> /*extends Discriminant<'UpsertManyEntitiesPayload'>*/ {
-  //   data: Entity | Entity[];
-  // }
-
   export interface UpdatePayload<Entity> {
     data: Partial<Entity>;
   }
