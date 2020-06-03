@@ -231,11 +231,13 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
   ) {
     const toArray = coerceArray(ids);
     const predicate = (isUpdate) => (id) => hasEntity(this.entities, id) === isUpdate;
-    const baseClass = onCreate && 'baseClass' in onCreate ? onCreate.baseClass : options.baseClass;
+    const isInCompMode = onCreate === undefined || 'baseClass' in onCreate; // is in compatibility mode if onCreate is undefined or not a function
+    const baseClass = onCreate !== undefined && 'baseClass' in onCreate ? onCreate.baseClass : options.baseClass;
     const isClassBased = isFunction(baseClass);
     const updateIds = toArray.filter(predicate(true));
     const newEntities = toArray.filter(predicate(false)).map((id) => {
-      const newStateObj = isFunction(newState) ? newState(this.entities[id as any]) : newState;
+      const oldStateObj = this.entities[id as any];
+      const newStateObj = isFunction(newState) ? newState(isInCompMode ? (oldStateObj === undefined ? {} : oldStateObj) : oldStateObj) : newState;
       const entity = typeof onCreate === 'function' ? onCreate(id, newStateObj) : ((newStateObj as unknown) as EntityType);
       const withId = { ...(entity as EntityType), [this.idKey]: id };
       if (isClassBased) {

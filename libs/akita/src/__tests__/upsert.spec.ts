@@ -28,10 +28,44 @@ describe('upsert', () => {
     store.remove();
   });
 
+  it('should add if not exist - one (undefined passed to update callback)', () => {
+    let testNewState: any;
+    store.upsert(
+      1,
+      (newState) => {
+        testNewState = newState;
+        return {
+          title: 'new title',
+        };
+      },
+      (id, newState) => ({ ...newState, author: 'new author' })
+    );
+    expect(store._value().entities[1].title).toEqual('new title');
+    expect(store._value().entities[1].author).toEqual('new author');
+    expect(testNewState).toBeUndefined(); //
+    expect(store._value().entities[1].id).toBe(1);
+    store.remove();
+  });
+
   it('should add if not exist - one (deprecated)', () => {
     store.upsert(1, { title: 'new title' });
     expect(store._value().entities[1].title).toEqual('new title');
     expect(store._value().entities[1].author).toEqual(undefined);
+    expect(store._value().entities[1].id).toBe(1);
+    store.remove();
+  });
+
+  it('should add if not exist - one (deprecated, empty object passed to update callback)', () => {
+    let testNewState: any;
+    store.upsert(1, (newState) => {
+      testNewState = newState;
+      return {
+        title: 'new title',
+      };
+    });
+    expect(store._value().entities[1].title).toEqual('new title');
+    expect(store._value().entities[1].author).toEqual(undefined);
+    expect(Object.keys(testNewState).length === 0 && Object.getPrototypeOf(testNewState).constructor === Object.prototype.constructor).toBe(true);
     expect(store._value().entities[1].id).toBe(1);
     store.remove();
   });
