@@ -22,8 +22,6 @@ export interface StoreActionConfig<TActionType extends StoreActionType, TPayload
 }
 
 export class StoreActions {
-  private constructor() {}
-
   static buildActionConfig<TActionType extends StoreActionType, TPayload>(type: TActionType, payload: TPayload): StoreActionConfig<TActionType, TPayload> {
     return {
       type,
@@ -32,19 +30,19 @@ export class StoreActions {
   }
 
   static SetEntities<Entity>(payload: StoreActions.SetEntitiesPayload<Entity>) {
-    return this.buildActionConfig(StoreActionType.SetEntities, payload);
+    return StoreActions.buildActionConfig(StoreActionType.SetEntities, payload);
   }
 
   static AddEntities<Entity>(payload: StoreActions.AddEntitiesPayload<Entity>) {
-    return this.buildActionConfig(StoreActionType.AddEntities, payload);
+    return StoreActions.buildActionConfig(StoreActionType.AddEntities, payload);
   }
 
   static UpdateEntities<Entity>(payload: StoreActions.UpdateEntitiesPayload<Entity>) {
-    return this.buildActionConfig(StoreActionType.UpdateEntities, payload);
+    return StoreActions.buildActionConfig(StoreActionType.UpdateEntities, payload);
   }
 
   static RemoveEntities<Entity>(payload: StoreActions.RemoveEntitiesPayload<Entity>) {
-    return this.buildActionConfig(StoreActionType.RemoveEntities, payload);
+    return StoreActions.buildActionConfig(StoreActionType.RemoveEntities, payload);
   }
 
   static UpsertEntities<Payload extends StoreActions.UpsertEntitiesPayload<Entity, NewEntity>, Entity, NewEntity extends Partial<Entity>>(payload: Payload);
@@ -57,15 +55,15 @@ export class StoreActions {
   static UpsertEntities<Payload extends StoreActions.UpsertEntitiesPayloadUnsafe<Entity, NewEntity> | StoreActions.UpsertEntitiesPayload<Entity, NewEntity>, Entity, NewEntity extends Partial<Entity>>(
     payload: Payload
   ) {
-    return this.buildActionConfig(StoreActionType.UpsertEntities, payload);
+    return StoreActions.buildActionConfig(StoreActionType.UpsertEntities, payload);
   }
 
   static UpsertManyEntities<Entity>(payload: StoreActions.UpsertManyEntitiesPayload<Entity>) {
-    return this.buildActionConfig(StoreActionType.UpsertManyEntities, payload);
+    return StoreActions.buildActionConfig(StoreActionType.UpsertManyEntities, payload);
   }
 
   static Update<Entity>(payload: StoreActions.UpdatePayload<Entity>) {
-    return this.buildActionConfig(StoreActionType.Update, payload);
+    return StoreActions.buildActionConfig(StoreActionType.Update, payload);
   }
 }
 

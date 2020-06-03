@@ -213,7 +213,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
   upsert<NewEntityType extends Partial<EntityType>>(
     ids: OrArray<IDType>,
     newState: NewEntityType | ((oldState?: EntityType) => NewEntityType),
-    onCreateOr: CreateStateCallback<EntityType, NewEntityType, IDType>,
+    onCreate: CreateStateCallback<EntityType, NewEntityType, IDType>,
     options?: { baseClass?: Constructor }
   );
 
