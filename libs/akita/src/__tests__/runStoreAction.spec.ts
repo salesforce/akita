@@ -24,27 +24,36 @@ describe('runStoreAction', () => {
     runStoreAction<TestBook>(
       'books',
       StoreActions.UpsertEntities({
-        data: {
-          newState: { title: 'Another title' },
-          onCreate: (id, update) => ({ ...update, price: 0 }),
-        },
+        data: { title: 'Another title' },
         entityIds: [2, 3],
       })
     );
     expect(store._value().entities[2].title).toBe('Another title');
     expect(store._value().entities[3].title).toBe('Another title');
+    expect(store._value().entities[3].price).toBe(undefined);
     expect(store._value().ids.length).toBe(5);
 
     runStoreAction<TestBook>(
       'books',
       StoreActions.UpsertEntities({
         data: {
-          newState: [
-            { id: 2, title: 'New title' },
-            { id: 4, title: 'Another title' },
-          ],
-          onCreate: (id, update) => ({ ...update, price: 0 }),
+          newState: { title: 'Another title 2' },
+          onCreate: (id, newState) => ({ id, ...newState, price: 0 }),
         },
+        entityIds: [2, 3],
+      })
+    );
+    expect(store._value().entities[2].title).toBe('Another title 2');
+    expect(store._value().entities[3].title).toBe('Another title 2');
+    expect(store._value().ids.length).toBe(5);
+
+    runStoreAction<TestBook>(
+      'books',
+      StoreActions.UpsertManyEntities({
+        data: [
+          { id: 2, title: 'New title', price: 0 },
+          { id: 4, title: 'Another title', price: 0 },
+        ],
       })
     );
     expect(store._value().entities[2].title).toBe('New title');

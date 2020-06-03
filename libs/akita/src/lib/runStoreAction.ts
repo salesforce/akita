@@ -13,64 +13,123 @@ export enum StoreActionType {
   UpdateEntities,
   RemoveEntities,
   UpsertEntities,
+  UpsertManyEntities,
 }
 
-export namespace StoreActions {
-  export interface ActionConfig<TActionType extends StoreActionType, TPayload> {
-    type: TActionType;
-    payload: TPayload;
-  }
+export interface StoreActionConfig<TActionType extends StoreActionType, TPayload> {
+  type: TActionType;
+  payload: TPayload;
+}
 
-  function buildActionConfig<TActionType extends StoreActionType, TPayload>(type: TActionType, payload: TPayload): ActionConfig<TActionType, TPayload> {
+export class StoreActions {
+  private constructor() {}
+
+  static buildActionConfig<TActionType extends StoreActionType, TPayload>(type: TActionType, payload: TPayload): StoreActionConfig<TActionType, TPayload> {
     return {
       type,
       payload,
     };
   }
 
+  static SetEntities<Entity>(payload: StoreActions.SetEntitiesPayload<Entity>) {
+    return this.buildActionConfig(StoreActionType.SetEntities, payload);
+  }
+
+  static AddEntities<Entity>(payload: StoreActions.AddEntitiesPayload<Entity>) {
+    return this.buildActionConfig(StoreActionType.AddEntities, payload);
+  }
+
+  static UpdateEntities<Entity>(payload: StoreActions.UpdateEntitiesPayload<Entity>) {
+    return this.buildActionConfig(StoreActionType.UpdateEntities, payload);
+  }
+
+  static RemoveEntities<Entity>(payload: StoreActions.RemoveEntitiesPayload<Entity>) {
+    return this.buildActionConfig(StoreActionType.RemoveEntities, payload);
+  }
+
+  static UpsertEntities<Payload extends StoreActions.UpsertEntitiesPayload<Entity, NewEntity>, Entity, NewEntity extends Partial<Entity>>(payload: Payload);
+  /**
+   * @deprecated
+   */
+  static UpsertEntities<Payload extends StoreActions.UpsertEntitiesPayloadUnsafe<Entity, NewEntity>, Entity, NewEntity extends Partial<Entity> & { newState?: never; onCreate?: never }>(
+    payload: Payload
+  );
+  static UpsertEntities<Payload extends StoreActions.UpsertEntitiesPayloadUnsafe<Entity, NewEntity> | StoreActions.UpsertEntitiesPayload<Entity, NewEntity>, Entity, NewEntity extends Partial<Entity>>(
+    payload: Payload
+  ) {
+    return this.buildActionConfig(StoreActionType.UpsertEntities, payload);
+  }
+
+  static UpsertManyEntities<Entity>(payload: StoreActions.UpsertManyEntitiesPayload<Entity>) {
+    return this.buildActionConfig(StoreActionType.UpsertManyEntities, payload);
+  }
+
+  static Update<Entity>(payload: StoreActions.UpdatePayload<Entity>) {
+    return this.buildActionConfig(StoreActionType.Update, payload);
+  }
+}
+
+export declare namespace StoreActions {
   export interface SetEntitiesPayload<Entity> {
     data: SetEntitiesData<Entity>;
   }
-
-  export const SetEntities = <Entity>(payload: SetEntitiesPayload<Entity>) => buildActionConfig(StoreActionType.SetEntities, payload);
 
   export interface AddEntitiesPayload<Entity> {
     data: Entity[] | Entity;
     params?: AddEntitiesOptions;
   }
 
-  export const AddEntities = <Entity>(payload: AddEntitiesPayload<Entity>) => buildActionConfig(StoreActionType.AddEntities, payload);
-
   export interface UpdateEntitiesPayload<Entity> {
     data: Partial<Entity> | Partial<Entity>[];
     entityIds: IDS;
   }
 
-  export const UpdateEntities = <Entity>(payload: UpdateEntitiesPayload<Entity>) => buildActionConfig(StoreActionType.UpdateEntities, payload);
-
   export interface RemoveEntitiesPayload<Entity> {
     entityIds: IDS;
   }
 
-  export const RemoveEntities = <Entity>(payload: RemoveEntitiesPayload<Entity>) => buildActionConfig(StoreActionType.RemoveEntities, payload);
-
   export interface UpsertEntitiesPayload<Entity, NewEntity extends Partial<Entity>> {
     data: {
-      newState: NewEntity | NewEntity[];
+      newState: NewEntity;
       onCreate: CreateStateCallback<Entity, NewEntity, ID>;
     };
-    entityIds?: IDS;
+    entityIds: IDS;
   }
 
-  export const UpsertEntities = <Entity, NewEntity extends Partial<Entity>>(payload: UpsertEntitiesPayload<Entity, NewEntity>) => buildActionConfig(StoreActionType.UpsertEntities, payload);
+  export interface UpsertEntitiesPayloadUnsafe<Entity, NewEntity extends Partial<Entity> & { newState?: never; onCreate?: never }> {
+    data: NewEntity;
+    entityIds: IDS;
+  }
+
+  export interface UpsertManyEntitiesPayload<Entity> {
+    data: Entity[];
+  }
+
+  // /**
+  //  * @deprecated
+  //  */
+  // export interface UpsertEntitiesPayloadDeprecated<Entity, NewEntity extends Partial<Entity>> /*extends Discriminant<'UpsertEntitiesPayloadDeprecated'>*/ {
+  //   data: NewEntity;
+  //   entityIds: IDS;
+  // }
+  //
+  // export interface UpsertManyEntitiesPayload<Entity, NewEntity extends Partial<Entity>> /*extends Discriminant<'UpsertManyEntitiesPayload'>*/ {
+  //   data: Entity | Entity[];
+  // }
 
   export interface UpdatePayload<Entity> {
     data: Partial<Entity>;
   }
 
-  export const Update = <Entity>(payload: UpdatePayload<Entity>) => buildActionConfig(StoreActionType.Update, payload);
-
-  export type Any = typeof SetEntities | typeof AddEntities | typeof UpdateEntities | typeof RemoveEntities | typeof UpsertEntities | typeof Update;
+  export type AnyStoreActionConfig<Entity, NewEntity extends Partial<Entity> = Partial<Entity>> =
+    | StoreActionConfig<StoreActionType.SetEntities, SetEntitiesPayload<Entity>>
+    | StoreActionConfig<StoreActionType.AddEntities, AddEntitiesPayload<Entity>>
+    | StoreActionConfig<StoreActionType.UpdateEntities, UpdateEntitiesPayload<Entity>>
+    | StoreActionConfig<StoreActionType.RemoveEntities, RemoveEntitiesPayload<Entity>>
+    | StoreActionConfig<StoreActionType.UpsertEntities, UpsertEntitiesPayload<Entity, NewEntity>>
+    | StoreActionConfig<StoreActionType.UpsertEntities, UpsertEntitiesPayloadUnsafe<Entity, NewEntity>>
+    | StoreActionConfig<StoreActionType.UpsertManyEntities, UpsertManyEntitiesPayload<Entity>>
+    | StoreActionConfig<StoreActionType.Update, UpdatePayload<Entity>>;
 }
 
 /**
@@ -98,19 +157,19 @@ export namespace StoreActions {
  * runStoreAction('books', StoreActions.UpsertEntities({
  *    data: {
  *      newState: { title: 'New Title' },
- *      onCreate: (id, update) => ({ ...update, price: 0 })
+ *      onCreate: (id, newState) => ({ id, ...newState, price: 0 })
  *    },
  *    entityIds: [1, 2]
  * }));
  *
- * runStoreAction('books', StoreActions.UpsertEntities({
+ * runStoreAction('books', StoreActions.UpsertManyEntities({
  *    data: [{ id: 2, title: 'New Title' }, { id: 3, title: 'Another title'}],
  * }));
  *
  * @param storeName
  * @param action
  */
-export function runStoreAction<EntityOrState>(storeName: string, action: ReturnType<StoreActions.Any>): void {
+export function runStoreAction<EntityOrState>(storeName: string, action: StoreActions.AnyStoreActionConfig<EntityOrState>): void {
   const store = __stores__[storeName];
 
   if (isNil(store)) {
@@ -143,13 +202,17 @@ export function runStoreAction<EntityOrState>(storeName: string, action: ReturnT
 
     case StoreActionType.UpsertEntities: {
       const { payload } = action;
-      if (payload.entityIds) {
+      if ('newState' in payload.data || 'onCreate' in payload.data) {
         (store as EntityStore).upsert(payload.entityIds, payload.data.newState, payload.data.onCreate);
-      } else if (Array.isArray(payload.data.newState)) {
-        (store as EntityStore).upsertMany(payload.data.newState);
       } else {
-        (store as EntityStore).upsertMany([payload.data]);
+        (store as EntityStore).upsert(payload.entityIds, payload.data);
       }
+      return;
+    }
+
+    case StoreActionType.UpsertManyEntities: {
+      const { payload } = action;
+      (store as EntityStore).upsertMany(payload.data);
       return;
     }
 

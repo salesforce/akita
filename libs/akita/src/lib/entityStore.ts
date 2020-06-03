@@ -210,11 +210,23 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
    * store.upsert([2, 3], entity => ({ isOpen: !(entity?.isOpen ?? true) }), (id, newState) => ({ id, ...newState, enabled: true }))
    *
    */
+  upsert<NewEntityType extends Partial<EntityType>>(
+    ids: OrArray<IDType>,
+    newState: NewEntityType | ((oldState?: EntityType) => NewEntityType),
+    onCreateOr: CreateStateCallback<EntityType, NewEntityType, IDType>,
+    options?: { baseClass?: Constructor }
+  );
+
+  /**
+   * @deprecated Produce not type safe entity entries if entity needs to be created. Use upsert with a oncCreate() callback
+   */
+  upsert(ids: OrArray<IDType>, newState: Partial<EntityType> | EntityType | UpdateStateCallback<EntityType> | EntityType[], options?: { baseClass?: Constructor });
+
   @transaction()
   upsert<NewEntityType extends Partial<EntityType>>(
     ids: OrArray<IDType>,
     newState: NewEntityType | ((oldState?: EntityType) => NewEntityType),
-    onCreate: CreateStateCallback<EntityType, NewEntityType, IDType>,
+    onCreate?: CreateStateCallback<EntityType, NewEntityType, IDType> | { baseClass?: Constructor },
     options: { baseClass?: Constructor } = {}
   ) {
     const toArray = coerceArray(ids);
@@ -222,7 +234,8 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     const isClassBased = isFunction(options.baseClass);
     const updateIds = toArray.filter(predicate(true));
     const newEntities = toArray.filter(predicate(false)).map((id) => {
-      const entity = onCreate(id, isFunction(newState) ? newState(this.entities[id as any]) : newState);
+      const newStateObj = isFunction(newState) ? newState(this.entities[id as any]) : newState;
+      const entity = typeof onCreate === 'function' ? onCreate(id, newStateObj) : ((newStateObj as unknown) as EntityType);
       const withId = { ...(entity as EntityType), [this.idKey]: id };
       if (isClassBased) {
         return new options.baseClass(withId);

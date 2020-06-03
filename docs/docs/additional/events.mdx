@@ -34,7 +34,7 @@ runStoreAction('books', StoreActions.UpsertEntities({
   entityIds: [2, 3]
 }));
 
-runStoreAction('books', StoreActions.UpsertEntities({
+runStoreAction('books', StoreActions.UpsertManyEntities({
   data: [
    { id: 3, title: 'Updated title' },
    { id: 4, title: 'Original title' }
