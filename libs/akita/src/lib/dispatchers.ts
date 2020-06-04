@@ -1,5 +1,5 @@
 import { ReplaySubject, Subject } from 'rxjs';
-import { StoreSnapshotAction } from './store';
+import { StoreSnapshotAction } from './actions';
 
 // @internal
 export const $$deleteStore = new Subject<string>();
