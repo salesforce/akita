@@ -1,7 +1,15 @@
-export const currentAction = {
+import { IDS } from './types';
+
+export interface StoreSnapshotAction {
+  type: string | null;
+  entityIds: IDS[] | null;
+  skip: boolean;
+}
+
+export const currentAction: StoreSnapshotAction = {
   type: null,
   entityIds: null,
-  skip: false
+  skip: false,
 };
 
 let customActionActive = false;
@@ -28,9 +36,9 @@ export function setSkipAction(skip = true) {
 }
 
 export function action(action: string, entityIds?) {
-  return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
-    descriptor.value = function(...args) {
+    descriptor.value = function (...args) {
       logAction(action, entityIds);
       return originalMethod.apply(this, args);
     };

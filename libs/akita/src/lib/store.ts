@@ -1,6 +1,6 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
-import { resetCustomAction, setAction } from './actions';
+import { currentAction, resetCustomAction, setAction, StoreSnapshotAction } from './actions';
 import { getAkitaConfig, getGlobalProducerFn } from './config';
 import { deepFreeze } from './deepFreeze';
 import { dispatchAdded, dispatchDeleted, dispatchUpdate } from './dispatchers';
@@ -14,6 +14,11 @@ import { configKey, StoreConfigOptions, UpdatableStoreConfigOptions } from './st
 import { __stores__ } from './stores';
 import { commit, isTransactionInProcess } from './transaction';
 import { StoreCache, UpdateStateCallback } from './types';
+
+interface StoreSnapshot<S> {
+  state: S;
+  action?: StoreSnapshotAction;
+}
 
 /**
  *
@@ -41,13 +46,13 @@ import { StoreCache, UpdateStateCallback } from './types';
  * }
  */
 export class Store<S = any> {
-  private store: BehaviorSubject<Readonly<S>>;
+  private store: BehaviorSubject<Readonly<StoreSnapshot<S>>>;
   private storeValue: S;
   private inTransaction = false;
   private _initialState: S;
   protected cache: StoreCache = {
     active: new BehaviorSubject<boolean>(false),
-    ttl: null
+    ttl: null,
   };
 
   constructor(initialState: Partial<S>, protected options: Partial<StoreConfigOptions> = {}) {
@@ -65,7 +70,7 @@ export class Store<S = any> {
   setLoading(loading = false) {
     if (loading !== (this._value() as S & { loading: boolean }).loading) {
       isDev() && setAction('Set Loading');
-      this._setState(state => ({ ...state, loading } as S & { loading: boolean }));
+      this._setState((state) => ({ ...state, loading } as S & { loading: boolean }));
     }
   }
 
@@ -118,13 +123,16 @@ export class Store<S = any> {
   setError<T>(error: T) {
     if (error !== (this._value() as S & { error: any }).error) {
       isDev() && setAction('Set Error');
-      this._setState(state => ({ ...state, error } as S & { error: any }));
+      this._setState((state) => ({ ...state, error } as S & { error: any }));
     }
   }
 
   // @internal
   _select<R>(project: (store: S) => R): Observable<R> {
-    return this.store.asObservable().pipe(map(project), distinctUntilChanged());
+    return this.store.asObservable().pipe(
+      map((snapshot) => project(snapshot.state)),
+      distinctUntilChanged()
+    );
   }
 
   // @internal
@@ -176,7 +184,12 @@ export class Store<S = any> {
     }
 
     if (!this.store) {
-      this.store = new BehaviorSubject(this.storeValue);
+      this.store = new BehaviorSubject({ state: this.storeValue });
+      this.store.subscribe(({ action }) => {
+        if (action) {
+          dispatchUpdate(this.storeName, action);
+        }
+      });
       return;
     }
 
@@ -270,6 +283,7 @@ export class Store<S = any> {
       dispatchDeleted(this.storeName);
       this.setHasCache(false);
       this.cache.active.complete();
+      this.store.complete();
     }
   }
 
@@ -284,11 +298,14 @@ export class Store<S = any> {
   }
 
   private dispatch(state: S, _dispatchAction = true) {
-    this.store.next(state);
+    let action: StoreSnapshotAction | undefined = undefined;
+
     if (_dispatchAction) {
-      dispatchUpdate(this.storeName);
+      action = currentAction;
       resetCustomAction();
     }
+
+    this.store.next({ state, action });
   }
 
   private watchTransaction() {
