@@ -2,7 +2,20 @@ import { getEntity } from './getEntity';
 import { isEmpty } from './isEmpty';
 import { SetEntities, setEntities } from './setEntities';
 import { Store } from './store';
-import { Constructor, EntityState, EntityUICreateFn, IDS, OrArray, StateWithActive, UpdateEntityPredicate, UpdateStateCallback, getEntityType, getIDType, CreateStateCallback } from './types';
+import {
+  Constructor,
+  EntityState,
+  EntityUICreateFn,
+  IDS,
+  OrArray,
+  StateWithActive,
+  UpdateEntityPredicate,
+  UpdateStateCallback,
+  getEntityType,
+  getIDType,
+  CreateStateCallback,
+  UpsertStateCallback,
+} from './types';
 import { getActiveEntities, SetActiveOptions } from './getActiveEntities';
 import { addEntities, AddEntitiesOptions } from './addEntities';
 import { coerceArray } from './coerceArray';
@@ -210,35 +223,22 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
    * store.upsert([2, 3], entity => ({ isOpen: !(entity?.isOpen ?? true) }), (id, newState) => ({ id, ...newState, enabled: true }))
    *
    */
-  upsert<NewEntityType extends Partial<EntityType>>(
-    ids: OrArray<IDType>,
-    newState: NewEntityType | ((oldState?: EntityType) => NewEntityType),
-    onCreate: CreateStateCallback<EntityType, NewEntityType, IDType>,
-    options?: { baseClass?: Constructor }
-  );
-
-  /**
-   * @deprecated Produce not type safe entity entries if entity needs to be created. Use upsert with a oncCreate() callback
-   */
-  upsert(ids: OrArray<IDType>, newState: Partial<EntityType> | EntityType | UpdateStateCallback<EntityType> | EntityType[], options?: { baseClass?: Constructor });
-
   @transaction()
   upsert<NewEntityType extends Partial<EntityType>>(
     ids: OrArray<IDType>,
-    newState: NewEntityType | ((oldState?: EntityType) => NewEntityType),
-    onCreate?: CreateStateCallback<EntityType, NewEntityType, IDType> | { baseClass?: Constructor },
+    newState: UpsertStateCallback<EntityType, NewEntityType> | NewEntityType,
+    onCreate: CreateStateCallback<EntityType, NewEntityType, IDType>,
     options: { baseClass?: Constructor } = {}
   ) {
     const toArray = coerceArray(ids);
     const predicate = (isUpdate) => (id) => hasEntity(this.entities, id) === isUpdate;
-    const isInCompMode = onCreate === undefined || 'baseClass' in onCreate; // is in compatibility mode if onCreate is undefined or not a function
-    const baseClass = onCreate !== undefined && 'baseClass' in onCreate ? onCreate.baseClass : options.baseClass;
+    const baseClass = options.baseClass;
     const isClassBased = isFunction(baseClass);
     const updateIds = toArray.filter(predicate(true));
     const newEntities = toArray.filter(predicate(false)).map((id) => {
       const oldStateObj = this.entities[id as any];
-      const newStateObj = isFunction(newState) ? newState(isInCompMode ? (oldStateObj === undefined ? {} : oldStateObj) : oldStateObj) : newState;
-      const entity = typeof onCreate === 'function' ? onCreate(id, newStateObj) : ((newStateObj as unknown) as EntityType);
+      const newStateObj = typeof newState === 'function' ? newState(oldStateObj) : newState;
+      const entity = onCreate(id, newStateObj ? newStateObj : undefined);
       const withId = { ...(entity as EntityType), [this.idKey]: id };
       if (isClassBased) {
         return new baseClass(withId);
@@ -247,7 +247,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     });
 
     // it can be any of the three types
-    this.update(updateIds as any, newState as any);
+    this.update(updateIds, newState as UpdateStateCallback<EntityType, NewEntityType>);
     this.add(newEntities);
     isDev() && logAction('Upsert Entity');
   }

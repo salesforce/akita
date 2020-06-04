@@ -1,211 +1,154 @@
-import { __stores__ } from './stores';
-import { CreateStateCallback, ID, IDS } from './types';
-import { AddEntitiesOptions } from './addEntities';
 import { EntityStore } from './entityStore';
-import { SetEntities as SetEntitiesData } from './setEntities';
-import { isNil } from './isNil';
 import { AkitaError } from './errors';
+import { isNil } from './isNil';
+import { Store } from './store';
+import { configKey } from './storeConfig';
+import { __stores__ } from './stores';
+import { Constructor } from './types';
 
-export enum StoreActionType {
-  Update,
-  AddEntities,
-  SetEntities,
-  UpdateEntities,
-  RemoveEntities,
-  UpsertEntities,
-  UpsertManyEntities,
+export enum StoreAction {
+  Update = 'UPDATE',
 }
 
-export interface StoreActionConfig<TActionType extends StoreActionType, TPayload> {
-  type: TActionType;
-  payload: TPayload;
+const StoreActionMapping = {
+  [StoreAction.Update]: 'update',
+};
+
+export enum EntityStoreAction {
+  Update = 'UPDATE',
+  AddEntities = 'ADD_ENTITIES',
+  SetEntities = 'SET_ENTITIES',
+  UpdateEntities = 'UPDATE_ENTITIES',
+  RemoveEntities = 'REMOVE_ENTITIES',
+  UpsertEntities = 'UPSERT_ENTITIES',
+  UpsertManyEntities = 'UPSERT_MANY_ENTITIES',
 }
 
-export class StoreActions {
-  static buildActionConfig<TActionType extends StoreActionType, TPayload>(type: TActionType, payload: TPayload): StoreActionConfig<TActionType, TPayload> {
-    return {
-      type,
-      payload,
-    };
+const EntityStoreActionMapping = {
+  [EntityStoreAction.Update]: 'update',
+  [EntityStoreAction.AddEntities]: 'add',
+  [EntityStoreAction.SetEntities]: 'set',
+  [EntityStoreAction.UpdateEntities]: 'update',
+  [EntityStoreAction.RemoveEntities]: 'remove',
+  [EntityStoreAction.UpsertEntities]: 'upsert',
+  [EntityStoreAction.UpsertManyEntities]: 'upsertMany',
+};
+
+/**
+ * Get a {@link Store} from the global store registry.
+ * @param storeClass The {@link Store} class to return the instance.
+ */
+export function getStore<TStore extends Store<S>, S = TStore extends Store<infer T> ? T : never>(storeClass: Constructor<TStore>): TStore {
+  const store = __stores__[storeClass[configKey]['storeName']] as TStore;
+
+  if (isNil(store)) {
+    throw new AkitaError(`${store} doesn't exist`);
   }
 
-  static SetEntities<Entity>(payload: StoreActions.SetEntitiesPayload<Entity>) {
-    return StoreActions.buildActionConfig(StoreActionType.SetEntities, payload);
-  }
-
-  static AddEntities<Entity>(payload: StoreActions.AddEntitiesPayload<Entity>) {
-    return StoreActions.buildActionConfig(StoreActionType.AddEntities, payload);
-  }
-
-  static UpdateEntities<Entity>(payload: StoreActions.UpdateEntitiesPayload<Entity>) {
-    return StoreActions.buildActionConfig(StoreActionType.UpdateEntities, payload);
-  }
-
-  static RemoveEntities<Entity>(payload: StoreActions.RemoveEntitiesPayload<Entity>) {
-    return StoreActions.buildActionConfig(StoreActionType.RemoveEntities, payload);
-  }
-
-  static UpsertEntities<Payload extends StoreActions.UpsertEntitiesPayload<Entity, NewEntity>, Entity, NewEntity extends Partial<Entity>>(payload: Payload);
-  /**
-   * @deprecated
-   */
-  static UpsertEntities<Payload extends StoreActions.UpsertEntitiesPayloadUnsafe<Entity, NewEntity>, Entity, NewEntity extends Partial<Entity> & { newState?: never; onCreate?: never }>(
-    payload: Payload
-  );
-  static UpsertEntities<Payload extends StoreActions.UpsertEntitiesPayloadUnsafe<Entity, NewEntity> | StoreActions.UpsertEntitiesPayload<Entity, NewEntity>, Entity, NewEntity extends Partial<Entity>>(
-    payload: Payload
-  ) {
-    return StoreActions.buildActionConfig(StoreActionType.UpsertEntities, payload);
-  }
-
-  static UpsertManyEntities<Entity>(payload: StoreActions.UpsertManyEntitiesPayload<Entity>) {
-    return StoreActions.buildActionConfig(StoreActionType.UpsertManyEntities, payload);
-  }
-
-  static Update<Entity>(payload: StoreActions.UpdatePayload<Entity>) {
-    return StoreActions.buildActionConfig(StoreActionType.Update, payload);
-  }
-}
-
-export declare namespace StoreActions {
-  export interface SetEntitiesPayload<Entity> {
-    data: SetEntitiesData<Entity>;
-  }
-
-  export interface AddEntitiesPayload<Entity> {
-    data: Entity[] | Entity;
-    params?: AddEntitiesOptions;
-  }
-
-  export interface UpdateEntitiesPayload<Entity> {
-    data: Partial<Entity> | Partial<Entity>[];
-    entityIds: IDS;
-  }
-
-  export interface RemoveEntitiesPayload<Entity> {
-    entityIds: IDS;
-  }
-
-  export interface UpsertEntitiesPayload<Entity, NewEntity extends Partial<Entity>> {
-    data: {
-      newState: NewEntity;
-      onCreate: CreateStateCallback<Entity, NewEntity, ID>;
-    };
-    entityIds: IDS;
-  }
-
-  export interface UpsertEntitiesPayloadUnsafe<Entity, NewEntity extends Partial<Entity> & { newState?: never; onCreate?: never }> {
-    data: NewEntity;
-    entityIds: IDS;
-  }
-
-  export interface UpsertManyEntitiesPayload<Entity> {
-    data: Entity[];
-  }
-
-  export interface UpdatePayload<Entity> {
-    data: Partial<Entity>;
-  }
-
-  export type AnyStoreActionConfig<Entity, NewEntity extends Partial<Entity> = Partial<Entity>> =
-    | StoreActionConfig<StoreActionType.SetEntities, SetEntitiesPayload<Entity>>
-    | StoreActionConfig<StoreActionType.AddEntities, AddEntitiesPayload<Entity>>
-    | StoreActionConfig<StoreActionType.UpdateEntities, UpdateEntitiesPayload<Entity>>
-    | StoreActionConfig<StoreActionType.RemoveEntities, RemoveEntitiesPayload<Entity>>
-    | StoreActionConfig<StoreActionType.UpsertEntities, UpsertEntitiesPayload<Entity, NewEntity>>
-    | StoreActionConfig<StoreActionType.UpsertEntities, UpsertEntitiesPayloadUnsafe<Entity, NewEntity>>
-    | StoreActionConfig<StoreActionType.UpsertManyEntities, UpsertManyEntitiesPayload<Entity>>
-    | StoreActionConfig<StoreActionType.Update, UpdatePayload<Entity>>;
+  return store;
 }
 
 /**
- * @example
- *
- * runStoreAction('books', StoreActions.Update({
- *    data: { filter: 'New filter' }
- * }));
- *
- * @example
- *
- * runStoreAction('books', StoreActions.UpdateEntities({
- *    data: { title: 'New title' },
- *    entityIds: 2
- * }));
- *
- * @example
- *
- * runStoreAction('books', StoreActions.SetEntities({
- *    data: [{ id: 1 }, { id: 2 }]
- * }));
- *
- * @example
- *
- * runStoreAction('books', StoreActions.UpsertEntities({
- *    data: {
- *      newState: { title: 'New Title' },
- *      onCreate: (id, newState) => ({ id, ...newState, price: 0 })
- *    },
- *    entityIds: [1, 2]
- * }));
- *
- * runStoreAction('books', StoreActions.UpsertManyEntities({
- *    data: [{ id: 2, title: 'New Title' }, { id: 3, title: 'Another title'}],
- * }));
- *
- * @param storeName
- * @param action
+ * Get a {@link EntityStore} from the global store registry.
+ * @param storeClass The {@link EntityStore} class to return the instance.
  */
-export function runStoreAction<EntityOrState>(storeName: string, action: StoreActions.AnyStoreActionConfig<EntityOrState>): void {
-  const store = __stores__[storeName];
+export function getEntityStore<TEntityStore extends EntityStore<S>, S = TEntityStore extends EntityStore<infer T> ? T : never>(storeClass: Constructor<TEntityStore>): TEntityStore {
+  return getStore(storeClass as Constructor<Store<S>>) as TEntityStore;
+}
 
-  if (isNil(store)) {
-    throw new AkitaError(`${storeName} doesn't exist`);
-  }
+/**
+ *  @example
+ *
+ *  runStoreAction(BooksStore, StoreAction.Update, update => update({ filter: 'COMPLETE' }));
+ *
+ */
+export function runStoreAction<TStore extends Store<S>, S = TStore extends Store<infer T> ? T : never>(
+  storeClass: Constructor<TStore>,
+  action: StoreAction.Update,
+  operation: (operator: TStore['update']) => void
+);
+export function runStoreAction<TStore extends Store<S>, S = TStore extends Store<infer T> ? T : never>(
+  storeClass: Constructor<TStore>,
+  action: StoreAction,
+  operation: (operator: TStore[keyof TStore] & Function) => void
+) {
+  const store = getStore<TStore, S>(storeClass);
+  operation(store[StoreActionMapping[action]].bind(store));
+}
 
-  switch (action.type) {
-    case StoreActionType.SetEntities: {
-      const { payload } = action;
-      (store as EntityStore).set(payload.data);
-      return;
-    }
-    case StoreActionType.AddEntities: {
-      const { payload } = action;
-      (store as EntityStore).add(payload.data, payload.params);
-      return;
-    }
-
-    case StoreActionType.UpdateEntities: {
-      const { payload } = action;
-      (store as EntityStore).update(payload.entityIds, payload.data);
-      return;
-    }
-
-    case StoreActionType.RemoveEntities: {
-      const { payload } = action;
-      (store as EntityStore).remove(payload.entityIds);
-      return;
-    }
-
-    case StoreActionType.UpsertEntities: {
-      const { payload } = action;
-      if ('newState' in payload.data || 'onCreate' in payload.data) {
-        (store as EntityStore).upsert(payload.entityIds, payload.data.newState, payload.data.onCreate);
-      } else {
-        (store as EntityStore).upsert(payload.entityIds, payload.data);
-      }
-      return;
-    }
-
-    case StoreActionType.UpsertManyEntities: {
-      const { payload } = action;
-      (store as EntityStore).upsertMany(payload.data);
-      return;
-    }
-
-    case StoreActionType.Update: {
-      const { payload } = action;
-      (store as EntityStore).update(payload.data);
-      return;
-    }
-  }
+/**
+ *  @example
+ *
+ *  runEntityStoreAction(BooksStore, EntityStoreAction.SetEntities, set => set([{ id: 1 }, { id: 2 }]));
+ *
+ */
+export function runEntityStoreAction<TEntityStore extends EntityStore<S>, S = TEntityStore extends EntityStore<infer T> ? T : never>(
+  storeClass: Constructor<TEntityStore>,
+  action: EntityStoreAction.SetEntities,
+  operation: (operator: TEntityStore['set']) => void
+);
+/**
+ *  @example
+ *
+ *  runEntityStoreAction(BooksStore, EntityStoreAction.AddEntities, add => add({ id: 1 }));
+ *
+ */
+export function runEntityStoreAction<TEntityStore extends EntityStore<S>, S = TEntityStore extends EntityStore<infer T> ? T : never>(
+  storeClass: Constructor<TEntityStore>,
+  action: EntityStoreAction.AddEntities,
+  operation: (operator: TEntityStore['add']) => void
+);
+/**
+ *  @example
+ *
+ *  runEntityStoreAction(BooksStore, EntityStoreAction.UpdateEntities, update => update(2, { title: 'New title' }));
+ *
+ */
+export function runEntityStoreAction<TEntityStore extends EntityStore<S>, S = TEntityStore extends EntityStore<infer T> ? T : never>(
+  storeClass: Constructor<TEntityStore>,
+  action: EntityStoreAction.UpdateEntities,
+  operation: (operator: TEntityStore['update']) => void
+);
+/**
+ *  @example
+ *
+ *  runEntityStoreAction(BooksStore, EntityStoreAction.RemoveEntities, remove => remove(2));
+ *
+ */
+export function runEntityStoreAction<TEntityStore extends EntityStore<S>, S = TEntityStore extends EntityStore<infer T> ? T : never>(
+  storeClass: Constructor<TEntityStore>,
+  action: EntityStoreAction.RemoveEntities,
+  operation: (operator: TEntityStore['remove']) => void
+);
+/**
+ *  @example
+ *
+ *  runEntityStoreAction(BooksStore, EntityStoreAction.UpsertEntities, upsert => upsert([2, 3], { title: 'New Title' }, (id, newState) => ({ id, ...newState, price: 0 })));
+ *
+ */
+export function runEntityStoreAction<TEntityStore extends EntityStore<S>, S = TEntityStore extends EntityStore<infer T> ? T : never>(
+  storeClass: Constructor<TEntityStore>,
+  action: EntityStoreAction.UpsertEntities,
+  operation: (operator: TEntityStore['upsert']) => void
+);
+/**
+ *  @example
+ *
+ *  runEntityStoreAction(BooksStore, EntityStoreAction.UpsertManyEntities, upsertMany => upsertMany([
+ *    { id: 2, title: 'New title', price: 0 },
+ *    { id: 4, title: 'Another title', price: 0 },
+ *  ));
+ */
+export function runEntityStoreAction<TEntityStore extends EntityStore<S>, S = TEntityStore extends EntityStore<infer T> ? T : never>(
+  storeClass: Constructor<TEntityStore>,
+  action: EntityStoreAction.UpsertManyEntities,
+  operation: (operator: TEntityStore['upsertMany']) => void
+);
+export function runEntityStoreAction<TEntityStore extends EntityStore<S>, S = TEntityStore extends EntityStore<infer T> ? T : never>(
+  storeClass: Constructor<TEntityStore>,
+  action: EntityStoreAction,
+  operation: (operator: TEntityStore[keyof TEntityStore] & Function) => void
+) {
+  const store = getEntityStore<TEntityStore, S>(storeClass);
+  operation(store[EntityStoreActionMapping[action]].bind(store));
 }
