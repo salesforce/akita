@@ -185,11 +185,15 @@ export class Store<S = any> {
 
     if (!this.store) {
       this.store = new BehaviorSubject({ state: this.storeValue });
-      this.store.subscribe(({ action }) => {
-        if (action) {
-          dispatchUpdate(this.storeName, action);
-        }
-      });
+
+      if (isDev()) {
+        this.store.subscribe(({ action }) => {
+          if (action) {
+            dispatchUpdate(this.storeName, action);
+          }
+        });
+      }
+
       return;
     }
 
