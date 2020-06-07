@@ -267,7 +267,7 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    */
   selectLast<R>(): Observable<EntityType | undefined>;
   selectLast<R>(project: (entity?: EntityType) => R): Observable<R>;
-  selectLast<R>(project?: (entity?: EntityType) => R): Observable<R | EntityType> {
+  selectLast<R>(project?: (entity?: EntityType) => R): Observable<R | EntityType | undefined> {
     return this.selectAt((ids) => ids[ids.length - 1], project);
   }
 
