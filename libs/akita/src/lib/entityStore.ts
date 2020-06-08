@@ -238,7 +238,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     const newEntities = toArray.filter(predicate(false)).map((id) => {
       const oldStateObj = this.entities[id as any];
       const newStateObj = typeof newState === 'function' ? newState(oldStateObj) : newState;
-      const entity = onCreate(id, newStateObj);
+      const entity = oldStateObj ? newStateObj : onCreate(id, newStateObj);
       const withId = { ...(entity as EntityType), [this.idKey]: id };
       if (isClassBased) {
         return new baseClass(withId);
