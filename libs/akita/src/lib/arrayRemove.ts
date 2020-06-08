@@ -15,7 +15,7 @@ import { not } from './not';
  *   names: arrayRemove(state.names, ['one', 'second'])
  * }))
  */
-export function arrayRemove<T extends any[], Entity = any>(arr: T, identifier: IDS | ItemPredicate<Entity>, idKey = DEFAULT_ID_KEY) {
+export function arrayRemove<T extends any[], Entity = any>(arr: T, identifier: IDS | ItemPredicate<Entity>, idKey = DEFAULT_ID_KEY): T {
   let identifiers;
   let filterFn;
 
@@ -29,6 +29,6 @@ export function arrayRemove<T extends any[], Entity = any>(arr: T, identifier: I
   }
 
   if (Array.isArray(arr)) {
-    return arr.filter(filterFn);
+    return arr.filter(filterFn) as any;
   }
 }

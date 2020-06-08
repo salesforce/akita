@@ -14,7 +14,7 @@ import { isObject } from './isObject';
  *   comments: arrayUpdate(entity.comments, 1, { name: 'newComment' })
  * }))
  */
-export function arrayUpdate<T extends any[], Entity = any>(arr: T, predicateOrIds: IDS | ItemPredicate<Entity>, obj: Partial<Entity>, idKey = DEFAULT_ID_KEY) {
+export function arrayUpdate<T extends any[], Entity = any>(arr: T, predicateOrIds: IDS | ItemPredicate<Entity>, obj: Partial<Entity>, idKey = DEFAULT_ID_KEY): T {
   let condition: ItemPredicate<Entity>;
 
   if (isFunction(predicateOrIds)) {
