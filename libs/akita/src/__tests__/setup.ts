@@ -22,11 +22,11 @@ export interface State extends EntityState<Todo>, ActiveState {
 
 export const initialState: State = {
   active: null,
-  metadata: { name: 'metadata' }
+  metadata: { name: 'metadata' },
 };
 
 @StoreConfig({
-  name: 'todos'
+  name: 'todos',
 })
 export class TodosStore extends EntityStore<State, Todo> {
   constructor(options?) {
@@ -44,11 +44,11 @@ export interface StateTwo extends EntityState<TodoCustomID> {}
 
 @StoreConfig({
   name: 'todos',
-  idKey: 'todoId'
+  idKey: 'todoId',
 })
 export class TodosStoreCustomID extends EntityStore<StateTwo, TodoCustomID> {
   constructor() {
-    super(initialState, { idKey: 'todoId' });
+    super({}, { idKey: 'todoId' });
   }
 }
 
@@ -63,12 +63,12 @@ export function createTodos(len) {
 
 export function ct() {
   let count = 0;
-  return function() {
+  return function () {
     const id = count++;
     return {
       id,
       title: `Todo ${id}`,
-      complete: false
+      complete: false,
     } as Todo;
   };
 }
@@ -77,7 +77,7 @@ export function cot() {
   return {
     id: 1,
     title: `Todo ${1}`,
-    complete: false
+    complete: false,
   } as Todo;
 }
 
@@ -104,7 +104,7 @@ export function createWidget(id) {
   return {
     id,
     title: `Widget ${id}`,
-    complete: false
+    complete: false,
   } as Widget;
 }
 
