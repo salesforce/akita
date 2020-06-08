@@ -1,9 +1,15 @@
 # Breaking Changes
 
+## 5.0.0
+
+- Updated `QueryEntity` typing of `select` / `get` methods to respect `undefined` entity values.
+
 ## 4.0.0
+
 Most of the breaking changes in this version are related to types changes.
 
 - EntityStore and QueryEntity now don't require the second generic entity type:
+
 ```ts
 // Before
 export interface ProductsState extends EntityState<Product> {}
@@ -33,10 +39,12 @@ export class ProductsQuery extends QueryEntity<ProductsState> {
   }
 }
 ```
+
 For now, we keep a deprecated generic, so it will not break any existing code, but please, don't use it anymore.
 
 - Removed the unused error state type - `EntityState<Product, StateErrorType>`.
 - Custom ID type location is changed:
+
 ```ts
 // Before:
 export interface ProductsState extends EntityState<Product> {}
@@ -54,30 +62,34 @@ export class ProductsStore extends EntityStore<ProductsState> {
   constructor() { super();
 }
 ```
+
 - Removed deprecated `selectUpdatedEntityIds` method in favor of `selectEntityAction`.
 - Removed deprecated `waitForTransaction` method in favor of `auditTime`.
 - The default entity id type changed from `ID` which was `number | string` to `any`. We now recommend to strict your type in the second `EntityState` generic parameter.
 
 ### Plugins
+
 Entity plugins now require one generic, which is the store's type instead of the entity type.
+
 - `new EntityDirtyCheckPlugin<WidgetsState>`
 - `new EntityStateHistoryPlugin<WidgetsState>`
 - `new PaginatorPlugin<WidgetsState>`
 
 ### Things you might have missed
+
 - Firebase [integration](https://netbasal.gitbook.io/akita/angular-plugins/firebase-integration).
 - In dev mode, you can now use `window.$$stores` and `window.$$queries` to obtain a reference to the stores or the queries.
 - persistState plugin performance optimization [option](https://netbasal.gitbook.io/akita/enhancers/persist-state#performance-optimization).
 - persistState plugin custom hooks [support](https://netbasal.gitbook.io/akita/enhancers/persist-state#custom-hooks).
-- Add a `replace` method to EntityStore. 
+- Add a `replace` method to EntityStore.
 - PaginatorPlugin add a `refreshCurrentPage` method.
 - HistoryPlugin add a custom clear function.
 - selectEntity now support predicate function - `query.selectEntity(e => e.title === 'title')`.
 - Add Entity Actions [API](https://netbasal.gitbook.io/akita/entity-store/entity-query/api#entity-actions).
 - `StoreConfig` can take a custom deep freeze function.
 
-
 ## 3.0.0
+
 - `EntityStore.set()` - remove `options` param, i.e `entityClass`..
 - Remove `EntityStore.createOrReplace()` in favor of `EntityStore.upsert()`.
 - Remove `EntityStore.updateRoot()` in favor of `EntityStore.update()`.
@@ -94,21 +106,22 @@ Entity plugins now require one generic, which is the store's type instead of the
 - Remove `EntityStore.isEmpty` in favor of `EntityStore.hasEntity()`.
 
 ## 2.0.0
+
 - Update typescript to v3.2.
 - Remove the `getInitialActiveState()` function.
 - Entity dirty check plugin: remove deprecated `isSomeDirty` and `someDirty`.
 
 #### Miscellaneous
+
 - Deprecate `getSnapshot()` in favor of `getValue()`.
 - Remove redundant `options` param from `selectMulti`,
 - When using the `active` functionality always add the initial `active` state. For single:
 
 ```ts
-export interface State extends EntityState<Widget>, ActiveState {
-}
+export interface State extends EntityState<Widget>, ActiveState {}
 
 const initialState = {
-  active: null
+  active: null,
 };
 
 @StoreConfig({ name: 'widgets' })
@@ -122,11 +135,10 @@ export class WidgetsStore extends EntityStore<WidgetsState, Widget> {
 And for multi:
 
 ```ts
-export interface State extends EntityState<Widget>, MultiActiveState {
-}
+export interface State extends EntityState<Widget>, MultiActiveState {}
 
 const initialState = {
-  active: []
+  active: [],
 };
 
 @StoreConfig({ name: 'widgets' })
@@ -138,6 +150,7 @@ export class WidgetsStore extends EntityStore<WidgetsState, Widget> {
 ```
 
 #### Features
+
 - Add support for multiple active entities 🎉
 - `filterNil` operator strongly typed
 - `selectFirst` and `selectLast` selectors
