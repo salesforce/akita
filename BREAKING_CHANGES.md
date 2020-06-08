@@ -3,6 +3,7 @@
 ## 5.0.0
 
 - Updated `QueryEntity` typing of `select` / `get` methods to respect `undefined` entity values.
+- Remove deprecated array utils functions.
 
 ## 4.0.0
 

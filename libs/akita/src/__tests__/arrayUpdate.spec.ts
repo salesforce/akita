@@ -34,16 +34,15 @@ describe('arrayUpdate', () => {
       title: 'title',
       comments: [
         { id: 1, text: 'comment' },
-        { id: 2, text: 'comment2' }
-      ]
+        { id: 2, text: 'comment2' },
+      ],
     };
 
     store.add(article);
 
-    store.update(
-      1,
-      arrayUpdate<Article, Comment>('comments', 2, { text: 'updated' })
-    );
+    store.update(1, (state) => ({
+      comments: arrayUpdate(state.comments, 2, { text: 'updated' }),
+    }));
     expect(store._value().entities[1].comments[1].text).toBe('updated');
     expect(store._value().entities[1].id).toBe(1);
     expect(store._value().entities[1].title).toBe('title');
@@ -57,22 +56,21 @@ describe('arrayUpdate', () => {
       comments: [
         { id: 1, text: 'comment' },
         { id: 2, text: 'comment2' },
-        { id: 3, text: 'comment3' }
-      ]
+        { id: 3, text: 'comment3' },
+      ],
     };
 
     store.add(article);
 
-    store.update(
-      1,
-      arrayUpdate<Article, Comment>('comments', [1, 3], { text: 'updated' })
-    );
+    store.update(1, (state) => ({
+      comments: arrayUpdate(state.comments, [1, 3], { text: 'updated' }),
+    }));
 
     expect(store._value().entities[1].comments[0].text).toBe('updated');
     expect(store._value().entities[1].comments[1].text).toBe('comment2');
     expect(store._value().entities[1].comments[2].text).toBe('updated');
-    store.update(1, entity => ({
-      comments: arrayUpdate(entity.comments, 1, { text: 'NEW' })
+    store.update(1, (entity) => ({
+      comments: arrayUpdate(entity.comments, 1, { text: 'NEW' }),
     }));
     expect(store._value().entities[1].comments[0].text).toBe('NEW'); // id = 1
     store.remove();
@@ -85,16 +83,15 @@ describe('arrayUpdate', () => {
       comments: [
         { id: 1, text: 'comment' },
         { id: 2, text: 'comment2' },
-        { id: 3, text: 'comment3' }
-      ]
+        { id: 3, text: 'comment3' },
+      ],
     };
 
     store.add(article);
 
-    store.update(
-      1,
-      arrayUpdate<Article, Comment>('comments', comment => comment.text === 'comment2', { text: 'updated' })
-    );
+    store.update(1, (state) => ({
+      comments: arrayUpdate(state.comments, (comment) => comment.text === 'comment2', { text: 'updated' }),
+    }));
 
     expect(store._value().entities[1].comments[0].text).toBe('comment');
     expect(store._value().entities[1].comments[1].text).toBe('updated');
@@ -106,12 +103,14 @@ describe('arrayUpdate', () => {
     const article: Article = {
       id: 1,
       title: '',
-      comments: [{ _id: 1, text: 'comment' } as any, { _id: 2, text: 'comment2' } as any]
+      comments: [{ _id: 1, text: 'comment' } as any, { _id: 2, text: 'comment2' } as any],
     };
 
     store.add(article);
 
-    store.update(1, arrayUpdate<Article, Comment>('comments', 2, { text: 'updated' }, '_id'));
+    store.update(1, (state) => ({
+      comments: arrayUpdate(state.comments, 2, { text: 'updated' }, '_id'),
+    }));
 
     expect(store._value().entities[1].comments[0].text).toBe('comment');
     expect(store._value().entities[1].comments[1].text).toBe('updated');
@@ -119,15 +118,17 @@ describe('arrayUpdate', () => {
   });
 
   it('should work with non-objects', () => {
-    const updateName = arrayUpdate<ArticlesState, string>('names', 'b', 'newName');
-    store.update(updateName);
+    store.update((state) => ({
+      names: arrayUpdate(state.names, 'b', 'newName'),
+    }));
     expect(store._value().names).toEqual(['a', 'newName', 'c']);
-    const updateNames = arrayUpdate<ArticlesState, string>('names', ['a', 'newName', 'c'], 'NEW');
-    store.update(updateNames);
+    store.update((state) => ({
+      names: arrayUpdate(state.names, ['a', 'newName', 'c'], 'NEW'),
+    }));
     expect(store._value().names).toEqual(['NEW', 'NEW', 'NEW']);
 
-    store.update(state => ({
-      names: arrayUpdate(state.names, 'NEW', 'NEWNEW')
+    store.update((state) => ({
+      names: arrayUpdate(state.names, 'NEW', 'NEWNEW'),
     }));
     expect(store._value().names).toEqual(['NEWNEW', 'NEWNEW', 'NEWNEW']);
   });
