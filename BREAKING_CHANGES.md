@@ -4,6 +4,7 @@
 
 - Updated `QueryEntity` typing of `select` / `get` methods to respect `undefined` entity values.
 - Remove deprecated array utils functions.
+- Remove deprecated `exclude` option from persist state. Use `include` with a callback option.
 
 ## 4.0.0
 
