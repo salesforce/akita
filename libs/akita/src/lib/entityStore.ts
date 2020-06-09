@@ -257,7 +257,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 
     const updateIds = toArray.filter(predicate(true));
     const newEntities = toArray.filter(predicate(false)).map((id) => {
-      const newStateObj = typeof newState === 'function' ? newState(undefined) : newState;
+      const newStateObj = typeof newState === 'function' ? newState({}) : newState;
       const entity = isFunction(onCreate) ? onCreate(id, newStateObj) : newStateObj;
       const withId = { ...entity, [this.idKey]: id };
       if (isClassBased) {
