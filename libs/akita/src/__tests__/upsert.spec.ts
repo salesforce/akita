@@ -28,8 +28,8 @@ describe('upsert', () => {
     store.remove();
   });
 
-  it('should add if not exist - one (undefined passed to update callback)', () => {
-    let testNewState: Article | undefined;
+  it('should add if not exist - one (empty object passed to update callback)', () => {
+    let testNewState: Article | {};
     store.upsert(
       1,
       (newState) => {
@@ -42,7 +42,7 @@ describe('upsert', () => {
     );
     expect(store._value().entities[1].title).toEqual('new title');
     expect(store._value().entities[1].author).toEqual('new author');
-    expect(testNewState).toBeUndefined(); //
+    expect(Object.keys(testNewState).length === 0 && Object.getPrototypeOf(testNewState).constructor === Object.prototype.constructor).toBeTruthy();
     expect(store._value().entities[1].id).toBe(1);
     store.remove();
   });
