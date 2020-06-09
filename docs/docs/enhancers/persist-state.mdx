@@ -55,10 +55,22 @@ storage strategy to use. This defaults to localStorage but you can pass sessionS
 ### `key`
 The key by which the state is saved.
 
-### `include` 
-by default the whole state is saved to storage, use this param to include only the stores you need. It can be a store name or a predicate callback.
+### `include`
+By default the whole state is saved to storage, use this param to include only the stores you need. It can be a store name or a predicate callback.
 
-### `deserialize` 
+### `select`
+By default the whole store is saved to storage, use this param to include only the data you need.
+
+```ts
+import { persistState, PersistStateSelectFn } from '@datorama/akita';
+
+const selectToken: PersistStateSelectFn<AuthState> = (store) => ({ token: store.token });
+selectToken.storeName = 'auth';
+
+persistState({ select: [selectToken] });
+```
+
+### `deserialize`
 Custom deserializer. Defaults to JSON.parse
 
 ### `serialize`
@@ -68,7 +80,7 @@ Custom serializer, defaults to JSON.stringify
 Custom operators that will run before storage update
 
 ### `enableInNonBrowser`
-Whether to enable persistState in a non-browser environment 
+Whether to enable persistState in a non-browser environment
 
 ### `persistOnDestroy`
 Whether to persist the `cache` value of dynamic store upon destroy
@@ -80,7 +92,7 @@ persistState({ include: ['auth.token'] });
 ```
 
 ## Custom Hooks
-You can use the `preStorageUpdate`, and `preStoreUpdate` hooks to get more control on the state. 
+You can use the `preStorageUpdate`, and `preStoreUpdate` hooks to get more control on the state.
 For example, here is how we can save only specific keys from the `auth` state:
 
 ```ts
@@ -142,7 +154,7 @@ export class AuthGuard {
 ```
 
 ## Performance Optimization
-By default, the plugin will update the storage upon each store's change. Some applications perform multiple updates in a second, and update the storage on each change can be costly. 
+By default, the plugin will update the storage upon each store's change. Some applications perform multiple updates in a second, and update the storage on each change can be costly.
 
 For such cases, it's recommended to use the `preStorageUpdateOperator` option and add a `debounce`. For example:
 
