@@ -84,9 +84,9 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
   );
 
   subs.push(
-    $$updateStore.subscribe((storeName) => {
+    $$updateStore.subscribe(({ storeName, action }) => {
       if (isAllowed(storeName) === false) return;
-      const { type, entityIds, skip } = currentAction;
+      const { type, entityIds, skip } = action;
 
       if (skip) {
         setSkipAction(false);

@@ -2,7 +2,6 @@ import { filter, skip } from 'rxjs/operators';
 import { from, isObservable, of, OperatorFunction, ReplaySubject, Subscription } from 'rxjs';
 import { HashMap, MaybeAsync } from './types';
 import { isFunction } from './isFunction';
-import { AkitaError } from './errors';
 import { __stores__ } from './stores';
 import { getValue } from './getValueByString';
 import { setAction } from './actions';
@@ -10,7 +9,7 @@ import { setValue } from './setValueByString';
 import { $$addStore, $$deleteStore } from './dispatchers';
 import { isNil } from './isNil';
 import { isObject } from './isObject';
-import { isNotBrowser, hasLocalStorage, hasSessionStorage } from './root';
+import { hasLocalStorage, hasSessionStorage, isNotBrowser } from './root';
 
 let skipStorageUpdate = false;
 
@@ -64,11 +63,6 @@ export interface PersistStateParams {
    * Pay attention that you can't use both include and exclude
    */
   include: (string | ((storeName: string) => boolean))[];
-  /**
-   *  By default the whole state is saved to storage, use this param to exclude stores that you don't need.
-   *  Pay attention that you can't use both include and exclude
-   */
-  exclude: string[];
 
   preStorageUpdate(storeName: string, state: any): any;
 
@@ -94,10 +88,6 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
     deserialize: JSON.parse,
     serialize: JSON.stringify,
     include: [],
-    /**
-     * @deprecated use include with a callback
-     */
-    exclude: [],
     persistOnDestroy: false,
     preStorageUpdate: function (storeName, state) {
       return state;
@@ -109,7 +99,7 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
     preStorageUpdateOperator: () => (source) => source,
   };
 
-  const { storage, enableInNonBrowser, deserialize, serialize, include, exclude, key, preStorageUpdate, persistOnDestroy, preStorageUpdateOperator, preStoreUpdate, skipStorageUpdate } = Object.assign(
+  const { storage, enableInNonBrowser, deserialize, serialize, include, key, preStorageUpdate, persistOnDestroy, preStorageUpdateOperator, preStoreUpdate, skipStorageUpdate } = Object.assign(
     {},
     defaults,
     params
@@ -118,12 +108,7 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
   if (isNotBrowser && !enableInNonBrowser) return;
 
   const hasInclude = include.length > 0;
-  const hasExclude = exclude.length > 0;
   let includeStores: { fns: Function[]; [key: string]: Function[] | string };
-
-  if (hasInclude && hasExclude) {
-    throw new AkitaError("You can't use both include and exclude");
-  }
 
   if (hasInclude) {
     includeStores = include.reduce(
@@ -206,7 +191,7 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
 
     subscriptions.push(
       $$addStore.subscribe((storeName) => {
-        if (storeName === 'router' || (hasExclude && exclude.includes(storeName))) {
+        if (storeName === 'router') {
           return;
         }
 

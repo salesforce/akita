@@ -2,7 +2,10 @@
 
 ## 5.0.0
 
-- The `upsert` operator of EntityStore now requires an explicit entity initialization callback if it is not
+- Updated `QueryEntity` typing of `select` / `get` methods to respect `undefined` entity values.
+- Remove deprecated array utils functions.
+- Remove deprecated `exclude` option from persist state. Use `include` with a callback option.
+- The `upsert` operator of EntityStore now requires an explicit entity initialization callback if the entity is not
   existing to guarantee a type safe entity store after execution.
 
 ```ts

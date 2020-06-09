@@ -24,7 +24,7 @@ Akita encourages simplicity. It saves you the hassle of creating boilerplate cod
 
 - 🤓 Learn about it on the [docs site](https://datorama.github.io/akita/)
 - 🚀 See it in action on [StackBlitz](https://stackblitz.com/edit/akita-todos-app)
-- 😎 Use the [CLI](https://github.com/datorama/akita/tree/master/cli)
+- 😎 Use the [CLI](https://github.com/datorama/akita/tree/master/tools/akita-cli)
 - 👉 Checkout the [sample application](http://akita.surge.sh/)
 - 📖 Read the blog [posts](https://netbasal.gitbook.io/akita/general/blog-posts)
 - 🍄 Join Akita's [Gitter](https://gitter.im/akita-state-management/Lobby#) room
@@ -102,6 +102,7 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/aleinin"><img src="https://avatars1.githubusercontent.com/u/25621595?v=4" width="100px;" alt=""/><br /><sub><b>aleinin</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=aleinin" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/xbaun"><img src="https://avatars0.githubusercontent.com/u/107658?v=4" width="100px;" alt=""/><br /><sub><b>xbaun</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=xbaun" title="Code">💻</a> <a href="#ideas-xbaun" title="Ideas, Planning, & Feedback">🤔</a></td>
   </tr>
 </table>
 
