@@ -214,32 +214,52 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 
   /**
    *
+   * Create or update.
+   *
+   * Warning: By omitting the initializing callback parameter onCreate(), the type safety of entities cannot be guaranteed.
+   *
+   * @example
+   *
+   * store.upsert(1, { active: true });
+   * store.upsert([2, 3], { active: true });
+   * store.upsert([2, 3], entity => ({ isOpen: !(entity?.isOpen ?? true) }))
+   *
+   */
+  upsert<NewEntityType extends Partial<EntityType>>(ids: OrArray<IDType>, newState: UpsertStateCallback<EntityType, NewEntityType> | NewEntityType, options?: { baseClass?: Constructor }): void;
+  /**
+   *
    * Create or update
    *
    * @example
    *
-   * store.upsert(1, { active: true }, (id, newState) => ({ id, ...newState, enabled: true }))
-   * store.upsert([2, 3], { active: true }, (id, newState) => ({ id, ...newState, enabled: true }))
-   * store.upsert([2, 3], entity => ({ isOpen: !(entity?.isOpen ?? true) }), (id, newState) => ({ id, ...newState, enabled: true }))
+   * store.upsert(1, { active: true }, (id, newState) => ({ id, ...newState, enabled: true }));
+   * store.upsert([2, 3], { active: true }, (id, newState) => ({ id, ...newState, enabled: true }));
+   * store.upsert([2, 3], entity => ({ isOpen: !(entity?.isOpen ?? true) }), (id, newState) => ({ id, ...newState, enabled: true }));
    *
    */
-  @transaction()
   upsert<NewEntityType extends Partial<EntityType>>(
     ids: OrArray<IDType>,
     newState: UpsertStateCallback<EntityType, NewEntityType> | NewEntityType,
     onCreate: CreateStateCallback<EntityType, NewEntityType, IDType>,
+    options?: { baseClass?: Constructor }
+  ): void;
+  @transaction()
+  upsert<NewEntityType extends Partial<EntityType>>(
+    ids: OrArray<IDType>,
+    newState: UpsertStateCallback<EntityType, NewEntityType> | NewEntityType,
+    onCreate?: CreateStateCallback<EntityType, NewEntityType, IDType> | { baseClass?: Constructor },
     options: { baseClass?: Constructor } = {}
   ) {
     const toArray = coerceArray(ids);
     const predicate = (isUpdate) => (id) => hasEntity(this.entities, id) === isUpdate;
-    const baseClass = options.baseClass;
+    const baseClass = isFunction(onCreate) ? options.baseClass : onCreate ? onCreate.baseClass : undefined;
     const isClassBased = isFunction(baseClass);
 
     const updateIds = toArray.filter(predicate(true));
     const newEntities = toArray.filter(predicate(false)).map((id) => {
       const newStateObj = typeof newState === 'function' ? newState(undefined) : newState;
-      const entity = onCreate(id, newStateObj);
-      const withId = { ...(entity as EntityType), [this.idKey]: id };
+      const entity = isFunction(onCreate) ? onCreate(id, newStateObj) : newStateObj;
+      const withId = { ...entity, [this.idKey]: id };
       if (isClassBased) {
         return new baseClass(withId);
       }

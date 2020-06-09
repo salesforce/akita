@@ -177,6 +177,11 @@ store.upsert(id, (oldState) => ({ isOpen: !(oldState?.isOpen ?? true) }), (id, n
 The first argument is the entity to be inserted or updated, the second contains the new entity state, and the last
 argument is the callback for creating a new entity if it does not exist.
 
+:::warning
+The initializing callback parameter can be omitted, but then type safety of entities cannot be guaranteed. Use
+this if all state properties are declared optional or if manually type check for `undefined`.
+:::
+
 ### `upsertMany()`
 Insert or update multiple entities. Creates a new entity when no entity matches the `id`; otherwise, it performs an update:
 
