@@ -8,12 +8,19 @@ export class CartService {
   constructor(private cartStore: CartStore) {}
 
   add(product: Product, quantity: number) {
-    this.cartStore.upsert(product.id, {
-      title: product.title,
-      price: product.additionalData.price,
-      total: product.additionalData.price * quantity,
-      quantity
-    });
+    this.cartStore.upsert(
+      product.id,
+      {
+        title: product.title,
+        price: product.additionalData.price,
+        total: product.additionalData.price * quantity,
+        quantity,
+      },
+      (id, newState) => ({
+        productId: id,
+        ...newState,
+      })
+    );
   }
 
   remove(productId: ID) {

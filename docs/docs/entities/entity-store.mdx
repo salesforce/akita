@@ -2,7 +2,7 @@
 title: Entity Store
 ---
 
-For the most part, the stores you'll require in your applications will be entity stores. You can think of an entity store as a table in a database, where each table represents a flat collection of entities. 
+For the most part, the stores you'll require in your applications will be entity stores. You can think of an entity store as a table in a database, where each table represents a flat collection of entities.
 Akita's `EntityStore` simplifies the process, giving you everything you need to manage it.
 
 Let's see how we can use it to create a `todos` table, i.e., an `EntityStore` managing a `Todo` object:
@@ -15,7 +15,7 @@ export interface TodosState extends EntityState<Todo, number> { }
 
 @StoreConfig({ name: 'todos' })
 export class TodosStore extends EntityStore<TodosState> {
-  constructor() { 
+  constructor() {
     super() ;
   }
 }
@@ -112,7 +112,7 @@ Add an entity or entities to the store:
 ```ts
 // Add multiple
 store.add([Entity, Entity]);
-// Add one 
+// Add one
 store.add(Entity);
 
 // Prepend
@@ -170,8 +170,17 @@ store.remove();
 Insert or update an entity. Creates a new entity when no entity matches the `id`; otherwise, it performs an update:
 
 ```ts
-store.upsert(id, { isOpen: true });
+store.upsert(id, { isOpen: true }, (id, newState) => ({ id, ...newState });
+store.upsert(id, (oldState) => ({ isOpen: !(oldState?.isOpen ?? true) }), (id, newState) => ({ id, ...newState });
 ```
+
+The first argument is the entity to be inserted or updated, the second contains the new entity state, and the last
+argument is the callback for creating a new entity if it does not exist.
+
+:::warning
+The initializing callback parameter can be omitted, but then type safety of entities cannot be guaranteed. Use
+this if all state properties are declared optional or if manually type check for `undefined`.
+:::
 
 ### `upsertMany()`
 Insert or update multiple entities. Creates a new entity when no entity matches the `id`; otherwise, it performs an update:

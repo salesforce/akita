@@ -13,11 +13,11 @@ export class ProductsService {
   getAll(term: string, filters) {
     return this.http
       .get<BaseProduct[]>(`${API}/products`, { params: { term, ...filters } })
-      .pipe(tap(products => this.productsStore.set(products)));
+      .pipe(tap((products) => this.productsStore.set(products)));
   }
 
   getProduct(id: ID) {
-    return this.http.get<Product>(`${API}/product/${id}`).pipe(tap(product => this.productsStore.upsert(id, product)));
+    return this.http.get<Product>(`${API}/product/${id}`).pipe(tap((product) => this.productsStore.upsert(id, product, (id, product) => ({ id, ...product }))));
   }
 
   updateFilters(filters) {
