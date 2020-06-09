@@ -62,7 +62,7 @@ export interface PersistStateParams {
   serialize: Function;
   /** By default the whole state is saved to storage, use this param to include only the stores you need. */
   include: (string | ((storeName: string) => boolean))[];
-  /** By default the whole store is saved to storage, use this param to include only the data you need. */
+  /** By default the whole state is saved to storage, use this param to include only the data you need. */
   select: PersistStateSelectFn[];
 
   preStorageUpdate(storeName: string, state: any): any;
@@ -101,20 +101,7 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
     preStorageUpdateOperator: () => (source) => source,
   };
 
-  const {
-    storage,
-    enableInNonBrowser,
-    deserialize,
-    serialize,
-    include,
-    select,
-    key,
-    preStorageUpdate,
-    persistOnDestroy,
-    preStorageUpdateOperator,
-    preStoreUpdate,
-    skipStorageUpdate,
-  } = Object.assign(
+  const { storage, enableInNonBrowser, deserialize, serialize, include, select, key, preStorageUpdate, persistOnDestroy, preStorageUpdateOperator, preStoreUpdate, skipStorageUpdate } = Object.assign(
     {},
     defaults,
     params

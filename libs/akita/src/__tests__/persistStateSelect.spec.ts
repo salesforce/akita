@@ -54,7 +54,7 @@ describe('persistState - Select', () => {
     expect(JSON.parse(localStorage.getItem('AkitaStores'))).toEqual(null);
   });
 
-  it('should save the whole store if not in select', async () => {
+  it('should save the whole state if not in select', async () => {
     await tick();
     products.add([{ id: 1 }]);
     await tick();
@@ -72,7 +72,7 @@ describe('persistState - Select', () => {
     });
   });
 
-  it('should save only selected store data if in select', async () => {
+  it('should save only selected state data if in select', async () => {
     await tick();
     todos.update({ todos: [{ id: 0 }] });
     await tick();

@@ -59,12 +59,12 @@ The key by which the state is saved.
 By default the whole state is saved to storage, use this param to include only the stores you need. It can be a store name or a predicate callback.
 
 ### `select`
-By default the whole store is saved to storage, use this param to include only the data you need.
+By default the whole state is saved to storage, use this param to include only the data you need.
 
 ```ts
 import { persistState, PersistStateSelectFn } from '@datorama/akita';
 
-const selectToken: PersistStateSelectFn<AuthState> = (store) => ({ token: store.token });
+const selectToken: PersistStateSelectFn<AuthState> = (state) => ({ token: state.token });
 selectToken.storeName = 'auth';
 
 persistState({ select: [selectToken] });
