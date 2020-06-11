@@ -1,15 +1,15 @@
-import { filter, skip } from 'rxjs/operators';
 import { from, isObservable, of, OperatorFunction, ReplaySubject, Subscription } from 'rxjs';
-import { HashMap, MaybeAsync } from './types';
-import { isFunction } from './isFunction';
-import { __stores__ } from './stores';
-import { getValue } from './getValueByString';
+import { filter, map, skip } from 'rxjs/operators';
 import { setAction } from './actions';
-import { setValue } from './setValueByString';
 import { $$addStore, $$deleteStore } from './dispatchers';
+import { getValue } from './getValueByString';
+import { isFunction } from './isFunction';
 import { isNil } from './isNil';
 import { isObject } from './isObject';
 import { hasLocalStorage, hasSessionStorage, isNotBrowser } from './root';
+import { setValue } from './setValueByString';
+import { __stores__ } from './stores';
+import { HashMap, MaybeAsync } from './types';
 
 let skipStorageUpdate = false;
 
@@ -47,6 +47,8 @@ function observify(asyncOrValue: any) {
   return of(asyncOrValue);
 }
 
+export type PersistStateSelectFn<T = any> = ((store: T) => Partial<T>) & { storeName: string };
+
 export interface PersistStateParams {
   /** The storage key */
   key: string;
@@ -58,11 +60,10 @@ export interface PersistStateParams {
   deserialize: Function;
   /** Custom serializer, defaults to JSON.stringify */
   serialize: Function;
-  /**
-   * By default the whole state is saved to storage, use this param to include only the stores you need.
-   * Pay attention that you can't use both include and exclude
-   */
+  /** By default the whole state is saved to storage, use this param to include only the stores you need. */
   include: (string | ((storeName: string) => boolean))[];
+  /** By default the whole state is saved to storage, use this param to include only the data you need. */
+  select: PersistStateSelectFn[];
 
   preStorageUpdate(storeName: string, state: any): any;
 
@@ -88,6 +89,7 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
     deserialize: JSON.parse,
     serialize: JSON.stringify,
     include: [],
+    select: [],
     persistOnDestroy: false,
     preStorageUpdate: function (storeName, state) {
       return state;
@@ -99,7 +101,7 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
     preStorageUpdateOperator: () => (source) => source,
   };
 
-  const { storage, enableInNonBrowser, deserialize, serialize, include, key, preStorageUpdate, persistOnDestroy, preStorageUpdateOperator, preStoreUpdate, skipStorageUpdate } = Object.assign(
+  const { storage, enableInNonBrowser, deserialize, serialize, include, select, key, preStorageUpdate, persistOnDestroy, preStorageUpdateOperator, preStoreUpdate, skipStorageUpdate } = Object.assign(
     {},
     defaults,
     params
@@ -108,7 +110,9 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
   if (isNotBrowser && !enableInNonBrowser) return;
 
   const hasInclude = include.length > 0;
+  const hasSelect = select.length > 0;
   let includeStores: { fns: Function[]; [key: string]: Function[] | string };
+  let selectStores: { [key: string]: PersistStateSelectFn };
 
   if (hasInclude) {
     includeStores = include.reduce(
@@ -123,6 +127,14 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
       },
       { fns: [] }
     );
+  }
+
+  if (hasSelect) {
+    selectStores = select.reduce((acc, selectFn) => {
+      acc[selectFn.storeName] = selectFn;
+
+      return acc;
+    }, {});
   }
 
   let stores: HashMap<Subscription> = {};
@@ -157,6 +169,13 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
         ._select((state) => getValue(state, path))
         .pipe(
           skip(1),
+          map((store) => {
+            if (hasSelect && selectStores[storeName]) {
+              return selectStores[storeName](store);
+            }
+
+            return store;
+          }),
           filter(() => skipStorageUpdate() === false),
           preStorageUpdateOperator()
         )
