@@ -5,16 +5,9 @@
 - Updated `QueryEntity` typing of `select` / `get` methods to respect `undefined` entity values.
 - Remove deprecated array utils functions.
 - Remove deprecated `exclude` option from persist state. Use `include` with a callback option.
-- The `upsert` operator of EntityStore now requires an explicit entity initialization callback if the entity is not
-  existing to guarantee a type safe entity store after execution.
+- The `upsert` operator of `EntityStore` now accepts an explicit entity initialization callback that'll be used as the initial value of the entity if it doesn't exist.
 
 ```ts
-// Before
-store.upsert([2, 3], (entity) => ({ isOpen: !entity.isOpen }));
-```
-
-```ts
-// After
 store.upsert(
   [2, 3],
   (entity) => ({ isOpen: !(entity?.isOpen ?? true) }),
@@ -38,6 +31,8 @@ runStoreAction('books', StoreActions.UpsertEntities, {
 // After
 runEntityStoreAction(BooksStore, EntityStoreAction.UpsertEntities, (upsert) => upsert([2, 3], { title: 'New Title' }, (id, newState) => ({ id, ...newState, price: 0 })));
 ```
+
+- A new [select](https://datorama.github.io/akita/docs/enhancers/persist-state/#select) option for the `persistState` plugin.
 
 ## 4.0.0
 
