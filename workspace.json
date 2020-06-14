@@ -11,9 +11,8 @@
           "builder": "@nrwl/linter:lint",
           "options": {
             "linter": "eslint",
-            "config": "libs/akita/.eslintrc",
             "tsConfig": ["libs/akita/tsconfig.lib.json", "libs/akita/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**", "!libs/akita/**"]
+            "exclude": ["**/node_modules/**", "!libs/akita/**/*"]
           }
         },
         "test": {
@@ -61,7 +60,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": ["libs/akita-ng-entity-service/tsconfig.lib.json", "libs/akita-ng-entity-service/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**", "!libs/akita-ng-entity-service/**"]
+            "exclude": ["**/node_modules/**", "!libs/akita-ng-entity-service/**/*"]
           }
         },
         "test": {
@@ -152,7 +151,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": ["apps/angular-store-app/tsconfig.app.json", "apps/angular-store-app/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**", "!apps/angular-store-app/**"]
+            "exclude": ["**/node_modules/**", "!apps/angular-store-app/**/*"]
           }
         },
         "test": {
@@ -188,7 +187,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": ["apps/angular-store-app-e2e/tsconfig.e2e.json"],
-            "exclude": ["**/node_modules/**", "!apps/angular-store-app-e2e/**"]
+            "exclude": ["**/node_modules/**", "!apps/angular-store-app-e2e/**/*"]
           }
         }
       }
@@ -215,7 +214,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": ["libs/akita-ng-router-store/tsconfig.lib.json", "libs/akita-ng-router-store/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**", "!libs/akita-ng-router-store/**"]
+            "exclude": ["**/node_modules/**", "!libs/akita-ng-router-store/**/*"]
           }
         },
         "test": {
@@ -252,7 +251,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": ["libs/akita-ng-devtools/tsconfig.lib.json", "libs/akita-ng-devtools/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**", "!libs/akita-ng-devtools/**"]
+            "exclude": ["**/node_modules/**", "!libs/akita-ng-devtools/**/*"]
           }
         },
         "test": {
@@ -289,7 +288,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": ["libs/akita-ng-forms-manager/tsconfig.lib.json", "libs/akita-ng-forms-manager/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**", "!libs/akita-ng-forms-manager/**"]
+            "exclude": ["**/node_modules/**", "!libs/akita-ng-forms-manager/**/*"]
           }
         },
         "test": {
@@ -314,9 +313,8 @@
           "builder": "@nrwl/linter:lint",
           "options": {
             "linter": "eslint",
-            "config": "libs/akita-schematics/.eslintrc",
             "tsConfig": ["libs/akita-schematics/tsconfig.schematics.json"],
-            "exclude": ["**/node_modules/**", "!libs/akita-schematics/**"]
+            "exclude": ["**/node_modules/**", "!libs/akita-schematics/**/*"]
           }
         }
       }
@@ -398,7 +396,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": ["apps/angular-akita-server-side-pagination/tsconfig.app.json", "apps/angular-akita-server-side-pagination/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**", "!apps/angular-akita-server-side-pagination/**"]
+            "exclude": ["**/node_modules/**", "!apps/angular-akita-server-side-pagination/**/*"]
           }
         },
         "test": {
@@ -434,7 +432,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": ["apps/angular-akita-server-side-pagination-e2e/tsconfig.e2e.json"],
-            "exclude": ["**/node_modules/**", "!apps/angular-akita-server-side-pagination-e2e/**"]
+            "exclude": ["**/node_modules/**", "!apps/angular-akita-server-side-pagination-e2e/**/*"]
           }
         }
       }
@@ -512,7 +510,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": ["apps/angular-twitter-like/tsconfig.app.json", "apps/angular-twitter-like/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**", "!apps/angular-twitter-like/**"]
+            "exclude": ["**/node_modules/**", "!apps/angular-twitter-like/**/*"]
           }
         },
         "test": {
@@ -548,7 +546,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": ["apps/angular-twitter-like-e2e/tsconfig.e2e.json"],
-            "exclude": ["**/node_modules/**", "!apps/angular-twitter-like-e2e/**"]
+            "exclude": ["**/node_modules/**", "!apps/angular-twitter-like-e2e/**/*"]
           }
         }
       }
@@ -627,7 +625,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": ["apps/angular-ecommerce/tsconfig.app.json", "apps/angular-ecommerce/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**", "!apps/angular-ecommerce/**"]
+            "exclude": ["**/node_modules/**", "!apps/angular-ecommerce/**/*"]
           }
         },
         "test": {
@@ -663,7 +661,7 @@
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": ["apps/angular-ecommerce-e2e/tsconfig.e2e.json"],
-            "exclude": ["**/node_modules/**", "!apps/angular-ecommerce-e2e/**"]
+            "exclude": ["**/node_modules/**", "!apps/angular-ecommerce-e2e/**/*"]
           }
         }
       }
@@ -708,9 +706,8 @@
           "builder": "@nrwl/linter:lint",
           "options": {
             "linter": "eslint",
-            "config": "apps/angular-ecommerce-server/.eslintrc",
             "tsConfig": ["apps/angular-ecommerce-server/tsconfig.app.json", "apps/angular-ecommerce-server/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**", "!apps/angular-ecommerce-server/**"]
+            "exclude": ["**/node_modules/**", "!apps/angular-ecommerce-server/**/*"]
           }
         },
         "test": {
@@ -783,9 +780,8 @@
           "builder": "@nrwl/linter:lint",
           "options": {
             "linter": "eslint",
-            "config": "apps/react-akita-app/.eslintrc",
             "tsConfig": ["apps/react-akita-app/tsconfig.app.json", "apps/react-akita-app/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**", "!apps/react-akita-app/**"]
+            "exclude": ["**/node_modules/**", "!apps/react-akita-app/**/*"]
           }
         },
         "test": {
@@ -820,9 +816,8 @@
           "builder": "@nrwl/linter:lint",
           "options": {
             "linter": "eslint",
-            "config": "apps/react-akita-app-e2e/.eslintrc",
             "tsConfig": ["apps/react-akita-app-e2e/tsconfig.e2e.json"],
-            "exclude": ["**/node_modules/**", "!apps/react-akita-app-e2e/**"]
+            "exclude": ["**/node_modules/**", "!apps/react-akita-app-e2e/**/*"]
           }
         }
       }
