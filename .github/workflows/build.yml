@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 11
+          node-version: 12
       - uses: actions/cache@v1
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
@@ -29,12 +29,11 @@ jobs:
   build:
     name: Build applications & libraries
     runs-on: ubuntu-latest
-    needs: [dependencies]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: 11
+          node-version: 12
       - name: Restore dependencies from cache
         uses: actions/cache@v1
         with:
