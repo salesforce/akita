@@ -10,7 +10,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     const dependencies: NodeDependency[] = [
       {
         type: NodeDependencyType.Default,
-        version: '^4.22.3',
+        version: '^5.0.0',
         name: '@datorama/akita',
       },
     ];
