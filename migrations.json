@@ -1,32 +1,53 @@
 {
   "migrations": [
     {
-      "version": "9.2.0-beta.1",
-      "description": "Add cacheable operations to nx.json",
-      "factory": "./src/migrations/update-9-2-0/update-9-2-0",
+      "version": "9.3.0-beta.1",
+      "description": "Update prettier to v2",
+      "factory": "./src/migrations/update-9-3-0/update-9-3-0",
       "package": "@nrwl/workspace",
-      "name": "update-9-2-0"
+      "name": "update-9-3-0"
     },
     {
-      "version": "9.2.0-beta.3",
-      "description": "Update jest to v25",
-      "factory": "./src/migrations/update-9-2-0/update-9-2-0",
-      "package": "@nrwl/jest",
-      "name": "update-9.2.0"
+      "version": "9.4.0-beta.1",
+      "description": "Remove config builder option when using eslint to enable automatic detection",
+      "factory": "./src/migrations/update-9-4-0/update-eslint-config",
+      "package": "@nrwl/workspace",
+      "name": "update-eslint-config"
     },
     {
-      "version": "9.2.0-beta.1",
-      "description": "Set buildLibsFromSource property to true to not break existing projects.",
-      "factory": "./src/migrations/update-9-2-0/set-build-libs-from-source",
-      "package": "@nrwl/node",
-      "name": "set-build-libs-from-source"
+      "version": "9.4.0-beta.1",
+      "description": "Fix exclude patterns in tslint and eslint to ensure it does not break linting when a files option is defined",
+      "factory": "./src/migrations/update-9-4-0/update-linters-exclude",
+      "package": "@nrwl/workspace",
+      "name": "update-linters-exclude"
     },
     {
-      "version": "9.2.0-beta.1",
-      "description": "Set buildLibsFromSource property to true to not break existing projects.",
-      "factory": "./src/migrations/update-9-2-0/set-build-libs-from-source",
-      "package": "@nrwl/web",
-      "name": "set-build-libs-from-source"
+      "version": "9.4.0-beta.1",
+      "description": "Decorate cli to enable computation caching",
+      "factory": "./src/migrations/update-9-4-0/add-decorate-cli",
+      "package": "@nrwl/workspace",
+      "name": "add-decorate-cli"
+    },
+    {
+      "version": "9.4.0-beta.1",
+      "description": "Add Cypress ESLint plugin",
+      "factory": "./src/migrations/update-9-4-0/add-cypress-eslint-plugin-9-4-0",
+      "package": "@nrwl/cypress",
+      "name": "add-cypress-eslint-plugin-9.4.0"
+    },
+    {
+      "version": "9.4.0-beta.1",
+      "description": "Update libraries",
+      "factory": "./src/migrations/update-9-4-0/update-9-4-0",
+      "package": "@nrwl/react",
+      "name": "update-9.4.0"
+    },
+    {
+      "version": "9.4.0-beta.1",
+      "description": "Migrate to new babel setup for greater flexibility",
+      "factory": "./src/migrations/update-9-4-0/babelrc-9-4-0",
+      "package": "@nrwl/react",
+      "name": "babelrc-9.4.0"
     }
   ]
 }
