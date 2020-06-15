@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.0.0](https://github.com/datorama/akita/compare/akita-v4.23.2...akita-v5.0.0) (2020-06-15)
+
+### ⚠ BREAKING CHANGES
+
+- **action:** Remove deprecated exclude option from persist state
+- **action:** Remove deprecated array utils functions
+
+### Features
+
+- **action:** remove deprecated array utils functions ([44d99c9](https://github.com/datorama/akita/commit/44d99c9c8a1833cf46fa1fc79725d8cf37dba985))
+- **action:** remove deprecated exclude option from persist state ([5ca933a](https://github.com/datorama/akita/commit/5ca933ae8db2b1b6f57dcba37609fc9fb365809f))
+- **persist-state:** add ability to select store data to persist ([#437](https://github.com/datorama/akita/issues/437)) ([3f4e5ae](https://github.com/datorama/akita/commit/3f4e5ae87c9a9bca46b5b41f8db6cd57390e77bb))
+
+### Bug Fixes
+
+- **devtools:** fix multiple logging of same actions ([#441](https://github.com/datorama/akita/issues/441)) ([7992435](https://github.com/datorama/akita/commit/7992435f294d27ec7ba3963485d6e3d15d1e6067))
+- **entity-store:** improve type safety of entity store upsert operations ([#439](https://github.com/datorama/akita/issues/439)) ([08c4656](https://github.com/datorama/akita/commit/08c4656a8a3d9186156692e071790bbbf7f5a0ff))
+- **query-entity:** selection of a single entity can be undefined ([#445](https://github.com/datorama/akita/issues/445)) ([888a825](https://github.com/datorama/akita/commit/888a8253ed03d8af77306d06e0ecbef3b1b78cec))
+
 ### [4.23.2](https://github.com/datorama/akita/compare/akita-v4.23.1...akita-v4.23.2) (2020-05-15)
 
 ### Bug Fixes
