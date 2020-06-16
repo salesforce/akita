@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.0.1](https://github.com/datorama/akita/compare/akita-v5.0.0...akita-v5.0.1) (2020-06-16)
+
+### Bug Fixes
+
+- **entity-store:** change set cache location ([d318901](https://github.com/datorama/akita/commit/d318901bdc89c19eaba8ec1db3de438e4e6b4ec4))
+
 ## [5.0.0](https://github.com/datorama/akita/compare/akita-v4.23.2...akita-v5.0.0) (2020-06-15)
 
 ### ⚠ BREAKING CHANGES
