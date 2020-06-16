@@ -1,39 +1,38 @@
-import { getEntity } from './getEntity';
+import { Observable, Subject } from 'rxjs';
+import { logAction, setAction } from './actions';
+import { addEntities, AddEntitiesOptions } from './addEntities';
+import { coerceArray } from './coerceArray';
+import { DEFAULT_ID_KEY } from './defaultIDKey';
+import { EntityAction, EntityActions } from './entityActions';
+import { isDev } from './env';
+import { getActiveEntities, SetActiveOptions } from './getActiveEntities';
+import { getInitialEntitiesState } from './getInitialEntitiesState';
+import { hasEntity } from './hasEntity';
+import { isDefined } from './isDefined';
 import { isEmpty } from './isEmpty';
+import { isFunction } from './isFunction';
+import { isNil } from './isNil';
+import { isUndefined } from './isUndefined';
+import { removeEntities } from './removeEntities';
 import { SetEntities, setEntities } from './setEntities';
 import { Store } from './store';
+import { StoreConfigOptions } from './storeConfig';
+import { transaction } from './transaction';
 import {
   Constructor,
+  CreateStateCallback,
   EntityState,
   EntityUICreateFn,
+  getEntityType,
+  getIDType,
   IDS,
   OrArray,
   StateWithActive,
   UpdateEntityPredicate,
   UpdateStateCallback,
-  getEntityType,
-  getIDType,
-  CreateStateCallback,
   UpsertStateCallback,
 } from './types';
-import { getActiveEntities, SetActiveOptions } from './getActiveEntities';
-import { addEntities, AddEntitiesOptions } from './addEntities';
-import { coerceArray } from './coerceArray';
-import { removeEntities } from './removeEntities';
-import { getInitialEntitiesState } from './getInitialEntitiesState';
-import { isDefined } from './isDefined';
 import { updateEntities } from './updateEntities';
-import { transaction } from './transaction';
-import { isNil } from './isNil';
-import { isFunction } from './isFunction';
-import { isUndefined } from './isUndefined';
-import { StoreConfigOptions } from './storeConfig';
-import { logAction, setAction } from './actions';
-import { isDev } from './env';
-import { hasEntity } from './hasEntity';
-import { Observable, Subject } from 'rxjs';
-import { EntityAction, EntityActions } from './entityActions';
-import { DEFAULT_ID_KEY } from './defaultIDKey';
 
 /**
  *
@@ -87,6 +86,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     isDev() && setAction('Set Entity');
 
     const isNativePreAdd = this.akitaPreAddEntity === EntityStore.prototype.akitaPreAddEntity;
+    this.setHasCache(true, { restartTTL: true });
 
     this._setState((state) => {
       const newState = setEntities({
@@ -103,8 +103,6 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 
       return newState;
     });
-
-    this.setHasCache(true, { restartTTL: true });
 
     if (this.hasInitialUIState()) {
       this.handleUICreation();
