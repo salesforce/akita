@@ -6,41 +6,22 @@ import { configKey } from './storeConfig';
 import { __stores__ } from './stores';
 import { Constructor } from './types';
 
-export abstract class StoreAction {
-  static readonly Update = 'UPDATE';
-
-  private StoreAction() {}
-}
-
-export declare namespace StoreAction {
-  export type Any = typeof StoreAction.Update;
+export enum StoreAction {
+  Update = 'UPDATE',
 }
 
 const StoreActionMapping = {
   [StoreAction.Update]: 'update',
 };
 
-export abstract class EntityStoreAction {
-  static readonly Update = 'UPDATE';
-  static readonly AddEntities = 'ADD_ENTITIES';
-  static readonly SetEntities = 'SET_ENTITIES';
-  static readonly UpdateEntities = 'UPDATE_ENTITIES';
-  static readonly RemoveEntities = 'REMOVE_ENTITIES';
-  static readonly UpsertEntities = 'UPSERT_ENTITIES';
-  static readonly UpsertManyEntities = 'UPSERT_MANY_ENTITIES';
-
-  private EntityStoreAction() {}
-}
-
-export declare namespace EntityStoreAction {
-  export type Any =
-    | typeof EntityStoreAction.Update
-    | typeof EntityStoreAction.AddEntities
-    | typeof EntityStoreAction.SetEntities
-    | typeof EntityStoreAction.UpdateEntities
-    | typeof EntityStoreAction.RemoveEntities
-    | typeof EntityStoreAction.UpsertEntities
-    | typeof EntityStoreAction.UpsertManyEntities;
+export enum EntityStoreAction {
+  Update = 'UPDATE',
+  AddEntities = 'ADD_ENTITIES',
+  SetEntities = 'SET_ENTITIES',
+  UpdateEntities = 'UPDATE_ENTITIES',
+  RemoveEntities = 'REMOVE_ENTITIES',
+  UpsertEntities = 'UPSERT_ENTITIES',
+  UpsertManyEntities = 'UPSERT_MANY_ENTITIES',
 }
 
 const EntityStoreActionMapping = {
@@ -103,12 +84,12 @@ export function getEntityStoreByName<TEntityStore extends EntityStore<S>, S = TE
  */
 export function runStoreAction<TStore extends Store<S>, S = TStore extends Store<infer T> ? T : any>(
   storeClassOrName: Constructor<TStore> | string,
-  action: typeof StoreAction.Update,
+  action: StoreAction.Update,
   operation: (operator: TStore['update']) => void
 );
 export function runStoreAction<TStore extends Store<S>, S = TStore extends Store<infer T> ? T : any>(
   storeClassOrName: Constructor<TStore> | string,
-  action: StoreAction.Any,
+  action: StoreAction,
   operation: (operator: TStore[keyof TStore] & Function) => void
 ) {
   const store = typeof storeClassOrName === 'string' ? getStoreByName<TStore, S>(storeClassOrName) : getStore<TStore, S>(storeClassOrName);
@@ -127,7 +108,7 @@ export function runStoreAction<TStore extends Store<S>, S = TStore extends Store
  */
 export function runEntityStoreAction<TEntityStore extends EntityStore<S>, S = TEntityStore extends EntityStore<infer T> ? T : any>(
   storeClassOrName: Constructor<TEntityStore> | string,
-  action: typeof EntityStoreAction.SetEntities,
+  action: EntityStoreAction.SetEntities,
   operation: (operator: TEntityStore['set']) => void
 );
 /**
@@ -142,7 +123,7 @@ export function runEntityStoreAction<TEntityStore extends EntityStore<S>, S = TE
  */
 export function runEntityStoreAction<TEntityStore extends EntityStore<S>, S = TEntityStore extends EntityStore<infer T> ? T : any>(
   storeClassOrName: Constructor<TEntityStore> | string,
-  action: typeof EntityStoreAction.AddEntities,
+  action: EntityStoreAction.AddEntities,
   operation: (operator: TEntityStore['add']) => void
 );
 /**
@@ -157,7 +138,7 @@ export function runEntityStoreAction<TEntityStore extends EntityStore<S>, S = TE
  */
 export function runEntityStoreAction<TEntityStore extends EntityStore<S>, S = TEntityStore extends EntityStore<infer T> ? T : any>(
   storeClassOrName: Constructor<TEntityStore> | string,
-  action: typeof EntityStoreAction.UpdateEntities,
+  action: EntityStoreAction.UpdateEntities,
   operation: (operator: TEntityStore['update']) => void
 );
 /**
@@ -172,7 +153,7 @@ export function runEntityStoreAction<TEntityStore extends EntityStore<S>, S = TE
  */
 export function runEntityStoreAction<TEntityStore extends EntityStore<S>, S = TEntityStore extends EntityStore<infer T> ? T : any>(
   storeClassOrName: Constructor<TEntityStore> | string,
-  action: typeof EntityStoreAction.RemoveEntities,
+  action: EntityStoreAction.RemoveEntities,
   operation: (operator: TEntityStore['remove']) => void
 );
 /**
@@ -187,7 +168,7 @@ export function runEntityStoreAction<TEntityStore extends EntityStore<S>, S = TE
  */
 export function runEntityStoreAction<TEntityStore extends EntityStore<S>, S = TEntityStore extends EntityStore<infer T> ? T : any>(
   storeClassOrName: Constructor<TEntityStore> | string,
-  action: typeof EntityStoreAction.UpsertEntities,
+  action: EntityStoreAction.UpsertEntities,
   operation: (operator: TEntityStore['upsert']) => void
 );
 /**
@@ -204,12 +185,12 @@ export function runEntityStoreAction<TEntityStore extends EntityStore<S>, S = TE
  */
 export function runEntityStoreAction<TEntityStore extends EntityStore<S>, S = TEntityStore extends EntityStore<infer T> ? T : any>(
   storeClassOrName: Constructor<TEntityStore> | string,
-  action: typeof EntityStoreAction.UpsertManyEntities,
+  action: EntityStoreAction.UpsertManyEntities,
   operation: (operator: TEntityStore['upsertMany']) => void
 );
 export function runEntityStoreAction<TEntityStore extends EntityStore<S>, S = TEntityStore extends EntityStore<infer T> ? T : any>(
   storeClassOrName: Constructor<TEntityStore> | string,
-  action: EntityStoreAction.Any,
+  action: EntityStoreAction,
   operation: (operator: TEntityStore[keyof TEntityStore] & Function) => void
 ) {
   const store = typeof storeClassOrName === 'string' ? getEntityStoreByName<TEntityStore, S>(storeClassOrName) : getEntityStore<TEntityStore, S>(storeClassOrName);
