@@ -15,9 +15,17 @@ describe('runStoreAction', () => {
     runEntityStoreAction(BooksStore, EntityStoreAction.UpdateEntities, (update) => update(2, { title: 'New title' }));
     expect(store._value().entities[2].title).toBe('New title');
 
+    runEntityStoreAction('books', EntityStoreAction.UpdateEntities, (update) => update(2, { title: 'New title 2' }));
+    expect(store._value().entities[2].title).toBe('New title 2');
+
     runEntityStoreAction(BooksStore, EntityStoreAction.UpsertEntities, (upsert) => upsert([2, 3], { title: 'Another title 2' }, (id, newState) => ({ id, ...newState, price: 0 })));
     expect(store._value().entities[2].title).toBe('Another title 2');
     expect(store._value().entities[3].title).toBe('Another title 2');
+    expect(store._value().ids.length).toBe(5);
+
+    runEntityStoreAction('books', EntityStoreAction.UpsertEntities, (upsert) => upsert([2, 3], { title: 'Another title 3' }, (id, newState) => ({ id, ...newState, price: 0 })));
+    expect(store._value().entities[2].title).toBe('Another title 3');
+    expect(store._value().entities[3].title).toBe('Another title 3');
     expect(store._value().ids.length).toBe(5);
 
     runEntityStoreAction(BooksStore, EntityStoreAction.UpsertManyEntities, (upsertMany) =>
@@ -34,5 +42,8 @@ describe('runStoreAction', () => {
 
     runStoreAction(BooksStore, StoreAction.Update, (update) => update({ filter: 'COMPLETE' }));
     expect(store._value().filter).toBe('COMPLETE');
+
+    runStoreAction('books', StoreAction.Update, (update) => update({ filter: 'COMPLETE 2' }));
+    expect(store._value().filter).toBe('COMPLETE 2');
   });
 });
