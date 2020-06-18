@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.0.2](https://github.com/datorama/akita/compare/akita-v5.0.1...akita-v5.0.2) (2020-06-18)
+
+### Bug Fixes
+
+- **run-store-action:** add untyped store support ([#451](https://github.com/datorama/akita/issues/451)) ([f95ec5f](https://github.com/datorama/akita/commit/f95ec5f58a6cef3249341a3c5275519189194c9b))
+
 ### [5.0.1](https://github.com/datorama/akita/compare/akita-v5.0.0...akita-v5.0.1) (2020-06-16)
 
 ### Bug Fixes
