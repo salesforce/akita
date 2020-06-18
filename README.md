@@ -103,6 +103,7 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds
   <tr>
     <td align="center"><a href="https://github.com/aleinin"><img src="https://avatars1.githubusercontent.com/u/25621595?v=4" width="100px;" alt=""/><br /><sub><b>aleinin</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=aleinin" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/xbaun"><img src="https://avatars0.githubusercontent.com/u/107658?v=4" width="100px;" alt=""/><br /><sub><b>xbaun</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=xbaun" title="Code">💻</a> <a href="#ideas-xbaun" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://stackoverflow.com/users/3915438/sebaferreras?tab=profile"><img src="https://avatars1.githubusercontent.com/u/17194770?v=4" width="100px;" alt=""/><br /><sub><b>Sebastián Ferreras</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=sebaferreras" title="Documentation">📖</a></td>
   </tr>
 </table>
 

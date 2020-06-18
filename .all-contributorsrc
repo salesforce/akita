@@ -490,6 +490,15 @@
         "code",
         "ideas"
       ]
+    },
+    {
+      "login": "sebaferreras",
+      "name": "Sebastián Ferreras",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/17194770?v=4",
+      "profile": "https://stackoverflow.com/users/3915438/sebaferreras?tab=profile",
+      "contributions": [
+        "doc"
+      ]
     }
   ]
 }
