@@ -4,7 +4,7 @@ title: Event-based APIs
 
 One of the recurring requests we got, was to simplify and improve the experience of working with event-based APIs such as web-sockets.
 
-To make it easier for you, we’ve added a new API method — `runStoreAction`:
+To make it easier for you, we’ve added a new API method — `runStoreAction` and `runEntityStoreAction`:
 
 ```ts
 import { runStoreAction, StoreActions, runEntityStoreAction, EntityStoreActions  } from '@datorama/akita';
@@ -31,6 +31,9 @@ runEntityStoreAction(BooksStore, EntityStoreAction.UpsertManyEntities, upsertMan
 ));
 ```
 
-The `runStoreAction()` and `runEntityStoreAction()` takes the store’s class, the store action to perform and an operation
+The `runStoreAction()` and `runEntityStoreAction()` takes the store’s class or name, the store action to perform and an operation
 callback. The first argument of the operation callback is the store operator specified by the action. You can determine
 these parameters from your socket connection and update any store you want.
+
+By using the store name and not the store class as the first argument, type checking of the respective action arguments is disabled.
+This can be useful when validation of untyped data is unnecessary and can be passed directly to the activity.
