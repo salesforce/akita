@@ -11,6 +11,9 @@ import { runStoreAction, StoreActions, runEntityStoreAction, EntityStoreActions 
 
 runStoreAction(BooksStore, StoreAction.Update, update => update({ filter: 'COMPLETE' }));
 
+// Or use a string
+runStoreAction('books', StoreAction.Update, update => update({ filter: 'COMPLETE' }));
+
 runEntityStoreAction(BooksStore, EntityStoreAction.SetEntities, set => set([
   { id: 1 },
   { id: 2 }
