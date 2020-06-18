@@ -16,12 +16,5 @@
     "directory": "libs/akita-ng-forms-manager"
   },
   "license": "Apache-2.0",
-  "author": "Netanel Basal",
-  "peerDependencies": {
-    "@angular/core": ">= 7 < 10",
-    "@angular/forms": ">= 7 < 10",
-    "@datorama/akita": ">= 4 < 5",
-    "rxjs": ">= 6.1.0 < 7",
-    "tslib": ">= 1.7.0 < 2"
-  }
+  "author": "Netanel Basal"
 }
