@@ -1,6 +1,6 @@
 {
   "name": "@datorama/akita-ng-forms-manager",
-  "version": "3.3.1",
+  "version": "5.0.0",
   "description": "The best way to manage your Angular form state in Akita",
   "keywords": [
     "angular",
@@ -16,5 +16,8 @@
     "directory": "libs/akita-ng-forms-manager"
   },
   "license": "Apache-2.0",
-  "author": "Netanel Basal"
+  "author": "Netanel Basal",
+  "peerDependencies": {
+    "@angular/core": ">= 8.0.0"
+  }
 }

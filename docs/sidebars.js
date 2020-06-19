@@ -76,7 +76,7 @@ module.exports = {
         },
         {
           type: 'link',
-          label: 'Akita Firbase',
+          label: 'Akita Firebase',
           href: 'https://github.com/dappsnation/akita-ng-fire',
         },
         'angular/router',

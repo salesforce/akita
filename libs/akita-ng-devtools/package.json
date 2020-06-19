@@ -1,6 +1,6 @@
 {
   "name": "@datorama/akita-ngdevtools",
-  "version": "4.0.1",
+  "version": "5.0.0",
   "description": "Akita integration for Redux dev-tools chrome extension",
   "keywords": [
     "angular",
@@ -18,5 +18,8 @@
     "directory": "libs/akita-ng-devtools"
   },
   "license": "Apache-2.0",
-  "author": "Netanel Basal"
+  "author": "Netanel Basal",
+  "peerDependencies": {
+    "@angular/core": ">= 8.0.0"
+  }
 }
