@@ -18,7 +18,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     if (options.withRouter || options.router) {
       dependencies.push({
         type: NodeDependencyType.Dev,
-        version: '^5.0.0',
+        version: '^5.1.3',
         name: '@datorama/akita-ng-router-store',
       });
     }
@@ -26,7 +26,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     if (options.devtools) {
       dependencies.push({
         type: NodeDependencyType.Dev,
-        version: '^4.0.0',
+        version: '^5.0.0',
         name: '@datorama/akita-ngdevtools',
       });
     }
@@ -34,7 +34,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     if (options.httpEntityService) {
       dependencies.push({
         type: NodeDependencyType.Default,
-        version: '^2.0.0',
+        version: '^5.0.0',
         name: '@datorama/akita-ng-entity-service',
       });
     }
