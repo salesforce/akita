@@ -28,7 +28,6 @@
     "build:app:angular:akita-twitter-like": "nx build angular-twitter-like --with-deps",
     "build:app:angular:akita-twitter-like:prod": "nx build angular-twitter-like --prod --with-deps",
     "build:app:react:akita-app": "nx build react-akita-app --with-deps",
-    "build:app:react:akita-app:prod": "nx build react-akita-app --prod --with-deps",
     "build:app:svelte:todo": "echo Nx doesn't support svelte, you're on your own!",
     "build:apps": "run-s build:app:*:*",
     "build:apps:prod": "run-s build:app:*:prod",
