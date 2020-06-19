@@ -26,7 +26,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     if (options.devtools) {
       dependencies.push({
         type: NodeDependencyType.Dev,
-        version: '^5.0.0',
+        version: '^5.0.1',
         name: '@datorama/akita-ngdevtools',
       });
     }
@@ -163,7 +163,7 @@ function addModuleToImports(options: Schema): Rule {
     }
 
     if (options.devtools) {
-      importDevtools = `environment.production ? [] : AkitaNgDevtools`;
+      importDevtools = `environment.production ? [] : AkitaNgDevtools.forRoot()`;
     }
 
     if (options.httpEntityService) {

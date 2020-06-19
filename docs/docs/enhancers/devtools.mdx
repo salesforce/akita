@@ -21,7 +21,7 @@ And add the `AkitaNgDevtools` module:
 import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
 
 @NgModule({
-  imports: [environment.production ? [] : AkitaNgDevtools]
+  imports: [environment.production ? [] : AkitaNgDevtools.forRoot(options?)]
   bootstrap: [AppComponent]
 })
 export class AppModule {}
@@ -32,7 +32,7 @@ If you're not using Angular, you can call the `akitaDevtools` function directly:
 ```ts
 import { akitaDevtools } from '@datorama/akita';
 
-akitaDevtools();
+akitaDevtools(options?);
 ```
 
 ## Options
