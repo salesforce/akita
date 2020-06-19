@@ -1,6 +1,6 @@
 {
   "name": "@datorama/akita-ngdevtools",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "Akita integration for Redux dev-tools chrome extension",
   "keywords": [
     "angular",
