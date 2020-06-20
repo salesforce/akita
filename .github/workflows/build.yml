@@ -43,4 +43,4 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Run builders
-        run: yarn nx run-many --target=build --configuration=production --all
+        run: yarn nx run-many --target=build --configuration=production --projects=akita,angular-store-app
