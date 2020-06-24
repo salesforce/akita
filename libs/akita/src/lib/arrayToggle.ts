@@ -19,9 +19,9 @@ export function byId<T extends Record<K, any>, K extends keyof T | 'id' = 'id'>(
  *
  * @param array The array to modify.
  * @param newValue The new value to toggle.
- * @param compare A compare function to determine equality of array values.
+ * @param compare A compare function to determine equality of array values. Default is an equality test by object identity.
  */
 export function arrayToggle<T>(array: T[], newValue: T, compare: (a: T, b: T) => boolean = (a, b) => a === b) {
-  const oldIndex = array.findIndex((oldValue) => compare(newValue, oldValue));
-  return !!~oldIndex ? array.filter((value, index) => index !== oldIndex) : [...array, newValue];
+  const index = array.findIndex((oldValue) => compare(newValue, oldValue));
+  return !!~index ? [...array.slice(0, index), ...array.slice(index + 1)] : [...array, newValue];
 }
