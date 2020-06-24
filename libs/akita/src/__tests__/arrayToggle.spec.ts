@@ -1,4 +1,4 @@
-import { arrayToggle } from '../lib/arrayToggle';
+import { arrayToggle, byId, byKey } from '../lib/arrayToggle';
 import { EntityStore } from '../lib/entityStore';
 import { StoreConfig } from '../lib/storeConfig';
 import { EntityState, ID } from '../lib/types';
@@ -45,7 +45,7 @@ describe('arrayToggle', () => {
 
     store.update(1, (state) => {
       return {
-        comments: arrayToggle(state.comments, { id: 1, text: 'comment' }, (a, b) => a.id === b.id),
+        comments: arrayToggle(state.comments, { id: 1, text: 'comment' }, byId()),
       };
     });
 
@@ -63,7 +63,7 @@ describe('arrayToggle', () => {
 
     store.update(1, (state) => {
       return {
-        comments: arrayToggle(state.comments, { id: 1, text: 'comment' }, (a, b) => a.id === b.id),
+        comments: arrayToggle(state.comments, { id: 1, text: 'comment' }, byKey('id')),
       };
     });
 
