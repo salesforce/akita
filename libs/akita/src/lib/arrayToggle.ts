@@ -7,5 +7,6 @@
  * @param compare A compare function to determine equality of array values.
  */
 export function arrayToggle<T>(array: T[], newValue: T, compare: (a: T, b: T) => boolean = (a, b) => a === b) {
-  return !!~array.findIndex((oldValue) => compare(newValue, oldValue)) ? array.filter((oldValue) => !compare(newValue, oldValue)) : [...array, newValue];
+  const oldIndex = array.findIndex((oldValue) => compare(newValue, oldValue));
+  return oldIndex >= 0 ? array.filter((value, index) => index !== oldIndex) : [...array, newValue];
 }
