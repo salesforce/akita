@@ -31,7 +31,7 @@ We have an `EntityStore` which holds a collection of articles. Each `article` ho
 ### `arrayAdd`
 
 ```ts
-import { arrayAdd } from '@datorama/akita'; 
+import { arrayAdd } from '@datorama/akita';
 
 articlesStore.update(1, ({ comments }) => ({
   comments: arrayAdd(comments, newComments)
@@ -41,7 +41,7 @@ articlesStore.update(1, ({ comments }) => ({
 ### `arrayRemove`
 
 ```ts
-import { arrayRemove } from '@datorama/akita'; 
+import { arrayRemove } from '@datorama/akita';
 
 articlesStore.update(1, ({ comments }) => ({
   comments: arrayRemove(comments, ids)
@@ -56,7 +56,7 @@ articlesStore.update(1, ({ comments }) => ({
 ### `arrayUpdate`
 
 ```ts
-import { arrayUpdate } from '@datorama/akita'; 
+import { arrayUpdate } from '@datorama/akita';
 
 articlesStore.update(1, ({ comments }) => ({
   comments: arrayUpdate(comments, id/s, { text: 'New text' })
@@ -71,7 +71,7 @@ articlesStore.update(1, ({ comments }) => ({
 ### `arrayUpsert`
 
 ```ts
-import { arrayUpsert } from '@datorama/akita'; 
+import { arrayUpsert } from '@datorama/akita';
 
 articlesStore.update(1, ({ comments }) => ({
   comments: arrayUpsert(comments, id, { text: 'New text' })
@@ -88,6 +88,34 @@ Each function takes an optional `idKey` which defaults to `id`:
 articlesStore.update(1, ({ comments }) => ({
   comments: arrayUpdate(comments, 3, { text: 'New text' }, 'comment_id')
 }));
+```
+
+### `arrayToggle`
+
+Adds a value to an array if it doesn't exist yet or removes it if already present. Objects are compared by identity by default.
+You can override it by providing a custom compare function.
+
+:::tip
+Akita provides two common comparators for `arrayToggle`: The `byId()` and `byKey(key: string)` compare function.
+:::
+
+Toggling an array of objects:
+
+```ts
+import { arrayToggle } from '@datorama/akita';
+
+articlesStore.update(1, ({ comments }) => ({
+  comments: arrayToggle(comments, { id: 1, text: 'New text' }, byId())
+}));
+```
+
+Toggling an array of primitive values:
+
+```ts
+import { arrayToggle } from '@datorama/akita';
+
+arrayToggle(['a', 'b'], 'c'); // returns ['a', 'b', 'c']
+arrayToggle(['a', 'b', 'c'], 'b'); // returns ['a', 'c']
 ```
 
 ## Store Usage
@@ -138,5 +166,4 @@ const admins$ = authQuery
 
 
 The added advantage is that these observables **will only fire if one of the items in the resulting collection has been modified**, via an update, add or delete operation.
-
 

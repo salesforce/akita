@@ -61,6 +61,7 @@ export { arrayAdd } from './arrayAdd';
 export { arrayUpsert } from './arrayUpsert';
 export { arrayFind, distinctUntilArrayItemChanged, find } from './arrayFind';
 export { arrayRemove } from './arrayRemove';
+export { arrayToggle, byId, byKey } from './arrayToggle';
 export { createEntityQuery, createEntityStore, createQuery, createStore } from './fp';
 export * from './entityActions';
 export * from './dispatchers';
