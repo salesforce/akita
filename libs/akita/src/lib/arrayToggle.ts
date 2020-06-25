@@ -9,8 +9,8 @@ export function byKey<T>(prop: keyof T) {
 /**
  * Create an array value comparator for the id field of an array value.
  */
-export function byId<T extends Record<K, any>, K extends keyof T | 'id' = 'id'>() {
-  return byKey<T>('id' as K);
+export function byId<T extends Record<'id', any>>() {
+  return byKey<T>('id');
 }
 
 /**
