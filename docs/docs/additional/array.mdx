@@ -92,14 +92,14 @@ articlesStore.update(1, ({ comments }) => ({
 
 ### `arrayToggle`
 
-Adds a value to an array if it does'nt exist yet or removes it if already present. Objects are compared by identity by
-default. For a fine grained control how values are compared the last argument of `arrayToggle` accepts a compare function.
+Adds a value to an array if it doesn't exist yet or removes it if already present. Objects are compared by identity by default.
+You can override it by providing a custom compare function.
 
 :::tip
 Akita provides two common comparators for `arrayToggle`: The `byId()` and `byKey(key: string)` compare function.
 :::
 
-Toggling objects of an array:
+Toggling an array of objects:
 
 ```ts
 import { arrayToggle } from '@datorama/akita';
@@ -109,12 +109,12 @@ articlesStore.update(1, ({ comments }) => ({
 }));
 ```
 
-Toggling primitive values of an array:
+Toggling an array of primitive values:
 
 ```ts
 import { arrayToggle } from '@datorama/akita';
 
-arrayToggle(['a', 'c'], 'b'); // returns ['a', 'b', 'c']
+arrayToggle(['a', 'b'], 'c'); // returns ['a', 'b', 'c']
 arrayToggle(['a', 'b', 'c'], 'b'); // returns ['a', 'c']
 ```
 
