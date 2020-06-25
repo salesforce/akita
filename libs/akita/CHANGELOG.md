@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.1.0](https://github.com/datorama/akita/compare/akita-v5.0.5...akita-v5.1.0) (2020-06-25)
+
+### Features
+
+- **helper:** add a utility function to toggle array values ([#467](https://github.com/datorama/akita/issues/467)) ([ecf5ca3](https://github.com/datorama/akita/commit/ecf5ca3d764517a62588ca6cd72af3ab6324d7cf))
+
 ### [5.0.5](https://github.com/datorama/akita/compare/akita-v5.0.4...akita-v5.0.5) (2020-06-19)
 
 ### [5.0.4](https://github.com/datorama/akita/compare/akita-v5.0.3...akita-v5.0.4) (2020-06-19)
