@@ -96,7 +96,7 @@ Adds a value to an array if it does'nt exist yet or removes it if already presen
 default. For a fine grained control how values are compared the last argument of `arrayToggle` accepts a compare function.
 
 :::tip
-Akita provides two often used comparators for `arrayToggle`: The `byId()` and `byKey(key: string)` compare function.
+Akita provides two common comparators for `arrayToggle`: The `byId()` and `byKey(key: string)` compare function.
 :::
 
 Toggling objects of an array:
@@ -166,5 +166,4 @@ const admins$ = authQuery
 
 
 The added advantage is that these observables **will only fire if one of the items in the resulting collection has been modified**, via an update, add or delete operation.
-
 
