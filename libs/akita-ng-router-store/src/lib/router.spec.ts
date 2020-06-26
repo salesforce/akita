@@ -64,9 +64,9 @@ describe('RouterService', () => {
       providers: [AuthGuard, { provide: APP_BASE_HREF, useValue: '/' }],
     }).compileComponents();
 
-    routerQuery = TestBed.inject(RouterQuery);
-    ngZone = TestBed.inject(NgZone);
-    router = TestBed.inject(Router);
+    routerQuery = TestBed.get(RouterQuery);
+    ngZone = TestBed.get(NgZone);
+    router = TestBed.get(Router);
 
     navigateByUrl('start');
   });
