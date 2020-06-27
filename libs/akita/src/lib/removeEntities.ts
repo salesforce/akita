@@ -1,3 +1,4 @@
+import { coerceArray } from './coerceArray';
 import { EntityState, ID, StateWithActive } from './types';
 import { isNil } from './isNil';
 import { hasActiveState, isMultiActiveState, resolveActiveEntity } from './activeState';
@@ -22,7 +23,8 @@ export function removeEntities<S extends EntityState<E>, E>({ state, ids }: Remo
   const newState = {
     ...state,
     entities: newEntities,
-    ids: state.ids.filter(current => ids.includes(current) === false)
+    ids: state.ids.filter((current) => !ids.includes(current)),
+    idsExpired: coerceArray(state.idsExpired).filter((id) => !ids.includes(id)),
   };
 
   if (hasActiveState(state)) {
@@ -38,6 +40,7 @@ export function removeAllEntities<S>(state: StateWithActive<S>): S {
     ...state,
     entities: {},
     ids: [],
-    active: isMultiActiveState(state.active) ? [] : null
+    idsExpired: [],
+    active: isMultiActiveState(state.active) ? [] : null,
   };
 }

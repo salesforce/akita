@@ -164,6 +164,13 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
   }
 
   /**
+   * Select all expired entity ids which are still present.
+   */
+  selectExpiredEntityIds() {
+    return this.select((state) => state.idsExpired);
+  }
+
+  /**
    * Get an entity by id
    *
    * @example

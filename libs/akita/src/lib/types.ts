@@ -7,6 +7,7 @@ export interface HashMap<T> {
 
 export interface EntityState<E = any, IDType = any> {
   entities?: HashMap<E>;
+  idsExpired?: IDType[];
   ids?: IDType[];
   loading?: boolean;
   error?: any;
@@ -42,10 +43,10 @@ export type IDS = ID | ID[];
 export type PreAddEntity<Entity> = (entity: Entity) => Entity;
 export type PreUpdateEntity<Entity> = (prevEntity: Entity, nextEntity: Entity) => Entity;
 
-export type StoreCache = {
-  active: BehaviorSubject<boolean>;
-  ttl: number;
-};
+// export type StoreCache = {
+//   active: BehaviorSubject<boolean>;
+//   ttl: number;
+// };
 export type ArrayProperties<T> = { [K in keyof T]: T[K] extends any[] ? K : never }[keyof T];
 export type ItemPredicate<Item = any> = (item: Item, index?: number) => boolean;
 export type MaybeAsync<T = any> = Promise<T> | Observable<T> | T;

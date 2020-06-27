@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable } from 'rxjs';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { currentAction, resetCustomAction, setAction, StoreSnapshotAction } from './actions';
 import { getAkitaConfig, getGlobalProducerFn } from './config';
 import { deepFreeze } from './deepFreeze';
@@ -13,7 +13,8 @@ import { isBrowser } from './root';
 import { configKey, StoreConfigOptions, UpdatableStoreConfigOptions } from './storeConfig';
 import { __stores__ } from './stores';
 import { commit, isTransactionInProcess } from './transaction';
-import { StoreCache, UpdateStateCallback } from './types';
+import { TTLCache, TTLType } from './ttlCache';
+import { UpdateStateCallback } from './types';
 
 interface StoreSnapshot<S> {
   state: S;
@@ -50,10 +51,14 @@ export class Store<S = any> {
   private storeValue: S;
   private inTransaction = false;
   private _initialState: S;
-  protected cache: StoreCache = {
-    active: new BehaviorSubject<boolean>(false),
-    ttl: null,
-  };
+
+  protected ttlCache = new TTLCache();
+  protected hasCache = new BehaviorSubject<boolean>(false);
+
+  // protected cache: StoreCache = {
+  //   active: new BehaviorSubject<boolean>(false),
+  //   ttl: null,
+  // };
 
   constructor(initialState: Partial<S>, protected options: Partial<StoreConfigOptions> = {}) {
     this.onInit(initialState as S);
@@ -86,17 +91,15 @@ export class Store<S = any> {
    *
    */
   setHasCache(hasCache: boolean, options: { restartTTL: boolean } = { restartTTL: false }) {
-    if (hasCache !== this.cache.active.value) {
-      this.cache.active.next(hasCache);
+    if (hasCache !== this.hasCache.value) {
+      this.hasCache.next(hasCache);
     }
 
-    if (options.restartTTL) {
+    if (hasCache && options.restartTTL) {
       const ttlConfig = this.getCacheTTL();
+
       if (ttlConfig) {
-        if (this.cache.ttl !== null) {
-          clearTimeout(this.cache.ttl);
-        }
-        this.cache.ttl = <any>setTimeout(() => this.setHasCache(false), ttlConfig);
+        this.ttlCache.update(ttlConfig, TTLType.Store, undefined);
       }
     }
   }
@@ -142,7 +145,12 @@ export class Store<S = any> {
 
   // @internal
   _cache(): BehaviorSubject<boolean> {
-    return this.cache.active;
+    return this.hasCache;
+  }
+
+  // @internal
+  get expired$() {
+    return this.ttlCache.expired$.asObservable();
   }
 
   // @internal
@@ -286,7 +294,7 @@ export class Store<S = any> {
       delete __stores__[this.storeName];
       dispatchDeleted(this.storeName);
       this.setHasCache(false);
-      this.cache.active.complete();
+      this.hasCache.complete();
       this.store.complete();
     }
   }
@@ -299,6 +307,9 @@ export class Store<S = any> {
       this._initialState = initialState;
     }
     isDev() && assertStoreHasName(this.storeName, this.constructor.name);
+    this.ttlCache.expired$.pipe(filter((ttl) => ttl.type === TTLType.Store)).subscribe(() => {
+      this.setHasCache(false);
+    });
   }
 
   private dispatch(state: S, _dispatchAction = true) {
@@ -333,7 +344,7 @@ export class Store<S = any> {
     }
   }
 
-  private getCacheTTL() {
+  protected getCacheTTL() {
     return (this.cacheConfig && this.cacheConfig.ttl) || getAkitaConfig().ttl;
   }
 }

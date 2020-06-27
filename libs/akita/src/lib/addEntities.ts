@@ -1,3 +1,4 @@
+import { coerceArray } from './coerceArray';
 import { EntityState, PreAddEntity } from './types';
 import { hasEntity } from './hasEntity';
 
@@ -36,11 +37,12 @@ export function addEntities<S extends EntityState<E>, E>({ state, entities, idKe
           ...state,
           entities: {
             ...state.entities,
-            ...newEntities
+            ...newEntities,
           },
-          ids: options.prepend ? [...newIds, ...state.ids] : [...state.ids, ...newIds]
+          ids: options.prepend ? [...newIds, ...state.ids] : [...state.ids, ...newIds],
+          idsExpired: coerceArray(state.idsExpired),
         },
-        newIds
+        newIds,
       }
     : null;
 }

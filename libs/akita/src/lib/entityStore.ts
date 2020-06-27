@@ -1,7 +1,11 @@
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { logAction, setAction } from './actions';
 import { addEntities, AddEntitiesOptions } from './addEntities';
+import { arrayAdd } from './arrayAdd';
+import { arrayUpsert } from './arrayUpsert';
 import { coerceArray } from './coerceArray';
+import { getAkitaConfig } from './config';
 import { DEFAULT_ID_KEY } from './defaultIDKey';
 import { EntityAction, EntityActions } from './entityActions';
 import { isDev } from './env';
@@ -18,6 +22,7 @@ import { SetEntities, setEntities } from './setEntities';
 import { Store } from './store';
 import { StoreConfigOptions } from './storeConfig';
 import { transaction } from './transaction';
+import { TTLType } from './ttlCache';
 import {
   Constructor,
   CreateStateCallback,
@@ -25,6 +30,7 @@ import {
   EntityUICreateFn,
   getEntityType,
   getIDType,
+  ID,
   IDS,
   OrArray,
   StateWithActive,
@@ -57,6 +63,25 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 
   constructor(initialState: Partial<S> = {}, protected options: Partial<StoreConfigOptions> = {}) {
     super({ ...getInitialEntitiesState(), ...initialState }, options);
+
+    const removeExpiredEntities = this.getCacheRemoveExpiredEntities();
+
+    this.ttlCache.expired$.pipe(filter((ttl) => ttl.type === TTLType.Entity)).subscribe((ttl) => {
+      if (ttl.id && this.ids.includes(ttl.id)) {
+        this._setState((state) => {
+          const idsExpired = state.idsExpired || [];
+
+          return {
+            ...state,
+            idsExpired: idsExpired.includes(ttl.id) ? idsExpired : [...idsExpired, ttl.id],
+          };
+        });
+
+        if (removeExpiredEntities) {
+          this.remove((ttl.id as unknown) as IDType);
+        }
+      }
+    });
   }
 
   // @internal
@@ -86,7 +111,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     isDev() && setAction('Set Entity');
 
     const isNativePreAdd = this.akitaPreAddEntity === EntityStore.prototype.akitaPreAddEntity;
-    this.setHasCache(true, { restartTTL: true });
+    // this.setHasCache(true, { restartTTL: true });
 
     this._setState((state) => {
       const newState = setEntities({
@@ -109,6 +134,12 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     }
 
     this.entityActions.next({ type: EntityActions.Set, ids: this.ids });
+
+    const ttlConfig = this.getCacheTTL();
+
+    if (ttlConfig) {
+      this.ids.forEach((id) => this.ttlCache.update(ttlConfig, TTLType.Entity, id));
+    }
   }
 
   /**
@@ -146,6 +177,12 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
       }
 
       this.entityActions.next({ type: EntityActions.Add, ids: data.newIds });
+
+      const ttlConfig = this.getCacheTTL();
+
+      if (ttlConfig) {
+        data.newIds.forEach((id) => this.ttlCache.update(ttlConfig, TTLType.Entity, id));
+      }
     }
   }
 
@@ -208,6 +245,12 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     );
 
     this.entityActions.next({ type: EntityActions.Update, ids });
+
+    const ttlConfig = this.getCacheTTL();
+
+    if (ttlConfig) {
+      ids.forEach((id) => this.ttlCache.update(ttlConfig, TTLType.Entity, (id as unknown) as ID));
+    }
   }
 
   /**
@@ -254,7 +297,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     const isClassBased = isFunction(baseClass);
 
     const updateIds = toArray.filter(predicate(true));
-    const newEntities = toArray.filter(predicate(false)).map((id) => {
+    const newEntities: EntityType[] = toArray.filter(predicate(false)).map((id) => {
       const newStateObj = typeof newState === 'function' ? newState({}) : newState;
       const entity = isFunction(onCreate) ? onCreate(id, newStateObj) : newStateObj;
       const withId = { ...entity, [this.idKey]: id };
@@ -268,6 +311,14 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     this.update(updateIds, newState as UpdateStateCallback<EntityType, NewEntityType>);
     this.add(newEntities);
     isDev() && logAction('Upsert Entity');
+
+    const ttlConfig = this.getCacheTTL();
+
+    if (ttlConfig) {
+      const ids = [...updateIds, ...newEntities.map((entity) => entity[this.idKey] as IDType)];
+
+      ids.forEach((id) => this.ttlCache.update(ttlConfig, TTLType.Entity, (id as unknown) as ID));
+    }
   }
 
   /**
@@ -313,6 +364,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     this._setState((state) => ({
       ...state,
       ids: addedIds.length ? [...state.ids, ...addedIds] : state.ids,
+      idsExpired: coerceArray(state.idsExpired).filter((id) => !updatedIds.includes(id)),
       entities: {
         ...state.entities,
         ...updatedEntities,
@@ -324,6 +376,14 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     addedIds.length && this.entityActions.next({ type: EntityActions.Add, ids: addedIds });
     if (addedIds.length && this.hasUIStore()) {
       this.handleUICreation(true);
+    }
+
+    const ttlConfig = this.getCacheTTL();
+
+    if (ttlConfig) {
+      const ids = [...updatedIds, ...addedIds];
+
+      ids.forEach((id) => this.ttlCache.update(ttlConfig, TTLType.Entity, id));
     }
   }
 
@@ -418,6 +478,12 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 
     this.handleUIRemove(ids);
     this.entityActions.next({ type: EntityActions.Remove, ids });
+
+    const ttlConfig = this.getCacheTTL();
+
+    if (ttlConfig) {
+      ids.forEach((id) => this.ttlCache.cancel(TTLType.Entity, (id as unknown) as ID));
+    }
   }
 
   /**
@@ -637,6 +703,10 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 
   private hasUIStore() {
     return this.ui instanceof EntityUIStore;
+  }
+
+  protected getCacheRemoveExpiredEntities() {
+    return (this.cacheConfig && this.cacheConfig.removeExpiredEntities) || false;
   }
 }
 

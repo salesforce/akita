@@ -4,7 +4,7 @@ import { snapshotManager } from '../lib/snapshotManager';
 import { StoreConfig } from '../lib/storeConfig';
 
 @StoreConfig({
-  name: 'todos'
+  name: 'todos',
 })
 class TodosStore extends EntityStore<any, any> {
   constructor() {
@@ -13,7 +13,7 @@ class TodosStore extends EntityStore<any, any> {
 }
 
 @StoreConfig({
-  name: 'auth'
+  name: 'auth',
 })
 class AuthStore extends Store<any> {
   constructor() {
@@ -30,7 +30,7 @@ auth._setState(() => {
     id: 1,
     firstName: 'Netanel',
     lastName: 'Basal',
-    token: 'token'
+    token: 'token',
   };
 });
 
@@ -40,10 +40,11 @@ describe('Snapshot manager', () => {
       todos: {
         entities: { '1': { id: 1 } },
         ids: [1],
+        idsExpired: [],
         loading: false,
-        error: null
+        error: null,
       },
-      auth: { id: 1, firstName: 'Netanel', lastName: 'Basal', token: 'token' }
+      auth: { id: 1, firstName: 'Netanel', lastName: 'Basal', token: 'token' },
     };
     expect(snapshotManager.getStoresSnapshot()).toEqual(expected);
   });
@@ -53,9 +54,10 @@ describe('Snapshot manager', () => {
       todos: {
         entities: { '1': { id: 1 } },
         ids: [1],
+        idsExpired: [],
         loading: false,
-        error: null
-      }
+        error: null,
+      },
     };
     expect(snapshotManager.getStoresSnapshot(['todos'])).toEqual(expected);
   });
@@ -66,16 +68,18 @@ describe('Snapshot manager', () => {
       todos: {
         entities: { '1': { id: 1 } },
         ids: [1],
+        idsExpired: [],
         loading: true,
-        error: null
-      }
+        error: null,
+      },
     };
     snapshotManager.setStoresSnapshot(value);
     expect(todos._value()).toEqual({
       entities: { '1': { id: 1 } },
       ids: [1],
+      idsExpired: [],
       loading: true,
-      error: null
+      error: null,
     });
   });
 
@@ -85,6 +89,7 @@ describe('Snapshot manager', () => {
       "todos": {
         "entities": { "1": { "id": 1 } },
         "ids": [1],
+        "idsExpired": [],
         "loading": true,
         "error": null
       }
@@ -93,8 +98,9 @@ describe('Snapshot manager', () => {
     expect(todos._value()).toEqual({
       entities: { '1': { id: 1 } },
       ids: [1],
+      idsExpired: [],
       loading: true,
-      error: null
+      error: null,
     });
   });
 });

@@ -28,13 +28,13 @@ describe('setLoading', () => {
     expect(query.getValue().loading).toBe(false);
     cacheable(store, request).subscribe(spy);
     // from inside withLoading
-    expect(store.setLoading).toBeCalledTimes(2);
+    expect(store.setLoading).toBeCalledTimes(3);
     expect(spy).toHaveBeenCalledTimes(1);
     expect(log.length).toEqual(1);
 
     cacheable(store, request).subscribe(spy);
     // from inside withLoading
-    expect(store.setLoading).toBeCalledTimes(2);
+    expect(store.setLoading).toBeCalledTimes(4);
     expect(spy).toHaveBeenCalledTimes(1);
     expect(log.length).toEqual(1);
   });

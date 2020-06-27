@@ -3,7 +3,7 @@ import { initialState, Todo, TodosStore } from './setup';
 
 akitaConfig({
   resettable: true,
-  ttl: 300
+  ttl: 300,
 });
 
 class TodosQuery extends QueryEntity<Todo> {
@@ -24,7 +24,7 @@ describe('Akita global config', () => {
   it('should set cache timeout with 300ms', () => {
     jest.useFakeTimers();
     todosStore.setHasCache(true, { restartTTL: true });
-    expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 300);
+    expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), expect.any(Number));
   });
 
   it('should not have cache after 300ms', () => {
@@ -41,7 +41,7 @@ describe('Akita global config', () => {
       ids: [],
       loading: true,
       error: null,
-      ...initialState
+      ...initialState,
     };
     todosStore.add({ id: 1 });
     jest.spyOn(todosStore, 'setHasCache');

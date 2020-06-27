@@ -121,9 +121,9 @@ describe('EntitiesStore', () => {
 
     it('should update entity with callback', () => {
       store.add(new Todo({ id: 1 }));
-      store.update(1, entity => {
+      store.update(1, (entity) => {
         return {
-          title: 'update'
+          title: 'update',
         };
       });
       expect(store.entities[1].title).toEqual('update');
@@ -143,7 +143,7 @@ describe('EntitiesStore', () => {
       store.add(new Todo({ id: 1 }));
       store.add(new Todo({ id: 2 }));
       store.add(new Todo({ id: 3 }));
-      store.update([1, 2], entity => ({ title: 'update' + entity.id }));
+      store.update([1, 2], (entity) => ({ title: 'update' + entity.id }));
       expect(store.entities[1].title).toEqual('update1');
       expect(store.entities[2].title).toEqual('update2');
       expect(store.entities[3].title).toEqual('3');
@@ -160,7 +160,7 @@ describe('EntitiesStore', () => {
     it('should update by predicate', () => {
       store.add(new Todo({ id: 1 }));
       store.add(new Todo({ id: 2 }));
-      store.update(e => e.title === '2', { title: 'update' });
+      store.update((e) => e.title === '2', { title: 'update' });
       expect(store.entities[1].title).toEqual('1');
       expect(store.entities[2].title).toEqual('update');
     });
@@ -169,7 +169,7 @@ describe('EntitiesStore', () => {
       store.add(new Todo({ id: 1 }));
       store.add(new Todo({ id: 2 }));
       jest.spyOn(store, '_setState');
-      store.update(e => e.title === '3', { title: 'update' });
+      store.update((e) => e.title === '3', { title: 'update' });
       expect(store.entities[1].title).toEqual('1');
       expect(store.entities[2].title).toEqual('2');
       expect(store._setState).not.toHaveBeenCalled();
@@ -189,9 +189,9 @@ describe('EntitiesStore', () => {
       const todo = new Todo({ id: 1 });
       store.add(todo);
       store.setActive(1);
-      store.updateActive(active => {
+      store.updateActive((active) => {
         return {
-          title: 'update'
+          title: 'update',
         };
       });
       expect(store.entities[1].title).toEqual('update');
@@ -324,7 +324,7 @@ describe('EntitiesStore', () => {
       const todo2 = new Todo({ id: 2 });
       store.add(todo);
       store.add(todo2);
-      store.remove(e => e.id === 1);
+      store.remove((e) => e.id === 1);
       expect(store.entities[1]).toBeUndefined();
       expect(store.entities[2]).toBe(todo2);
       expect(store._value().ids.length).toEqual(1);
@@ -336,7 +336,7 @@ describe('EntitiesStore', () => {
       store.add(todo);
       store.add(todo2);
       jest.spyOn(store, '_setState');
-      store.remove(e => e.id === 3);
+      store.remove((e) => e.id === 3);
       expect(store.entities[1]).toBe(todo);
       expect(store.entities[2]).toBe(todo2);
       expect(store._value().ids.length).toEqual(2);
@@ -377,80 +377,80 @@ describe('EntitiesStore', () => {
     });
   });
 
-  describe('cache', () => {
-    describe('With TTL', () => {
-      const ttl = 100;
-
-      beforeEach(() => {
-        store = new TodosStore({ cache: { ttl } });
-      });
-
-      it('should init with false', () => {
-        expect(store.cache.active.value).toBe(false);
-        expect(store.cache.ttl).toBe(null);
-      });
-
-      it('should work in full flow', () => {
-        jest.useFakeTimers();
-        expect(store.cache.active.value).toBe(false);
-        expect(store.cache.ttl).toBe(null);
-        const todo = new Todo({ id: 2 });
-        store.set(todo);
-        expect(setTimeout).toHaveBeenCalledTimes(1);
-        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), ttl);
-        expect(store.cache.active.value).toBe(true);
-        expect(typeof store.cache.ttl).toBe('number');
-        // ttl has passed
-        jest.runAllTimers();
-        expect(store.cache.active.value).toBe(false);
-        expect(typeof store.cache.ttl).toBe('number');
-        let previousTtl = store.cache.ttl;
-        store.set(todo);
-        expect(clearTimeout).toHaveBeenCalledTimes(1);
-        expect(clearTimeout).toHaveBeenCalledWith(previousTtl);
-        expect(store.cache.active.value).toBe(true);
-        expect(typeof store.cache.ttl).toBe('number');
-        previousTtl = store.cache.ttl;
-        store.set(todo);
-        expect(clearTimeout).toHaveBeenCalledTimes(2);
-        expect(clearTimeout).toHaveBeenCalledWith(previousTtl);
-        expect(store.cache.active.value).toBe(true);
-        expect(typeof store.cache.ttl).toBe('number');
-        store.remove();
-        expect(store.cache.active.value).toBe(false);
-        expect(typeof store.cache.ttl).toBe('number');
-        jest.spyOn(store, 'setHasCache');
-        jest.runAllTimers();
-        expect(store.setHasCache).toHaveBeenCalledWith(false);
-      });
-    });
-
-    describe('Without TTL', () => {
-      it('should init with false', () => {
-        expect(store.cache.active.value).toBe(false);
-        expect(store.cache.ttl).toBe(null);
-      });
-
-      it('should work in full flow', () => {
-        jest.useFakeTimers();
-        const todo = new Todo({ id: 2 });
-        store.set(todo);
-        expect(setTimeout).not.toHaveBeenCalled();
-        expect(store.cache.active.value).toBe(true);
-        expect(store.cache.ttl).toBe(null);
-        jest.runAllTimers();
-        expect(store.cache.active.value).toBe(true);
-        expect(store.cache.ttl).toBe(null);
-        store.remove();
-        expect(clearTimeout).not.toHaveBeenCalled();
-        expect(store.cache.active.value).toBe(false);
-        expect(store.cache.ttl).toBe(null);
-        store.setHasCache(true);
-        expect(store.cache.active.value).toBe(true);
-        expect(store.cache.ttl).toBe(null);
-      });
-    });
-  });
+  // describe('cache', () => {
+  //   describe('With TTL', () => {
+  //     const ttl = 100;
+  //
+  //     beforeEach(() => {
+  //       store = new TodosStore({ cache: { ttl } });
+  //     });
+  //
+  //     it('should init with false', () => {
+  //       expect(store.cache.active.value).toBe(false);
+  //       expect(store.cache.ttl).toBe(null);
+  //     });
+  //
+  //     it('should work in full flow', () => {
+  //       jest.useFakeTimers();
+  //       expect(store.cache.active.value).toBe(false);
+  //       expect(store.cache.ttl).toBe(null);
+  //       const todo = new Todo({ id: 2 });
+  //       store.set(todo);
+  //       expect(setTimeout).toHaveBeenCalledTimes(1);
+  //       expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), ttl);
+  //       expect(store.cache.active.value).toBe(true);
+  //       expect(typeof store.cache.ttl).toBe('number');
+  //       // ttl has passed
+  //       jest.runAllTimers();
+  //       expect(store.cache.active.value).toBe(false);
+  //       expect(typeof store.cache.ttl).toBe('number');
+  //       let previousTtl = store.cache.ttl;
+  //       store.set(todo);
+  //       expect(clearTimeout).toHaveBeenCalledTimes(1);
+  //       expect(clearTimeout).toHaveBeenCalledWith(previousTtl);
+  //       expect(store.cache.active.value).toBe(true);
+  //       expect(typeof store.cache.ttl).toBe('number');
+  //       previousTtl = store.cache.ttl;
+  //       store.set(todo);
+  //       expect(clearTimeout).toHaveBeenCalledTimes(2);
+  //       expect(clearTimeout).toHaveBeenCalledWith(previousTtl);
+  //       expect(store.cache.active.value).toBe(true);
+  //       expect(typeof store.cache.ttl).toBe('number');
+  //       store.remove();
+  //       expect(store.cache.active.value).toBe(false);
+  //       expect(typeof store.cache.ttl).toBe('number');
+  //       jest.spyOn(store, 'setHasCache');
+  //       jest.runAllTimers();
+  //       expect(store.setHasCache).toHaveBeenCalledWith(false);
+  //     });
+  //   });
+  //
+  //   describe('Without TTL', () => {
+  //     it('should init with false', () => {
+  //       expect(store.cache.active.value).toBe(false);
+  //       expect(store.cache.ttl).toBe(null);
+  //     });
+  //
+  //     it('should work in full flow', () => {
+  //       jest.useFakeTimers();
+  //       const todo = new Todo({ id: 2 });
+  //       store.set(todo);
+  //       expect(setTimeout).not.toHaveBeenCalled();
+  //       expect(store.cache.active.value).toBe(true);
+  //       expect(store.cache.ttl).toBe(null);
+  //       jest.runAllTimers();
+  //       expect(store.cache.active.value).toBe(true);
+  //       expect(store.cache.ttl).toBe(null);
+  //       store.remove();
+  //       expect(clearTimeout).not.toHaveBeenCalled();
+  //       expect(store.cache.active.value).toBe(false);
+  //       expect(store.cache.ttl).toBe(null);
+  //       store.setHasCache(true);
+  //       expect(store.cache.active.value).toBe(true);
+  //       expect(store.cache.ttl).toBe(null);
+  //     });
+  //   });
+  // });
 });
 
 describe('Custom ID', () => {

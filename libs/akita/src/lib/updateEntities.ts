@@ -1,3 +1,4 @@
+import { coerceArray } from './coerceArray';
 import { EntityState, ID, PreUpdateEntity, UpdateStateCallback } from './types';
 import { isFunction } from './isFunction';
 import { hasEntity } from './hasEntity';
@@ -44,7 +45,7 @@ export function updateEntities<S extends EntityState<E>, E>({ state, ids, idKey,
 
     const merged = {
       ...oldEntity,
-      ...newState
+      ...newState,
     };
 
     if (isPlainObject(oldEntity)) {
@@ -77,15 +78,16 @@ export function updateEntities<S extends EntityState<E>, E>({ state, ids, idKey,
     const [id] = ids;
     const { [id]: deletedEntity, ...rest } = state.entities;
     stateEntities = rest;
-    updatedIds = state.ids.map(current => (current === id ? idToUpdate : current));
+    updatedIds = state.ids.map((current) => (current === id ? idToUpdate : current));
   }
 
   return {
     ...state,
     entities: {
       ...stateEntities,
-      ...updatedEntities
+      ...updatedEntities,
     },
-    ids: updatedIds
+    ids: updatedIds,
+    idsExpired: coerceArray(state.idsExpired).filter((id) => !updatedIds.includes(id)),
   };
 }

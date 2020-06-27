@@ -43,14 +43,15 @@ export function setEntities<S extends EntityState<E>, E>({ state, entities, idKe
   } else {
     // it's an object
     newEntities = isNativePreAdd ? entities : applyMiddleware(entities, preAddEntity);
-    newIds = Object.keys(newEntities).map(id => (isNaN(id as any) ? id : Number(id)));
+    newIds = Object.keys(newEntities).map((id) => (isNaN(id as any) ? id : Number(id)));
   }
 
   const newState = {
     ...state,
     entities: newEntities,
+    idsExpired: [],
     ids: newIds,
-    loading: false
+    loading: false,
   };
 
   if (hasActiveState(state)) {

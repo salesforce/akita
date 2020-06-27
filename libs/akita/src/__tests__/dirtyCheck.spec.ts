@@ -7,7 +7,7 @@ describe('DirtyCheck', () => {
   function createWidget() {
     return {
       id: ++_id,
-      title: `Widget ${_id}`
+      title: `Widget ${_id}`,
     } as Widget;
   }
 
@@ -41,12 +41,13 @@ describe('DirtyCheck', () => {
           entities: {
             '1': {
               id: 1,
-              title: 'Widget 1'
-            }
+              title: 'Widget 1',
+            },
           },
           error: null,
           ids: [1],
-          loading: false
+          idsExpired: [],
+          loading: false,
         });
         expect(spy).toHaveBeenLastCalledWith(false);
       });
@@ -70,17 +71,18 @@ describe('DirtyCheck', () => {
           entities: {
             '1': {
               id: 1,
-              title: 'Widget 1'
+              title: 'Widget 1',
             },
             '3': {
               id: 3,
-              title: 'Widget 3'
-            }
+              title: 'Widget 3',
+            },
           },
 
           error: null,
           ids: [1, 3],
-          loading: false
+          idsExpired: [],
+          loading: false,
         });
       });
 
@@ -92,16 +94,17 @@ describe('DirtyCheck', () => {
           entities: {
             '1': {
               id: 1,
-              title: 'Widget 1'
+              title: 'Widget 1',
             },
             '3': {
               id: 3,
-              title: 'Widget 3'
-            }
+              title: 'Widget 3',
+            },
           },
           error: null,
           ids: [1, 3],
-          loading: false
+          idsExpired: [],
+          loading: false,
         });
 
         expect(spy).toHaveBeenLastCalledWith(false);
@@ -140,7 +143,7 @@ describe('DirtyCheck', () => {
         const widgetsStore = new WidgetsStore({ some: { nested: { value: '' } } });
         const widgetsQuery = new WidgetsQuery(widgetsStore);
         const dirtyCheck = new DirtyCheckPlugin(widgetsQuery);
-        it('should not return dirty for isPathDirty', function() {
+        it('should not return dirty for isPathDirty', function () {
           let isPathDirty: boolean;
           dirtyCheck.setHead();
           isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
@@ -149,9 +152,9 @@ describe('DirtyCheck', () => {
           widgetsStore.update({
             some: {
               nested: {
-                value: 'other value'
-              }
-            }
+                value: 'other value',
+              },
+            },
           });
 
           isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
@@ -164,9 +167,9 @@ describe('DirtyCheck', () => {
           widgetsStore.update({
             some: {
               nested: {
-                value: 'other value'
-              }
-            }
+                value: 'other value',
+              },
+            },
           });
 
           isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
@@ -175,24 +178,24 @@ describe('DirtyCheck', () => {
           widgetsStore.update({
             some: {
               nested: {
-                value: ''
-              }
-            }
+                value: '',
+              },
+            },
           });
 
           isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
           expect(isPathDirty).toBeFalsy();
         });
 
-        it('should return dirty for isPathDirty', function() {
+        it('should return dirty for isPathDirty', function () {
           let isPathDirty: boolean;
           dirtyCheck.setHead();
           widgetsStore.update({
             some: {
               nested: {
-                value: 'some other name'
-              }
-            }
+                value: 'some other name',
+              },
+            },
           });
 
           isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
@@ -205,9 +208,9 @@ describe('DirtyCheck', () => {
           widgetsStore.update({
             some: {
               nested: {
-                value: 'some other name'
-              }
-            }
+                value: 'some other name',
+              },
+            },
           });
 
           isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
@@ -216,9 +219,9 @@ describe('DirtyCheck', () => {
           widgetsStore.update({
             some: {
               nested: {
-                value: ''
-              }
-            }
+                value: '',
+              },
+            },
           });
 
           isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
@@ -227,9 +230,9 @@ describe('DirtyCheck', () => {
           widgetsStore.update({
             some: {
               nested: {
-                value: 'some value'
-              }
-            }
+                value: 'some value',
+              },
+            },
           });
 
           isPathDirty = dirtyCheck.isPathDirty('some.nested.value');
@@ -274,7 +277,7 @@ describe('DirtyCheck', () => {
     const spy = jest.fn();
     dirtyCheck.isDirty$.pipe(skip(1)).subscribe(spy);
     it(`should watch 'ids' property if 'entities' is watched`, () => {
-      const watching = !['entities', 'ids'].some(key => !(dirtyCheck.params.watchProperty as any[]).includes(key));
+      const watching = !['entities', 'ids'].some((key) => !(dirtyCheck.params.watchProperty as any[]).includes(key));
       expect(watching).toBe(true);
     });
 
@@ -340,7 +343,7 @@ describe('DirtyCheckEntity', () => {
     return {
       id: ++_id,
       title: `Widget ${_id}`,
-      complete
+      complete,
     } as Widget;
   }
 
@@ -376,7 +379,7 @@ describe('DirtyCheckEntity', () => {
       const updateFn = (head, current) => {
         return {
           ...head,
-          title: current.title
+          title: current.title,
         };
       };
       collection.reset(1, { updateFn });
@@ -391,7 +394,7 @@ describe('DirtyCheckEntity', () => {
       collection.setHead();
       let expectedResult = false;
       let isDirty = collection.someDirty();
-      const subscription = collection.someDirty$.subscribe(res => {
+      const subscription = collection.someDirty$.subscribe((res) => {
         isDirty = collection.someDirty();
         expect(isDirty).toBe(expectedResult);
         expect(res).toBe(expectedResult);
@@ -449,7 +452,7 @@ describe('DirtyCheckEntity', () => {
     });
 
     describe('dirtyPath', () => {
-      it('should not return dirty for isPathDirty', function() {
+      it('should not return dirty for isPathDirty', function () {
         let isPathDirty: boolean;
         const widget = createWidget();
         widgetsStore.add(widget);
@@ -474,7 +477,7 @@ describe('DirtyCheckEntity', () => {
         expect(isPathDirty).toBeFalsy();
       });
 
-      it('should return dirty for isPathDirty', function() {
+      it('should return dirty for isPathDirty', function () {
         let isPathDirty: boolean;
         let widget = createWidget();
         widgetsStore.add(widget);
@@ -485,7 +488,7 @@ describe('DirtyCheckEntity', () => {
 
         widgetsStore.update(widget.id, {
           ...widget,
-          title: 'some other name'
+          title: 'some other name',
         });
 
         isPathDirty = collection.isPathDirty(widget.id, 'title');
@@ -493,7 +496,7 @@ describe('DirtyCheckEntity', () => {
 
         widgetsStore.update(widget.id, {
           ...widget,
-          title: `Widget ${widget.id}`
+          title: `Widget ${widget.id}`,
         });
 
         isPathDirty = collection.isPathDirty(widget.id, 'title');
@@ -501,7 +504,7 @@ describe('DirtyCheckEntity', () => {
 
         widgetsStore.update(widget.id, {
           ...widget,
-          title: 'some other name'
+          title: 'some other name',
         });
 
         isPathDirty = collection.isPathDirty(widget.id, 'title');
@@ -542,7 +545,7 @@ describe('DirtyCheckEntity', () => {
       const updateFn = (head, current) => {
         return {
           ...head,
-          title: current.title
+          title: current.title,
         };
       };
       collection.reset(1, { updateFn });
@@ -561,12 +564,12 @@ describe('DirtyCheckEntity', () => {
       let isDirty = collection.someDirty();
       const spy = jest.fn();
       const subscription = [
-        collection.someDirty$.subscribe(res => {
+        collection.someDirty$.subscribe((res) => {
           isDirty = collection.someDirty();
           expect(isDirty).toBe(expectedResult);
           expect(res).toBe(expectedResult);
         }),
-        collection.someDirty$.subscribe(spy)
+        collection.someDirty$.subscribe(spy),
       ];
       expect(isDirty).toBe(expectedResult);
       jest.runAllTimers();
@@ -601,7 +604,7 @@ describe('DirtyCheckEntity', () => {
       expect(isDirty).toBe(expectedResult);
       jest.runAllTimers();
       expect(spy).toBeCalledTimes(7);
-      subscription.forEach(s => s.unsubscribe());
+      subscription.forEach((s) => s.unsubscribe());
     });
 
     it('someDirty should return false when calling set head', () => {
@@ -613,10 +616,10 @@ describe('DirtyCheckEntity', () => {
       const spy = jest.fn();
       let expectedResult = false;
       const subscription = [
-        collection.someDirty$.subscribe(res => {
+        collection.someDirty$.subscribe((res) => {
           expect(res).toBe(expectedResult);
         }),
-        collection.someDirty$.subscribe(spy)
+        collection.someDirty$.subscribe(spy),
       ];
       jest.runAllTimers();
       collection.setHead();
@@ -638,7 +641,7 @@ describe('DirtyCheckEntity', () => {
       expectedResult = false;
       jest.runAllTimers();
       expect(spy).toBeCalledTimes(6);
-      subscription.forEach(s => s.unsubscribe());
+      subscription.forEach((s) => s.unsubscribe());
     });
 
     it('should return false for hasHead()', () => {
@@ -654,7 +657,7 @@ describe('DirtyCheckEntity', () => {
 function deepEqual(x, y) {
   return x && y && typeof x === 'object' && typeof y === 'object'
     ? Object.keys(x).length === Object.keys(y).length &&
-        Object.keys(x).reduce(function(isEqual, key) {
+        Object.keys(x).reduce(function (isEqual, key) {
           return isEqual && deepEqual(x[key], y[key]);
         }, true)
     : x === y;
