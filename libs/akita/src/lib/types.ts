@@ -1,3 +1,4 @@
+import { EntityStore } from './entityStore';
 import { SortByOptions } from './queryConfig';
 import { BehaviorSubject, Observable } from 'rxjs';
 

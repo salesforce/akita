@@ -624,6 +624,17 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     return this.ui;
   }
 
+  /**
+   * Reset entity cache: Cancel all ttls and clear expired entity ids.
+   */
+  resetCache() {
+    this.ttlCache.reset();
+    this.update((state) => ({
+      ...state,
+      idsExpired: [] as IDType[],
+    }));
+  }
+
   // @internal
   destroy() {
     super.destroy();

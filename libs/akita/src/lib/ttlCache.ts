@@ -114,6 +114,15 @@ export class TTLCache {
     return undefined;
   }
 
+  reset() {
+    if (this._loop) {
+      clearTimeout(this._loop);
+      this._loop = undefined;
+    }
+
+    this._ttls = [];
+  }
+
   private expired(ttl: TTL, reschedule: boolean) {
     this.cancel(ttl.type as any, ttl.id, reschedule);
     this.expired$.next({ type: ttl.type, id: ttl.id });

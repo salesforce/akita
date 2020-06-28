@@ -37,7 +37,7 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
   protected store: EntityStore<S>;
 
   // @internal
-  __store__;
+  __store__: EntityStore<S>;
 
   constructor(store: EntityStore<S>, private options: QueryConfigOptions = {}) {
     super(store);
@@ -166,8 +166,15 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
   /**
    * Select all expired entity ids which are still present.
    */
-  selectExpiredEntityIds() {
+  selectAllExpiredEntityIds() {
     return this.select((state) => state.idsExpired);
+  }
+
+  /**
+   *
+   */
+  selectIsEntityExpired(id: IDType) {
+    return this.select((state) => state.idsExpired.includes(id));
   }
 
   /**
