@@ -1,4 +1,4 @@
-import { Path, basename, dirname, normalize } from '@angular-devkit/core';
+import { basename, dirname, normalize, Path } from '@angular-devkit/core';
 
 export interface Location {
   name: string;
@@ -6,13 +6,27 @@ export interface Location {
 }
 
 export function parseName(options: any): Location {
-  const { name, path, dirName, feature } = options;
+  const { name, path } = options;
   const nameWithoutPath = basename(name as Path);
   const namePath = dirname((path + '/' + name) as Path);
-  const normalizedPath = feature ? normalize('/' + namePath + '/' + dirName) : normalize('/' + namePath);
+  const normalizedPath = normalizePath(nameWithoutPath, namePath, options);
 
   return {
     name: nameWithoutPath,
-    path: normalizedPath
+    path: normalizedPath,
   };
+}
+
+function normalizePath(name: string, namePath: Path, options: any): Path {
+  const { dirName, feature, flat } = options;
+  const basePath = `/${namePath}`;
+
+  if (!feature) {
+    return normalize(basePath);
+  }
+
+  const dirPath = `${basePath}/${dirName}`;
+  const fullPath = flat ? dirPath : `${dirPath}/${name}`;
+
+  return normalize(fullPath);
 }
