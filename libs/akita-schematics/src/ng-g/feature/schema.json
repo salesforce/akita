@@ -55,9 +55,9 @@
       "type": "boolean"
     },
     "withActive": {
-      "type": "boolean",
-      "default": false,
-      "description": "Specifies if the entity state is ActiveState"
+      "type": "string",
+      "enum": ["Active", "MultiActive"],
+      "description": "Specifies if the entity state is ActiveState or MultiActiveState"
     },
     "idType": {
       "type": "string",
