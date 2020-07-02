@@ -17,7 +17,7 @@ query.selectEntity(1).pipe(trackIdChanges(query)).subscribe(entity => {
 ```
 
 :::info
-Operators preceding `trackIdChanges` in the same rxjs pipeline will be discarded on entity id changes.
+Operators preceding `trackIdChanges` in the same rxjs pipeline will only run once and are then discarded.
 :::
 
 By applying the `trackIdChanges` operator on a query, the query gets rebuild each time the id changes.
