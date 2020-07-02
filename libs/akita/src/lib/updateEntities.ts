@@ -1,3 +1,4 @@
+import { Subject } from 'rxjs';
 import { EntityState, ID, PreUpdateEntity, UpdateStateCallback } from './types';
 import { isFunction } from './isFunction';
 import { hasEntity } from './hasEntity';
@@ -10,10 +11,11 @@ export type UpdateEntitiesParams<State, Entity> = {
   newStateOrFn: UpdateStateCallback<Entity> | Partial<Entity> | Partial<State>;
   preUpdateEntity: PreUpdateEntity<Entity>;
   producerFn;
+  onEntityIdChanges: (oldId: any, newId: any) => void;
 };
 
 // @internal
-export function updateEntities<S extends EntityState<E>, E>({ state, ids, idKey, newStateOrFn, preUpdateEntity, producerFn }: UpdateEntitiesParams<S, E>) {
+export function updateEntities<S extends EntityState<E>, E>({ state, ids, idKey, newStateOrFn, preUpdateEntity, producerFn, onEntityIdChanges }: UpdateEntitiesParams<S, E>) {
   const updatedEntities = {};
 
   let isUpdatingIdKey = false;
@@ -44,7 +46,7 @@ export function updateEntities<S extends EntityState<E>, E>({ state, ids, idKey,
 
     const merged = {
       ...oldEntity,
-      ...newState
+      ...newState,
     };
 
     if (isPlainObject(oldEntity)) {
@@ -77,15 +79,16 @@ export function updateEntities<S extends EntityState<E>, E>({ state, ids, idKey,
     const [id] = ids;
     const { [id]: deletedEntity, ...rest } = state.entities;
     stateEntities = rest;
-    updatedIds = state.ids.map(current => (current === id ? idToUpdate : current));
+    updatedIds = state.ids.map((current) => (current === id ? idToUpdate : current));
+    onEntityIdChanges(id, idToUpdate);
   }
 
   return {
     ...state,
     entities: {
       ...stateEntities,
-      ...updatedEntities
+      ...updatedEntities,
     },
-    ids: updatedIds
+    ids: updatedIds,
   };
 }

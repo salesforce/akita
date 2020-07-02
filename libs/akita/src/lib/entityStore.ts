@@ -54,14 +54,20 @@ import { updateEntities } from './updateEntities';
 export class EntityStore<S extends EntityState = any, EntityType = getEntityType<S>, IDType = getIDType<S>> extends Store<S> {
   ui: EntityUIStore<any, EntityType>;
   private entityActions = new Subject<EntityAction<IDType>>();
+  private entityIdChanges = new Subject<{ newId: IDType; oldId: IDType; pending: boolean }>();
 
   constructor(initialState: Partial<S> = {}, protected options: Partial<StoreConfigOptions> = {}) {
     super({ ...getInitialEntitiesState(), ...initialState }, options);
   }
 
   // @internal
-  get selectEntityAction$(): Observable<EntityAction<IDType>> {
+  get selectEntityAction$() {
     return this.entityActions.asObservable();
+  }
+
+  // @internal
+  get selectEntityIdChanges$() {
+    return this.entityIdChanges.asObservable();
   }
 
   // @internal
@@ -196,6 +202,14 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     if (isEmpty(ids)) return;
 
     isDev() && setAction('Update Entity', ids);
+
+    let entityIdChanged:
+      | undefined
+      | {
+          newId: IDType;
+          oldId: IDType;
+        };
+
     this._setState((state) =>
       updateEntities({
         idKey: this.idKey,
@@ -204,8 +218,16 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
         state,
         newStateOrFn,
         producerFn: this._producerFn,
+        onEntityIdChanges: (oldId: IDType, newId: IDType) => {
+          entityIdChanged = { oldId, newId };
+          this.entityIdChanges.next({ ...entityIdChanged, pending: true });
+        },
       })
     );
+
+    if (entityIdChanged) {
+      this.entityIdChanges.next({ ...entityIdChanged, pending: false });
+    }
 
     this.entityActions.next({ type: EntityActions.Update, ids });
   }
