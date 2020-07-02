@@ -24,7 +24,7 @@ By applying the `trackIdChanges` operator on a query, the query gets rebuild eac
 This also means, that all successive operators in the same pipeline gets re-evaluated but preceding operators will be discarded.
 The project function argument of `selectEntity(id, project)` is also discarded on id changes.
 
-In the following example the `filter()` operator, and the project function of `selectEntity()` will only run until the entity id changes:
+In the following example the `filter()` operator, and the project function of `selectEntity()` will only run once and will be discarded:
 
 ```ts
 
