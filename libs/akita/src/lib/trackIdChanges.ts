@@ -1,9 +1,7 @@
-import { EntityState, EntityStore, getEntityType, getIDType, ID, QueryEntity } from '@datorama/akita';
-import { merge, MonoTypeOperatorFunction, Observable, of, Operator, Subscriber, TeardownLogic, UnaryFunction } from 'rxjs';
-import { distinctUntilChanged, filter, first, switchMap, tap } from 'rxjs/operators';
-import { OperatorFunction } from 'rxjs/src/internal/types';
-
-type getQueryEntityState<T extends QueryEntity<any>> = T extends QueryEntity<infer S> ? S : never;
+import { merge, MonoTypeOperatorFunction, Observable, of, Operator, Subscriber, TeardownLogic } from 'rxjs';
+import { filter, first, switchMap, tap } from 'rxjs/operators';
+import { QueryEntity } from './queryEntity';
+import { EntityState, getEntityType, getQueryEntityState } from './types';
 
 /**
  * Track id updates of an entity and re-evaluation the query with the changed entity id.
