@@ -7,6 +7,9 @@ export enum TTLType {
 }
 
 export interface TTL {
+  /**
+   * Optional entity id of the TTL.
+   */
   id?: ID;
 
   /**
@@ -25,7 +28,7 @@ export interface TTL {
 /**
  * Implements a fixed priority scheduler to handle the expiration of objects sequentially within a single event loop.
  */
-export class TTLCache {
+export class TTLQueue {
   /**
    * A list of all ttl objects
    */

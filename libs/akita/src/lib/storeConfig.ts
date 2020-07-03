@@ -3,7 +3,10 @@ import { AkitaConfig } from './config';
 export type StoreConfigOptions = {
   name: string;
   resettable?: AkitaConfig['resettable'];
-  cache?: { ttl: number; removeExpiredEntities?: boolean };
+  cache?: {
+    ttl?: number;
+    invalidation?: { entity: (state: any) => boolean } | { store: (state: any) => boolean };
+  };
   deepFreezeFn?: (o: any) => any;
   idKey?: string;
   producerFn?: AkitaConfig['producerFn'];

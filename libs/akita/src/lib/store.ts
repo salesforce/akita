@@ -13,7 +13,7 @@ import { isBrowser } from './root';
 import { configKey, StoreConfigOptions, UpdatableStoreConfigOptions } from './storeConfig';
 import { __stores__ } from './stores';
 import { commit, isTransactionInProcess } from './transaction';
-import { TTLCache, TTLType } from './ttlCache';
+import { TTLQueue, TTLType } from './ttlQueue';
 import { UpdateStateCallback } from './types';
 
 interface StoreSnapshot<S> {
@@ -52,13 +52,9 @@ export class Store<S = any> {
   private inTransaction = false;
   private _initialState: S;
 
-  protected ttlCache = new TTLCache();
-  protected hasCache = new BehaviorSubject<boolean>(false);
+  protected ttlQueue = new TTLQueue();
 
-  // protected cache: StoreCache = {
-  //   active: new BehaviorSubject<boolean>(false),
-  //   ttl: null,
-  // };
+  protected hasCache = new BehaviorSubject<boolean>(false);
 
   constructor(initialState: Partial<S>, protected options: Partial<StoreConfigOptions> = {}) {
     this.onInit(initialState as S);
@@ -99,7 +95,7 @@ export class Store<S = any> {
       const ttlConfig = this.getCacheTTL();
 
       if (ttlConfig) {
-        this.ttlCache.update(ttlConfig, TTLType.Store, undefined);
+        this.ttlQueue.update(ttlConfig, TTLType.Store, undefined);
       }
     }
   }
@@ -150,7 +146,7 @@ export class Store<S = any> {
 
   // @internal
   get expired$() {
-    return this.ttlCache.expired$.asObservable();
+    return this.ttlQueue.expired$.asObservable();
   }
 
   // @internal
@@ -307,7 +303,7 @@ export class Store<S = any> {
       this._initialState = initialState;
     }
     isDev() && assertStoreHasName(this.storeName, this.constructor.name);
-    this.ttlCache.expired$.pipe(filter((ttl) => ttl.type === TTLType.Store)).subscribe(() => {
+    this.ttlQueue.expired$.pipe(filter((ttl) => ttl.type === TTLType.Store)).subscribe(() => {
       this.setHasCache(false);
     });
   }

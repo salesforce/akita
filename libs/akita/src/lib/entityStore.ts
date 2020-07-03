@@ -22,7 +22,7 @@ import { SetEntities, setEntities } from './setEntities';
 import { Store } from './store';
 import { StoreConfigOptions } from './storeConfig';
 import { transaction } from './transaction';
-import { TTLType } from './ttlCache';
+import { TTLType } from './ttlQueue';
 import {
   Constructor,
   CreateStateCallback,
@@ -65,9 +65,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
   constructor(initialState: Partial<S> = {}, protected options: Partial<StoreConfigOptions> = {}) {
     super({ ...getInitialEntitiesState(), ...initialState }, options);
 
-    const removeExpiredEntities = this.getCacheRemoveExpiredEntities();
-
-    this.ttlCache.expired$.pipe(filter((ttl) => ttl.type === TTLType.Entity)).subscribe((ttl) => {
+    this.ttlQueue.expired$.pipe(filter((ttl) => ttl.type === TTLType.Entity)).subscribe((ttl) => {
       if (ttl.id && this.ids.includes(ttl.id)) {
         this._setState((state) => {
           const idsExpired = state.idsExpired || [];
@@ -77,10 +75,6 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
             idsExpired: idsExpired.includes(ttl.id) ? idsExpired : [...idsExpired, ttl.id],
           };
         });
-
-        if (removeExpiredEntities) {
-          this.remove((ttl.id as unknown) as IDType);
-        }
       }
     });
   }
@@ -144,7 +138,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     const ttlConfig = this.getCacheTTL();
 
     if (ttlConfig) {
-      this.ids.forEach((id) => this.ttlCache.update(ttlConfig, TTLType.Entity, id));
+      this.ids.forEach((id) => this.ttlQueue.update(ttlConfig, TTLType.Entity, id));
     }
   }
 
@@ -187,7 +181,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
       const ttlConfig = this.getCacheTTL();
 
       if (ttlConfig) {
-        data.newIds.forEach((id) => this.ttlCache.update(ttlConfig, TTLType.Entity, id));
+        data.newIds.forEach((id) => this.ttlQueue.update(ttlConfig, TTLType.Entity, id));
       }
     }
   }
@@ -271,7 +265,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     const ttlConfig = this.getCacheTTL();
 
     if (ttlConfig) {
-      ids.forEach((id) => this.ttlCache.update(ttlConfig, TTLType.Entity, (id as unknown) as ID));
+      ids.forEach((id) => this.ttlQueue.update(ttlConfig, TTLType.Entity, (id as unknown) as ID));
     }
   }
 
@@ -339,7 +333,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     if (ttlConfig) {
       const ids = [...updateIds, ...newEntities.map((entity) => entity[this.idKey] as IDType)];
 
-      ids.forEach((id) => this.ttlCache.update(ttlConfig, TTLType.Entity, (id as unknown) as ID));
+      ids.forEach((id) => this.ttlQueue.update(ttlConfig, TTLType.Entity, (id as unknown) as ID));
     }
   }
 
@@ -405,7 +399,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     if (ttlConfig) {
       const ids = [...updatedIds, ...addedIds];
 
-      ids.forEach((id) => this.ttlCache.update(ttlConfig, TTLType.Entity, id));
+      ids.forEach((id) => this.ttlQueue.update(ttlConfig, TTLType.Entity, id));
     }
   }
 
@@ -504,7 +498,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     const ttlConfig = this.getCacheTTL();
 
     if (ttlConfig) {
-      ids.forEach((id) => this.ttlCache.cancel(TTLType.Entity, (id as unknown) as ID));
+      ids.forEach((id) => this.ttlQueue.cancel(TTLType.Entity, (id as unknown) as ID));
     }
   }
 
@@ -647,10 +641,10 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
   }
 
   /**
-   * Reset entity cache: Cancel all ttls and clear expired entity ids.
+   * Reset entity cache: Cancel all TTLs and clear expired entity ids.
    */
-  resetCache() {
-    this.ttlCache.reset();
+  resetEntityCache() {
+    this.ttlQueue.reset();
     this.update((state) => ({
       ...state,
       idsExpired: [] as IDType[],
@@ -736,10 +730,6 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 
   private hasUIStore() {
     return this.ui instanceof EntityUIStore;
-  }
-
-  protected getCacheRemoveExpiredEntities() {
-    return (this.cacheConfig && this.cacheConfig.removeExpiredEntities) || false;
   }
 }
 
