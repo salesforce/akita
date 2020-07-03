@@ -499,6 +499,24 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "fritzschoff",
+      "name": "Max Fritz",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/39312833?v=4",
+      "profile": "https://github.com/fritzschoff",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Eilonudi",
+      "name": "Eilon Udi",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/8526882?v=4",
+      "profile": "https://github.com/Eilonudi",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }

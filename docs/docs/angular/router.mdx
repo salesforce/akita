@@ -15,7 +15,7 @@ import {
 ​@NgModule({ 
 imports: [
   AkitaNgRouterStoreModule,
-  environment.production ? [] : AkitaNgDevtools
+  environment.production ? [] : AkitaNgDevtools.forRoot()
 })
 export class AppModule {
 }

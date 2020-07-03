@@ -1,6 +1,7 @@
 import { EntityStore } from './entityStore';
 import { SortByOptions } from './queryConfig';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { QueryEntity } from './queryEntity';
 
 export interface HashMap<T> {
   [id: string]: T;
@@ -56,6 +57,7 @@ export type Constructor<T = any> = new (...args: any[]) => T;
 export type OrArray<Type> = Type | Type[];
 export type getEntityType<S> = S extends EntityState<infer I> ? I : never;
 export type getIDType<S> = S extends EntityState<any, infer I> ? I : never;
+export type getQueryEntityState<T extends QueryEntity<any>> = T extends QueryEntity<infer S> ? S : never;
 
 export type ArrayFuncs = ((...a: any[]) => any)[];
 export type ReturnTypes<T extends ArrayFuncs> = { [P in keyof T]: T[P] extends (...a: any[]) => infer R ? R : never };

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.1.1](https://github.com/datorama/akita/compare/akita-v5.1.0...akita-v5.1.1) (2020-06-29)
+
+### Bug Fixes
+
+- **run-store-action:** add package exports for store actions ([#473](https://github.com/datorama/akita/issues/473)) ([ca3d3c0](https://github.com/datorama/akita/commit/ca3d3c09d188fa1f66374b43ae57183d0cc210a5)), closes [#472](https://github.com/datorama/akita/issues/472)
+
 ## [5.1.0](https://github.com/datorama/akita/compare/akita-v5.0.5...akita-v5.1.0) (2020-06-25)
 
 ### Features

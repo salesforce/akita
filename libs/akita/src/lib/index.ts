@@ -55,7 +55,7 @@ export { SelectAllOptionsA, SelectAllOptionsB, SelectAllOptionsC, SelectAllOptio
 export { __stores__ } from './stores';
 export { isDev, enableAkitaProdMode, __DEV__ } from './env';
 export { isNotBrowser } from './root';
-export { runStoreAction, runEntityStoreAction, getStore, getEntityStore } from './runStoreAction';
+export { runStoreAction, runEntityStoreAction, getStore, getStoreByName, getEntityStore, getEntityStoreByName, EntityStoreAction, StoreAction } from './runStoreAction';
 export { arrayUpdate } from './arrayUpdate';
 export { arrayAdd } from './arrayAdd';
 export { arrayUpsert } from './arrayUpsert';
@@ -69,3 +69,4 @@ export { cacheable } from './cacheable';
 export { combineQueries } from './combineQueries';
 export { EntityService } from './entityService';
 export { setLoading } from './setLoading';
+export { trackIdChanges } from './trackIdChanges';
