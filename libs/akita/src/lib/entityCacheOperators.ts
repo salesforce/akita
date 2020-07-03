@@ -38,7 +38,7 @@ export function useEntityCache<
   const invalidation = store.cacheConfig && store.cacheConfig.invalidation;
 
   if (invalidation === undefined || !('entity' in invalidation) || invalidation.entity === undefined) {
-    throw Error(`No entity predicate in @StoreConfig exists of '${store.storeName}' to compute cache invalidation: ` + `@StoreConfig({ cache: { entity: { predicate: (state) => boolean }}})`);
+    throw Error(`No entity predicate in @StoreConfig exists of '${store.storeName}' to compute cache invalidation: @StoreConfig({ cache: { entity: { predicate: (state) => boolean }}})`);
   }
 
   const result = store

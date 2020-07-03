@@ -32,7 +32,7 @@ export function useStoreCache<TStore extends Store<TState>, TState = TStore exte
   const invalidation = store.cacheConfig && store.cacheConfig.invalidation;
 
   if (invalidation === undefined || !('store' in invalidation) || invalidation.store === undefined) {
-    throw Error(`No store predicate in @StoreConfig exists of '${store.storeName} to compute cache invalidation': ` + `@StoreConfig({ cache: { store: { predicate: (state) => boolean }}})`);
+    throw Error(`No store predicate in @StoreConfig exists of '${store.storeName} to compute cache invalidation': @StoreConfig({ cache: { store: { predicate: (state) => boolean }}})`);
   }
 
   const result = store._select((state) => state);
@@ -55,7 +55,7 @@ export function useStoreCache<TStore extends Store<TState>, TState = TStore exte
 }
 
 /**
- * Tests whether a store state is invalidated by its ttl set via {@link StoreConfig} or via {@link Store.setHasCache}:
+ * Tests whether a store state is expired by its ttl set via {@link StoreConfig} or via {@link Store.setHasCache}:
  * If so, the subscription is forwarded to the parent observable to request new state data and update the store,
  * otherwise return the existing state and ignore the parent observable.
  *

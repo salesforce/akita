@@ -2,7 +2,7 @@ import { ActiveState, EntityState, EntityStore, ID, Store, StoreConfig } from '@
 import { of } from 'rxjs';
 import { first } from 'rxjs/operators';
 import { EntityStoreAction, runEntityStoreAction, runStoreAction, StoreAction } from '../lib/runStoreAction';
-import { ttlStoreCache, useStoreCache } from '../lib/store-cache-operators';
+import { ttlStoreCache, useStoreCache } from '../lib/storeCacheOperators';
 import { TestAuth, TestAuthStore } from './entityStoreCache.spec';
 import { createMockEntities } from './mocks';
 

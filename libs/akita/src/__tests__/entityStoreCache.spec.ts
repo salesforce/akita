@@ -1,7 +1,7 @@
 import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
 import { of } from 'rxjs';
 import { first } from 'rxjs/operators';
-import { ttlEntityCache, useEntityCache } from '../lib/entity-cache-operators';
+import { ttlEntityCache, useEntityCache } from '../lib/entityCacheOperators';
 
 export type TestAuth = {
   id: number;
