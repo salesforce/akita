@@ -3,6 +3,15 @@ import { EntityStore } from './entityStore';
 import { combineLatest, MonoTypeOperatorFunction, Observable, of } from 'rxjs';
 import { distinctUntilChanged, first, map, switchMap, switchMapTo, tap } from 'rxjs/operators';
 
+function selectEntity<TStore extends EntityStore<TState, TEntity, TIdType>, TState extends EntityState<TEntity, TIdType>, TEntity, TIdType>(store: TStore, id: TIdType) {
+  return store
+    ._select((state) => state.entities)
+    .pipe(
+      map((entities) => entities[id as any]),
+      distinctUntilChanged()
+    );
+}
+
 /**
  * Tests whether an entity is invalidated by a predicate via the {@link StoreConfig}: If so, the subscription is forwarded
  * to the parent observable to request new entity data and update the store, otherwise return the existing entity and
@@ -42,12 +51,7 @@ export function useEntityCache<
     throw Error(`No entity predicate in @StoreConfig exists of '${store.storeName}' to compute cache invalidation: @StoreConfig({ cache: { entity: { predicate: (state) => boolean }}})`);
   }
 
-  const result = store
-    ._select((state) => state.entities)
-    .pipe(
-      map((entities) => entities[id as any]),
-      distinctUntilChanged()
-    );
+  const result = selectEntity<TStore, TState, TEntity, TIdType>(store, id);
 
   return (source: Observable<TEntity>) =>
     result.pipe(
@@ -109,12 +113,7 @@ export function ttlEntityCache<
     throw Error(`No cache ttl in @StoreConfig set of '${store.storeName}' to compute entity expiration: ` + `@StoreConfig({ cache: { ttl: 1000 }})`);
   }
 
-  const result = store
-    ._select((state) => state.entities)
-    .pipe(
-      map((entities) => entities[id as any]),
-      distinctUntilChanged()
-    );
+  const result = selectEntity<TStore, TState, TEntity, TIdType>(store, id);
 
   return (source: Observable<TEntity>) =>
     combineLatest([

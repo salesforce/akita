@@ -64,19 +64,6 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 
   constructor(initialState: Partial<S> = {}, protected options: Partial<StoreConfigOptions> = {}) {
     super({ ...getInitialEntitiesState(), ...initialState }, options);
-
-    this.ttlQueue.expired$.pipe(filter((ttl) => ttl.type === TTLType.Entity)).subscribe((ttl) => {
-      if (ttl.id && this.ids.includes(ttl.id)) {
-        this._setState((state) => {
-          const idsExpired = state.idsExpired || [];
-
-          return {
-            ...state,
-            idsExpired: idsExpired.includes(ttl.id) ? idsExpired : [...idsExpired, ttl.id],
-          };
-        });
-      }
-    });
   }
 
   // @internal
@@ -133,13 +120,8 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
       this.handleUICreation();
     }
 
+    this.updateEntityTTL(this.ids);
     this.entityActions.next({ type: EntityActions.Set, ids: this.ids });
-
-    const ttlConfig = this.getCacheTTL();
-
-    if (ttlConfig) {
-      this.ids.forEach((id) => this.ttlQueue.update(ttlConfig, TTLType.Entity, id));
-    }
   }
 
   /**
@@ -176,13 +158,8 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
         this.handleUICreation(true);
       }
 
+      this.updateEntityTTL(data.newIds);
       this.entityActions.next({ type: EntityActions.Add, ids: data.newIds });
-
-      const ttlConfig = this.getCacheTTL();
-
-      if (ttlConfig) {
-        data.newIds.forEach((id) => this.ttlQueue.update(ttlConfig, TTLType.Entity, id));
-      }
     }
   }
 
@@ -260,13 +237,8 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
       this.entityIdChanges.next({ ...entityIdChanged, pending: false });
     }
 
+    this.updateEntityTTL(ids);
     this.entityActions.next({ type: EntityActions.Update, ids });
-
-    const ttlConfig = this.getCacheTTL();
-
-    if (ttlConfig) {
-      ids.forEach((id) => this.ttlQueue.update(ttlConfig, TTLType.Entity, (id as unknown) as ID));
-    }
   }
 
   /**
@@ -327,14 +299,6 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     this.update(updateIds, newState as UpdateStateCallback<EntityType, NewEntityType>);
     this.add(newEntities);
     isDev() && logAction('Upsert Entity');
-
-    const ttlConfig = this.getCacheTTL();
-
-    if (ttlConfig) {
-      const ids = [...updateIds, ...newEntities.map((entity) => entity[this.idKey] as IDType)];
-
-      ids.forEach((id) => this.ttlQueue.update(ttlConfig, TTLType.Entity, (id as unknown) as ID));
-    }
   }
 
   /**
@@ -388,18 +352,15 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
       loading: !!options.loading,
     }));
 
-    updatedIds.length && this.entityActions.next({ type: EntityActions.Update, ids: updatedIds });
-    addedIds.length && this.entityActions.next({ type: EntityActions.Add, ids: addedIds });
-    if (addedIds.length && this.hasUIStore()) {
-      this.handleUICreation(true);
+    if (this.hasCacheTTLEnabled()) {
+      this.updateEntityTTL([...updatedIds, ...addedIds]);
     }
 
-    const ttlConfig = this.getCacheTTL();
+    updatedIds.length && this.entityActions.next({ type: EntityActions.Update, ids: updatedIds });
+    addedIds.length && this.entityActions.next({ type: EntityActions.Add, ids: addedIds });
 
-    if (ttlConfig) {
-      const ids = [...updatedIds, ...addedIds];
-
-      ids.forEach((id) => this.ttlQueue.update(ttlConfig, TTLType.Entity, id));
+    if (addedIds.length && this.hasUIStore()) {
+      this.handleUICreation(true);
     }
   }
 
@@ -413,13 +374,13 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
    * this.store.replace(5, newEntity)
    * this.store.replace([1,2,3], newEntity)
    */
-  replace(ids: IDS, newState: Partial<EntityType>) {
+  replace(ids: IDType | IDType[], newState: Partial<EntityType>) {
     const toArray = coerceArray(ids);
     if (isEmpty(toArray)) return;
     let replaced = {};
     for (const id of toArray) {
       newState[this.idKey] = id;
-      replaced[id] = newState;
+      replaced[id as any] = newState;
     }
     isDev() && setAction('Replace Entity', ids);
     this._setState((state) => ({
@@ -429,6 +390,10 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
         ...replaced,
       },
     }));
+
+    if (this.hasCacheTTLEnabled()) {
+      this.updateEntityTTL(toArray);
+    }
   }
 
   /**
@@ -493,13 +458,9 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     }
 
     this.handleUIRemove(ids);
+    this.cancelEntityTTL(ids);
+
     this.entityActions.next({ type: EntityActions.Remove, ids });
-
-    const ttlConfig = this.getCacheTTL();
-
-    if (ttlConfig) {
-      ids.forEach((id) => this.ttlQueue.cancel(TTLType.Entity, (id as unknown) as ID));
-    }
   }
 
   /**
@@ -643,7 +604,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
   /**
    * Reset entity cache: Cancel all TTLs and clear expired entity ids.
    */
-  resetEntityCache() {
+  resetTTLEntityCache() {
     this.ttlQueue.reset();
     this.update((state) => ({
       ...state,
@@ -730,6 +691,37 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 
   private hasUIStore() {
     return this.ui instanceof EntityUIStore;
+  }
+
+  protected cancelEntityTTL(ids: IDType[]) {
+    const ttl = this.getCacheTTL();
+
+    if (ttl) {
+      ids.forEach((id) => this.ttlQueue.cancel(TTLType.Entity, id as any));
+    }
+  }
+
+  protected updateEntityTTL(ids: IDType[]) {
+    const ttl = this.getCacheTTL();
+
+    if (ttl) {
+      ids.forEach((id) => this.ttlQueue.update(ttl, TTLType.Entity, id as any));
+    }
+  }
+
+  protected watchCacheTTL() {
+    super.watchCacheTTL();
+    this.ttlQueue.expired$.pipe(filter((ttl) => ttl.type === TTLType.Entity)).subscribe((ttl) => {
+      if (ttl.id && this.ids.includes(ttl.id)) {
+        this._setState((state) => {
+          const idsExpired = state.idsExpired || [];
+          return {
+            ...state,
+            idsExpired: idsExpired.includes(ttl.id) ? idsExpired : [...idsExpired, ttl.id],
+          };
+        });
+      }
+    });
   }
 }
 

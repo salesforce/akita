@@ -303,9 +303,9 @@ export class Store<S = any> {
       this._initialState = initialState;
     }
     isDev() && assertStoreHasName(this.storeName, this.constructor.name);
-    this.ttlQueue.expired$.pipe(filter((ttl) => ttl.type === TTLType.Store)).subscribe(() => {
-      this.setHasCache(false);
-    });
+    if (this.hasCacheTTLEnabled()) {
+      this.watchCacheTTL();
+    }
   }
 
   private dispatch(state: S, _dispatchAction = true) {
@@ -342,5 +342,15 @@ export class Store<S = any> {
 
   protected getCacheTTL() {
     return (this.cacheConfig && this.cacheConfig.ttl) || getAkitaConfig().ttl;
+  }
+
+  protected hasCacheTTLEnabled() {
+    return this.getCacheTTL() !== undefined;
+  }
+
+  protected watchCacheTTL() {
+    this.ttlQueue.expired$.pipe(filter((ttl) => ttl.type === TTLType.Store)).subscribe(() => {
+      this.setHasCache(false);
+    });
   }
 }
