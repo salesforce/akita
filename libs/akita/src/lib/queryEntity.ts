@@ -37,7 +37,7 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
   protected store: EntityStore<S>;
 
   // @internal
-  __store__: EntityStore<S>;
+  __store__;
 
   constructor(store: EntityStore<S>, private options: QueryConfigOptions = {}) {
     super(store);

@@ -1,4 +1,4 @@
-import { Store } from '@datorama/akita';
+import { Store } from './store';
 import { MonoTypeOperatorFunction, Observable, of } from 'rxjs';
 import { first, map, switchMap, switchMapTo, tap } from 'rxjs/operators';
 

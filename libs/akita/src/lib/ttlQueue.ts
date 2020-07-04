@@ -1,4 +1,4 @@
-import { ID } from '@datorama/akita';
+import { ID } from './types';
 import { Subject } from 'rxjs';
 
 export enum TTLType {

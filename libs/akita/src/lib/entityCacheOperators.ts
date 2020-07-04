@@ -1,4 +1,5 @@
-import { EntityState, EntityStore, getEntityType, getIDType } from '@datorama/akita';
+import { EntityState, getEntityType, getIDType } from './types';
+import { EntityStore } from './entityStore';
 import { combineLatest, MonoTypeOperatorFunction, Observable, of } from 'rxjs';
 import { distinctUntilChanged, first, map, switchMap, switchMapTo, tap } from 'rxjs/operators';
 
