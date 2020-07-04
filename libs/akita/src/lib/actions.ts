@@ -39,11 +39,24 @@ export function setSkipAction(skip = true) {
   currentAction.skip = skip;
 }
 
-export function action(action: string, entityIds?, payload?) {
+export function action(type: string);
+export function action(type: string, entityIds: any[]);
+export function action(type: string, options: { entityIds?: any[]; payload?: any });
+export function action(type: string, optionsOrEntityIds?: { entityIds?: any[]; payload?: any } | any[]) {
+  let entityIds: any[], payload: any;
+  if (optionsOrEntityIds) {
+    if (Array.isArray(optionsOrEntityIds)) {
+      entityIds = optionsOrEntityIds;
+    } else {
+      entityIds = optionsOrEntityIds.entityIds;
+      payload = optionsOrEntityIds.payload;
+    }
+  }
+
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
     descriptor.value = function (...args) {
-      logAction(action, entityIds, isNil(payload) ? args : payload);
+      logAction(type, entityIds, isNil(payload) ? args : payload);
       return originalMethod.apply(this, args);
     };
 

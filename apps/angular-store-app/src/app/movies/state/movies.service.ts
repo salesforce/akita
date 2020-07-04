@@ -34,7 +34,7 @@ export class MoviesService {
     this.actorsStore.update(id, { name });
   }
 
-  @action('custom mark as open', undefined, { custom: 'payload' })
+  @action('custom mark as open', { payload: { custom: 'payload' } })
   markAsOpen(id: ID) {
     this.moviesStore.ui.update(id, (entity) => ({ isOpen: !entity.isOpen }));
   }
