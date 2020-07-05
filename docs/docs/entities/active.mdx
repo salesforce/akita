@@ -20,6 +20,10 @@ export class TodosStore extends EntityStore<TodosState> {
 }
 ```
 
+:::tip
+You can use the store or feature schematics with the flag --withActive="Active" to generate a store which ActiveState.
+:::
+
 The Store provides the following methods to update and query the `active` state:
 
 ## API
@@ -114,6 +118,10 @@ export class TodosStore extends EntityStore<TodosState> {
 ```
 
 Unlike working with a single active entity, we've added the `MultiActiveState` interface and set the initial state of the `active` property to an empty array.
+
+:::tip
+You can use the store or feature schematics with the flag --withActive="MultiActive" to generate a store which ActiveState.
+:::
 
 In addition to the methods of working with a single active entity, we will also receive the following methods:
 
