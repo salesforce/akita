@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.2.0](https://github.com/datorama/akita/compare/akita-v5.1.1...akita-v5.2.0) (2020-07-05)
+
+### Features
+
+- **entity-store:** track entity id updates ([#476](https://github.com/datorama/akita/issues/476)) ([bb59c14](https://github.com/datorama/akita/commit/bb59c1455d005b878340195f604ed03384ae1268))
+
+### Bug Fixes
+
+- **akita:** added getStoreByName to index.ts ([#475](https://github.com/datorama/akita/issues/475)) ([a0afa3a](https://github.com/datorama/akita/commit/a0afa3a6f1592d588dda1d912a203de7259dff71))
+
 ### [5.1.1](https://github.com/datorama/akita/compare/akita-v5.1.0...akita-v5.1.1) (2020-06-29)
 
 ### Bug Fixes
