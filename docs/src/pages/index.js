@@ -14,14 +14,14 @@ function Home() {
     <Layout title={siteConfig.title} description="Akita official documentation site">
       <Helmet>
         <title>Akita | Reactive State Management</title>
-        <meta name="description" content="Akita - A Reactive State Management Tailored-Made for JS Applications" />
+        <meta name="description" content="Akita - A Reactive State Management Tailor-Made for JS Applications" />
       </Helmet>
 
       <header className="app-header">
         <div className="container">
           <div className="flex">
             <h1 className="hero__title">
-              🔮 A <span className="c">Reactive</span> State Management Tailored-Made for <span className="c">JS Applications</span>
+              🔮 A <span className="c">Reactive</span> State Management Tailor-Made for <span className="c">JS Applications</span>
             </h1>
             <img src="img/akita.svg" />
           </div>

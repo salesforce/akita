@@ -1,6 +1,6 @@
 module.exports = {
   title: 'Akita',
-  tagline: '🔮 A Reactive State Management Tailored-Made for JS Applications',
+  tagline: '🔮 A Reactive State Management Tailor-Made for JS Applications',
   baseUrl: '/akita/',
   url: 'https://github.com/datorama',
   favicon: 'img/favicon.ico',
