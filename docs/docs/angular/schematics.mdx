@@ -42,6 +42,9 @@ You can also generate the normal feature with the `plain` option:
 
 ```bash
 ng g @datorama/akita:feature auth/auth --plain
+
+options:
+  --withActive="Active" / "MultiActive" // decides which interface the store will implement, ActiveState or MultiActiveState
 ```
 
 :::tip
@@ -52,6 +55,9 @@ The akita-schematics: prefix is only needed when the default collection isn't se
 ```bash
 ng g @datorama/akita:as todos
 ng g @datorama/akita:aes todos // entity store
+
+options:
+  --withActive="Active" / "MultiActive" // decides which interface the store will implement, ActiveState or MultiActiveState
 ```
 
 ### Generate a Query
