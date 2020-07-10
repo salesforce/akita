@@ -13,8 +13,6 @@ export class Query<S> {
   // @internal
   __store__: Store<S>;
 
-  readonly state$: Observable<S> = this.store._select((state) => state);
-
   constructor(protected store: Store<S>) {
     this.__store__ = store;
     if (isDev()) {

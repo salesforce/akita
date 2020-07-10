@@ -2,16 +2,16 @@ import { SortByOptions } from './queryConfig';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { QueryEntity } from './queryEntity';
 
-export interface HashMap<T> {
-  [id: string]: T;
-}
+export type HashMap<T, K extends ID = ID> = {
+  [id in K]: T;
+};
 
-export interface EntityState<E = any, IDType = any> {
-  entities?: HashMap<E>;
+export interface EntityState<E = any, IDType extends ID = ID> {
+  entities?: HashMap<E, IDType>;
   ids?: IDType[];
   loading?: boolean;
   error?: any;
-  [key: string]: any;
+  [key: string]: any; // TODO: Required?
 }
 
 export interface Entities<E> {
@@ -53,8 +53,10 @@ export type MaybeAsync<T = any> = Promise<T> | Observable<T> | T;
 export type EntityUICreateFn<EntityUI = any, Entity = any> = EntityUI | ((entity: Entity) => EntityUI);
 export type Constructor<T = any> = new (...args: any[]) => T;
 export type OrArray<Type> = Type | Type[];
-export type getEntityType<S> = S extends EntityState<infer I> ? I : never;
-export type getIDType<S> = S extends EntityState<any, infer I> ? I : never;
+
+export type getEntityType<S extends EntityState> = S extends EntityState<infer I> ? I : never;
+export type getIDType<S extends EntityState> = S extends EntityState<any, infer I> ? I : never;
+
 export type getQueryEntityState<T extends QueryEntity<any>> = T extends QueryEntity<infer S> ? S : never;
 
 export type ArrayFuncs = ((...a: any[]) => any)[];

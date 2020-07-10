@@ -25,6 +25,7 @@ import {
   EntityUICreateFn,
   getEntityType,
   getIDType,
+  ID,
   IDS,
   OrArray,
   StateWithActive,
@@ -51,7 +52,7 @@ import { updateEntities } from './updateEntities';
  *
  *
  */
-export class EntityStore<S extends EntityState = any, EntityType = getEntityType<S>, IDType = getIDType<S>> extends Store<S> {
+export class EntityStore<S extends EntityState<EntityType, IDType> = any, EntityType = getEntityType<S>, IDType extends ID = getIDType<S>> extends Store<S> {
   ui: EntityUIStore<any, EntityType>;
   private entityActions = new Subject<EntityAction<IDType>>();
   private entityIdChanges = new Subject<{ newId: IDType; oldId: IDType; pending: boolean }>();

@@ -48,12 +48,17 @@ interface StoreSnapshot<S> {
 export class Store<S = any> {
   private store: BehaviorSubject<Readonly<StoreSnapshot<S>>>;
   private storeValue: S;
+  private _state$: Observable<S>;
   private inTransaction = false;
   private _initialState: S;
   protected cache: StoreCache = {
     active: new BehaviorSubject<boolean>(false),
     ttl: null,
   };
+
+  get state$() {
+    return this._state$;
+  }
 
   constructor(initialState: Partial<S>, protected options: Partial<StoreConfigOptions> = {}) {
     this.onInit(initialState as S);
@@ -185,6 +190,10 @@ export class Store<S = any> {
 
     if (!this.store) {
       this.store = new BehaviorSubject({ state: this.storeValue });
+      this._state$ = this.store.pipe(
+        map(({ state }) => state),
+        distinctUntilChanged()
+      );
 
       if (isDev()) {
         this.store.subscribe(({ action }) => {
