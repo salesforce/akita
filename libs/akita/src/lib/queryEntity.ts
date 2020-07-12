@@ -17,7 +17,7 @@ import { QueryConfigOptions } from './queryConfig';
 import { SelectAllOptionsA, SelectAllOptionsB, SelectAllOptionsC, SelectAllOptionsD, SelectAllOptionsE } from './selectAllOverloads';
 import { sortByOptions } from './sortByOptions';
 import { toBoolean } from './toBoolean';
-import { EntityState, getEntityType, getIDType, HashMap, ItemPredicate, OrArray, SelectOptions } from './types';
+import { EntityState, getEntityType, getIDType, HashMap, ID, ItemPredicate, OrArray, SelectOptions } from './types';
 
 /**
  *
@@ -32,14 +32,14 @@ import { EntityState, getEntityType, getIDType, HashMap, ItemPredicate, OrArray,
  *
  *
  */
-export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, IDType = getIDType<S>> extends Query<S> {
+export class QueryEntity<S extends EntityState<EntityType, IDType>, EntityType = getEntityType<S>, IDType extends ID = getIDType<S>> extends Query<S> {
   ui: EntityUIQuery<any, EntityType>;
-  protected store: EntityStore<S>;
+  protected store: EntityStore<S, EntityType, IDType>;
 
   // @internal
   __store__;
 
-  constructor(store: EntityStore<S>, private options: QueryConfigOptions = {}) {
+  constructor(store: EntityStore<S, EntityType, IDType>, private options: QueryConfigOptions = {}) {
     super(store);
     this.__store__ = store;
   }
