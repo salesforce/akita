@@ -50,7 +50,7 @@ function createEntityStateCommit<
  * @param state
  */
 export const update = <S>(state: Partial<S>) =>
-  createEntityStateCommit({ type: 'update', args: [state] }, (newState) => (oldState: S, context) => {
+  createStateCommit({ type: 'update', args: [state] }, (newState) => (oldState: S, context) => {
     return { ...oldState, ...newState };
   });
 
