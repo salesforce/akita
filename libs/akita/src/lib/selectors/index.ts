@@ -63,7 +63,6 @@ function memomize<T extends (...args: any[]) => R, R>(fn: T): T {
 
 /**
  *
- *
  * Selects an entity from the store by id
  *
  * @example

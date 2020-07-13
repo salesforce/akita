@@ -1,5 +1,6 @@
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { logAction, setAction } from './actions';
+import { Commit, Reducer } from './actions/index';
 import { addEntities, AddEntitiesOptions } from './addEntities';
 import { coerceArray } from './coerceArray';
 import { DEFAULT_ID_KEY } from './defaultIDKey';
@@ -154,6 +155,10 @@ export class EntityStore<S extends EntityState<EntityType, IDType> = any, Entity
 
       this.entityActions.next({ type: EntityActions.Add, ids: data.newIds });
     }
+  }
+
+  apply(commit: Commit<string, any[], Reducer<string, any[], S>, S>) {
+    super._apply(commit, { idKey: this.idKey });
   }
 
   /**

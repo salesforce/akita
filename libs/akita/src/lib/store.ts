@@ -1,6 +1,7 @@
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { currentAction, resetCustomAction, setAction, StoreSnapshotAction } from './actions';
+import { Action, Commit, Reducer } from './actions/index';
 import { getAkitaConfig, getGlobalProducerFn } from './config';
 import { deepFreeze } from './deepFreeze';
 import { dispatchAdded, dispatchDeleted, dispatchUpdate } from './dispatchers';
@@ -51,6 +52,10 @@ export class Store<S = any> {
   private _state$: Observable<S>;
   private inTransaction = false;
   private _initialState: S;
+
+  private _actions$ = new Subject<Action<string, any[]>>();
+  readonly actions$ = this._actions$.asObservable();
+
   protected cache: StoreCache = {
     active: new BehaviorSubject<boolean>(false),
     ttl: null,
@@ -62,6 +67,18 @@ export class Store<S = any> {
 
   constructor(initialState: Partial<S>, protected options: Partial<StoreConfigOptions> = {}) {
     this.onInit(initialState as S);
+  }
+
+  apply(commit: Commit<string, any[], Reducer<string, any[], S>, S>) {
+    this._apply(commit, {});
+  }
+
+  // @internal
+  protected _apply({ action, reducer }: Commit<string, any[], Reducer<string, any[], S>, S>, context: {}) {
+    const newState = reducer(...action.args)(this._value(), { ...context, action });
+    setAction(action.type);
+    this._setState(() => newState);
+    this._actions$.next(action);
   }
 
   /**
