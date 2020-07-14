@@ -107,7 +107,7 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
     params
   );
 
-  if (isNotBrowser && !enableInNonBrowser) return;
+  if ((isNotBrowser && !enableInNonBrowser) || !storage) return;
 
   const hasInclude = include.length > 0;
   const hasSelect = select.length > 0;
