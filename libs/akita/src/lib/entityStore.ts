@@ -304,7 +304,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
    * store.upsertMany([ { id: 1 }, { id: 2 }], { baseClass: Todo  });
    *
    */
-  upsertMany(entities: EntityType[], options: { baseClass?: Constructor; loading?: boolean } = {}) {
+  upsertMany(entities: EntityType[], options: { baseClass?: Constructor; loading?: boolean; prepend?: boolean } = {}) {
     const addedIds = [];
     const updatedIds = [];
     const updatedEntities = {};
@@ -334,11 +334,16 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 
     this._setState((state) => ({
       ...state,
-      ids: addedIds.length ? [...state.ids, ...addedIds] : state.ids,
-      entities: {
-        ...state.entities,
-        ...updatedEntities,
-      },
+      ids: options.prepend ? (addedIds.length ? [...addedIds, ...state.ids] : state.ids) : addedIds.length ? [...state.ids, ...addedIds] : state.ids,
+      entities: options.prepend
+        ? {
+            ...updatedEntities,
+            ...state.entities,
+          }
+        : {
+            ...state.entities,
+            ...updatedEntities,
+          },
       loading: !!options.loading,
     }));
 
