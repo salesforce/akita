@@ -1,6 +1,6 @@
 import { Subject } from 'rxjs';
 import { logAction, setAction } from './actions';
-import { Commit, Reducer } from './actions/index';
+import { Action, Commit, Reduce } from './actions/index';
 import { addEntities, AddEntitiesOptions } from './addEntities';
 import { coerceArray } from './coerceArray';
 import { DEFAULT_ID_KEY } from './defaultIDKey';
@@ -53,7 +53,13 @@ import { updateEntities } from './updateEntities';
  *
  *
  */
-export class EntityStore<S extends EntityState<EntityType, IDType> = any, EntityType = getEntityType<S>, IDType extends ID = getIDType<S>> extends Store<S> {
+export class EntityStore<S extends EntityState<EntityType, IDType> = EntityState<EntityType, IDType>, EntityType = getEntityType<S>, IDType extends ID = getIDType<S>> extends Store<S> {
+  // @internal
+  __ENTITY__!: EntityType;
+
+  // @internal
+  __ENTITY_ID_TYPE__!: IDType;
+
   ui: EntityUIStore<any, EntityType>;
   private entityActions = new Subject<EntityAction<IDType>>();
   private entityIdChanges = new Subject<{ newId: IDType; oldId: IDType; pending: boolean }>();
@@ -157,8 +163,8 @@ export class EntityStore<S extends EntityState<EntityType, IDType> = any, Entity
     }
   }
 
-  apply(commit: Commit<string, any[], Reducer<string, any[], S>, S>) {
-    super._apply(commit, { idKey: this.idKey });
+  apply(commit: Commit<this>) {
+    super._apply(commit);
   }
 
   /**

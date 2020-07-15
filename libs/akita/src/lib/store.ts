@@ -1,7 +1,7 @@
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { currentAction, resetCustomAction, setAction, StoreSnapshotAction } from './actions';
-import { Action, Commit, Reducer } from './actions/index';
+import { Action, Commit } from './actions/index';
 import { getAkitaConfig, getGlobalProducerFn } from './config';
 import { deepFreeze } from './deepFreeze';
 import { dispatchAdded, dispatchDeleted, dispatchUpdate } from './dispatchers';
@@ -47,6 +47,8 @@ interface StoreSnapshot<S> {
  * }
  */
 export class Store<S = any> {
+  __STATE__!: S;
+
   private store: BehaviorSubject<Readonly<StoreSnapshot<S>>>;
   private storeValue: S;
   private _state$: Observable<S>;
@@ -69,13 +71,13 @@ export class Store<S = any> {
     this.onInit(initialState as S);
   }
 
-  apply(commit: Commit<string, any[], Reducer<string, any[], S>, S>) {
-    this._apply(commit, {});
+  apply(commit: Commit<this>) {
+    this._apply(commit);
   }
 
   // @internal
-  protected _apply({ action, reducer }: Commit<string, any[], Reducer<string, any[], S>, S>, context: {}) {
-    const newState = reducer(...action.args)(this._value(), { ...context, action });
+  protected _apply({ action, reduce }: Commit<this>) {
+    const newState = reduce(action, this._value() as this['__STATE__'], this);
     setAction(action.type);
     this._setState(() => newState);
     this._actions$.next(action);

@@ -11,7 +11,7 @@ export interface EntityState<E = any, IDType extends ID = ID> {
   ids?: IDType[];
   loading?: boolean;
   error?: any;
-  [key: string]: any; // TODO: Required?
+  [key: string]: any; // FIXME: Replace with optional state interfaces
 }
 
 export interface Entities<E> {

@@ -1,56 +1,41 @@
-import { coerceArray } from '@datorama/akita';
-import { EntityState, getEntityType, getIDType, ID } from '../types';
+import { coerceArray } from '../coerceArray';
+import { EntityStore } from '../entityStore';
+import { Store } from '../store';
 
-export interface ReducerContext<TActionType extends string, TActionArgs extends any[]> {
-  action: { type: TActionType; args: TActionArgs };
-}
+type StateOf<TStore extends Store> = TStore['__STATE__'];
+type EntityOf<TStore extends EntityStore> = TStore['__ENTITY__'];
+type EntityIdOf<TStore extends EntityStore> = TStore['__ENTITY_ID_TYPE__'];
 
-export interface EntityReducerContext<TActionType extends string, TActionArgs extends any[]> extends ReducerContext<TActionType, TActionArgs> {
-  idKey: string;
-}
+const store = <TStore extends Store>() => (undefined as unknown) as TStore;
+const action = <TActionType extends string, TActionArgs extends any[]>(type: TActionType, ...args: TActionArgs) => ({ type, args });
 
-export interface Reducer<TActionType extends string, TActionArgs extends any[], S> {
-  (...args: TActionArgs): (state: S, context: ReducerContext<TActionType, TActionArgs>) => S;
-}
-
-export interface EntityReducer<TActionType extends string, TActionArgs extends any[], S extends EntityState<EntityType, IdType>, EntityType = getEntityType<S>, IdType extends ID = getIDType<S>> {
-  (...args: TActionArgs): (state: S, context: EntityReducerContext<TActionType, TActionArgs>) => S;
-}
-
-export interface Action<TActionType extends string, TActionArgs extends any[]> {
+export interface Action<TActionType extends string = string, TActionArgs extends any[] = any[]> {
   type: TActionType;
   args: TActionArgs;
 }
 
-export interface Commit<TActionType extends string, TActionArgs extends any[], TReducer extends Reducer<TActionType, TActionArgs, S>, S> {
-  action: Action<TActionType, TActionArgs>;
-  reducer: TReducer;
+export interface Commit<TStore extends Store, TAction extends Action = Action, TReduce extends Reduce<TStore, TAction> = Reduce<TStore, TAction>> {
+  __STORE__: TStore;
+
+  action: TAction;
+
+  reduce: TReduce;
 }
 
-function createStateCommit<TActionType extends string, TActionArgs extends any[], TReducer extends Reducer<TActionType, TActionArgs, S>, S>(
-  action: { type: TActionType; args: TActionArgs },
-  reducer: TReducer
-): Commit<TActionType, TActionArgs, TReducer, S> {
-  return { action, reducer };
+export interface Reduce<TStore extends Store, TAction extends Action> {
+  (action: TAction, state: StateOf<TStore>, store: TStore): StateOf<TStore>;
 }
 
-function createEntityStateCommit<
-  TActionType extends string,
-  TActionArgs extends any[],
-  TReducer extends EntityReducer<TActionType, TActionArgs, S, EntityType, IdType>,
-  S,
-  EntityType = getEntityType<S>,
-  IdType extends ID = getIDType<S>
->(action: { type: TActionType; args: TActionArgs }, reducer: TReducer): Commit<TActionType, TActionArgs, TReducer, S> {
-  return { action, reducer };
+function createCommit<TStore extends Store, TAction extends Action, TReduce extends Reduce<TStore, TAction>>(__STORE__: TStore, action: TAction, reduce: TReduce): Commit<TStore, TAction, TReduce> {
+  return { action, reduce, __STORE__ };
 }
 
 /**
  *
  * @param state
  */
-export const update = <S>(state: Partial<S>) =>
-  createStateCommit({ type: 'update', args: [state] }, (newState) => (oldState: S, context) => {
+export const update = <TStore extends Store>(state: Partial<StateOf<TStore>>) =>
+  createCommit(store<TStore>(), action('update', state), ({ type, args: [newState] }, oldState: StateOf<TStore>, store) => {
     return { ...oldState, ...newState };
   });
 
@@ -58,20 +43,20 @@ export const update = <S>(state: Partial<S>) =>
  *
  * @param entity
  */
-export const insertOne = <S extends EntityState<EntityType, IdType>, EntityType = getEntityType<S>, IdType extends ID = getIDType<S>>(entity: EntityType) =>
-  createEntityStateCommit({ type: 'insertOne', args: [entity] }, (entity) => (state: S, context) => {
-    const entityId = entity[context.idKey] as IdType;
-    const entityIds = coerceArray(state.ids);
+export const insertOne = <TStore extends EntityStore>(entity: EntityOf<TStore>) =>
+  createCommit(store<TStore>(), action('insertOne', entity), ({ type, args: [entity] }, oldState: StateOf<TStore>, store) => {
+    const entityId = entity[store.idKey] as EntityIdOf<TStore>;
+    const entityIds = coerceArray(oldState.ids);
 
     if (entityIds.includes(entityId)) {
-      return state;
+      return oldState;
     }
 
     return {
-      ...state,
+      ...oldState,
       ids: [...entityIds, entityId],
       entities: {
-        ...state.entities,
+        ...oldState.entities,
         [entityId]: entity,
       },
     };

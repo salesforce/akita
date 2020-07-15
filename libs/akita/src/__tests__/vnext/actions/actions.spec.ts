@@ -1,5 +1,5 @@
 import { EntityState, EntityStore, QueryEntity, StoreConfig } from '@datorama/akita';
-import { update, insertOne } from '../../../lib/actions/index';
+import { insertOne, update } from '../../../lib/actions/index';
 
 interface Todo {
   id: number;
