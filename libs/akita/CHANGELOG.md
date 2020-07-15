@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.2.1](https://github.com/datorama/akita/compare/akita-v5.2.0...akita-v5.2.1) (2020-07-15)
+
+### Bug Fixes
+
+- **persist-state:** localStorage security errors ([#489](https://github.com/datorama/akita/issues/489)) ([50ff4e8](https://github.com/datorama/akita/commit/50ff4e853bb3e91df32faafaeee20ba615327119))
+
 ## [5.2.0](https://github.com/datorama/akita/compare/akita-v5.1.1...akita-v5.2.0) (2020-07-05)
 
 ### Features
