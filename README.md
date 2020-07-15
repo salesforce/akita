@@ -107,6 +107,7 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds
     <td align="center"><a href="https://github.com/fritzschoff"><img src="https://avatars1.githubusercontent.com/u/39312833?v=4" width="100px;" alt=""/><br /><sub><b>Max Fritz</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=fritzschoff" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/Eilonudi"><img src="https://avatars1.githubusercontent.com/u/8526882?v=4" width="100px;" alt=""/><br /><sub><b>Eilon Udi</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=Eilonudi" title="Code">💻</a></td>
     <td align="center"><a href="https://getsetbro.github.com/"><img src="https://avatars2.githubusercontent.com/u/442793?v=4" width="100px;" alt=""/><br /><sub><b>getsetbro</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=getsetbro" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/sslaih"><img src="https://avatars3.githubusercontent.com/u/63254899?v=4" width="100px;" alt=""/><br /><sub><b>Samy Slaih</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=sslaih" title="Code">💻</a></td>
   </tr>
 </table>
 
