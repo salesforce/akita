@@ -261,14 +261,14 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     ids: OrArray<IDType>,
     newState: UpsertStateCallback<EntityType, NewEntityType> | NewEntityType,
     onCreate: CreateStateCallback<EntityType, NewEntityType, IDType>,
-    options?: { baseClass?: Constructor }
+    options?: { baseClass?: Constructor; prepend?: boolean }
   ): void;
   @transaction()
   upsert<NewEntityType extends Partial<EntityType>>(
     ids: OrArray<IDType>,
     newState: UpsertStateCallback<EntityType, NewEntityType> | NewEntityType,
     onCreate?: CreateStateCallback<EntityType, NewEntityType, IDType> | { baseClass?: Constructor },
-    options: { baseClass?: Constructor } = {}
+    options: { baseClass?: Constructor; prepend?: boolean } = {}
   ) {
     const toArray = coerceArray(ids);
     const predicate = (isUpdate) => (id) => hasEntity(this.entities, id) === isUpdate;
@@ -288,7 +288,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 
     // it can be any of the three types
     this.update(updateIds, newState as UpdateStateCallback<EntityType, NewEntityType>);
-    this.add(newEntities);
+    this.add(newEntities, { prepend: options.prepend });
     isDev() && logAction('Upsert Entity');
   }
 
