@@ -286,9 +286,20 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
       return withId;
     });
 
+    if (options.prepend && updateIds.length) {
+      let arr = this.ids;
+      arr.filter(predicate(true));
+      arr = [ids, ...arr];
+      this._setState((state) => ({
+        ...state,
+        ids: arr,
+      }));
+    } else {
+      this.update(updateIds, newState as UpdateStateCallback<EntityType, NewEntityType>);
+      this.add(newEntities, { prepend: options.prepend });
+    }
+
     // it can be any of the three types
-    this.update(updateIds, newState as UpdateStateCallback<EntityType, NewEntityType>);
-    this.add(newEntities, { prepend: options.prepend });
     isDev() && logAction('Upsert Entity');
   }
 
