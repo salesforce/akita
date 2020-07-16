@@ -1,7 +1,7 @@
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { currentAction, resetCustomAction, setAction, StoreSnapshotAction } from './actions';
-import { Action, Commit } from './actions/index';
+import { Action, Commit, Committed } from './actions/index';
 import { getAkitaConfig, getGlobalProducerFn } from './config';
 import { deepFreeze } from './deepFreeze';
 import { dispatchAdded, dispatchDeleted, dispatchUpdate } from './dispatchers';
@@ -20,6 +20,10 @@ interface StoreSnapshot<S> {
   state: S;
   action?: StoreSnapshotAction;
 }
+
+// export interface StoreCommit<TStore extends Store<TState>, TState> {
+//   action: Action, state: TState, store: TStore
+// }
 
 /**
  *
@@ -55,8 +59,10 @@ export class Store<S = any> {
   private inTransaction = false;
   private _initialState: S;
 
-  private _actions$ = new Subject<Action<string, any[]>>();
-  readonly actions$ = this._actions$.asObservable();
+  private _commits$ = new Subject<Committed<this>>();
+  readonly commits$ = this._commits$.asObservable();
+
+  private _effects = new Map<Function, Subscription>();
 
   protected cache: StoreCache = {
     active: new BehaviorSubject<boolean>(false),
@@ -71,16 +77,41 @@ export class Store<S = any> {
     this.onInit(initialState as S);
   }
 
+  detachEffect(effect: (commits$: Observable<{ action: Action; state: S }>) => Observable<Commit<this> | undefined>) {
+    const sub = this._effects.get(effect);
+
+    if (sub) {
+      this._effects.delete(effect);
+      sub.unsubscribe();
+    }
+  }
+
+  attachEffect(effect: (commits$: Observable<Committed<this>>) => Observable<Committed<this> | undefined>) {
+    this._effects.set(
+      effect,
+      effect(this.commits$).subscribe((commit) => {
+        if (commit) {
+          this.apply(commit);
+        }
+      })
+    );
+  }
+
   apply(commit: Commit<this>) {
     this._apply(commit);
   }
 
   // @internal
   protected _apply({ action, reduce }: Commit<this>) {
-    const newState = reduce(action, this._value() as this['__STATE__'], this);
-    setAction(action.type);
-    this._setState(() => newState);
-    this._actions$.next(action);
+    let state: S | undefined = undefined;
+
+    if (reduce) {
+      state = reduce(action, this._value() as this['__STATE__'], this);
+      setAction(action.type);
+      this._setState(state);
+    }
+
+    this._commits$.next({ action, state } as Committed<this>);
   }
 
   /**

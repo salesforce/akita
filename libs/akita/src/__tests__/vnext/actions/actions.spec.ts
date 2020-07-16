@@ -1,5 +1,7 @@
 import { EntityState, EntityStore, QueryEntity, StoreConfig } from '@datorama/akita';
-import { insertOne, update } from '../../../lib/actions/index';
+import { EMPTY, of } from 'rxjs';
+import { filter, switchMapTo, tap } from 'rxjs/operators';
+import { insertOne, typeOf, update } from '../../../lib/actions/index';
 
 interface Todo {
   id: number;
@@ -26,6 +28,12 @@ describe('commit action', () => {
 
   it('update', () => {
     store = new TodosStore({});
+    store.attachEffect((commits$) =>
+      commits$.pipe(
+        typeOf(update),
+        tap((x) => console.log(x))
+      )
+    ); //,  filter(({ action: { type, args: [state] } }) => state.name === 'error' ), switchMapTo(of(update({ name: 'error2'})))))
     expect(store._value().name).toEqual(undefined);
     store.apply(update({ name: 'error' }));
     expect(store._value().name).toEqual('error');
