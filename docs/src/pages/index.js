@@ -6,6 +6,7 @@ import classnames from 'classnames';
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import styles from './styles.module.css';
+import { architectureSvg } from "../components/architecture-svg";
 
 function Home() {
   const context = useDocusaurusContext();
@@ -23,7 +24,7 @@ function Home() {
             <h1 className="hero__title">
               🔮 A <span className="c">Reactive</span> State Management Tailor-Made for <span className="c">JS Applications</span>
             </h1>
-            <img src="img/akita.svg" />
+            <img className="logo" src="img/akita.svg" />
           </div>
 
           <div className={styles.buttons}>
@@ -35,26 +36,25 @@ function Home() {
         </div>
       </header>
 
-      <div className="container arc">
-        <img src="img/akita-arc.jpg" />
+      <div className="container arc padding-top--xl padding-bottom--xl">
+        {architectureSvg()}
       </div>
 
       <div className="description">
         <div className="container">
-          <p>
-            Akita is a state management pattern, built on top of RxJS, which takes the idea of multiple data stores from Flux and the immutable updates from Redux, along with the concept of streaming
-            data, to create the Observable Data Store model.
-          </p>
-
-          <p>
-            Akita encourages simplicity. It saves you the hassle of creating boilerplate code and offers powerful tools with a moderate learning curve, suitable for both experienced and inexperienced
-            developers alike.
-          </p>
-
-          <p>
-            Akita is based on object-oriented design principles instead of functional programming, so developers with OOP experience should feel right at home. Its opinionated structure provides your
-            team with a fixed pattern that cannot be deviated from.
-          </p>
+          <ul>
+            <li>            Akita is a state management pattern, built on top of RxJS, which takes the idea of multiple data stores from Flux and the immutable updates from Redux, along with the concept of streaming
+              data, to create the Observable Data Store model.
+            </li>
+            <li>
+              Akita encourages simplicity. It saves you the hassle of creating boilerplate code and offers powerful tools with a moderate learning curve, suitable for both experienced and inexperienced
+              developers alike.
+            </li>
+            <li>
+              Akita is based on object-oriented design principles instead of functional programming, so developers with OOP experience should feel right at home. Its opinionated structure provides your
+              team with a fixed pattern that cannot be deviated from.
+            </li>
+          </ul>
         </div>
       </div>
     </Layout>
