@@ -288,12 +288,32 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 
     if (options.prepend && updateIds.length) {
       let arr = this.ids;
-      arr.filter(predicate(true));
+      arr = arr.filter((elem) => elem !== ids);
       arr = [ids, ...arr];
       this._setState((state) => ({
         ...state,
         ids: arr,
       }));
+
+      // let entityIdChanged:
+      //   | undefined
+      //   | {
+      //   newId: IDType;
+      //   oldId: IDType;
+      // };
+      // this._setState((state) =>
+      //   updateEntities({
+      //     idKey: this.idKey,
+      //     // this.ids,
+      //     preUpdateEntity: this.akitaPreUpdateEntity,
+      //     state,
+      //     producerFn: this._producerFn,
+      //     onEntityIdChanges: (oldId: IDType, newId: IDType) => {
+      //       entityIdChanged = { oldId, newId };
+      //       this.entityIdChanges.next({ ...entityIdChanged, pending: true });
+      //     },
+      //   })
+      // );
     } else {
       this.update(updateIds, newState as UpdateStateCallback<EntityType, NewEntityType>);
       this.add(newEntities, { prepend: options.prepend });
