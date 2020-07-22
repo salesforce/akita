@@ -1,4 +1,4 @@
-import { hasActiveState } from '@datorama/akita';
+import { hasActiveState } from '../activeState';
 import { Observable, OperatorFunction } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
 import { EntityState, getEntityType, getIDType, ID } from '../types';
