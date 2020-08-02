@@ -1,7 +1,7 @@
 import { merge, MonoTypeOperatorFunction, Observable, of, Operator, Subscriber, TeardownLogic } from 'rxjs';
 import { filter, first, switchMap, tap } from 'rxjs/operators';
 import { QueryEntity } from './queryEntity';
-import { EntityState, getEntityType, getQueryEntityState } from './types';
+import { EntityState, getEntityType, getQueryEntityState, ID } from './types';
 
 /**
  * Track id updates of an entity and re-evaluation the query with the changed entity id.
@@ -13,19 +13,21 @@ import { EntityState, getEntityType, getQueryEntityState } from './types';
  *   query.selectEntity(1).pipe(trackIdChanges(query)).subscribe(entity => { ... })
  *
  */
-export function trackIdChanges<K extends QueryEntity<S, T>, S extends EntityState<T> = getQueryEntityState<K>, T = getEntityType<S>>(query: K): MonoTypeOperatorFunction<T> {
-  return (source) => source.lift<T>(new TrackIdChanges(query));
+export function trackIdChanges<TQuery extends QueryEntity<S, EntityType, ID>, S extends EntityState<EntityType, any> = getQueryEntityState<TQuery>, EntityType = getEntityType<S>>(
+  query: TQuery
+): MonoTypeOperatorFunction<EntityType> {
+  return (source) => source.lift<EntityType>(new TrackIdChanges(query));
 }
 
-class TrackIdChanges<K extends QueryEntity<S, T>, S extends EntityState<T>, T = getEntityType<S>> implements Operator<T, T> {
-  constructor(readonly query: K) {}
+class TrackIdChanges<TQuery extends QueryEntity<S, EntityType, ID>, S extends EntityState<EntityType>, EntityType = getEntityType<S>> implements Operator<EntityType, EntityType> {
+  constructor(readonly query: TQuery) {}
 
-  call(subscriber: Subscriber<T>, source: Observable<T>): TeardownLogic {
+  call(subscriber: Subscriber<EntityType>, source: Observable<EntityType>): TeardownLogic {
     return source
       .pipe(
         first(),
         switchMap((entity) => {
-          let currId = entity[this.query.__store__.config.idKey];
+          let currId = entity[this.query.__store__.config.idKey] as ID;
           let pending = false;
 
           return merge(of({ newId: undefined, oldId: currId, pending: false }), this.query.__store__.selectEntityIdChanges$).pipe(

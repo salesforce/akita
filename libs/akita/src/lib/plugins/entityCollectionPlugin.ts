@@ -16,7 +16,7 @@ export type RebaseActions<P = any> = { beforeRemove?: RebaseAction; beforeAdd?: 
 export abstract class EntityCollectionPlugin<State extends EntityState, P> {
   protected entities = new Map<getIDType<State>, P>();
 
-  protected constructor(protected query: QueryEntity<State>, private entityIds: OrArray<getIDType<State>>) {}
+  protected constructor(protected query: QueryEntity<State, any, any>, private entityIds: OrArray<getIDType<State>>) {}
 
   /**
    * Get the entity plugin instance.
@@ -124,7 +124,7 @@ export abstract class EntityCollectionPlugin<State extends EntityState, P> {
       /**
        * Otherwise, start with the provided ids or all.
        */
-      this.getIds().forEach(id => {
+      this.getIds().forEach((id) => {
         if (!this.hasEntity(id)) this.createEntity(id, this.instantiatePlugin(id));
       });
     }
@@ -134,7 +134,7 @@ export abstract class EntityCollectionPlugin<State extends EntityState, P> {
    * Listen for add/remove entities.
    */
   protected selectIds(): Observable<any> {
-    return this.query.select(state => state.ids);
+    return this.query.select((state) => state.ids);
   }
 
   /**

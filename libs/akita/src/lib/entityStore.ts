@@ -1,6 +1,6 @@
 import { Subject } from 'rxjs';
 import { logAction, setAction } from './actions';
-import { Action, Commit, Reduce } from './actions/index';
+import { Commit } from './actions/core/commit';
 import { addEntities, AddEntitiesOptions } from './addEntities';
 import { coerceArray } from './coerceArray';
 import { DEFAULT_ID_KEY } from './defaultIDKey';
@@ -53,7 +53,7 @@ import { updateEntities } from './updateEntities';
  *
  *
  */
-export class EntityStore<S extends EntityState<EntityType, IDType> = EntityState<EntityType, IDType>, EntityType = getEntityType<S>, IDType extends ID = getIDType<S>> extends Store<S> {
+export class EntityStore<S extends EntityState<EntityType, IDType> = EntityState<any, any>, EntityType = getEntityType<S>, IDType extends ID = getIDType<S>> extends Store<S> {
   // @internal
   __ENTITY__!: EntityType;
 
@@ -163,7 +163,7 @@ export class EntityStore<S extends EntityState<EntityType, IDType> = EntityState
     }
   }
 
-  apply(commit: Commit<this>) {
+  apply(commit: Commit<this, any>) {
     super._apply(commit);
   }
 
@@ -445,7 +445,7 @@ export class EntityStore<S extends EntityState<EntityType, IDType> = EntityState
     if (isEmpty(ids)) return;
 
     isDev() && setAction('Remove Entity', ids);
-    this._setState((state: StateWithActive<S>) => removeEntities({ state, ids }));
+    this._setState((state: StateWithActive<S>) => removeEntities<S, EntityType, IDType>({ state, ids }));
     if (ids === null) {
       this.setHasCache(false);
     }
@@ -700,3 +700,6 @@ export class EntityUIStore<UIState, DEPRECATED = any> extends EntityStore<UIStat
     this._akitaCreateEntityFn = createFn;
   }
 }
+
+export type EntityOf<TStore extends EntityStore> = TStore['__ENTITY__'];
+export type EntityIdOf<TStore extends EntityStore> = TStore['__ENTITY_ID_TYPE__'];

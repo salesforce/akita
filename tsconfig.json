@@ -14,7 +14,6 @@
     "lib": ["es2018", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "strictNullChecks": true,
     "baseUrl": ".",
     "paths": {
       "@datorama/akita": ["libs/akita/src/index.ts"],

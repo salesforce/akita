@@ -109,9 +109,9 @@ export class QueryEntity<S extends EntityState<EntityType, IDType>, EntityType =
   getAll(options: SelectAllOptionsD<EntityType>): EntityType[];
   getAll(options: SelectAllOptionsE<EntityType>): EntityType[];
   getAll(): EntityType[];
-  getAll(options: SelectOptions<EntityType> = { asObject: false, filterBy: undefined, limitTo: undefined }): EntityType[] | HashMap<EntityType> {
+  getAll(options: SelectOptions<EntityType> = { asObject: false, filterBy: undefined, limitTo: undefined }): EntityType[] | HashMap<EntityType, IDType> {
     if (options.asObject) {
-      return entitiesToMap(this.getValue(), options);
+      return entitiesToMap<S, EntityType, IDType>(this.getValue(), options);
     }
     sortByOptions(options, this.config || this.options);
 

@@ -1,15 +1,9 @@
-import { ActiveState, EntityState, getEntityType, getIDType, ID, IDS, MultiActiveState } from './types';
 import { hasEntity } from './hasEntity';
 import { isArray } from './isArray';
+import { ActiveState, EntityState, ID, IDS, MultiActiveState } from './types';
 
 // @internal
-// export function hasActiveState<E>(state: EntityState<E>): state is EntityState<E> & (ActiveState | MultiActiveState) {
-//   return state.hasOwnProperty('active');
-// }
-
-export function hasActiveState<S extends EntityState<EntityType, IdType>, EntityType = getEntityType<S>, IdType extends ID = getIDType<S>>(
-  state: S
-): state is S & (ActiveState<IdType> | MultiActiveState<IdType>) {
+export function hasActiveState<E>(state: EntityState<E>): state is EntityState<E> & (ActiveState | MultiActiveState) {
   return state.hasOwnProperty('active');
 }
 

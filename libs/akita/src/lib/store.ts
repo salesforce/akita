@@ -1,7 +1,10 @@
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { currentAction, resetCustomAction, setAction, StoreSnapshotAction } from './actions';
-import { Action, Commit, Committed } from './actions/index';
+import { Action } from './actions/core/action';
+import { Commit } from './actions/core/commit';
+import { Committed } from './actions/core/committed';
+import { applyCommitMiddlewares, CommitMiddleware } from './actions/core/middlware';
 import { getAkitaConfig, getGlobalProducerFn } from './config';
 import { deepFreeze } from './deepFreeze';
 import { dispatchAdded, dispatchDeleted, dispatchUpdate } from './dispatchers';
@@ -20,10 +23,6 @@ interface StoreSnapshot<S> {
   state: S;
   action?: StoreSnapshotAction;
 }
-
-// export interface StoreCommit<TStore extends Store<TState>, TState> {
-//   action: Action, state: TState, store: TStore
-// }
 
 /**
  *
@@ -59,10 +58,11 @@ export class Store<S = any> {
   private inTransaction = false;
   private _initialState: S;
 
-  private _commits$ = new Subject<Committed<this>>();
+  private _commits$ = new Subject<Committed<this, any>>();
   readonly commits$ = this._commits$.asObservable();
 
   private _effects = new Map<Function, Subscription>();
+  private _middlewares = [] as CommitMiddleware<this>[];
 
   protected cache: StoreCache = {
     active: new BehaviorSubject<boolean>(false),
@@ -77,16 +77,7 @@ export class Store<S = any> {
     this.onInit(initialState as S);
   }
 
-  detachEffect(effect: (commits$: Observable<{ action: Action; state: S }>) => Observable<Commit<this> | undefined>) {
-    const sub = this._effects.get(effect);
-
-    if (sub) {
-      this._effects.delete(effect);
-      sub.unsubscribe();
-    }
-  }
-
-  attachEffect(effect: (commits$: Observable<Committed<this>>) => Observable<Committed<this> | undefined>) {
+  attachEffect(effect: (commits$: Observable<Committed<this>>) => Observable<Commit<this> | undefined>) {
     this._effects.set(
       effect,
       effect(this.commits$).subscribe((commit) => {
@@ -97,21 +88,36 @@ export class Store<S = any> {
     );
   }
 
+  detachEffect(effect: (commits$: Observable<{ action: Action; state: S }>) => Observable<Commit<this> | undefined>) {
+    const sub = this._effects.get(effect);
+
+    if (sub) {
+      this._effects.delete(effect);
+      sub.unsubscribe();
+    }
+  }
+
+  attachMiddleware(middleware: CommitMiddleware<this>, prepend = false) {
+    this._middlewares = prepend ? [middleware, ...this._middlewares] : [...this._middlewares, middleware];
+  }
+
+  detachMiddleware(middleware: CommitMiddleware<this>) {
+    this._middlewares = this._middlewares.filter((entry) => entry !== middleware);
+  }
+
   apply(commit: Commit<this>) {
     this._apply(commit);
   }
 
   // @internal
-  protected _apply({ action, reduce }: Commit<this>) {
-    let state: S | undefined = undefined;
+  protected _apply(commit: Commit<this, any>) {
+    const { action, state } = applyCommitMiddlewares(this._middlewares, this, this.getValue(), commit) ?? {};
 
-    if (reduce) {
-      state = reduce(action, this._value() as this['__STATE__'], this);
+    if (action) {
       setAction(action.type);
-      this._setState(state);
+      this._setState(state ?? this.getValue());
+      this._commits$.next({ action, state } as Committed<this, any>);
     }
-
-    this._commits$.next({ action, state } as Committed<this>);
   }
 
   /**
@@ -396,3 +402,5 @@ export class Store<S = any> {
     return (this.cacheConfig && this.cacheConfig.ttl) || getAkitaConfig().ttl;
   }
 }
+
+export type StateOf<TStore extends Store> = TStore['__STATE__'];

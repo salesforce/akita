@@ -1,5 +1,5 @@
-import { EntityState, EntityStore, QueryEntity, StoreConfig } from '@datorama/akita';
-import { selectMany, selectManyFn, selectOne } from '../../../lib/selectors';
+import { EntityState, EntityStore, StoreConfig } from '@datorama/akita';
+import { selectMany, selectManyFn, selectOne } from '../../lib/selectors';
 
 interface Todo {
   id: number;

@@ -1,17 +1,21 @@
-import { EntityState, ID, StateWithActive } from './types';
-import { isNil } from './isNil';
 import { hasActiveState, isMultiActiveState, resolveActiveEntity } from './activeState';
+import { isNil } from './isNil';
+import { EntityState, getEntityType, getIDType, HashMap, ID, StateWithActive } from './types';
 
-export type RemoveEntitiesParams<State, Entity> = {
-  state: StateWithActive<State>;
-  ids: any[];
+// @internal
+export type RemoveEntitiesParams<S extends EntityState<EntityType, IDType> = EntityState<any, any>, EntityType = getEntityType<S>, IDType extends ID = getIDType<S>> = {
+  state: StateWithActive<S>;
+  ids: IDType[];
 };
 
 // @internal
-export function removeEntities<S extends EntityState<E>, E>({ state, ids }: RemoveEntitiesParams<S, E>): S {
+export function removeEntities<S extends EntityState<EntityType, IDType> = EntityState<any, any>, EntityType = getEntityType<S>, IDType extends ID = getIDType<S>>({
+  state,
+  ids,
+}: RemoveEntitiesParams<S, EntityType, IDType>): S {
   if (isNil(ids)) return removeAllEntities(state);
   const entities = state.entities;
-  let newEntities = {};
+  let newEntities = {} as HashMap<EntityType, IDType>;
 
   for (const id of state.ids) {
     if (ids.includes(id) === false) {
@@ -22,11 +26,12 @@ export function removeEntities<S extends EntityState<E>, E>({ state, ids }: Remo
   const newState = {
     ...state,
     entities: newEntities,
-    ids: state.ids.filter(current => ids.includes(current) === false)
+    ids: state.ids.filter((current) => ids.includes(current) === false),
   };
 
-  if (hasActiveState(state)) {
-    newState.active = resolveActiveEntity(newState);
+  // FIXME: Remove `as any'
+  if (hasActiveState(state as any)) {
+    newState.active = resolveActiveEntity(newState as any);
   }
 
   return newState;
@@ -38,6 +43,6 @@ export function removeAllEntities<S>(state: StateWithActive<S>): S {
     ...state,
     entities: {},
     ids: [],
-    active: isMultiActiveState(state.active) ? [] : null
+    active: isMultiActiveState(state.active) ? [] : null,
   };
 }
