@@ -1,10 +1,10 @@
-import { EntityState } from './types';
-import { isNil } from './isNil';
 import { coerceArray } from './coerceArray';
+import { isNil } from './isNil';
+import { EntityState, getEntityType, getIDType, HashMap, ID } from './types';
 
 // @internal
-export function entitiesToMap<S extends EntityState<E>, E>(state: S, options) {
-  const map = {};
+export function entitiesToMap<S extends EntityState<EntityType, IDType>, EntityType = getEntityType<S>, IDType extends ID = getIDType<S>>(state: S, options) {
+  const map = {} as HashMap<EntityType, IDType>;
   const { filterBy, limitTo } = options;
   const { ids, entities } = state;
 
@@ -19,7 +19,7 @@ export function entitiesToMap<S extends EntityState<E>, E>(state: S, options) {
       if (count === limitTo) break;
       const id = ids[i];
       const entity = entities[id];
-      const allPass = coerceArray(filterBy).every(fn => fn(entity, i));
+      const allPass = coerceArray(filterBy).every((fn) => fn(entity, i));
       if (allPass) {
         map[id] = entity;
         count++;
@@ -37,7 +37,7 @@ export function entitiesToMap<S extends EntityState<E>, E>(state: S, options) {
         continue;
       }
 
-      const allPass = coerceArray(filterBy).every(fn => fn(entity, i));
+      const allPass = coerceArray(filterBy).every((fn) => fn(entity, i));
       if (allPass) {
         map[id] = entity;
       }

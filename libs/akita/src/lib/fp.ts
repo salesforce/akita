@@ -15,9 +15,9 @@ export function createQuery<State>(store: Store<State>) {
 }
 
 export function createEntityStore<State extends EntityState>(initialState: Partial<State>, options: Partial<StoreConfigOptions>) {
-  return new EntityStore<State>(initialState, options);
+  return new EntityStore<State, any, any>(initialState, options);
 }
 
-export function createEntityQuery<State extends EntityState>(store: EntityStore<State>, options: QueryConfigOptions = {}) {
-  return new QueryEntity<State>(store, options);
+export function createEntityQuery<State extends EntityState>(store: EntityStore<State, any, any>, options: QueryConfigOptions = {}) {
+  return new QueryEntity<State, any, any>(store, options);
 }

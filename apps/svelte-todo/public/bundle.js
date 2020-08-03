@@ -8195,7 +8195,7 @@ var app = (function () {
 	     * @param {?=} options
 	     * @return {?}
 	     */
-	    QueryEntity.prototype.selectAll = /**
+	    QueryEntity.prototype.selectAllIds = /**
 	     * @param {?=} options
 	     * @return {?}
 	     */

@@ -17,7 +17,7 @@ import { QueryConfigOptions } from './queryConfig';
 import { SelectAllOptionsA, SelectAllOptionsB, SelectAllOptionsC, SelectAllOptionsD, SelectAllOptionsE } from './selectAllOverloads';
 import { sortByOptions } from './sortByOptions';
 import { toBoolean } from './toBoolean';
-import { EntityState, getEntityType, getIDType, HashMap, ItemPredicate, OrArray, SelectOptions } from './types';
+import { EntityState, getEntityType, getIDType, HashMap, ID, ItemPredicate, OrArray, SelectOptions } from './types';
 
 /**
  *
@@ -32,14 +32,14 @@ import { EntityState, getEntityType, getIDType, HashMap, ItemPredicate, OrArray,
  *
  *
  */
-export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, IDType = getIDType<S>> extends Query<S> {
+export class QueryEntity<S extends EntityState<EntityType, IDType>, EntityType = getEntityType<S>, IDType extends ID = getIDType<S>> extends Query<S> {
   ui: EntityUIQuery<any, EntityType>;
-  protected store: EntityStore<S>;
+  protected store: EntityStore<S, EntityType, IDType>;
 
   // @internal
   __store__;
 
-  constructor(store: EntityStore<S>, private options: QueryConfigOptions = {}) {
+  constructor(store: EntityStore<S, EntityType, IDType>, private options: QueryConfigOptions = {}) {
     super(store);
     this.__store__ = store;
   }
@@ -109,9 +109,9 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
   getAll(options: SelectAllOptionsD<EntityType>): EntityType[];
   getAll(options: SelectAllOptionsE<EntityType>): EntityType[];
   getAll(): EntityType[];
-  getAll(options: SelectOptions<EntityType> = { asObject: false, filterBy: undefined, limitTo: undefined }): EntityType[] | HashMap<EntityType> {
+  getAll(options: SelectOptions<EntityType> = { asObject: false, filterBy: undefined, limitTo: undefined }): EntityType[] | HashMap<EntityType, IDType> {
     if (options.asObject) {
-      return entitiesToMap(this.getValue(), options);
+      return entitiesToMap<S, EntityType, IDType>(this.getValue(), options);
     }
     sortByOptions(options, this.config || this.options);
 

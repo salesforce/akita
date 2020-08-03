@@ -1,5 +1,6 @@
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { logAction, setAction } from './actions';
+import { Commit } from './actions/core/commit';
 import { addEntities, AddEntitiesOptions } from './addEntities';
 import { coerceArray } from './coerceArray';
 import { DEFAULT_ID_KEY } from './defaultIDKey';
@@ -25,6 +26,7 @@ import {
   EntityUICreateFn,
   getEntityType,
   getIDType,
+  ID,
   IDS,
   OrArray,
   StateWithActive,
@@ -51,7 +53,13 @@ import { updateEntities } from './updateEntities';
  *
  *
  */
-export class EntityStore<S extends EntityState = any, EntityType = getEntityType<S>, IDType = getIDType<S>> extends Store<S> {
+export class EntityStore<S extends EntityState<EntityType, IDType> = EntityState<any, any>, EntityType = getEntityType<S>, IDType extends ID = getIDType<S>> extends Store<S> {
+  // @internal
+  __ENTITY__!: EntityType;
+
+  // @internal
+  __ENTITY_ID_TYPE__!: IDType;
+
   ui: EntityUIStore<any, EntityType>;
   private entityActions = new Subject<EntityAction<IDType>>();
   private entityIdChanges = new Subject<{ newId: IDType; oldId: IDType; pending: boolean }>();
@@ -153,6 +161,10 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 
       this.entityActions.next({ type: EntityActions.Add, ids: data.newIds });
     }
+  }
+
+  apply(commit: Commit<this, any>) {
+    super._apply(commit);
   }
 
   /**
@@ -433,7 +445,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     if (isEmpty(ids)) return;
 
     isDev() && setAction('Remove Entity', ids);
-    this._setState((state: StateWithActive<S>) => removeEntities({ state, ids }));
+    this._setState((state: StateWithActive<S>) => removeEntities<S, EntityType, IDType>({ state, ids }));
     if (ids === null) {
       this.setHasCache(false);
     }
@@ -688,3 +700,6 @@ export class EntityUIStore<UIState, DEPRECATED = any> extends EntityStore<UIStat
     this._akitaCreateEntityFn = createFn;
   }
 }
+
+export type EntityOf<TStore extends EntityStore> = TStore['__ENTITY__'];
+export type EntityIdOf<TStore extends EntityStore> = TStore['__ENTITY_ID_TYPE__'];

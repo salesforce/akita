@@ -32,7 +32,7 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
   private readonly dispatchSuccess: (action: Partial<EntityServiceAction>) => void;
   private readonly dispatchError: (action: Partial<EntityServiceAction>) => void;
 
-  constructor(protected readonly store: EntityStore<S>, readonly config: NgEntityServiceParams = {}) {
+  constructor(protected readonly store: EntityStore<S, any, any>, readonly config: NgEntityServiceParams = {}) {
     super();
     this.http = inject(HttpClient);
     this.loader = inject(NgEntityServiceLoader);

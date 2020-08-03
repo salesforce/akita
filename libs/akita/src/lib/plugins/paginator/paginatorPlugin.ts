@@ -32,7 +32,7 @@ const paginatorDefaults: PaginatorConfig = {
   range: false,
   startWith: 1,
   cacheTimeout: undefined,
-  clearStoreWithCache: true
+  clearStoreWithCache: true,
 };
 
 export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<State> {
@@ -48,7 +48,7 @@ export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<Stat
     perPage: 0,
     total: 0,
     lastPage: 0,
-    data: []
+    data: [],
   };
 
   /**
@@ -57,12 +57,12 @@ export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<Stat
    */
   private initial = true;
 
-  constructor(protected query: QueryEntity<State>, public config: PaginatorConfig = {}) {
+  constructor(protected query: QueryEntity<State, any, any>, public config: PaginatorConfig = {}) {
     super(query, {
       resetFn: () => {
         this.initial = false;
         this.destroy({ clearCache: true, currentPage: 1 });
-      }
+      },
     });
     this.config = Object.assign(paginatorDefaults, config);
     const { startWith, cacheTimeout } = this.config;
@@ -144,7 +144,7 @@ export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<Stat
    * Set the ids and add the page to store
    */
   addPage(data: getEntityType<State>[]) {
-    this.pages.set(this.currentPage, { ids: data.map(entity => entity[this.getStore().idKey]) });
+    this.pages.set(this.currentPage, { ids: data.map((entity) => entity[this.getStore().idKey]) });
     this.getStore().add(data);
   }
 
@@ -262,7 +262,7 @@ export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<Stat
     }
   }
 
-  getQuery(): QueryEntity<State> {
+  getQuery(): QueryEntity<State, any, any> {
     return this.query;
   }
 
@@ -293,10 +293,10 @@ export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<Stat
   private selectPage(page: number): Observable<PaginationResponse<getEntityType<State>>> {
     return this.query.selectAll({ asObject: true }).pipe(
       take(1),
-      map(entities => {
+      map((entities) => {
         let response: PaginationResponse<getEntityType<State>> = {
           ...this.pagination,
-          data: this.pages.get(page).ids.map(id => entities[id])
+          data: this.pages.get(page).ids.map((id) => entities[id]),
         };
 
         const { range, pagesControls } = this.config;
