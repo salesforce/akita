@@ -3,14 +3,14 @@ import { distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
 import { distinctUntilArrayItemChanged } from './arrayFind';
 import { entitiesToArray } from './entitiesToArray';
 import { entitiesToMap } from './entitiesToMap';
-import { EntityAction, EntityActions } from './entityActions';
+import { EntityAction, EntityActions, EntityActionsNames } from './entityActions';
 import { EntityStore } from './entityStore';
 import { findEntityByPredicate, getEntity } from './getEntity';
 import { isArray } from './isArray';
 import { isDefined } from './isDefined';
+import { isEmpty } from './isEmpty';
 import { isFunction } from './isFunction';
 import { isNil } from './isNil';
-import { isUndefined } from './isUndefined';
 import { mapSkipUndefined } from './mapSkipUndefined';
 import { Query } from './query';
 import { QueryConfigOptions } from './queryConfig';
@@ -291,22 +291,24 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    * Listen for entity actions
    *
    *  @example
-   *
    *  this.query.selectEntityAction(EntityActions.Add);
    *  this.query.selectEntityAction(EntityActions.Update);
    *  this.query.selectEntityAction(EntityActions.Remove);
    *
+   *  this.query.selectEntityAction(EntityActions.Add, EntityActions.Update, EntityActions.Remove)
+   *
    *  this.query.selectEntityAction();
    */
-  selectEntityAction(action: EntityActions): Observable<IDType[]>;
+  selectEntityAction(...actions: EntityActions[]): Observable<{ [Name in EntityActionsNames]?: IDType[] }>;
   selectEntityAction(): Observable<EntityAction<IDType>>;
-  selectEntityAction(action?: EntityActions): Observable<IDType[] | EntityAction<IDType>> {
-    if (isUndefined(action)) {
+  selectEntityAction(...actions: EntityActions[]): Observable<{ [Name in EntityActionsNames]?: IDType[] } | EntityAction<IDType>> {
+    if (isEmpty(actions)) {
       return this.store.selectEntityAction$;
     }
+
     return this.store.selectEntityAction$.pipe(
-      filter((ac) => ac.type === action),
-      map((action) => action.ids)
+      filter(({ type }) => actions.includes(type)),
+      map(({ type, ids }) => ({ [type]: ids }))
     );
   }
 

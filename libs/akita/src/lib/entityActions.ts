@@ -1,9 +1,11 @@
 export enum EntityActions {
-  Set,
-  Add,
-  Update,
-  Remove
+  Set = 'Set',
+  Add = 'Add',
+  Update = 'Update',
+  Remove = 'Remove',
 }
+
+export type EntityActionsNames = keyof typeof EntityActions;
 
 export interface EntityAction<IDType> {
   type: EntityActions;
