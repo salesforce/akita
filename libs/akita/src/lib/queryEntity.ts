@@ -1,6 +1,7 @@
 import { Observable, of } from 'rxjs';
 import { distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
 import { distinctUntilArrayItemChanged } from './arrayFind';
+import { coerceArray } from './coerceArray';
 import { entitiesToArray } from './entitiesToArray';
 import { entitiesToMap } from './entitiesToMap';
 import { EntityAction, EntityActions, EntityActionsNames } from './entityActions';
@@ -8,7 +9,6 @@ import { EntityStore } from './entityStore';
 import { findEntityByPredicate, getEntity } from './getEntity';
 import { isArray } from './isArray';
 import { isDefined } from './isDefined';
-import { isEmpty } from './isEmpty';
 import { isFunction } from './isFunction';
 import { isNil } from './isNil';
 import { mapSkipUndefined } from './mapSkipUndefined';
@@ -295,20 +295,24 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    *  this.query.selectEntityAction(EntityActions.Update);
    *  this.query.selectEntityAction(EntityActions.Remove);
    *
-   *  this.query.selectEntityAction(EntityActions.Add, EntityActions.Update, EntityActions.Remove)
+   *  this.query.selectEntityAction([EntityActions.Add, EntityActions.Update, EntityActions.Remove])
    *
    *  this.query.selectEntityAction();
    */
-  selectEntityAction(...actions: EntityActions[]): Observable<{ [Name in EntityActionsNames]?: IDType[] }>;
+  selectEntityAction(action: EntityActions): Observable<IDType[]>;
+  selectEntityAction(actions: EntityActions[]): Observable<IDType[]>;
   selectEntityAction(): Observable<EntityAction<IDType>>;
-  selectEntityAction(...actions: EntityActions[]): Observable<{ [Name in EntityActionsNames]?: IDType[] } | EntityAction<IDType>> {
-    if (isEmpty(actions)) {
+  selectEntityAction(actionOrActions?: EntityActions | EntityActions[]): Observable<IDType[] | { [Name in EntityActionsNames]?: IDType[] } | EntityAction<IDType>> {
+    if (isNil(actionOrActions)) {
       return this.store.selectEntityAction$;
     }
 
+    const project = isArray(actionOrActions) ? ({ type, ids }: EntityAction<IDType>) => ({ [type]: ids }) : ({ ids }: EntityAction<IDType>) => ids;
+    const actions = coerceArray(actionOrActions);
+
     return this.store.selectEntityAction$.pipe(
       filter(({ type }) => actions.includes(type)),
-      map(({ type, ids }) => ({ [type]: ids }))
+      map((action) => project(action))
     );
   }
 

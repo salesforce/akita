@@ -36,12 +36,12 @@ describe('Entity Actions', () => {
       { id: 2, title: '2 ' },
     ]);
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith({ [EntityActions.Set]: [1, 2] });
+    expect(spy).toHaveBeenCalledWith([1, 2]);
 
     // update
     store.update(1, { title: 'new' });
     expect(spy).toHaveBeenCalledTimes(2);
-    expect(spy).toHaveBeenCalledWith({ [EntityActions.Update]: [1] });
+    expect(spy).toHaveBeenCalledWith([1]);
 
     // add
     store.add([
@@ -49,22 +49,22 @@ describe('Entity Actions', () => {
       { id: 4, title: '4' },
     ]);
     expect(spy).toHaveBeenCalledTimes(3);
-    expect(spy).toHaveBeenCalledWith({ [EntityActions.Add]: [3, 4] });
+    expect(spy).toHaveBeenCalledWith([3, 4]);
 
     // remove
     store.remove([1, 2]);
     expect(spy).toHaveBeenCalledTimes(4);
-    expect(spy).toHaveBeenCalledWith({ [EntityActions.Remove]: [1, 2] });
+    expect(spy).toHaveBeenCalledWith([1, 2]);
 
     store.remove();
     expect(spy).toHaveBeenCalledTimes(5);
-    expect(spy).toHaveBeenCalledWith({ [EntityActions.Remove]: [3, 4] });
+    expect(spy).toHaveBeenCalledWith([3, 4]);
   });
 
   it('should listen for a subset of actions', () => {
     const spy = jest.fn();
 
-    query.selectEntityAction(EntityActions.Update, EntityActions.Remove).subscribe(spy);
+    query.selectEntityAction([EntityActions.Update, EntityActions.Remove]).subscribe(spy);
 
     expect(spy).not.toHaveBeenCalled();
 
