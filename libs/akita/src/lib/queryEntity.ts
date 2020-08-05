@@ -1,4 +1,4 @@
-import { Observable, of } from 'rxjs';
+import { identity, Observable, of } from 'rxjs';
 import { distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
 import { distinctUntilArrayItemChanged } from './arrayFind';
 import { coerceArray } from './coerceArray';
@@ -300,19 +300,19 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
    *  this.query.selectEntityAction();
    */
   selectEntityAction(action: EntityActions): Observable<IDType[]>;
-  selectEntityAction(actions: EntityActions[]): Observable<IDType[]>;
+  selectEntityAction(actions: EntityActions[]): Observable<EntityAction<IDType>>;
   selectEntityAction(): Observable<EntityAction<IDType>>;
   selectEntityAction(actionOrActions?: EntityActions | EntityActions[]): Observable<IDType[] | { [Name in EntityActionsNames]?: IDType[] } | EntityAction<IDType>> {
     if (isNil(actionOrActions)) {
       return this.store.selectEntityAction$;
     }
 
-    const project = isArray(actionOrActions) ? ({ type, ids }: EntityAction<IDType>) => ({ [type]: ids }) : ({ ids }: EntityAction<IDType>) => ids;
+    const project = isArray(actionOrActions) ? identity : ({ ids }: EntityAction<IDType>) => ids;
     const actions = coerceArray(actionOrActions);
 
     return this.store.selectEntityAction$.pipe(
-      filter(({ type }) => actions.includes(type)),
-      map((action) => project(action))
+      filter(({ type }: EntityAction<IDType>) => actions.includes(type)),
+      map(project)
     );
   }
 

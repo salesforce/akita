@@ -82,12 +82,12 @@ describe('Entity Actions', () => {
     // update
     store.update(1, { title: 'updated ' });
     expect(spy).toHaveBeenCalledTimes(1);
-    expect(spy).toHaveBeenCalledWith({ [EntityActions.Update]: [1] });
+    expect(spy).toHaveBeenCalledWith({ type: EntityActions.Update, ids: [1] });
 
     // remove
     store.remove([1, 2]);
     expect(spy).toHaveBeenCalledTimes(2);
-    expect(spy).toHaveBeenCalledWith({ [EntityActions.Remove]: [1, 2] });
+    expect(spy).toHaveBeenCalledWith({ type: EntityActions.Remove, ids: [1, 2] });
   });
 
   it('should listen for all action', () => {
