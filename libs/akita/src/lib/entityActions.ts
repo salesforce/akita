@@ -5,8 +5,6 @@ export enum EntityActions {
   Remove = 'Remove',
 }
 
-export type EntityActionsNames = keyof typeof EntityActions;
-
 export interface EntityAction<IDType> {
   type: EntityActions;
   ids: IDType[];
