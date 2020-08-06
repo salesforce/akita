@@ -40,19 +40,19 @@ describe('EntitiesStore', () => {
   describe('add', () => {
     it('should add entity', () => {
       store.add(new Todo({ id: 1 }));
-      expect(store.entities[1]).toBeDefined();
+      expect(store._value().entities[1]).toBeDefined();
     });
 
     it('should add many', () => {
       store.add([new Todo({ id: 1 }), new Todo({ id: 2 })]);
-      expect(store.entities[1]).toBeDefined();
-      expect(store.entities[2]).toBeDefined();
+      expect(store._value().entities[1]).toBeDefined();
+      expect(store._value().entities[2]).toBeDefined();
     });
 
     it('should NOT add if all exist', () => {
       store.add([new Todo({ id: 1 }), new Todo({ id: 2 })]);
-      expect(store.entities[1]).toBeDefined();
-      expect(store.entities[2]).toBeDefined();
+      expect(store._value().entities[1]).toBeDefined();
+      expect(store._value().entities[2]).toBeDefined();
       jest.spyOn(store, '_setState');
       store.add([new Todo({ id: 1 }), new Todo({ id: 2 })]);
       expect(store._setState).not.toHaveBeenCalled();
@@ -60,12 +60,12 @@ describe('EntitiesStore', () => {
 
     it('should add if one of them NOT exist', () => {
       store.add([new Todo({ id: 1 }), new Todo({ id: 2 })]);
-      expect(store.entities[1]).toBeDefined();
-      expect(store.entities[2]).toBeDefined();
+      expect(store._value().entities[1]).toBeDefined();
+      expect(store._value().entities[2]).toBeDefined();
       jest.spyOn(store, '_setState');
       store.add([new Todo({ id: 1 }), new Todo({ id: 3 })]);
       expect(store._setState).toHaveBeenCalled();
-      expect(store.entities[3]).toBeDefined();
+      expect(store._value().entities[3]).toBeDefined();
     });
 
     it('should prepend with uid', () => {
@@ -100,14 +100,14 @@ describe('EntitiesStore', () => {
     it('should update entity', () => {
       store.add(new Todo({ id: 1 }));
       store.update(1, { title: 'update' });
-      expect(store.entities[1].title).toEqual('update');
+      expect(store._value().entities[1].title).toEqual('update');
     });
 
     it('should update entity id', () => {
       store.add(new Todo({ id: 1 }));
       store.add(new Todo({ id: 2 }));
       store.update(1, { id: 3 });
-      expect(store.entities[3].id).toEqual(3);
+      expect(store._value().entities[3].id).toEqual(3);
       expect(store._value().ids).toEqual([3, 2]);
     });
 
@@ -121,12 +121,12 @@ describe('EntitiesStore', () => {
 
     it('should update entity with callback', () => {
       store.add(new Todo({ id: 1 }));
-      store.update(1, entity => {
+      store.update(1, (entity) => {
         return {
-          title: 'update'
+          title: 'update',
         };
       });
-      expect(store.entities[1].title).toEqual('update');
+      expect(store._value().entities[1].title).toEqual('update');
     });
 
     it('should update many', () => {
@@ -134,44 +134,44 @@ describe('EntitiesStore', () => {
       store.add(new Todo({ id: 2 }));
       store.add(new Todo({ id: 3 }));
       store.update([1, 2], { title: 'update' });
-      expect(store.entities[1].title).toEqual('update');
-      expect(store.entities[2].title).toEqual('update');
-      expect(store.entities[3].title).toEqual('3');
+      expect(store._value().entities[1].title).toEqual('update');
+      expect(store._value().entities[2].title).toEqual('update');
+      expect(store._value().entities[3].title).toEqual('3');
     });
 
     it('should update many with callback using entity object', () => {
       store.add(new Todo({ id: 1 }));
       store.add(new Todo({ id: 2 }));
       store.add(new Todo({ id: 3 }));
-      store.update([1, 2], entity => ({ title: 'update' + entity.id }));
-      expect(store.entities[1].title).toEqual('update1');
-      expect(store.entities[2].title).toEqual('update2');
-      expect(store.entities[3].title).toEqual('3');
+      store.update([1, 2], (entity) => ({ title: 'update' + entity.id }));
+      expect(store._value().entities[1].title).toEqual('update1');
+      expect(store._value().entities[2].title).toEqual('update2');
+      expect(store._value().entities[3].title).toEqual('3');
     });
 
     it('should update all', () => {
       store.add(new Todo({ id: 1 }));
       store.add(new Todo({ id: 2 }));
       store.update(null, { title: 'update' });
-      expect(store.entities[1].title).toEqual('update');
-      expect(store.entities[2].title).toEqual('update');
+      expect(store._value().entities[1].title).toEqual('update');
+      expect(store._value().entities[2].title).toEqual('update');
     });
 
     it('should update by predicate', () => {
       store.add(new Todo({ id: 1 }));
       store.add(new Todo({ id: 2 }));
-      store.update(e => e.title === '2', { title: 'update' });
-      expect(store.entities[1].title).toEqual('1');
-      expect(store.entities[2].title).toEqual('update');
+      store.update((e) => e.title === '2', { title: 'update' });
+      expect(store._value().entities[1].title).toEqual('1');
+      expect(store._value().entities[2].title).toEqual('update');
     });
 
     it('should not update by predicate which does not match any entity', () => {
       store.add(new Todo({ id: 1 }));
       store.add(new Todo({ id: 2 }));
       jest.spyOn(store, '_setState');
-      store.update(e => e.title === '3', { title: 'update' });
-      expect(store.entities[1].title).toEqual('1');
-      expect(store.entities[2].title).toEqual('2');
+      store.update((e) => e.title === '3', { title: 'update' });
+      expect(store._value().entities[1].title).toEqual('1');
+      expect(store._value().entities[2].title).toEqual('2');
       expect(store._setState).not.toHaveBeenCalled();
     });
   });
@@ -182,20 +182,20 @@ describe('EntitiesStore', () => {
       store.add(todo);
       store.setActive(1);
       store.updateActive({ title: 'update' });
-      expect(store.entities[1].title).toEqual('update');
+      expect(store._value().entities[1].title).toEqual('update');
     });
 
     it('should update the active with callback', () => {
       const todo = new Todo({ id: 1 });
       store.add(todo);
       store.setActive(1);
-      store.updateActive(active => {
+      store.updateActive((active) => {
         return {
-          title: 'update'
+          title: 'update',
         };
       });
-      expect(store.entities[1].title).toEqual('update');
-      expect(store.entities[1].id).toEqual(1);
+      expect(store._value().entities[1].title).toEqual('update');
+      expect(store._value().entities[1].id).toEqual(1);
     });
   });
 
@@ -286,7 +286,7 @@ describe('EntitiesStore', () => {
       const todo = new Todo({ id: 1 });
       store.add(todo);
       store.remove(1);
-      expect(store.entities[1]).toBeUndefined();
+      expect(store._value().entities[1]).toBeUndefined();
     });
 
     it('should remove and set active to null', () => {
@@ -295,7 +295,7 @@ describe('EntitiesStore', () => {
       store.setActive(2);
       expect(store._value().active).toEqual(2);
       store.remove(2);
-      expect(store.entities[2]).toBeUndefined();
+      expect(store._value().entities[2]).toBeUndefined();
       expect(store._value().active).toBeNull();
     });
 
@@ -314,8 +314,8 @@ describe('EntitiesStore', () => {
       store.add(todo);
       store.add(todo2);
       store.remove([1, 2]);
-      expect(store.entities[1]).toBeUndefined();
-      expect(store.entities[2]).toBeUndefined();
+      expect(store._value().entities[1]).toBeUndefined();
+      expect(store._value().entities[2]).toBeUndefined();
       expect(store._value().ids.length).toEqual(0);
     });
 
@@ -324,9 +324,9 @@ describe('EntitiesStore', () => {
       const todo2 = new Todo({ id: 2 });
       store.add(todo);
       store.add(todo2);
-      store.remove(e => e.id === 1);
-      expect(store.entities[1]).toBeUndefined();
-      expect(store.entities[2]).toBe(todo2);
+      store.remove((e) => e.id === 1);
+      expect(store._value().entities[1]).toBeUndefined();
+      expect(store._value().entities[2]).toBe(todo2);
       expect(store._value().ids.length).toEqual(1);
     });
 
@@ -336,9 +336,9 @@ describe('EntitiesStore', () => {
       store.add(todo);
       store.add(todo2);
       jest.spyOn(store, '_setState');
-      store.remove(e => e.id === 3);
-      expect(store.entities[1]).toBe(todo);
-      expect(store.entities[2]).toBe(todo2);
+      store.remove((e) => e.id === 3);
+      expect(store._value().entities[1]).toBe(todo);
+      expect(store._value().entities[2]).toBe(todo2);
       expect(store._value().ids.length).toEqual(2);
       expect(store._setState).not.toHaveBeenCalled();
     });
@@ -349,8 +349,8 @@ describe('EntitiesStore', () => {
       store.add(todo);
       store.add(todo2);
       store.remove();
-      expect(store.entities[1]).toBeUndefined();
-      expect(store.entities[2]).toBeUndefined();
+      expect(store._value().entities[1]).toBeUndefined();
+      expect(store._value().entities[2]).toBeUndefined();
       expect(store._value().ids.length).toEqual(0);
     });
 
@@ -361,8 +361,8 @@ describe('EntitiesStore', () => {
       store.add(todo2);
       store.setActive(1);
       store.remove();
-      expect(store.entities[1]).toBeUndefined();
-      expect(store.entities[2]).toBeUndefined();
+      expect(store._value().entities[1]).toBeUndefined();
+      expect(store._value().entities[2]).toBeUndefined();
       expect(store._value().ids.length).toEqual(0);
       expect(store._value().active).toBeNull();
     });

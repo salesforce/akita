@@ -1,4 +1,4 @@
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { logAction, setAction } from './actions';
 import { addEntities, AddEntitiesOptions } from './addEntities';
 import { coerceArray } from './coerceArray';
@@ -427,14 +427,15 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
     if (isFunction(idsOrFn)) {
       ids = this.ids.filter((entityId) => idsOrFn(this.entities[entityId]));
     } else {
-      ids = idPassed ? coerceArray(idsOrFn) : null;
+      ids = idPassed ? coerceArray(idsOrFn) : this.ids;
     }
 
     if (isEmpty(ids)) return;
 
     isDev() && setAction('Remove Entity', ids);
     this._setState((state: StateWithActive<S>) => removeEntities({ state, ids }));
-    if (ids === null) {
+
+    if (!idPassed) {
       this.setHasCache(false);
     }
 
