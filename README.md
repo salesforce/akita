@@ -109,6 +109,9 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds
     <td align="center"><a href="https://getsetbro.github.com/"><img src="https://avatars2.githubusercontent.com/u/442793?v=4" width="100px;" alt=""/><br /><sub><b>getsetbro</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=getsetbro" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/sslaih"><img src="https://avatars3.githubusercontent.com/u/63254899?v=4" width="100px;" alt=""/><br /><sub><b>Samy Slaih</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=sslaih" title="Code">💻</a></td>
   </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/talohana"><img src="https://avatars2.githubusercontent.com/u/24203431?v=4" width="100px;" alt=""/><br /><sub><b>Tal Ohana</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=talohana" title="Code">💻</a></td>
+  </tr>
 </table>
 
 <!-- markdownlint-enable -->
