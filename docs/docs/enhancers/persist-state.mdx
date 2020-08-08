@@ -9,7 +9,7 @@ To use it you should call the `persistState()` function. Here's an example of An
 ```ts title="main.ts"
 import { persistState } from '@datorama/akita';
 
-const persistState = persistState();
+const storage = persistState();
 
 const providers = [{ provide: 'persistStorage', useValue: storage }];
 
