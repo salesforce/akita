@@ -1,8 +1,8 @@
-import { IDS, ItemPredicate } from './types';
-import { DEFAULT_ID_KEY } from './defaultIDKey';
 import { coerceArray } from './coerceArray';
+import { DEFAULT_ID_KEY } from './defaultIDKey';
 import { isFunction } from './isFunction';
 import { isObject } from './isObject';
+import { IDS, ItemPredicate } from './types';
 
 /**
  * Update item in a collection
@@ -25,8 +25,8 @@ export function arrayUpdate<T extends any[], Entity = any>(arr: T, predicateOrId
   }
 
   const updateFn = (state) =>
-    state.map((entity) => {
-      if (condition(entity) === true) {
+    state.map((entity, index) => {
+      if (condition(entity, index) === true) {
         return isObject(entity)
           ? {
               ...entity,
