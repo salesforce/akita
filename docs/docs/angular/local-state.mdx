@@ -78,7 +78,11 @@ function counterStateFactory(element: ElementRef<Element>) {
     {{ counter$ | async }}
     <button (click)="increment()">Increment</button>
   `,
-  providers: [CounterState]
+  providers: [{
+    provide: CounterState, 
+    useFactory: counterStateFactory,
+    deps: [ElementRef]
+  }]
 })
 export class CounterComponent {
   counter$ = this.state.query.select('counter');
