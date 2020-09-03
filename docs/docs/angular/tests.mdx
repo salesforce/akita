@@ -71,20 +71,14 @@ We can mock the query and in each spec provide the selector result:
 
 describe('TodosPageComponent', () => {
   let component: TodosPageComponent;
-  let todosQuery: jasmine.SpyObj<TodosQuery>;
+  let todosQuery: TodosQuery;
   let fixture: ComponentFixture<TodosPageComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       providers: [
-        {
-          provide: TodosService,
-          useValue: jasmine.createSpyObj('TodosService', ['get'])
-        },
-        {
-          provide: TodosQuery,
-          useValue: jasmine.createSpyObj('TodosQuery', ['selectAll'])
-        }
+        TodosService,
+        TodosQuery
       ],
       declarations: [TodosComponent]
     }).compileComponents();
@@ -143,10 +137,7 @@ describe('TodosPageComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       providers: [
-        {
-          provide: TodosService,
-          useValue: jasmine.createSpyObj('TodosService', ['get'])
-        }
+       TodosService,
       ],
       declarations: [TodosComponent]
     }).compileComponents();
@@ -155,7 +146,7 @@ describe('TodosPageComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TodosComponent);
     component = fixture.componentInstance;
-    todosStore = TestBed.get(TodosStore);
+    todosStore = TestBed.inject(TodosStore);
   });
 
   it('should display no todos message', () => {
