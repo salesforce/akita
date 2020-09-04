@@ -174,7 +174,7 @@ store.upsert(id, { isOpen: true }, (id, newState) => ({ id, ...newState });
 store.upsert(id, (oldState) => ({ isOpen: !(oldState?.isOpen ?? true) }), (id, newState) => ({ id, ...newState });
 ```
 
-The first argument is the entity to be inserted or updated, the second contains the new entity state, and the last
+The first argument is the entity id to be inserted or updated, the second contains the new entity state, and the last
 argument is the callback for creating a new entity if it does not exist.
 
 :::warning
