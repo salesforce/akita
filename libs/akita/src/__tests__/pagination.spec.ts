@@ -130,6 +130,23 @@ describe('Paginator', () => {
     expect(paginator.currentPage).toEqual(3);
   });
 
+  it('should update entity on the store when page is fetched', () => {
+    expect(query.getEntity(45)).toBeUndefined();
+    store.add({ id: 45, email: 'outdated' });
+
+    const outdateEntiry = query.getEntity(45)
+    expect(outdateEntiry.email).toBe('outdated');
+
+    expect(paginator.hasPage(5)).toBeFalsy();
+    paginator.setPage(5);
+    expect(requestFunc).toHaveBeenCalledTimes(4);
+    expect(paginator.currentPage).toEqual(5);
+
+    const updatedEntiry = query.getEntity(45)
+    expect(updatedEntiry).toBeTruthy();
+    expect(updatedEntiry.email).toBe('email 45');
+  });
+
   describe('isFirst', () => {
     it('should return false', () => {
       expect(paginator.isFirst).toBeFalsy();
