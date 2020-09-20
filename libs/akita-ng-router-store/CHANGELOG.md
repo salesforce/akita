@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.1.7](https://github.com/datorama/akita/compare/akita-ng-router-store-v5.1.6...akita-ng-router-store-v5.1.7) (2020-09-20)
+
+### Bug Fixes
+
+- **router-store:** serializeRoute 'state' undefined ([#529](https://github.com/datorama/akita/issues/529)) ([ed0e40b](https://github.com/datorama/akita/commit/ed0e40be2d9371d528e0197cc5f222714724ec17))
+
 ### [5.1.1](https://github.com/datorama/akita/compare/akita-ng-router-store-v5.1.0...akita-ng-router-store-v5.1.1) (2020-06-18)
 
 ### Bug Fixes
