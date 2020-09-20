@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.2.4](https://github.com/datorama/akita/compare/akita-v5.2.3...akita-v5.2.4) (2020-09-20)
+
+### Bug Fixes
+
+- **paginator:** update entities on store ([#530](https://github.com/datorama/akita/issues/530)) ([4c16def](https://github.com/datorama/akita/commit/4c16deffc87d66fb320b69903a187df62a409dff))
+
 ### [5.2.3](https://github.com/datorama/akita/compare/akita-v5.2.2...akita-v5.2.3) (2020-08-28)
 
 ### Bug Fixes
