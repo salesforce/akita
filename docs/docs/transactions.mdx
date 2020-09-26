@@ -32,7 +32,8 @@ export class AuthQuery extends query<AuthState> {
 
 And we want to query the entire state:
 ```ts
-const authState$ = authQuery.select().subscribe();
+const authState$ = authQuery.select();
+const subscription = authState$.subscribe();
 ```
 
 Now let's say we need to update the same store a couple of times on the same `tick`:
