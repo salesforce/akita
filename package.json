@@ -84,11 +84,6 @@
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
-  },
   "lint-staged": {
     "*.{ts,yml,json,md}": [
       "prettier --write"
@@ -137,8 +132,9 @@
     "@angular/compiler": "8.2.14",
     "@angular/compiler-cli": "~8.2.14",
     "@angular/language-service": "8.2.14",
-    "@commitlint/cli": "^8.3.5",
-    "@commitlint/config-conventional": "^8.3.4",
+    "@commitlint/cli": "8.1.0",
+    "@commitlint/config-angular": "8.1.0",
+    "@commitlint/config-conventional": "8.1.0",
     "@nrwl/angular": "9.4.0",
     "@nrwl/cypress": "9.4.0",
     "@nrwl/eslint-plugin-nx": "9.4.0",
@@ -165,13 +161,14 @@
     "@typescript-eslint/parser": "2.27.0",
     "all-contributors-cli": "^6.14.1",
     "codelyzer": "~5.2.2",
-    "commitizen": "^4.0.4",
     "copyfiles": "^2.2.0",
     "cypress": "^4.3.0",
     "cz-conventional-changelog": "^3.1.0",
     "dotenv": "8.2.0",
     "eslint": "6.8.0",
     "eslint-config-prettier": "6.10.1",
+    "eslint-plugin-cypress": "^2.10.3",
+    "git-cz": "^4.7.1",
     "husky": "^4.2.5",
     "jest": "25.3.0",
     "jest-localstorage-mock": "^2.4.0",
@@ -186,7 +183,6 @@
     "ts-node": "~8.8.2",
     "tslint": "6.1.1",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "3.2.4",
-    "eslint-plugin-cypress": "^2.10.3"
+    "typescript": "3.2.4"
   }
 }
