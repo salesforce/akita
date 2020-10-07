@@ -24,6 +24,9 @@
   ],
   "peerDependencies": {
     "@datorama/akita": ">= 5.0.0",
-    "@angular/core": ">= 8.0.0"
+    "@angular/core": ">= 8.0.0",
+    "rxjs": "*",
+    "@angular/router": ">= 8.0.0",
+    "@angular/common": ">= 8.0.0"
   }
 }
