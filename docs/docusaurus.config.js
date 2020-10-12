@@ -18,7 +18,7 @@ module.exports = {
         alt: 'Transloco',
         src: 'img/akita.svg',
       },
-      links: [
+      items: [
         {
           to: 'docs/store',
           activeBasePath: 'docs',
@@ -40,13 +40,13 @@ module.exports = {
         },
         {
           href: 'https://gitter.im/akita-state-management/Lobby',
-          label: '',
+          label: ' ',
           position: 'right',
           className: 'header-icon-link header-gitter-link'
         },
         {
           href: 'https://github.com/datorama/akita/',
-          label: '',
+          label: ' ',
           position: 'right',
           className: 'header-icon-link header-github-link'
         }
