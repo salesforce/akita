@@ -51,7 +51,6 @@
     "format": "nx format:write",
     "format:check": "nx format:check",
     "format:write": "nx format:write",
-    "help": "nx help",
     "lint": "nx workspace-lint && nx lint",
     "lint:all": "nx run-many --target=lint --all",
     "nx": "nx",
