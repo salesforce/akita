@@ -42,7 +42,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     if (options.firebaseEntityService) {
       dependencies.push({
         type: NodeDependencyType.Default,
-        version: '^1.5.13',
+        version: '^3.1.6',
         name: 'akita-ng-fire',
       });
     }
