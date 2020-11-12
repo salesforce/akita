@@ -65,7 +65,7 @@ export class ContactsPageComponent {
            perPage: 10
          });
 
-         return this.paginator.getPage(reqFn);
+         return this.paginatorRef.getPage(reqFn);
        })
      );
   }
