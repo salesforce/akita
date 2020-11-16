@@ -77,6 +77,9 @@ export interface PersistStateParams {
 
 export interface PersistState {
   destroy(): void;
+  /**
+   * @deprecated Use clearStore instead.
+   */
   clear(): void;
   clearStore(storeName?: string): void;
 }
