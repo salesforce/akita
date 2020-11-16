@@ -7,7 +7,7 @@ The store supports having an `active` property, holding the active entity's `id`
 Here's how to set it up:
 
 ```ts {3} title="todos.store.ts"
-import { EntityState, ActiveState, StoreConfig } from '@datorama/akita';
+import { EntityState, ActiveState, StoreConfig, EntityStore } from '@datorama/akita';
 
 export interface TodosState extends EntityState<Todo, number>, ActiveState {
 }
