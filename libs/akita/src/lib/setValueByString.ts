@@ -19,15 +19,12 @@ export function setValue(obj: any, prop: string, val: any) {
   const removeStoreName = prop.split('.').slice(1);
 
   removeStoreName.reduce((acc, part, index) => {
-    if (index === lastIndex) {
-      if (isObject(acc[part])) {
-        acc[part] = { ...acc[part], ...val };
-      } else {
-        acc[part] = val;
-      }
-    } else {
+    if (index !== lastIndex) {
       acc[part] = { ...acc[part] };
+      return acc && acc[part];
     }
+
+    acc[part] = Array.isArray(acc[part]) || !isObject(acc[part]) ? val : { ...acc[part], ...val };
 
     return acc && acc[part];
   }, obj);

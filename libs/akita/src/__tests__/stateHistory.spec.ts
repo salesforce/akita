@@ -1,3 +1,4 @@
+import { arrayAdd } from '@datorama/akita';
 import { Store } from '../lib/store';
 import { Query } from '../lib/query';
 import { StateHistoryPlugin } from '../lib/plugins/stateHistory/stateHistoryPlugin';
@@ -30,7 +31,7 @@ describe('StateHistory', () => {
     expect(stateHistory.history).toEqual({
       past: [],
       present: { counter: 0 },
-      future: []
+      future: [],
     });
   });
 
@@ -38,31 +39,31 @@ describe('StateHistory', () => {
     expect(stateHistory.hasPast).toBeFalsy();
     expect(stateHistory.hasFuture).toBeFalsy();
 
-    store._setState(state => {
+    store._setState((state) => {
       return {
-        counter: state.counter + 1
+        counter: state.counter + 1,
       };
     });
 
     expect(stateHistory.history).toEqual({
       past: [{ counter: 0 }],
       present: { counter: 1 },
-      future: []
+      future: [],
     });
 
     expect(stateHistory.hasPast).toBeTruthy();
     expect(stateHistory.hasFuture).toBeFalsy();
 
-    store._setState(state => {
+    store._setState((state) => {
       return {
-        counter: state.counter + 1
+        counter: state.counter + 1,
       };
     });
 
     expect(stateHistory.history).toEqual({
       past: [{ counter: 0 }, { counter: 1 }],
       present: { counter: 2 },
-      future: []
+      future: [],
     });
 
     expect(stateHistory.hasPast).toBeTruthy();
@@ -73,7 +74,7 @@ describe('StateHistory', () => {
     expect(stateHistory.history).toEqual({
       past: [{ counter: 0 }],
       present: { counter: 1 },
-      future: [{ counter: 2 }]
+      future: [{ counter: 2 }],
     });
 
     expect(stateHistory.hasPast).toBeTruthy();
@@ -84,7 +85,7 @@ describe('StateHistory', () => {
     expect(stateHistory.history).toEqual({
       past: [],
       present: { counter: 0 },
-      future: [{ counter: 1 }, { counter: 2 }]
+      future: [{ counter: 1 }, { counter: 2 }],
     });
 
     expect(stateHistory.hasPast).toBeFalsy();
@@ -95,7 +96,7 @@ describe('StateHistory', () => {
     expect(stateHistory.history).toEqual({
       past: [{ counter: 0 }],
       present: { counter: 1 },
-      future: [{ counter: 2 }]
+      future: [{ counter: 2 }],
     });
 
     expect(stateHistory.hasPast).toBeTruthy();
@@ -106,34 +107,34 @@ describe('StateHistory', () => {
     expect(stateHistory.history).toEqual({
       past: [{ counter: 0 }, { counter: 1 }],
       present: { counter: 2 },
-      future: []
+      future: [],
     });
 
     expect(stateHistory.hasPast).toBeTruthy();
     expect(stateHistory.hasFuture).toBeFalsy();
 
-    store._setState(state => {
+    store._setState((state) => {
       return {
-        counter: state.counter + 1
+        counter: state.counter + 1,
       };
     });
 
-    store._setState(state => {
+    store._setState((state) => {
       return {
-        counter: state.counter + 1
+        counter: state.counter + 1,
       };
     });
 
-    store._setState(state => {
+    store._setState((state) => {
       return {
-        counter: state.counter + 1
+        counter: state.counter + 1,
       };
     });
 
     expect(stateHistory.history).toEqual({
       past: [{ counter: 0 }, { counter: 1 }, { counter: 2 }, { counter: 3 }, { counter: 4 }],
       present: { counter: 5 },
-      future: []
+      future: [],
     });
 
     stateHistory.jumpToPast(1);
@@ -141,7 +142,7 @@ describe('StateHistory', () => {
     expect(stateHistory.history).toEqual({
       past: [{ counter: 0 }],
       present: { counter: 1 },
-      future: [{ counter: 2 }, { counter: 3 }, { counter: 4 }, { counter: 5 }]
+      future: [{ counter: 2 }, { counter: 3 }, { counter: 4 }, { counter: 5 }],
     });
 
     stateHistory.jumpToFuture(1);
@@ -149,33 +150,33 @@ describe('StateHistory', () => {
     expect(stateHistory.history).toEqual({
       past: [{ counter: 0 }, { counter: 1 }, { counter: 2 }],
       present: { counter: 3 },
-      future: [{ counter: 4 }, { counter: 5 }]
+      future: [{ counter: 4 }, { counter: 5 }],
     });
 
     stateHistory.ignoreNext();
 
-    store._setState(state => {
+    store._setState((state) => {
       return {
-        counter: state.counter + 1
+        counter: state.counter + 1,
       };
     });
 
     expect(stateHistory.history).toEqual({
       past: [{ counter: 0 }, { counter: 1 }, { counter: 2 }],
       present: { counter: 3 },
-      future: [{ counter: 4 }, { counter: 5 }]
+      future: [{ counter: 4 }, { counter: 5 }],
     });
 
-    store._setState(state => {
+    store._setState((state) => {
       return {
-        counter: state.counter + 1
+        counter: state.counter + 1,
       };
     });
 
     expect(stateHistory.history).toEqual({
       past: [{ counter: 0 }, { counter: 1 }, { counter: 2 }, { counter: 4 }],
       present: { counter: 5 },
-      future: [{ counter: 4 }, { counter: 5 }]
+      future: [{ counter: 4 }, { counter: 5 }],
     });
 
     stateHistory.ignoreNext();
@@ -183,35 +184,35 @@ describe('StateHistory', () => {
     expect(stateHistory.history).toEqual({
       past: [{ counter: 0 }, { counter: 1 }, { counter: 2 }, { counter: 4 }],
       present: { counter: 5 },
-      future: [{ counter: 4 }, { counter: 5 }]
+      future: [{ counter: 4 }, { counter: 5 }],
     });
 
-    stateHistory.clear(history => {
+    stateHistory.clear((history) => {
       return {
         past: history.past,
         present: history.present,
-        future: []
+        future: [],
       };
     });
 
     expect(stateHistory.history).toEqual({
       past: [{ counter: 0 }, { counter: 1 }, { counter: 2 }, { counter: 4 }],
       present: { counter: 5 },
-      future: []
+      future: [],
     });
 
-    stateHistory.clear(history => {
+    stateHistory.clear((history) => {
       return {
         past: [],
         present: history.present,
-        future: history.future
+        future: history.future,
       };
     });
 
     expect(stateHistory.history).toEqual({
       past: [],
       present: { counter: 5 },
-      future: []
+      future: [],
     });
   });
 });
@@ -221,45 +222,45 @@ const query2 = new CounterQuery(store2);
 const stateHistory2 = new StateHistoryPlugin(query2, { maxAge: 1 });
 
 describe('StateHistory - Limit', () => {
-  store2._setState(state => {
+  store2._setState((state) => {
     return {
-      counter: state.counter + 1
+      counter: state.counter + 1,
     };
   });
 
-  store2._setState(state => {
+  store2._setState((state) => {
     return {
-      counter: state.counter + 1
+      counter: state.counter + 1,
     };
   });
 
-  store2._setState(state => {
+  store2._setState((state) => {
     return {
-      counter: state.counter + 1
+      counter: state.counter + 1,
     };
   });
 
-  store2._setState(state => {
+  store2._setState((state) => {
     return {
-      counter: state.counter + 1
+      counter: state.counter + 1,
     };
   });
 
-  store2._setState(state => {
+  store2._setState((state) => {
     return {
-      counter: state.counter + 1
+      counter: state.counter + 1,
     };
   });
 
-  store2._setState(state => {
+  store2._setState((state) => {
     return {
-      counter: state.counter + 1
+      counter: state.counter + 1,
     };
   });
 
-  store2._setState(state => {
+  store2._setState((state) => {
     return {
-      counter: state.counter + 1
+      counter: state.counter + 1,
     };
   });
 
@@ -319,23 +320,23 @@ describe('StateHistory - Observability', () => {
 
     // Simple mutator function for convenience
     const makeChange = () => {
-      store._setState(state => {
+      store._setState((state) => {
         return {
-          counter: state.counter + 1
+          counter: state.counter + 1,
         };
       });
     };
 
     return {
       history,
-      makeChange
+      makeChange,
     };
   }
 
   // Just a convenience wraper for handling assertions on the observable stream
   function expectHistoryStatusEqual(status$: Observable<boolean>, expectedValues: Boolean[], done: () => void) {
     const values: boolean[] = [];
-    status$.subscribe(val => {
+    status$.subscribe((val) => {
       values.push(val);
       if (values.length == expectedValues.length) {
         expect(values).toEqual(expectedValues);
@@ -345,23 +346,23 @@ describe('StateHistory - Observability', () => {
   }
 
   describe('hasPast$', () => {
-    it('should initially be false', done => {
+    it('should initially be false', (done) => {
       const { history } = getStateHistory();
 
-      history.hasPast$.subscribe(val => {
+      history.hasPast$.subscribe((val) => {
         expect(val).toEqual(false);
         done();
       });
     });
 
-    it('should update observable on update', done => {
+    it('should update observable on update', (done) => {
       const { history, makeChange } = getStateHistory();
 
       const expectedValues: boolean[] = [
         false, // Initial
         true, // makeChange
         false, // undo
-        true // redo
+        true, // redo
       ];
 
       expectHistoryStatusEqual(history.hasPast$, expectedValues, done);
@@ -371,13 +372,13 @@ describe('StateHistory - Observability', () => {
       history.redo();
     });
 
-    it('should only update on change', done => {
+    it('should only update on change', (done) => {
       const { history, makeChange } = getStateHistory();
 
       const expectedValues: boolean[] = [
         false, // initial
         true, // after first change
-        false // after both undo's
+        false, // after both undo's
       ];
 
       expectHistoryStatusEqual(history.hasPast$, expectedValues, done);
@@ -389,13 +390,13 @@ describe('StateHistory - Observability', () => {
       history.undo();
     });
 
-    it('should work with ignoreNext', done => {
+    it('should work with ignoreNext', (done) => {
       const { history, makeChange } = getStateHistory();
 
       const expectedValues: boolean[] = [
         false, // initial
         true, // after first change
-        false // after undo
+        false, // after undo
       ];
 
       expectHistoryStatusEqual(history.hasPast$, expectedValues, done);
@@ -406,13 +407,13 @@ describe('StateHistory - Observability', () => {
       makeChange();
     });
 
-    it('should work with clear', done => {
+    it('should work with clear', (done) => {
       const { history, makeChange } = getStateHistory();
 
       const expectedValues: boolean[] = [
         false, // initial
         true, // after first change
-        false // after clear
+        false, // after clear
       ];
 
       expectHistoryStatusEqual(history.hasPast$, expectedValues, done);
@@ -423,22 +424,22 @@ describe('StateHistory - Observability', () => {
   });
 
   describe('hasFuture$', () => {
-    it('should initially be false', done => {
+    it('should initially be false', (done) => {
       const { history } = getStateHistory();
 
-      history.hasFuture$.subscribe(val => {
+      history.hasFuture$.subscribe((val) => {
         expect(val).toEqual(false);
         done();
       });
     });
 
-    it('should update observable on update', done => {
+    it('should update observable on update', (done) => {
       const { history, makeChange } = getStateHistory();
 
       const expectedValues: boolean[] = [
         false, // Initial
         true, // undo
-        false // redo
+        false, // redo
       ];
 
       expectHistoryStatusEqual(history.hasFuture$, expectedValues, done);
@@ -448,12 +449,12 @@ describe('StateHistory - Observability', () => {
       history.redo();
     });
 
-    it('should only update on change', done => {
+    it('should only update on change', (done) => {
       const { history, makeChange } = getStateHistory();
 
       const expectedValues: boolean[] = [
         false, // initial
-        true // after undo
+        true, // after undo
       ];
 
       expectHistoryStatusEqual(history.hasFuture$, expectedValues, done);
@@ -465,12 +466,12 @@ describe('StateHistory - Observability', () => {
       history.undo();
     });
 
-    it('should work with ignoreNext', done => {
+    it('should work with ignoreNext', (done) => {
       const { history, makeChange } = getStateHistory();
 
       const expectedValues: boolean[] = [
         false, // initial
-        true // after undo
+        true, // after undo
       ];
 
       expectHistoryStatusEqual(history.hasFuture$, expectedValues, done);
@@ -481,13 +482,13 @@ describe('StateHistory - Observability', () => {
       makeChange();
     });
 
-    it('should work with clear', done => {
+    it('should work with clear', (done) => {
       const { history, makeChange } = getStateHistory();
 
       const expectedValues: boolean[] = [
         false, // initial
         true, // after undo
-        false // after clear
+        false, // after clear
       ];
 
       expectHistoryStatusEqual(history.hasFuture$, expectedValues, done);
@@ -496,5 +497,69 @@ describe('StateHistory - Observability', () => {
       history.undo();
       history.clear();
     });
+  });
+});
+
+type CollectionState = {
+  collection: number[];
+};
+
+describe('StateHistory - array-like property', () => {
+  const collectionStore = new Store<CollectionState>({ collection: [] });
+  const collectionQuery = new Query<CollectionState>(collectionStore);
+  const collectionHistory = new StateHistoryPlugin(collectionQuery, { watchProperty: 'collection' });
+
+  it('should get the initial state', () => {
+    expect(collectionHistory.history).toEqual({
+      past: [],
+      present: [],
+      future: [],
+    });
+
+    expect(collectionHistory.hasPast).toBeFalsy();
+    expect(collectionHistory.hasFuture).toBeFalsy();
+  });
+
+  it('should work properly with array-like property', () => {
+    let expectedCollection = [1];
+
+    collectionStore.update((state) => ({ collection: arrayAdd(state.collection, 1) }));
+
+    expect(collectionHistory.history).toEqual({
+      past: [[]],
+      present: expectedCollection,
+      future: [],
+    });
+    expect(collectionStore.getValue()).toEqual({ collection: expectedCollection });
+
+    expectedCollection = [1, 2];
+    collectionStore.update((state) => ({ collection: arrayAdd(state.collection, 2) }));
+
+    expect(collectionHistory.history).toEqual({
+      past: [[], [1]],
+      present: expectedCollection,
+      future: [],
+    });
+    expect(collectionStore.getValue()).toEqual({ collection: expectedCollection });
+
+    expectedCollection = [1];
+    collectionHistory.undo();
+
+    expect(collectionHistory.history).toEqual({
+      past: [[]],
+      present: expectedCollection,
+      future: [[1, 2]],
+    });
+    expect(collectionQuery.getValue()).toEqual({ collection: expectedCollection });
+
+    expectedCollection = [1, 2];
+    collectionHistory.redo();
+
+    expect(collectionHistory.history).toEqual({
+      past: [[], [1]],
+      present: expectedCollection,
+      future: [],
+    });
+    expect(collectionQuery.getValue()).toEqual({ collection: expectedCollection });
   });
 });
