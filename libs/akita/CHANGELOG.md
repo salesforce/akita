@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [5.2.6](https://github.com/datorama/akita/compare/akita-v5.2.5...akita-v5.2.6) (2020-11-23)
+
+### Bug Fixes
+
+- **lib:** restored array state is not changed to an object literal ([#561](https://github.com/datorama/akita/issues/561)) ([b559a13](https://github.com/datorama/akita/commit/b559a133fa6d9d1bbaa6b6c88ed67fe274cd0d3e))
+
 ### [5.2.5](https://github.com/datorama/akita/compare/akita-v5.2.4...akita-v5.2.5) (2020-10-07)
 
 ### [5.2.4](https://github.com/datorama/akita/compare/akita-v5.2.3...akita-v5.2.4) (2020-09-20)
