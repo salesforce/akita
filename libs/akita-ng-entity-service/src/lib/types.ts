@@ -28,6 +28,7 @@ export type HttpConfig<Entity = any> = {
   params?: _HttpParams;
   headers?: _HttpHeaders;
   url?: string;
+  subResources?: string[];
   mapResponseFn?: (res: any) => Entity | Entity[];
 };
 
