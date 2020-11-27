@@ -1,18 +1,18 @@
-import { TestBed, inject, fakeAsync, tick } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { fakeAsync, inject, TestBed, tick } from '@angular/core/testing';
+import { HttpMethod, NgEntityServiceNotifier } from './ng-entity-service-notifier';
+import { defaultConfig, NgEntityServiceGlobalConfig, NG_ENTITY_SERVICE_CONFIG } from './ng-entity-service.config';
+import { NgEntityServiceLoader } from './ng-entity-service.loader';
 import {
-  TestStore,
-  TestServiceWithDecoratorConfig,
-  TestServiceWithDecoratorAndInlineConfig,
-  TestService,
-  TestServiceWithInlineConfig,
-  TestServiceWithMixedConfig,
   storeName,
   TestEntity,
+  TestService,
+  TestServiceWithDecoratorAndInlineConfig,
+  TestServiceWithDecoratorConfig,
+  TestServiceWithInlineConfig,
+  TestServiceWithMixedConfig,
+  TestStore,
 } from './setup';
-import { NgEntityServiceGlobalConfig, NG_ENTITY_SERVICE_CONFIG, defaultConfig } from './ng-entity-service.config';
-import { HttpMethod, NgEntityServiceNotifier } from './ng-entity-service-notifier';
-import { NgEntityServiceLoader } from './ng-entity-service.loader';
 
 describe('NgEntityService', () => {
   describe('should merge config in order...', () => {
@@ -537,24 +537,24 @@ describe('NgEntityService', () => {
       }
     ));
 
-    it('should add sub-resources to request URL when called with subResources config', inject(
+    it('should add URL postfix to request URL when called with urlPostfix config', inject(
       [TestServiceWithInlineConfig, HttpTestingController],
       (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
-        const subResources = ['sub-resource-1', '1', 'sub-resource-2', '2'];
-        const expectedUrl = `${service.api}/${subResources[0]}/${subResources[1]}/${subResources[2]}/${subResources[3]}`;
-        service.get({ subResources }).subscribe();
+        const urlPostfix = 'foo/3/bar/3';
+        const expectedUrl = `${service.api}/${urlPostfix}`;
+        service.get({ urlPostfix }).subscribe();
         const req = httpMock.expectOne((x) => x.url === expectedUrl);
         req.flush([]);
       }
     ));
 
-    it('should add sub-resources to request URL when called with id and subResources config', inject(
+    it('should add URL postfix to request URL when called with id and urlPostfix config', inject(
       [TestServiceWithInlineConfig, HttpTestingController],
       (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
         const entityId = 1;
-        const subResources = ['sub-resource-1', '1', 'sub-resource-2', '2'];
-        const expectedUrl = `${service.api}/${entityId}/${subResources[0]}/${subResources[1]}/${subResources[2]}/${subResources[3]}`;
-        service.get(entityId, { subResources }).subscribe();
+        const urlPostfix = 'foo/3/bar/3';
+        const expectedUrl = `${service.api}/${entityId}/${urlPostfix}`;
+        service.get(entityId, { urlPostfix }).subscribe();
         const req = httpMock.expectOne((x) => x.url === expectedUrl);
         req.flush([]);
       }
@@ -820,13 +820,13 @@ describe('NgEntityService', () => {
       }
     ));
 
-    it('should add sub-resources to request URL when called with subResources config', inject(
+    it('should add URL postfix to request URL when called with urlPostfix config', inject(
       [TestServiceWithInlineConfig, HttpTestingController],
       (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
         const dummyEntity: TestEntity = { id: 1, foo: 'foo', bar: 123 };
-        const subResources = ['sub-resource-1', '1', 'sub-resource-2', '2'];
-        const expectedUrl = `${service.api}/${subResources[0]}/${subResources[1]}/${subResources[2]}/${subResources[3]}`;
-        service.add(dummyEntity, { subResources }).subscribe();
+        const urlPostfix = 'foo/3/bar/3';
+        const expectedUrl = `${service.api}/${urlPostfix}`;
+        service.add(dummyEntity, { urlPostfix }).subscribe();
         const req = httpMock.expectOne((x) => x.url === expectedUrl);
         req.flush([]);
       }
@@ -1072,14 +1072,14 @@ describe('NgEntityService', () => {
       }
     ));
 
-    it('should add sub-resources to request URL when called with subResources config', inject(
+    it('should add URL postfix to request URL when called with urlPostfix config', inject(
       [TestServiceWithInlineConfig, HttpTestingController],
       (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
         const entityId = 1;
         const dummyEntity: Partial<TestEntity> = { foo: 'foo', bar: 123 };
-        const subResources = ['sub-resource-1', '1', 'sub-resource-2', '2'];
-        const expectedUrl = `${service.api}/${entityId}/${subResources[0]}/${subResources[1]}/${subResources[2]}/${subResources[3]}`;
-        service.update(entityId, dummyEntity, { subResources }).subscribe();
+        const urlPostfix = 'foo/3/bar/3';
+        const expectedUrl = `${service.api}/${entityId}/${urlPostfix}`;
+        service.update(entityId, dummyEntity, { urlPostfix }).subscribe();
         const req = httpMock.expectOne((x) => x.url === expectedUrl);
         req.flush([]);
       }
@@ -1322,13 +1322,13 @@ describe('NgEntityService', () => {
       }
     ));
 
-    it('should add sub-resources to request URL when called with subResources config', inject(
+    it('should add URL postfix to request URL when called with urlPostfix config', inject(
       [TestServiceWithInlineConfig, HttpTestingController],
       (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
         const entityId = 1;
-        const subResources = ['sub-resource-1', '1', 'sub-resource-2', '2'];
-        const expectedUrl = `${service.api}/${entityId}/${subResources[0]}/${subResources[1]}/${subResources[2]}/${subResources[3]}`;
-        service.delete(entityId, { subResources }).subscribe();
+        const urlPostfix = 'foo/3/bar/3';
+        const expectedUrl = `${service.api}/${entityId}/${urlPostfix}`;
+        service.delete(entityId, { urlPostfix }).subscribe();
         const req = httpMock.expectOne((x) => x.url === expectedUrl);
         req.flush([]);
       }

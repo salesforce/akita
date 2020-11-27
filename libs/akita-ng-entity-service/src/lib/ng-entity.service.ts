@@ -327,7 +327,7 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
   }
 
   protected resolveUrl(config?: HttpConfig, id?: any) {
-    const { url, subResources } = Object(config) as HttpConfig;
+    const { url, urlPostfix } = Object(config) as HttpConfig;
     let final = this.api;
 
     if (url) {
@@ -338,8 +338,8 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
       final += `/${id}`;
     }
 
-    if (subResources && subResources.length > 0) {
-      final += `/${subResources.join('/')}`;
+    if (urlPostfix) {
+      final += `/${urlPostfix}`;
     }
 
     return final;
