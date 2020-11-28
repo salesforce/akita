@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.3.0](https://github.com/datorama/akita/compare/akita-v5.2.6...akita-v5.3.0) (2020-11-28)
+
+### Features
+
+- 🎸 provide initial state to preStoreUpdate hook ([#567](https://github.com/datorama/akita/issues/567)) ([64278ef](https://github.com/datorama/akita/commit/64278ef51905fd9dbd8458dfd10b3c5781ade87f)), closes [#566](https://github.com/datorama/akita/issues/566)
+
 ### [5.2.6](https://github.com/datorama/akita/compare/akita-v5.2.5...akita-v5.2.6) (2020-11-23)
 
 ### Bug Fixes
