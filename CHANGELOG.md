@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.1](https://github.com/datorama/akita/compare/v0.1.0...v0.1.1) (2020-11-28)
+
+### Features
+
+- 🎸 provide initial state to preStoreUpdate hook ([#567](https://github.com/datorama/akita/issues/567)) ([64278ef](https://github.com/datorama/akita/commit/64278ef51905fd9dbd8458dfd10b3c5781ade87f)), closes [#566](https://github.com/datorama/akita/issues/566)
+- **entity-store:** track entity id updates ([#476](https://github.com/datorama/akita/issues/476)) ([bb59c14](https://github.com/datorama/akita/commit/bb59c1455d005b878340195f604ed03384ae1268))
+- **helper:** add a utility function to toggle array values ([#467](https://github.com/datorama/akita/issues/467)) ([ecf5ca3](https://github.com/datorama/akita/commit/ecf5ca3d764517a62588ca6cd72af3ab6324d7cf))
+- **schematics:** implement 'flat' flag for feature ([#470](https://github.com/datorama/akita/issues/470)) ([79cb3ea](https://github.com/datorama/akita/commit/79cb3ea1785caeae10b70ab35f215bafd9d98974))
+
+### Bug Fixes
+
+- 🐛 fix wrong types in router query ([8f1100f](https://github.com/datorama/akita/commit/8f1100f6569a6ddf57b100e08dd9dbe1c22973ff))
+- **lib:** restored array state is not changed to an object literal ([#561](https://github.com/datorama/akita/issues/561)) ([b559a13](https://github.com/datorama/akita/commit/b559a133fa6d9d1bbaa6b6c88ed67fe274cd0d3e))
+- add params to created object ([#544](https://github.com/datorama/akita/issues/544)) ([444cb4d](https://github.com/datorama/akita/commit/444cb4dbf255e13e5a1f97c79785cdbebf05197e))
+- **akita:** added getStoreByName to index.ts ([#475](https://github.com/datorama/akita/issues/475)) ([a0afa3a](https://github.com/datorama/akita/commit/a0afa3a6f1592d588dda1d912a203de7259dff71))
+- **build:** upgrade nx to 9.4.0 ([#478](https://github.com/datorama/akita/issues/478)) ([30bba8b](https://github.com/datorama/akita/commit/30bba8bd7b1351411e26c37c04887cc05a541ef5))
+- **libs:** bump version ([99226bd](https://github.com/datorama/akita/commit/99226bda28f0502fa3b8a4ba1f9fff5bcee04799))
+- **paginator:** update entities on store ([#530](https://github.com/datorama/akita/issues/530)) ([4c16def](https://github.com/datorama/akita/commit/4c16deffc87d66fb320b69903a187df62a409dff))
+- **persist-state:** localStorage security errors ([#489](https://github.com/datorama/akita/issues/489)) ([50ff4e8](https://github.com/datorama/akita/commit/50ff4e853bb3e91df32faafaeee20ba615327119))
+- **router-store:** serializeRoute 'state' undefined ([#529](https://github.com/datorama/akita/issues/529)) ([ed0e40b](https://github.com/datorama/akita/commit/ed0e40be2d9371d528e0197cc5f222714724ec17))
+- **run-store-action:** add package exports for store actions ([#473](https://github.com/datorama/akita/issues/473)) ([ca3d3c0](https://github.com/datorama/akita/commit/ca3d3c09d188fa1f66374b43ae57183d0cc210a5)), closes [#472](https://github.com/datorama/akita/issues/472)
+- **schematics:** bump versions ([1955267](https://github.com/datorama/akita/commit/1955267a53d94b7039d8b05525b2860520237d95))
+- **schematics:** fix devtools ([6e539d1](https://github.com/datorama/akita/commit/6e539d15eece181f2d551e5885c0499f0c88924e))
+- **schematics:** update schematics deps ([797bfa9](https://github.com/datorama/akita/commit/797bfa9efaca199889a820de15f81cdb34a88f12))
+- **utils:** pass index to array update util ([2f2d345](https://github.com/datorama/akita/commit/2f2d34513942a56529cc35a5d5add0fcfe1e4afd))
+
 ## [0.1.0](https://github.com/datorama/akita/compare/v0.0.1...v0.1.0) (2020-06-18)
 
 ### ⚠ BREAKING CHANGES
