@@ -67,7 +67,7 @@ export interface PersistStateParams {
 
   preStorageUpdate(storeName: string, state: any): any;
 
-  preStoreUpdate(storeName: string, state: any): any;
+  preStoreUpdate(storeName: string, state: any, initialState: any): any;
 
   skipStorageUpdate: () => boolean;
   preStorageUpdateOperator: () => OperatorFunction<any, any>;
@@ -192,7 +192,7 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
       if (storeName in storageState) {
         setAction('@PersistState');
         store._setState((state) => {
-          return setValue(state, path, preStoreUpdate(storeName, storageState[storeName]));
+          return setValue(state, path, preStoreUpdate(storeName, storageState[storeName], state));
         });
         const hasCache = storageState['$cache'] ? storageState['$cache'][storeName] : false;
         __stores__[storeName].setHasCache(hasCache, { restartTTL: true });

@@ -99,15 +99,47 @@ For example, here is how we can save only specific keys from the `auth` state:
 persistState({
   include: ['auth', 'todos'],
   preStorageUpdate(storeName, state) {
-    if(storeName === 'auth') {
+    if (storeName === 'auth') {
       return {
         token: state.token,
         expired: state.expired
-      }
+      };
     }
+
     return state;
   },
   preStoreUpdate(storeName, state) {
+    return state;
+  }
+});
+```
+
+We can also control how the state is being saved and updated:
+
+```ts
+persistState({
+  include: ['auth', 'products'],
+  preStorageUpdate(storeName, state) {
+    if (storeName === 'products') {
+      return {
+        sort: state.ui.filters.sort
+      };
+    }
+
+    return state;
+  },
+  preStoreUpdate(storeName, state, initialState) {
+    if (storeName === 'products') {
+      return {
+        ui: {
+          filters: {
+            ...initialState.ui.filters,
+            sort: state.sort
+          }
+        }
+      };
+    }
+
     return state;
   }
 });
