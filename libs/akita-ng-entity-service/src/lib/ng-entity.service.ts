@@ -1,14 +1,14 @@
+import { HttpClient } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { EntityService, EntityState, EntityStore, getEntityType, getIDType, isDefined } from '@datorama/akita';
 import { Observable, throwError } from 'rxjs';
-import { inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { catchError, finalize, map, tap } from 'rxjs/operators';
-import { HttpConfig, HttpAddConfig, HttpGetConfig, HttpDeleteConfig, HttpUpdateConfig, NgEntityServiceParams } from './types';
-import { EntityServiceAction, HttpMethod, NgEntityServiceNotifier } from './ng-entity-service-notifier';
-import { NgEntityServiceLoader } from './ng-entity-service.loader';
-import { defaultConfig, mergeDeep, NG_ENTITY_SERVICE_CONFIG, NgEntityServiceGlobalConfig } from './ng-entity-service.config';
-import { isID } from './helpers';
 import { errorAction, successAction } from './action-factory';
+import { isID } from './helpers';
+import { EntityServiceAction, HttpMethod, NgEntityServiceNotifier } from './ng-entity-service-notifier';
+import { defaultConfig, mergeDeep, NgEntityServiceGlobalConfig, NG_ENTITY_SERVICE_CONFIG } from './ng-entity-service.config';
+import { NgEntityServiceLoader } from './ng-entity-service.loader';
+import { HttpAddConfig, HttpConfig, HttpDeleteConfig, HttpGetConfig, HttpUpdateConfig, NgEntityServiceParams } from './types';
 
 export const mapResponse = <T>(config?: HttpConfig<T>) => map((res) => (config && !!config.mapResponseFn ? config.mapResponseFn(res) : res));
 
@@ -327,11 +327,22 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
   }
 
   protected resolveUrl(config?: HttpConfig, id?: any) {
-    if (config && config.url) {
-      return config.url;
+    const { url, urlPostfix } = Object(config) as HttpConfig;
+    let final = this.api;
+
+    if (url) {
+      return url;
     }
 
-    return isDefined(id) ? `${this.api}/${id}` : this.api;
+    if (isDefined(id)) {
+      final += `/${id}`;
+    }
+
+    if (urlPostfix) {
+      final += `/${urlPostfix}`;
+    }
+
+    return final;
   }
 
   protected handleError(method: HttpMethod, error: any, errorMsg?: string) {
