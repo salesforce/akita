@@ -47,8 +47,8 @@ export class TodosQuery extends QueryEntity<TodosState> {
   `
 })
 export class TodosPageComponent implements OnInit {
-  todos$ = this.todosQuery.selectAll();
-  selectFilter$ = this.todosQuery.selectFilter$;
+  todos$: Observable<Todo[]>;
+  selectFilter$: Observable<string>;
 
   constructor(
     private todosQuery: TodosQuery,
@@ -56,6 +56,8 @@ export class TodosPageComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.todos$ = this.todosQuery.selectAll();
+    this.selectFilter$ = this.todosQuery.selectFilter$;
     this.todosService.get().subscribe();
   }
 }
