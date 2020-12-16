@@ -7,7 +7,7 @@ import { Action, Typed } from 'ts-action';
 })
 export class Actions<T = Action> extends Subject<T> {
   // todo might need stricter type
-  dispatch(value: Typed<any, any>) {
+  dispatch(value: Typed<any, string>) {
     this.next(value);
   }
 }

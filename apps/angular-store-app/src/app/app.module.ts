@@ -34,7 +34,7 @@ import { AkitaNgEffectsModule }                                              fro
     // ERROR in Error during template compile of 'AppModule'
     // Function calls are not supported in decorators but 'AkitaNgEffectsModule' was called.
     // An Angular update will fix this;
-    // AkitaNgEffectsModule.forRoot([CartEffects]),
+    AkitaNgEffectsModule.forRoot([CartEffects]),
   ],
   providers: [
     AuthGuard,

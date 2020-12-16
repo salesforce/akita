@@ -72,6 +72,7 @@
     "test:lib:akita": "nx test akita",
     "test:lib:akita-ng-devtools": "nx test akita-ng-devtools",
     "test:lib:akita-ng-entity-service": "nx test akita-ng-entity-service",
+    "test:lib:akita-ng-effects": "nx test akita-ng-effects",
     "test:lib:akita-ng-forms-manager": "nx test akita-ng-forms-manager",
     "test:lib:akita-ng-router-store": "nx test akita-ng-router-store",
     "update": "nx migrate latest",

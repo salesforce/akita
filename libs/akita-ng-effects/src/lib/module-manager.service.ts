@@ -1,5 +1,7 @@
 import { Injectable, Type } from '@angular/core';
 
+// todo test integrated with modules after code change
+
 @Injectable()
 export class ModuleManager {
   rootInit: boolean;

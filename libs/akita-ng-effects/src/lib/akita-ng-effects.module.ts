@@ -5,6 +5,8 @@ import { Actions } from './actions';
 import { EffectsFeatureModule } from './effect-feature.module';
 import { ModuleManager } from './module-manager.service';
 
+// todo on destroy behavior will be implemented
+
 // forRoot method runs twice
 // https://github.com/angular/angular/issues/38376
 
@@ -14,8 +16,8 @@ let initRoot = false;
 @NgModule({})
 export class AkitaNgEffectsModule {
   static forRoot(rootEffects: Type<any>[] = []): ModuleWithProviders<EffectsRootModule> {
-    if (initRoot) return;
-    initRoot = true;
+    // if (initRoot) return;
+    // initRoot = true;
 
     return {
       ngModule: EffectsRootModule,
@@ -38,6 +40,8 @@ export class AkitaNgEffectsModule {
 
   // multiple instances of feature effects can coexist; todo keep for configuration purposes?
   static forFeature(featureEffects: Type<any>[] = []): ModuleWithProviders<EffectsFeatureModule> {
+    if ( !initRoot ) throw TypeError("Use AkitaNgEffectsModule.forRoot() before creating feature effects.")
+
     return {
       ngModule: EffectsFeatureModule,
       providers: [
