@@ -66,6 +66,9 @@
     "react-akita-app-e2e": {
       "tags": [],
       "implicitDependencies": ["react-akita-app"]
+    },
+    "akita-ng-effects": {
+      "tags": []
     }
   },
   "tasksRunnerOptions": {

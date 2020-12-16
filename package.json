@@ -121,6 +121,8 @@
     "recompose": "^0.30.0",
     "rxjs": "6.4.0",
     "schematics-utilities": "1.1.1",
+    "ts-action": "^11.0.0",
+    "ts-action-operators": "^9.1.1",
     "tslib": "^1.11.1",
     "zone.js": "^0.10.3"
   },
