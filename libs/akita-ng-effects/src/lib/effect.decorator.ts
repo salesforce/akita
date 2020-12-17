@@ -1,17 +1,20 @@
+import { setMetadata } from './effect.utils';
+
 export function Effect() {
   return function (classProto: any, propKey: string): any {
-    const valuesByInstance = new WeakMap();
+    let returnValue;
 
     Object.defineProperty(classProto, propKey, {
       get: function () {
-        return valuesByInstance.get(this);
+        return returnValue;
       },
       set: function (value) {
-        valuesByInstance.set(this, value.subscribe());
+        const setValue = value;
+        setMetadata(setValue, propKey);
+        returnValue = setValue;
       },
+      enumerable: true,
+      configurable: true,
     });
   };
 }
-
-
-

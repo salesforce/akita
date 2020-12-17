@@ -1,27 +1,32 @@
-import { Injectable, Type } from '@angular/core';
+import { Injectable, OnDestroy, Type } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
-// todo test integrated with modules after code change
-
-@Injectable()
-export class ModuleManager {
-  rootInit: boolean;
-  // can be used to keep track of instantiated effects
+@Injectable({
+  providedIn: 'root',
+})
+export class ModuleManager implements OnDestroy {
   effectInstanceSources: Type<any>[] = [];
+  destroyEffects$ = new Subject();
 
-  constructor() {
-    this.checkRootInit();
-    this.setRootInit();
+  addEffectInstance(effectInstance) {
+    this.effectInstanceSources.push(effectInstance);
+    this.subscribeToEffects(effectInstance);
   }
 
-  setRootInit() {
-    this.rootInit = true;
+  subscribeToEffects(effectInstance) {
+    for (let key in effectInstance) {
+      const property = effectInstance[key];
+      if (property.hasOwnProperty('isEffect') && property.isEffect) {
+        console.log(property.name);
+        property.pipe(takeUntil(this.destroyEffects$)).subscribe();
+      }
+    }
   }
 
-  checkRootInit() {
-    if (this.rootInit) throw TypeError('Init');
-  }
-
-  addEffectInstance(effect) {
-    this.effectInstanceSources.push(effect);
+  ngOnDestroy() {
+    // modules aren't supposed to be destroyed; might not be needed
+    this.destroyEffects$.next();
+    this.effectInstanceSources = [];
   }
 }

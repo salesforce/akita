@@ -120,7 +120,7 @@
     "react-loadable": "^5.5.0",
     "react-router-dom": "5.2.0",
     "recompose": "^0.30.0",
-    "rxjs": "6.5.5",
+    "rxjs": "6.6.3",
     "schematics-utilities": "1.1.1",
     "ts-action": "^11.0.0",
     "ts-action-operators": "^9.1.1",
