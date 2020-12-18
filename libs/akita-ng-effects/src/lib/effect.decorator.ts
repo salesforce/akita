@@ -13,8 +13,7 @@ export function Effect() {
         setMetadata(setValue, propKey);
         returnValue = setValue;
       },
-      enumerable: true,
-      configurable: true,
+      enumerable: true
     });
   };
 }
