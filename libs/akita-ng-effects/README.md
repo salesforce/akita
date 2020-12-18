@@ -68,7 +68,7 @@ export class NavigationEffects {
 
   @Effect()
   loadMainNavigationSuccess$ = this.actions$.pipe(
-    ofType(LOAD_MAIN_NAVIGATION_SUCCESS),
+    ofType(loadMainNavigationSuccess),
     map(({ mainNav }) => this.navigationService.updateNavigationTree(mainNav)),
     tap(mainRoutes => this.store.updateNavigation(mainRoutes))
   );
