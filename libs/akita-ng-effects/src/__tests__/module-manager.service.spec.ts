@@ -1,6 +1,6 @@
 import { Actions } from '@datorama/akita-ng-effects';
-import { ModuleManager } from './module-manager.service';
-import { setMetadata } from './effect.utils';
+import { ModuleManager } from '../lib/module-manager.service';
+import { setMetadata } from '../lib/effect.utils';
 import { Subject } from 'rxjs';
 
 describe('Module Manager Service', () => {
