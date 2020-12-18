@@ -18,7 +18,6 @@ export class ModuleManager implements OnDestroy {
     for (let key in effectInstance) {
       const property = effectInstance[key];
       if (property.hasOwnProperty('isEffect') && property.isEffect) {
-        console.log(property.name);
         property.pipe(takeUntil(this.destroyEffects$)).subscribe();
       }
     }
