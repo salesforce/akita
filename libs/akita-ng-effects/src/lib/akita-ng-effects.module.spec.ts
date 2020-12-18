@@ -4,18 +4,20 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 class FakeEffects {
-  constructor() {}
+  constructor() {
+  }
 }
 
 @Injectable()
 class FakeEffectsTwo {
-  constructor() {}
+  constructor() {
+  }
 }
 
 describe(`forRoot`, () => {
   it(`should provide FakeEffects`, () => {
     TestBed.configureTestingModule({
-      imports: [AkitaNgEffectsModule.forRoot([FakeEffects])],
+      imports: [AkitaNgEffectsModule.forRoot([FakeEffects])]
     });
     const fakeEffects = TestBed.inject(FakeEffects);
     expect(fakeEffects).toBeDefined();

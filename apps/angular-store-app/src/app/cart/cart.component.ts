@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { Observable }                                 from 'rxjs';
-import { Product }                                    from '../products/state/products.model';
-import { CartQuery }                                  from './state/cart.query';
-import { CartItem }                                   from './state/cart.model';
-import { Actions }                                    from '@datorama/akita-ng-effects';
-import { CartActions }                                from './state/cart.actions';
+import { Observable } from 'rxjs';
+import { Product } from '../products/state/products.model';
+import { CartQuery } from './state/cart.query';
+import { CartItem } from './state/cart.model';
+import { Actions } from '@datorama/akita-ng-effects';
+import { CartActions } from './state/cart.actions';
 
 @Component({
   selector: 'app-cart',
@@ -16,11 +16,12 @@ export class CartComponent implements OnInit {
   total$: Observable<number>;
   notify$: Observable<boolean>;
 
-  constructor(private cartQuery: CartQuery, private actions: Actions) {}
+  constructor(private cartQuery: CartQuery, private actions: Actions) {
+  }
 
   ngOnInit() {
-    this.items$ = this.cartQuery.selectItems$;
-    this.total$ = this.cartQuery.selectTotal$;
+    this.items$  = this.cartQuery.selectItems$;
+    this.total$  = this.cartQuery.selectTotal$;
     this.notify$ = this.cartQuery.selectNotification$;
   }
 

@@ -1,4 +1,4 @@
-import { Actions }          from '@datorama/akita-ng-effects';
+import { Actions } from '@datorama/akita-ng-effects';
 import { fakeAsync, flush } from '@angular/core/testing';
 
 describe('Actions', () => {

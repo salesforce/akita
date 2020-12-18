@@ -3,5 +3,6 @@ import { Actions } from '@datorama/akita-ng-effects';
 
 @Injectable()
 export class ContactEffects {
-  constructor(private actions$: Actions) {}
+  constructor(private actions$: Actions) {
+  }
 }

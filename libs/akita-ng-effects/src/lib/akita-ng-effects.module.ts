@@ -16,14 +16,14 @@ export class AkitaNgEffectsModule {
         rootEffects,
         {
           provide: _ROOT_EFFECTS,
-          useValue: rootEffects,
+          useValue: rootEffects
         },
         {
           provide: ROOT_EFFECT_INSTANCES,
           useFactory: createEffects,
-          deps: [Injector, _ROOT_EFFECTS],
-        },
-      ],
+          deps: [Injector, _ROOT_EFFECTS]
+        }
+      ]
     };
   }
 
@@ -34,14 +34,14 @@ export class AkitaNgEffectsModule {
         featureEffects,
         {
           provide: _FEATURE_EFFECTS,
-          useValue: featureEffects,
+          useValue: featureEffects
         },
         {
           provide: FEATURE_EFFECT_INSTANCES,
           useFactory: createEffects,
-          deps: [Injector, _FEATURE_EFFECTS],
-        },
-      ],
+          deps: [Injector, _FEATURE_EFFECTS]
+        }
+      ]
     };
   }
 }
