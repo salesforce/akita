@@ -19,7 +19,7 @@ describe(`forRoot`, () => {
     TestBed.configureTestingModule({
       imports: [AkitaNgEffectsModule.forRoot([FakeEffects])]
     });
-    const fakeEffects = TestBed.inject(FakeEffects);
+    const fakeEffects = TestBed.get(FakeEffects);
     expect(fakeEffects).toBeDefined();
   });
 });
