@@ -9,7 +9,7 @@ export function Effect() {
         return returnValue;
       },
       set: function (value) {
-        const setValue = value;
+        const setValue = {...value};
         setMetadata(setValue, propKey);
         returnValue = setValue;
       },
