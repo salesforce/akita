@@ -88,7 +88,7 @@ export class InitRouterGuard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> {
     return this.navigationQuery.isNavInitialized$.pipe(
       tap((isInit) => {
-        if (!isInit) this.actions.dispatch(LOAD_MAIN_NAVIGATION());
+        if (!isInit) this.actions.dispatch(loadMainNavigation());
       }),
       filter(isInit => isInit),
       map((val) => true)
