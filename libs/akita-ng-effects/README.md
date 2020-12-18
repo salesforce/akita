@@ -62,7 +62,7 @@ export class NavigationEffects {
   loadMainNavigation$ = this.actions$.pipe(
     ofType(LOAD_MAIN_NAVIGATION),
     switchMap(_ => this.navigationService.LOAD_MAIN_NAVIGATION().pipe(
-      tap(mainNav => this.actions$.dispatch(LOAD_MAIN_NAVIGATION_SUCCESS({ mainNav }))))
+      tap(mainNav => this.actions$.dispatch(loadMainNavigationSuccess({ mainNav }))))
     )
   );
 
