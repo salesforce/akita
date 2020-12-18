@@ -1,13 +1,14 @@
 import { Actions } from '@datorama/akita-ng-effects';
 import { fakeAsync, flush } from '@angular/core/testing';
+import { Subject } from 'rxjs';
 
 describe('Actions', () => {
   it('should notify on dispatched event', fakeAsync(() => {
-    const actions = new Actions();
-    actions.subscribe(val => {
+    const actions = new Subject();
+    actions.subscribe((val) => {
       expect(val).toBe('test');
     });
-    actions.dispatch('test');
+    actions.next('test');
     flush();
   }));
 });

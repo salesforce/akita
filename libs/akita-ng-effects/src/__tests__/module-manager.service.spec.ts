@@ -17,13 +17,13 @@ describe('Module Manager Service', () => {
     actions$ = new Actions();
     mockEffectOne = Object.create(actions$);
     mockEffectTwo = Object.create(actions$);
-    setMetadata(mockEffectOne, 'mockEffectOne');
-    setMetadata(mockEffectTwo, 'mockEffectTwo');
+    setMetadata(mockEffectOne, 'mockEffectOne', {});
+    setMetadata(mockEffectTwo, 'mockEffectTwo', {});
 
     observable$ = new Subject();
     noEffect = observable$;
 
-    moduleManager = new ModuleManager();
+    moduleManager = new ModuleManager(new Actions());
     effectInstance = {
       actions$,
       mockEffectOne,

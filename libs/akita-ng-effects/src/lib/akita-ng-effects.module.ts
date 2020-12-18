@@ -16,14 +16,14 @@ export class AkitaNgEffectsModule {
         rootEffects,
         {
           provide: _ROOT_EFFECTS,
-          useValue: rootEffects
+          useValue: rootEffects,
         },
         {
           provide: ROOT_EFFECT_INSTANCES,
-          useFactory: createEffects,
-          deps: [Injector, _ROOT_EFFECTS]
-        }
-      ]
+          useFactory: createEffectInstances,
+          deps: [Injector, _ROOT_EFFECTS],
+        },
+      ],
     };
   }
 
@@ -34,25 +34,16 @@ export class AkitaNgEffectsModule {
         featureEffects,
         {
           provide: _FEATURE_EFFECTS,
-          useValue: featureEffects
+          useValue: featureEffects,
         },
         {
           provide: FEATURE_EFFECT_INSTANCES,
-          useFactory: createEffects,
-          deps: [Injector, _FEATURE_EFFECTS]
-        }
-      ]
+          useFactory: createEffectInstances,
+          deps: [Injector, _FEATURE_EFFECTS],
+        },
+      ],
     };
   }
-}
-
-export function createEffects(injector: Injector, effects: Type<any>[]): any[] {
-  const mergedEffects: Type<any>[] = [];
-  for (let effect of effects) {
-    mergedEffects.push(effect);
-  }
-
-  return createEffectInstances(injector, mergedEffects);
 }
 
 export function createEffectInstances(injector: Injector, effects: Type<any>[]): any[] {

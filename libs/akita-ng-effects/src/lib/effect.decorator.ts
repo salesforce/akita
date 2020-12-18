@@ -1,6 +1,12 @@
 import { setMetadata } from './effect.utils';
+import { EffectOptions } from './types';
 
-export function Effect() {
+export function Effect(options?: EffectOptions) {
+  options = {
+    dispatch: true,
+    ...options,
+  };
+
   return function (classProto: any, propKey: string): any {
     let returnValue;
 
@@ -9,11 +15,10 @@ export function Effect() {
         return returnValue;
       },
       set: function (value) {
-        const setValue = {...value};
-        setMetadata(setValue, propKey);
-        returnValue = setValue;
+        setMetadata(value, propKey, options);
+        returnValue = value;
       },
-      enumerable: true
+      enumerable: true,
     });
   };
 }
