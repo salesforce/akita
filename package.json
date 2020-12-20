@@ -44,6 +44,7 @@
     "release:akita-ng-devtools": "yarn --cwd libs/akita-ng-devtools run standard-version",
     "release:akita-ng-forms-manager": "yarn --cwd libs/akita-ng-forms-manager run standard-version",
     "release:akita-ng-router-store": "yarn --cwd libs/akita-ng-router-store run standard-version",
+    "serve:app:angular:akita-store-app": "nx serve angular-store-app",
     "start": "nx serve angular-store-app",
     "test": "nx test akita",
     "test:all": "run-s test:lib:*",
