@@ -24,8 +24,5 @@
       "@datorama/akita-ng-effects": ["libs/akita-ng-effects/src/index.ts"]
     }
   },
-  "angularCompilerOptions": {
-    "disableTypeScriptVersionCheck": true
-  },
   "exclude": ["node_modules", "tmp"]
 }

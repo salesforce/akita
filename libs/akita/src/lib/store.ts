@@ -4,7 +4,7 @@ import { currentAction, resetCustomAction, setAction, StoreSnapshotAction } from
 import { getAkitaConfig, getGlobalProducerFn } from './config';
 import { deepFreeze } from './deepFreeze';
 import { dispatchAdded, dispatchDeleted, dispatchUpdate } from './dispatchers';
-import { __DEV__, isDev } from './env';
+import { isDev, __DEV__ } from './env';
 import { assertStoreHasName } from './errors';
 import { isDefined } from './isDefined';
 import { isFunction } from './isFunction';
@@ -14,7 +14,6 @@ import { configKey, StoreConfigOptions, UpdatableStoreConfigOptions } from './st
 import { __stores__ } from './stores';
 import { commit, isTransactionInProcess } from './transaction';
 import { StoreCache, UpdateStateCallback } from './types';
-
 interface StoreSnapshot<S> {
   state: S;
   action?: StoreSnapshotAction;

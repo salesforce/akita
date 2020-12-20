@@ -5,10 +5,5 @@ module.exports = {
     '^.+\\.[tj]sx?$': 'ts-jest'
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'html'],
-  coverageDirectory: '../../coverage/libs/akita',
-  globals: {
-    'ts-jest': {
-      diagnostics: false // TODO turn on
-    }
-  }
+  coverageDirectory: '../../coverage/libs/akita'
 };
