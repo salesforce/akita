@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Action } from './types';
+import { logAction } from '@datorama/akita';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +9,14 @@ import { Action } from './types';
 export class Actions extends Subject<Action> {
 
   dispatch(value: Action) {
+    this.logAction(value)
     this.next(value);
   }
+
+  logAction(value: Action) {
+    const {type, ...props} = value
+    const isProps = Object.getOwnPropertyNames(props).length > 0
+    logAction(type, null, isProps ? props : null)
+  }
+
 }

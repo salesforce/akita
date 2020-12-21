@@ -4,12 +4,14 @@ export interface StoreSnapshotAction {
   type: string | null;
   entityIds: IDS[] | null;
   skip: boolean;
+  payload: any
 }
 
 export const currentAction: StoreSnapshotAction = {
   type: null,
   entityIds: null,
   skip: false,
+  payload: null
 };
 
 let customActionActive = false;
@@ -19,15 +21,16 @@ export function resetCustomAction() {
 }
 
 // public API for custom actions. Custom action always wins
-export function logAction(type: string, entityIds?) {
-  setAction(type, entityIds);
+export function logAction(type: string, entityIds?: IDS[] | null | any, payload?: any) {
+  setAction(type, entityIds, payload);
   customActionActive = true;
 }
 
-export function setAction(type: string, entityIds?) {
+export function setAction(type: string, entityIds?: IDS[] | null | any, payload?: any) {
   if (customActionActive === false) {
     currentAction.type = type;
     currentAction.entityIds = entityIds;
+    currentAction.payload = payload
   }
 }
 
