@@ -88,7 +88,7 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
       if (isAllowed(storeName) === false) return;
       const { type, entityIds, skip, ...rest } = action;
 
-      const payload = rest.payload
+      const payload = rest.payload;
       if (skip) {
         setSkipAction(false);
         return;
@@ -126,7 +126,7 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
             return acc;
           }, {});
 
-        payload ? devTools.send({ type: msg, payload }, appState) : devTools.send({ type: msg }, appState);
+        payload ? devTools.send({ type: msg, payload }, sortedAppState) : devTools.send({ type: msg }, sortedAppState);
         return;
       }
 
