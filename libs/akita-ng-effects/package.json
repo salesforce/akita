@@ -6,6 +6,8 @@
     "@angular/core": "^9.1.12"
   },
   "dependencies": {
+    "ts-action": "^11.0.0",
+    "ts-action-operators": "^9.1.1",
     "tslib": "^1.10.0"
   }
 }

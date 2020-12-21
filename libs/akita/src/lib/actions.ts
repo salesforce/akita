@@ -21,12 +21,12 @@ export function resetCustomAction() {
 }
 
 // public API for custom actions. Custom action always wins
-export function logAction(type: string, entityIds?: IDS[] | null | any, payload?: any) {
+export function logAction(type: string, entityIds?, payload?: any) {
   setAction(type, entityIds, payload);
   customActionActive = true;
 }
 
-export function setAction(type: string, entityIds?: IDS[] | null | any, payload?: any) {
+export function setAction(type: string, entityIds?, payload?: any) {
   if (customActionActive === false) {
     currentAction.type = type;
     currentAction.entityIds = entityIds;

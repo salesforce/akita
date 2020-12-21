@@ -15,8 +15,8 @@ export class Actions extends Subject<Action> {
 
   logAction(value: Action) {
     const {type, ...props} = value
-    const isProps = Object.getOwnPropertyNames(props).length > 0
-    logAction(type, null, isProps ? props : null)
+    const hasPayload = Object.getOwnPropertyNames(props).length > 0
+    logAction(type, null, hasPayload ? props : null)
   }
 
 }
