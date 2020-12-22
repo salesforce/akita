@@ -14,6 +14,7 @@ import { configKey, StoreConfigOptions, UpdatableStoreConfigOptions } from './st
 import { __stores__ } from './stores';
 import { commit, isTransactionInProcess } from './transaction';
 import { StoreCache, UpdateStateCallback } from './types';
+import { Injectable } from '@angular/core';
 interface StoreSnapshot<S> {
   state: S;
   action?: StoreSnapshotAction;
@@ -44,6 +45,7 @@ interface StoreSnapshot<S> {
  *   }
  * }
  */
+@Injectable()
 export class Store<S = any> {
   private store: BehaviorSubject<Readonly<StoreSnapshot<S>>>;
   private storeValue: S;
