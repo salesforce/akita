@@ -30,27 +30,23 @@ import { AkitaNgEffectsModule } from '@datorama/akita-ng-effects';
     AuthModule,
     AkitaNgRouterStoreModule,
     AkitaNgDevtools.forRoot(),
-    // ERROR in Error during template compile of 'AppModule'
-    // Function calls are not supported in decorators but 'AkitaNgEffectsModule' was called.
-    // An Angular update will fix this;
-    AkitaNgEffectsModule.forRoot([CartEffects])
+    AkitaNgEffectsModule.forRoot([CartEffects]),
   ],
   providers: [
     AuthGuard,
     {
       provide: NG_ENTITY_SERVICE_CONFIG,
-      useFactory: function() {
+      useFactory: function () {
         return {
           baseUrl: 'https://jsonplaceholder.typicode.com',
           httpMethods: {
-            PUT: HttpMethod.PATCH
-          }
+            PUT: HttpMethod.PATCH,
+          },
         } as NgEntityServiceGlobalConfig;
       },
-      deps: []
-    }
+      deps: [],
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}
