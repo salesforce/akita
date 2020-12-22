@@ -1,0 +1,129 @@
+---
+title: Effects
+---
+
+Effects can be used to execute sideeffects (actions, http requests and other operations) upon action events.
+
+To register effects, simply run AkitaNgEffects.forRoot() and register effect classes.
+
+```ts title="app.module.ts"
+import { AkitaNgEffectModule } from '@datorama/akita';
+import { NavigationEffects } from './path/to/effects';
+
+// Only use .forRoot() once in your base module.
+@NgModule({
+  imports: [
+    CommonModule,
+    AkitaNgEffectModule.forRoot([NavigationEffects])
+  ],
+})
+export class CoreDataModule {}
+```
+
+```ts title="product.module.ts"
+import { AkitaNgEffectModule } from '@datorama/akita';
+import { ProductEffects } from './path/to/effects';
+
+// Use .forFeature() on any feature module
+@NgModule({
+  imports: [
+    CommonModule,
+    AkitaNgEffectModule.forFeature([ProductEffects])
+  ],
+})
+export class FeatureModule {}
+```
+
+## Setup Actions
+
+In order to use actions you need to setup action objects.
+
+An action always holds a type property and an optional payload.
+
+```ts title="navigation.actions.ts"
+export const loadMainNavigation = createAction('[Navigation] Load Main Navigation');
+// result { type: "Load Main Navigation" }
+
+export const loadMainNavigationSuccess = createAction(
+  '[Navigation] Load Main Navigation Success',
+  props<{ mainNav: { id: number, path: string } }>()
+);
+```
+
+## Setup Effects
+You can use the actions to act upon any action event.
+
+```ts title="navigation.effect.ts"
+@Injectable()
+export class NavigationEffects {
+  constructor(
+    private actions$: Actions,
+    private navigationService: NavigationService,
+    private navigationStore: NavigationStore
+  ) {
+  }
+
+  loadMainNavigation$ = createEffect(() => this.actions$.pipe(
+    ofType(loadMainNavigation),
+    switchMap(_ => this.navigationService.loadMainNavigation().pipe(
+      map(mainNav => loadMainNavigationSuccess({ mainNav }))
+    ))
+  ));
+
+  @Effect({dispatch: false})
+  loadMainNavigationSuccess$ = this.actions$.pipe(
+    ofType(loadMainNavigationSuccess),
+    map(({ mainNav }) => this.navigationService.updateNavigationTree(mainNav)),
+    tap(mainRoutes => this.store.updateNavigation(mainRoutes))
+  );
+}
+```
+
+### Possible use case
+
+This is one possible use case for an action inside a guard to initialize fetching of a navigation.
+
+You can also use them in components in order to fetch data.
+
+```ts title="init-route.guard.ts"
+@Injectable({
+  providedIn: 'root',
+})
+export class InitRouterGuard implements CanActivate {
+  constructor(
+    private actions: Actions,
+    private navigationQuery: NavigationQuery
+  ) {}
+
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> {
+    return this.navigationQuery.isNavInitialized$.pipe(
+      tap((isInit) => {
+        if (!isInit) this.actions.dispatch(loadMainNavigation());
+      }),
+      filter(isInit => isInit),
+      map(_ => true)
+    );
+  }
+}
+```
+
+
+:::tip
+We suggest scoping your actions for better maintenance and easier reusability.
+One possibility is using typescript namespaces.
+
+```ts
+export namespace NavigationAction {
+
+  export const loadMainNavigation = ...
+  export const loadMainNavigationSuccess = ...
+
+}
+
+...
+  ngOnInit() {
+    NavigationAction.loadMainNavigation()
+  }
+...
+:::
+

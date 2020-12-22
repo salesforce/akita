@@ -31,6 +31,9 @@
     },
     "angular-store-app": {
       "tags": ["playground"]
+    },
+    "akita-ng-effects": {
+      "tags": ["plugin"]
     }
   },
   "tasksRunnerOptions": {

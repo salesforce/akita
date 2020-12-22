@@ -292,6 +292,43 @@
           }
         }
       }
+    },
+    "akita-ng-effects": {
+      "projectType": "library",
+      "root": "libs/akita-ng-effects",
+      "sourceRoot": "libs/akita-ng-effects/src",
+      "prefix": "datorama",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/angular:package",
+          "options": {
+            "tsConfig": "libs/akita-ng-effects/tsconfig.lib.json",
+            "project": "libs/akita-ng-effects/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/akita-ng-effects/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["libs/akita-ng-effects/tsconfig.lib.json", "libs/akita-ng-effects/tsconfig.spec.json"],
+            "exclude": ["**/node_modules/**", "!libs/akita-ng-effects/**/*"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/akita-ng-effects/jest.config.js",
+            "tsConfig": "libs/akita-ng-effects/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "libs/akita-ng-effects/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {}
     }
   },
   "cli": {
