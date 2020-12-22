@@ -126,11 +126,11 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
             return acc;
           }, {});
 
-        payload ? devTools.send({ type: msg, ...payload }, sortedAppState) : devTools.send({ type: msg }, sortedAppState);
+        devTools.send({ type: msg, ...payload }, sortedAppState)
         return;
       }
 
-      payload ? devTools.send({ type: msg, ...payload }, appState) : devTools.send({ type: msg }, appState);
+      devTools.send({ type: msg, ...payload }, appState)
     })
   );
 
