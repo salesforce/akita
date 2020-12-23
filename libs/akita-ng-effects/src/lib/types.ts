@@ -1,5 +1,6 @@
 import { Subject } from 'rxjs';
 
+
 export interface EffectOptions {
   dispatch?: boolean;
 }
