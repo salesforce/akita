@@ -1,10 +1,10 @@
-import { AnonymousSubject } from 'rxjs/internal/Subject';
+import { Subject } from 'rxjs';
 
 export interface EffectOptions {
   dispatch?: boolean;
 }
 
-export interface Effect extends AnonymousSubject<Action> {
+export interface Effect extends Subject<Action> {
   isEffect: boolean;
   name: string | null;
   dispatchAction: boolean
