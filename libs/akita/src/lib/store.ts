@@ -14,6 +14,7 @@ import { configKey, StoreConfigOptions, UpdatableStoreConfigOptions } from './st
 import { __stores__ } from './stores';
 import { commit, isTransactionInProcess } from './transaction';
 import { StoreCache, UpdateStateCallback } from './types';
+
 interface StoreSnapshot<S> {
   state: S;
   action?: StoreSnapshotAction;

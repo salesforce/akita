@@ -47,5 +47,9 @@ export class AkitaNgEffectsModule {
 }
 
 export function createEffectInstances(injector: Injector, effects: Type<any>[]): any[] {
-  return effects.map((effect) => injector.get(effect));
+  const effectInstances = effects.map((effect) => {
+    return injector.get(effect)
+  });
+
+  return effectInstances
 }
