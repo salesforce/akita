@@ -2,12 +2,11 @@
   "name": "@datorama/akita-ng-effects",
   "version": "0.0.1",
   "peerDependencies": {
-    "@angular/common": "^9.1.12",
-    "@angular/core": "^9.1.12"
+    "rxjs": ">= 6.1.0 < 7",
+    "tslib": ">= 1.7.0 < 2"
   },
   "dependencies": {
     "ts-action": "^11.0.0",
-    "ts-action-operators": "^9.1.1",
-    "tslib": "^1.10.0"
+    "ts-action-operators": "^9.1.1"
   }
 }
