@@ -110,8 +110,19 @@ export class MoviesStore extends EntityStore<MoviesState> {
     super();
     const defaults = { isLoading: false, isOpen: true };
     this.createUIStore().setInitialEntityState(defaults);
-    
-    // Or if you need the entity object
+  }
+}
+```
+
+Or if you need the entity object:
+
+```ts {7,8} title="movies.store.ts"
+@StoreConfig({ name: 'movies' })
+export class MoviesStore extends EntityStore<MoviesState> {
+  // Note the ! modifier, as defaults are assigned via side-effect
+  ui!: EntityUIStore<MoviesUIState>;
+
+  constructor() {
     const defaults = entity => ({ isLoading: false, isOpen: true });
     this.createUIStore().setInitialEntityState(defaults);
   }
