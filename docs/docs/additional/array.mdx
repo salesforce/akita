@@ -135,7 +135,7 @@ export class AuthStore extends Store<AuthState> {
 
    addPermission(permission: string) {
      this.update(({ permissions }) => ({
-       names: arrayAdd(permissions, 'ADMIN')
+       permissions: arrayAdd(permissions, 'ADMIN')
      }));
    }
 }
