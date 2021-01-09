@@ -1,0 +1,71 @@
+import {
+  dasherize,
+  decamelize,
+  camelize,
+  classify,
+  underscore,
+  group,
+  capitalize,
+  featurePath,
+  pluralize,
+} from './utility/strings';
+
+export { isIvyEnabled } from './utility/angular-utils';
+
+export {
+  findNodes,
+  getSourceNodes,
+  getDecoratorMetadata,
+  getContentOfKeyLiteral,
+  insertAfterLastOccurrence,
+  insertImport,
+  addBootstrapToModule,
+  addDeclarationToModule,
+  addExportToModule,
+  addImportToModule,
+  addProviderToModule,
+  replaceImport,
+  containsProperty,
+} from './utility/ast-utils';
+
+export {
+  Host,
+  Change,
+  NoopChange,
+  InsertChange,
+  RemoveChange,
+  ReplaceChange,
+  createReplaceChange,
+  createChangeRecorder,
+  commitChanges,
+} from './utility/change';
+
+export { AppConfig, getWorkspace, getWorkspacePath } from './utility/config';
+
+export {
+  findModule,
+  findModuleFromOptions,
+  buildRelativePath,
+  ModuleOptions,
+} from './utility/find-module';
+
+export { findPropertyInAstObject } from './utility/json-utilts';
+
+export { getProjectPath, getProject, isLib } from './utility/project';
+
+export const stringUtils = {
+  dasherize,
+  decamelize,
+  camelize,
+  classify,
+  underscore,
+  group,
+  capitalize,
+  featurePath,
+  pluralize,
+};
+
+export { parseName } from './utility/parse-name';
+
+
+
