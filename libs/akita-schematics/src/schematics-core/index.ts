@@ -1,16 +1,6 @@
-import {
-  dasherize,
-  decamelize,
-  camelize,
-  classify,
-  underscore,
-  group,
-  capitalize,
-  featurePath,
-  pluralize,
-} from './utility/strings';
+import { dasherize, decamelize, camelize, classify, underscore, group, capitalize, featurePath, pluralize } from './utility/strings';
 
-export { isIvyEnabled } from './utility/angular-utils';
+export { isIvyEnabled } from '../ng-g/utils/angular-utils';
 
 export {
   findNodes,
@@ -26,30 +16,15 @@ export {
   addProviderToModule,
   replaceImport,
   containsProperty,
-} from './utility/ast-utils';
+} from '../ng-g/utils/ast-utils';
 
-export {
-  Host,
-  Change,
-  NoopChange,
-  InsertChange,
-  RemoveChange,
-  ReplaceChange,
-  createReplaceChange,
-  createChangeRecorder,
-  commitChanges,
-} from './utility/change';
+export { Host, Change, NoopChange, InsertChange, RemoveChange, ReplaceChange, createReplaceChange, createChangeRecorder, commitChanges } from '../ng-g/utils/change';
 
-export { AppConfig, getWorkspace, getWorkspacePath } from './utility/config';
+export { AppConfig, getWorkspace, getWorkspacePath } from '../ng-g/utils/config';
 
-export {
-  findModule,
-  findModuleFromOptions,
-  buildRelativePath,
-  ModuleOptions,
-} from './utility/find-module';
+export { findModule, findModuleFromOptions, buildRelativePath, ModuleOptions } from '../ng-g/utils/find-module';
 
-export { findPropertyInAstObject } from './utility/json-utilts';
+export { findPropertyInAstObject } from '../ng-g/utils/json-utilts';
 
 export { getProjectPath, getProject, isLib } from './utility/project';
 
@@ -66,6 +41,3 @@ export const stringUtils = {
 };
 
 export { parseName } from './utility/parse-name';
-
-
-

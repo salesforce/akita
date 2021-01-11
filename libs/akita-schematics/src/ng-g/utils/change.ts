@@ -102,12 +102,7 @@ export class ReplaceChange implements Change {
   order: number;
   description: string;
 
-  constructor(
-    public path: string,
-    public pos: number,
-    public oldText: string,
-    public newText: string
-  ) {
+  constructor(public path: string, public pos: number, public oldText: string, public newText: string) {
     if (pos < 0) {
       throw new Error('Negative positions are invalid');
     }
@@ -122,9 +117,7 @@ export class ReplaceChange implements Change {
       const text = content.substring(this.pos, this.pos + this.oldText.length);
 
       if (text !== this.oldText) {
-        return Promise.reject(
-          new Error(`Invalid replace: "${text}" != "${this.oldText}".`)
-        );
+        return Promise.reject(new Error(`Invalid replace: "${text}" != "${this.oldText}".`));
       }
 
       // TODO: throw error if oldText doesn't match removed string.
@@ -133,34 +126,15 @@ export class ReplaceChange implements Change {
   }
 }
 
-export function createReplaceChange(
-  sourceFile: ts.SourceFile,
-  node: ts.Node,
-  oldText: string,
-  newText: string
-): ReplaceChange {
-  return new ReplaceChange(
-    sourceFile.fileName,
-    node.getStart(sourceFile),
-    oldText,
-    newText
-  );
+export function createReplaceChange(sourceFile: ts.SourceFile, node: ts.Node, oldText: string, newText: string): ReplaceChange {
+  return new ReplaceChange(sourceFile.fileName, node.getStart(sourceFile), oldText, newText);
 }
 
-export function createRemoveChange(
-  sourceFile: ts.SourceFile,
-  node: ts.Node,
-  from = node.getStart(sourceFile),
-  to = node.getEnd()
-): RemoveChange {
+export function createRemoveChange(sourceFile: ts.SourceFile, node: ts.Node, from = node.getStart(sourceFile), to = node.getEnd()): RemoveChange {
   return new RemoveChange(sourceFile.fileName, from, to);
 }
 
-export function createChangeRecorder(
-  tree: Tree,
-  path: string,
-  changes: Change[]
-): UpdateRecorder {
+export function createChangeRecorder(tree: Tree, path: string, changes: Change[]): UpdateRecorder {
   const recorder = tree.beginUpdate(path);
   for (const change of changes) {
     if (change instanceof InsertChange) {

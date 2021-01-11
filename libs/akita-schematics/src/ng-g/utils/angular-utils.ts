@@ -1,10 +1,4 @@
-import {
-  JsonParseMode,
-  dirname,
-  normalize,
-  parseJsonAst,
-  resolve,
-} from '@angular-devkit/core';
+import { JsonParseMode, dirname, normalize, parseJsonAst, resolve } from '@angular-devkit/core';
 import { Tree } from '@angular-devkit/schematics';
 import { findPropertyInAstObject } from './json-utilts';
 
@@ -24,10 +18,7 @@ export function isIvyEnabled(tree: Tree, tsConfigPath: string): boolean {
     return true;
   }
 
-  const ngCompilerOptions = findPropertyInAstObject(
-    tsCfgAst,
-    'angularCompilerOptions'
-  );
+  const ngCompilerOptions = findPropertyInAstObject(tsCfgAst, 'angularCompilerOptions');
   if (ngCompilerOptions && ngCompilerOptions.kind === 'object') {
     const enableIvy = findPropertyInAstObject(ngCompilerOptions, 'enableIvy');
 
@@ -38,10 +29,7 @@ export function isIvyEnabled(tree: Tree, tsConfigPath: string): boolean {
 
   const configExtends = findPropertyInAstObject(tsCfgAst, 'extends');
   if (configExtends && configExtends.kind === 'string') {
-    const extendedTsConfigPath = resolve(
-      dirname(normalize(tsConfigPath)),
-      normalize(configExtends.value)
-    );
+    const extendedTsConfigPath = resolve(dirname(normalize(tsConfigPath)), normalize(configExtends.value));
 
     return isIvyEnabled(tree, extendedTsConfigPath);
   }

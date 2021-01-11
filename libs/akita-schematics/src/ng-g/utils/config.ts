@@ -129,7 +129,6 @@ export interface AppConfig {
   };
 }
 
-
 export function getWorkspacePath(host: Tree): string {
   const possibleFiles = ['/angular.json', '/.angular.json'];
   const path = possibleFiles.filter((path) => host.exists(path))[0];
