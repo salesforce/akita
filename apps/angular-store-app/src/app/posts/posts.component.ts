@@ -1,43 +1,28 @@
 import { Component, OnInit } from '@angular/core';
-import { PostsQuery, PostsService } from './state';
-import {
-  filterMethod,
-  NgEntityServiceNotifier,
-  NgEntityServiceLoader,
-  ofType
-} from '@datorama/akita-ng-entity-service';
-import { untilDestroyed } from 'ngx-take-until-destroy';
+import { filterMethod, NgEntityServiceLoader, NgEntityServiceNotifier, ofType } from '@datorama/akita-ng-entity-service';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { memo } from 'helpful-decorators';
+import { PostsQuery, PostsService } from './state';
 
+@UntilDestroy()
 @Component({
   templateUrl: './posts.component.html',
-  styleUrls: ['./posts.css']
+  styleUrls: ['./posts.css'],
 })
 export class PostsComponent implements OnInit {
   posts$ = this.postsQuery.selectAll();
   loaders = this.loader.loadersFor();
 
-  constructor(
-    private postsQuery: PostsQuery,
-    private postsService: PostsService,
-    private loader: NgEntityServiceLoader,
-    private notifier: NgEntityServiceNotifier
-  ) {}
+  constructor(private postsQuery: PostsQuery, private postsService: PostsService, private loader: NgEntityServiceLoader, private notifier: NgEntityServiceNotifier) {}
 
   ngOnInit() {
-    this.notifier.action$
-      .pipe(
-        ofType('success'),
-        filterMethod('DELETE'),
-        untilDestroyed(this)
-      )
-      .subscribe(v => console.log(v));
+    this.notifier.action$.pipe(ofType('success'), filterMethod('DELETE'), untilDestroyed(this)).subscribe((v) => console.log(v));
 
     this.postsService
       .get({
-        mapResponseFn: res => {
+        mapResponseFn: (res) => {
           return res;
-        }
+        },
       })
       .subscribe();
     this.loaders.deleteEntity(3);
@@ -58,7 +43,7 @@ export class PostsComponent implements OnInit {
   remove(id) {
     this.postsService
       .delete(id, {
-        successMsg: 'Deleted Successfully'
+        successMsg: 'Deleted Successfully',
       })
       .subscribe();
   }

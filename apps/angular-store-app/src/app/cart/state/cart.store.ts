@@ -24,4 +24,8 @@ export class CartStore extends EntityStore<CartState> {
       };
     });
   }
+
+  notify(notify: boolean) {
+    this.update(state => ({ ...state, notify }));
+  }
 }

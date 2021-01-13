@@ -20,11 +20,9 @@
       "@datorama/akita-ng-entity-service": ["libs/akita-ng-entity-service/src/index.ts"],
       "@datorama/akita-ng-router-store": ["libs/akita-ng-router-store/src/index.ts"],
       "@datorama/akita-ngdevtools": ["libs/akita-ng-devtools/src/index.ts"],
-      "@datorama/akita-ng-forms-manager": ["libs/akita-ng-forms-manager/src/index.ts"]
+      "@datorama/akita-ng-forms-manager": ["libs/akita-ng-forms-manager/src/index.ts"],
+      "@datorama/akita-ng-effects": ["libs/akita-ng-effects/src/index.ts"]
     }
-  },
-  "angularCompilerOptions": {
-    "disableTypeScriptVersionCheck": true
   },
   "exclude": ["node_modules", "tmp"]
 }

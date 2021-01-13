@@ -10,7 +10,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     const dependencies: NodeDependency[] = [
       {
         type: NodeDependencyType.Default,
-        version: '^5.2.4',
+        version: '^6.0.0',
         name: '@datorama/akita',
       },
     ];
@@ -18,7 +18,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     if (options.withRouter || options.router) {
       dependencies.push({
         type: NodeDependencyType.Default,
-        version: '^5.1.8',
+        version: '^6.0.0',
         name: '@datorama/akita-ng-router-store',
       });
     }
@@ -26,7 +26,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     if (options.devtools) {
       dependencies.push({
         type: NodeDependencyType.Dev,
-        version: '^5.0.3',
+        version: '^6.0.0',
         name: '@datorama/akita-ngdevtools',
       });
     }
@@ -34,7 +34,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     if (options.httpEntityService) {
       dependencies.push({
         type: NodeDependencyType.Default,
-        version: '^5.0.0',
+        version: '^6.0.0',
         name: '@datorama/akita-ng-entity-service',
       });
     }
@@ -171,11 +171,11 @@ function addModuleToImports(options: Schema): Rule {
     }
 
     if (importDevtools) {
-      addModuleImportToRootModule(host, importDevtools, null as any, project);
+      addModuleImportToRootModule(host, importDevtools, null as any, project as any);
     }
 
     if (importRouter) {
-      addModuleImportToRootModule(host, importRouter, null as any, project);
+      addModuleImportToRootModule(host, importRouter, null as any, project as any);
     }
 
     if (provideEntityServiceConfig) {

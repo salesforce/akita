@@ -1,0 +1,40 @@
+{
+  "name": "@datorama/akita-ng-effects",
+ "version": "1.0.0",
+  "description": "A Reactive State Management extension dealing with side effects.",
+  "keywords": [
+    "angular",
+    "state management",
+    "react",
+    "vue",
+    "typescript",
+    "javascript",
+    "rxjs",
+    "angular store",
+    "store",
+    "observable data stores",
+    "redux",
+    "reactive",
+    "effects"
+  ],
+  "homepage": "https://github.com/datorama/tree/master/libs/akita-ng-effects#readme",
+  "bugs": {
+    "url": "https://github.com/datorama/akita/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/datorama/akita",
+    "directory": "libs/akita-ng-effects"
+  },
+  "license": "Apache-2.0",
+  "author": "Yannick Boetzkes",
+  "peerDependencies": {
+    "rxjs": ">= 6.1.0 < 7",
+    "tslib": ">= 1.7.0 < 2"
+  },
+  "dependencies": {
+    "ts-action": "^11.0.0",
+    "ts-action-operators": "^9.1.1"
+  },
+  "schematics": "./schematics/collection.json"
+}
