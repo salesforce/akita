@@ -35,6 +35,5 @@
   "dependencies": {
     "ts-action": "^11.0.0",
     "ts-action-operators": "^9.1.1"
-  },
-  "schematics": "./schematics/collection.json"
+  }
 }

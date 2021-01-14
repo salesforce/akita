@@ -25,6 +25,7 @@
     "build:apps:prod": "run-s build:app:*:prod",
     "build:lib:akita-ng-devtools": "nx build akita-ng-devtools --with-deps --prod",
     "build:lib:akita-ng-entity-service": "nx build akita-ng-entity-service --with-deps --prod",
+    "build:lib:akita-ng-effects": "nx build akita-ng-effects --with-deps --prod",
     "build:lib:akita-ng-forms-manager": "nx build akita-ng-forms-manager --with-deps --prod",
     "build:lib:akita-ng-router-store": "nx build akita-ng-router-store --with-deps --prod",
     "build:lib:akita-ng-schematics": "yarn --cwd libs/akita-schematics run build",
