@@ -26,7 +26,6 @@
     "build:lib:akita-ng-devtools": "nx build akita-ng-devtools --with-deps --prod",
     "build:lib:akita-ng-entity-service": "nx build akita-ng-entity-service --with-deps --prod",
     "build:lib:akita-ng-effects": "nx build akita-ng-effects --with-deps --prod",
-    "build:lib:akita-ng-forms-manager": "nx build akita-ng-forms-manager --with-deps --prod",
     "build:lib:akita-ng-router-store": "nx build akita-ng-router-store --with-deps --prod",
     "build:lib:akita-ng-schematics": "yarn --cwd libs/akita-schematics run build",
     "build:libs": "run-s build:lib:*",
@@ -43,7 +42,6 @@
     "release": "yarn --cwd libs/akita run standard-version",
     "release:akita-entity-service": "yarn --cwd libs/akita-entity-service run standard-version",
     "release:akita-ng-devtools": "yarn --cwd libs/akita-ng-devtools run standard-version",
-    "release:akita-ng-forms-manager": "yarn --cwd libs/akita-ng-forms-manager run standard-version",
     "release:akita-ng-router-store": "yarn --cwd libs/akita-ng-router-store run standard-version",
     "serve:app:angular:akita-store-app": "nx serve angular-store-app",
     "start": "nx serve angular-store-app",
@@ -51,7 +49,6 @@
     "test:all": "run-s test:lib:*",
     "test:lib:akita-ng-devtools": "nx test akita-ng-devtools",
     "test:lib:akita-ng-entity-service": "nx test akita-ng-entity-service",
-    "test:lib:akita-ng-forms-manager": "nx test akita-ng-forms-manager",
     "test:lib:akita-ng-router-store": "nx test akita-ng-router-store",
     "update": "nx migrate latest",
     "workspace-schematic": "nx workspace-schematic"

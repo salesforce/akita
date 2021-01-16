@@ -1,6 +1,6 @@
 {
   "name": "@datorama/akita-ng-router-store",
-  "version": "5.1.9",
+  "version": "6.0.0",
   "description": "Bindings to connect the Angular Router with Akita store",
   "keywords": [
     "angular",
@@ -23,10 +23,10 @@
     "Shahar Kazaz"
   ],
   "peerDependencies": {
-    "@datorama/akita": ">= 5.0.0",
+    "@datorama/akita": ">= 6.0.0",
+    "rxjs": ">= 6.1.0 < 7",
     "@angular/core": ">= 8.0.0",
-    "rxjs": "*",
-    "@angular/router": ">= 8.0.0",
-    "@angular/common": ">= 8.0.0"
+    "@angular/common": ">= 8.0.0",
+    "@angular/router": ">= 8.0.0"
   }
 }
