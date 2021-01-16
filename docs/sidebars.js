@@ -69,6 +69,7 @@ module.exports = {
         'angular/architecture',
         'angular/local-state',
         'angular/entity-service',
+        'angular/effects',
         {
           type: 'link',
           label: 'NgEntityService - OData Pattern',
