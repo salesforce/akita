@@ -11,23 +11,23 @@ npm i @datorama/akita-ng-effects
 Next, to register effects, simply run `AkitaNgEffects.forRoot()` and register the effect classes:
 
 ```ts title="app.module.ts"
-import { AkitaNgEffectModule } from '@datorama/akita-ng-effects';
+import { AkitaNgEffectsModule } from '@datorama/akita-ng-effects';
 import { NavigationEffects } from './path/to/effects';
 
 // Only use .forRoot() once in your base module.
 @NgModule({
-  imports: [CommonModule, AkitaNgEffectModule.forRoot([NavigationEffects])],
+  imports: [CommonModule, AkitaNgEffectsModule.forRoot([NavigationEffects])],
 })
 export class AppModule {}
 ```
 
 ```ts title="product.module.ts"
-import { AkitaNgEffectModule } from '@datorama/akita';
+import { AkitaNgEffectsModule } from '@datorama/akita-ng-effects';
 import { ProductEffects } from './path/to/effects';
 
 // Use .forFeature() on any feature module
 @NgModule({
-  imports: [CommonModule, AkitaNgEffectModule.forFeature([ProductEffects])],
+  imports: [CommonModule, AkitaNgEffectsModule.forFeature([ProductEffects])],
 })
 export class FeatureModule {}
 ```
