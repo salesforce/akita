@@ -1,6 +1,6 @@
 {
   "name": "@datorama/akita-ng-effects",
- "version": "1.0.0",
+  "version": "1.0.0",
   "description": "A Reactive State Management extension dealing with side effects.",
   "keywords": [
     "angular",
@@ -29,8 +29,10 @@
   "license": "Apache-2.0",
   "author": "Yannick Boetzkes",
   "peerDependencies": {
+    "@datorama/akita": ">= 6.0.0",
     "rxjs": ">= 6.1.0 < 7",
-    "tslib": ">= 1.7.0 < 2"
+    "@angular/core": ">= 8.0.0",
+    "@angular/common": ">= 8.0.0"
   },
   "dependencies": {
     "ts-action": "^11.0.0",

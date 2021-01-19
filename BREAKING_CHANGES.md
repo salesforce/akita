@@ -1,5 +1,10 @@
 # Breaking Changes
 
+## 6.0.0
+
+- Upgrade to TS v4 and support tslib v2.0
+- New effects package
+
 ## 5.0.0
 
 - Updated `QueryEntity` typing of `select` / `get` methods to respect `undefined` entity values.
