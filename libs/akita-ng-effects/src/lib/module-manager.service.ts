@@ -34,7 +34,6 @@ export class ModuleManager implements OnDestroy {
   private dispatchAction(property: Effect, actionOrSkip: Action | Record<any, any>) {
     if (property.dispatchAction) {
       if (this.checkAction(actionOrSkip)) this.actions$.dispatch(actionOrSkip);
-
     }
   }
 
