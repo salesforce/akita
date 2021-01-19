@@ -3,7 +3,7 @@ import { EffectOptions } from './types';
 
 export function Effect(options?: EffectOptions) {
   options = {
-    dispatch: true,
+    dispatch: false,
     ...options,
   };
 
