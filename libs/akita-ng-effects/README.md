@@ -1,5 +1,12 @@
 # Akita Effects
 
+Akita's target is to provide a simple API that enables you to use object oriented patterns to manage state in your application.
+Introducing Effects into your app is entirely optional and allows you to implement very sophisticated event-based architectures
+
+- 🤓 Learn about it on the [docs site](https://datorama.github.io/akita/docs/angular/effects)
+- 🚀 See it in action on [StackBlitz](https://stackblitz.com/github/yackinn/akita-ng-effects-example)
+- 😎 Use the [CLI](https://github.com/datorama/akita/tree/master/cli)
+
 ### What is it?
 
 Use effects to hook into your actions and act upon action events.<br>
