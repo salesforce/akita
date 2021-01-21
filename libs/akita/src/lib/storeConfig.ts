@@ -16,6 +16,7 @@ export type UpdatableStoreConfigOptions = {
 export const configKey = 'akitaConfig';
 
 export function StoreConfig(metadata: StoreConfigOptions) {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   return (constructor: Function): void => {
     // TODO just use the StoreConfigOptions type
     const config: any = {

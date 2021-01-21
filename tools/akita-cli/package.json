@@ -1,6 +1,6 @@
 {
   "name": "@datorama/akita-cli",
-  "version": "6.1.0",
+  "version": "6.1.1",
   "description": "Akita CLI",
   "homepage": "https://github.com/datorama/akita/tree/master/tools/akita-cli#readme",
   "bugs": {

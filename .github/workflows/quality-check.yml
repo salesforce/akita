@@ -11,10 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12
-      - uses: actions/cache@v1
+      - uses: actions/setup-node@v2
+      - uses: actions/cache@v2
         id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
           path: node_modules # !WARN does not work if running multiple node versions, instead use https://github.com/actions/cache/blob/master/examples.md#node---yarn
@@ -24,19 +22,17 @@ jobs:
 
       - name: Yarn Install
         if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn install
+        run: yarn install --frozen-lockfile
 
   build:
-    name: Build applications & libraries
+    name: Build libraries
     runs-on: ubuntu-latest
     needs: [dependencies]
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12
+      - uses: actions/setup-node@v2
       - name: Restore dependencies from cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -44,19 +40,17 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Run builders
-        run: yarn nx run-many --target=build --configuration=production --all
+        run: yarn nx run-many --target=build --configuration=production --projects=akita,akita-ng-entity-service,akita-ng-router-store,akita-ng-devtools,akita-ng-forms-manager,akita-schematics,akita-ng-effects
 
   lint:
-    name: Lint all code
+    name: Lint libraries
     runs-on: ubuntu-latest
     needs: [dependencies]
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12
+      - uses: actions/setup-node@v2
       - name: Restore dependencies from cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -64,9 +58,7 @@ jobs:
             ${{ runner.os }}-yarn-
 
       - name: Run linting
-        # temporary measurements until linting errors are fixed, see https://github.com/datorama/akita/issues/401
-        # yarn nx run-many --target=lint --all
-        run: yarn nx run-many --target=lint --projects=akita,akita-ng-devtools,akita-ng-entity-service,akita-ng-forms-manager,akita-ng-router-store,akita-schematics
+        run: yarn nx run-many --target=lint --projects=akita,akita-ng-entity-service,akita-ng-router-store,akita-ng-devtools,akita-ng-forms-manager,akita-schematics,akita-ng-effects
 
   test:
     name: Test applications & libraries
@@ -74,11 +66,9 @@ jobs:
     needs: [dependencies]
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12
+      - uses: actions/setup-node@v2
       - name: Restore dependencies from cache
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: node_modules
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}

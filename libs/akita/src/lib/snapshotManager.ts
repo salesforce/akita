@@ -10,7 +10,7 @@ export class SnapshotManager {
    * Get a snapshot of the whole state or a specific stores
    * Use it ONLY for things such as saving the state in the server
    */
-  getStoresSnapshot(stores: string[] = []): object {
+  getStoresSnapshot(stores: string[] = []): Record<string, unknown> {
     const hasInclude = stores.length > 0;
     const keys = hasInclude ? stores : Object.keys(__stores__);
 

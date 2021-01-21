@@ -1,6 +1,6 @@
 import { Subscription } from 'rxjs';
-import { currentAction, setSkipAction } from './actions';
-import { capitalize } from './captialize';
+import { setSkipAction } from './actions';
+import { capitalize } from './capitalize';
 import { $$addStore, $$deleteStore, $$updateStore } from './dispatchers';
 import { isDefined } from './isDefined';
 import { isNotBrowser } from './root';
@@ -46,7 +46,6 @@ export function akitaDevtools(ngZoneOrOptions: NgZoneLike | Partial<DevtoolsOpti
       if (!!s.unsubscribe) {
         s.unsubscribe();
       } else if (s) {
-        // TODO no idea what `s` is
         (s as any)();
       }
     });
@@ -93,10 +92,11 @@ export function akitaDevtools(ngZoneOrOptions: NgZoneLike | Partial<DevtoolsOpti
   );
 
   subs.push(
-    $$updateStore.subscribe((storeName) => {
+    $$updateStore.subscribe(({ storeName, action }) => {
       if (isAllowed(storeName) === false) return;
-      const { type, entityIds, skip } = currentAction;
+      const { type, entityIds, skip, ...rest } = action;
 
+      const payload = rest.payload;
       if (skip) {
         setSkipAction(false);
         return;
@@ -118,6 +118,7 @@ export function akitaDevtools(ngZoneOrOptions: NgZoneLike | Partial<DevtoolsOpti
       };
 
       const normalize = capitalize(storeName);
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       const msg = isDefined(entityIds) ? `[${normalize}] - ${type} (ids: ${entityIds})` : `[${normalize}] - ${type}`;
 
       if (options.logTrace) {
@@ -134,11 +135,11 @@ export function akitaDevtools(ngZoneOrOptions: NgZoneLike | Partial<DevtoolsOpti
             return acc;
           }, {});
 
-        devTools.send({ type: msg }, sortedAppState);
+        devTools.send({ type: msg, ...payload }, sortedAppState);
         return;
       }
 
-      devTools.send({ type: msg }, appState);
+      devTools.send({ type: msg, ...payload }, appState);
     })
   );
 

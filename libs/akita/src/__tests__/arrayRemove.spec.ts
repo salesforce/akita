@@ -40,7 +40,9 @@ describe('arrayRemove', () => {
     };
 
     store.add(article);
-    store.update(1, (entity) => ({ comments: arrayRemove(entity.comments, 2) }));
+    store.update(1, (state) => ({
+      comments: arrayRemove(state.comments, 2),
+    }));
     expect(store._value().entities[1].comments.length).toBe(1);
     expect(store._value().entities[1].comments[1]).toBeUndefined();
     store.remove();
@@ -58,7 +60,9 @@ describe('arrayRemove', () => {
     };
 
     store.add(article);
-    store.update(1, (entity) => ({ comments: arrayRemove(entity.comments, [1, 3]) }));
+    store.update(1, (state) => ({
+      comments: arrayRemove(state.comments, [1, 3]),
+    }));
     expect(store._value().entities[1].comments.length).toBe(1);
     expect(store._value().entities[1].comments).toEqual([article.comments[1]]);
     store.remove();
@@ -76,7 +80,10 @@ describe('arrayRemove', () => {
     };
 
     store.add(article);
-    store.update(1, (entity) => ({ comments: arrayRemove(entity.comments, (comment) => comment.text === 'a') }));
+    store.update(1, (state) => ({
+      comments: arrayRemove(state.comments, (comment) => comment.text === 'a'),
+    }));
+
     expect(store._value().entities[1].comments.length).toBe(2);
     expect(store._value().entities[1].comments).toEqual([article.comments[1], article.comments[2]]);
     store.update(1, (entity) => ({
@@ -87,18 +94,22 @@ describe('arrayRemove', () => {
   });
 
   it('should work with non-objects', () => {
-    const updateNames = arrayAdd<ArticlesState, string>('names', ['a', 'b', 'c']);
-    store.update(updateNames);
+    store.update((state) => ({
+      names: arrayAdd(state.names, ['a', 'b', 'c']),
+    }));
     expect(store._value().names).toEqual(['a', 'b', 'c']);
-    const removeNames = arrayRemove<ArticlesState>('names', 'a');
-    store.update(removeNames);
+    store.update((state) => ({
+      names: arrayRemove(state.names, 'a'),
+    }));
     expect(store._value().names).toEqual(['b', 'c']);
-    const removeAll = arrayRemove<ArticlesState>('names', ['b', 'c']);
-    store.update(removeAll);
+    store.update((state) => ({
+      names: arrayRemove(state.names, ['b', 'c']),
+    }));
     expect(store._value().names).toEqual([]);
 
-    const updateNames2 = arrayAdd<ArticlesState, string>('names', ['a', 'b', 'c']);
-    store.update(updateNames2);
+    store.update((state) => ({
+      names: arrayAdd(state.names, ['a', 'b', 'c']),
+    }));
 
     store.update((state) => ({
       names: arrayRemove(state.names, 'b'),

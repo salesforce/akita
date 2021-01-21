@@ -5,6 +5,7 @@ import { dasherize } from '../utils/string';
 function buildSelector(options: any, projectPrefix: string): string {
   let selector = dasherize(options.name);
   if (options.prefix) {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     selector = `${options.prefix}-${selector}`;
   } else if (options.prefix === undefined && projectPrefix) {
     selector = `${projectPrefix}-${selector}`;
@@ -14,26 +15,25 @@ function buildSelector(options: any, projectPrefix: string): string {
 }
 
 export default function (options: any): Rule {
-  const optionsCopy = { ...options };
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   return (host: Tree, context: SchematicContext) => {
-    const project = getProject(host, optionsCopy.project);
+    const project = getProject(host, options.project);
 
-    optionsCopy.path = getProjectPath(host, optionsCopy);
+    options.path = getProjectPath(host, options);
 
-    const parsedPath = parseName(optionsCopy);
+    const parsedPath = parseName(options);
 
-    (parsedPath as any).path = parsedPath.path.replace(`${optionsCopy.dirName}`, `${parsedPath.name}/`);
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    (parsedPath as any).path = parsedPath.path.replace(`${options.dirName}`, `${parsedPath.name}/`);
 
-    optionsCopy.name = parsedPath.name;
-    optionsCopy.path = parsedPath.path;
-    optionsCopy.selector = optionsCopy.selector || buildSelector(optionsCopy, project.prefix);
+    options.name = parsedPath.name;
+    options.path = parsedPath.path;
+    options.selector = options.selector || buildSelector(options, project.prefix);
 
     const templateSource = apply(url('./files'), [
       template({
         ...stringUtils,
-        ...(optionsCopy as object),
-      } as any),
+        ...options,
+      }),
       move(parsedPath.path),
     ]);
 

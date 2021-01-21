@@ -10,6 +10,7 @@ import { toBoolean } from '../toBoolean';
 export type Queries<State> = Query<State> | QueryEntity<State>;
 
 export abstract class AkitaPlugin<State = any> {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   protected constructor(protected query: Queries<State>, config?: { resetFn?: Function }) {
     if (config && config.resetFn) {
       if (getAkitaConfig().resettable) {
@@ -90,6 +91,7 @@ export abstract class AkitaPlugin<State = any> {
   /**
    * Function to invoke upon reset
    */
+  // eslint-disable-next-line @typescript-eslint/ban-types
   private onReset(fn: Function): void {
     const original = this.getStore().reset;
     this.getStore().reset = (...params): void => {

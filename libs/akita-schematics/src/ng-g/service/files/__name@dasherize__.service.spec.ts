@@ -1,5 +1,5 @@
-import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { <%= classify(name) %>Service } from './<%= dasherize(name) %>.service';
 import { <%= classify(name) %>Store } from './<%= dasherize(name) %>.store';
 

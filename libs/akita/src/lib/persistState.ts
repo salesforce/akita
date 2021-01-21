@@ -1,8 +1,7 @@
 import { from, isObservable, Observable, of, OperatorFunction, ReplaySubject, Subscription } from 'rxjs';
-import { filter, skip } from 'rxjs/operators';
+import { filter, map, skip } from 'rxjs/operators';
 import { setAction } from './actions';
 import { $$addStore, $$deleteStore } from './dispatchers';
-import { AkitaError } from './errors';
 import { getValue } from './getValueByString';
 import { isFunction } from './isFunction';
 import { isNil } from './isNil';
@@ -48,6 +47,8 @@ function observify(asyncOrValue: any): Observable<unknown> {
   return of(asyncOrValue);
 }
 
+export type PersistStateSelectFn<T = any> = ((store: T) => Partial<T>) & { storeName: string };
+
 export interface PersistStateParams {
   /** The storage key */
   key: string;
@@ -56,32 +57,33 @@ export interface PersistStateParams {
   /** Storage strategy to use. This defaults to LocalStorage but you can pass SessionStorage or anything that implements the StorageEngine API. */
   storage: PersistStateStorage;
   /** Custom deserializer. Defaults to JSON.parse */
+  // eslint-disable-next-line @typescript-eslint/ban-types
   deserialize: Function;
   /** Custom serializer, defaults to JSON.stringify */
+  // eslint-disable-next-line @typescript-eslint/ban-types
   serialize: Function;
-  /**
-   * By default the whole state is saved to storage, use this param to include only the stores you need.
-   * Pay attention that you can't use both include and exclude
-   */
+  /** By default the whole state is saved to storage, use this param to include only the stores you need. */
   include: (string | ((storeName: string) => boolean))[];
-  /**
-   *  By default the whole state is saved to storage, use this param to exclude stores that you don't need.
-   *  Pay attention that you can't use both include and exclude
-   */
-  exclude: string[];
+  /** By default the whole state is saved to storage, use this param to include only the data you need. */
+  select: PersistStateSelectFn[];
+
+  preStorageUpdate(storeName: string, state: any): any;
+  preStorageUpdate(storeName: string, state: any): any;
+
+  preStoreUpdate(storeName: string, state: any, initialState: any): any;
+  preStoreUpdate(storeName: string, state: any): any;
 
   skipStorageUpdate: () => boolean;
   preStorageUpdateOperator: () => OperatorFunction<any, any>;
   /** Whether to persist a dynamic store upon destroy */
   persistOnDestroy: boolean;
-
-  preStorageUpdate(storeName: string, state: any): any;
-
-  preStoreUpdate(storeName: string, state: any): any;
 }
 
 export interface PersistState {
   destroy(): void;
+  /**
+   * @deprecated Use clearStore instead.
+   */
   clear(): void;
   clearStore(storeName?: string): void;
 }
@@ -94,10 +96,7 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
     deserialize: JSON.parse,
     serialize: JSON.stringify,
     include: [],
-    /**
-     * @deprecated use include with a callback
-     */
-    exclude: [],
+    select: [],
     persistOnDestroy: false,
     preStorageUpdate(storeName, state) {
       return state;
@@ -109,20 +108,20 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
     preStorageUpdateOperator: () => (source): Observable<any> => source,
   };
 
-  const { storage, enableInNonBrowser, deserialize, serialize, include, exclude, key, preStorageUpdate, persistOnDestroy, preStorageUpdateOperator, preStoreUpdate, skipStorageUpdate } = {
-    ...defaults,
-    ...params,
-  };
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  const { storage, enableInNonBrowser, deserialize, serialize, include, select, key, preStorageUpdate, persistOnDestroy, preStorageUpdateOperator, preStoreUpdate, skipStorageUpdate } = Object.assign(
+    {},
+    defaults,
+    params
+  );
 
-  if (isNotBrowser && !enableInNonBrowser) return undefined;
+  if ((isNotBrowser && !enableInNonBrowser) || !storage) return;
 
   const hasInclude = include.length > 0;
-  const hasExclude = exclude.length > 0;
+  const hasSelect = select.length > 0;
+  // eslint-disable-next-line @typescript-eslint/ban-types
   let includeStores: { fns: Function[]; [key: string]: Function[] | string };
-
-  if (hasInclude && hasExclude) {
-    throw new AkitaError("You can't use both include and exclude");
-  }
+  let selectStores: { [key: string]: PersistStateSelectFn };
 
   if (hasInclude) {
     includeStores = include.reduce(
@@ -139,6 +138,14 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
       },
       { fns: [] }
     );
+  }
+
+  if (hasSelect) {
+    selectStores = select.reduce((acc, selectFn) => {
+      acc[selectFn.storeName] = selectFn;
+
+      return acc;
+    }, {});
   }
 
   let stores: HashMap<Subscription> = {};
@@ -173,12 +180,19 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
         ._select((state) => getValue(state, path))
         .pipe(
           skip(1),
+          map((store) => {
+            if (hasSelect && selectStores[storeName]) {
+              return selectStores[storeName](store);
+            }
+
+            return store;
+          }),
           filter(() => skipStorageUpdate() === false),
           preStorageUpdateOperator()
         )
         .subscribe((data) => {
           acc[storeName] = preStorageUpdate(storeName, data);
-          Promise.resolve().then(() => save({ [storeName]: __stores__[storeName]._cache().getValue() }));
+          void Promise.resolve().then(() => save({ [storeName]: __stores__[storeName]._cache().getValue() }));
         });
     }
 
@@ -186,7 +200,7 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
       if (storeName in storageState) {
         setAction('@PersistState');
         store._setState((state) => {
-          return setValue(state, path, preStoreUpdate(storeName, storageState[storeName]));
+          return setValue(state, path, preStoreUpdate(storeName, storageState[storeName], state));
         });
         const hasCache = storageState.$cache ? storageState.$cache[storeName] : false;
         __stores__[storeName].setHasCache(hasCache, { restartTTL: true });
@@ -207,7 +221,7 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
 
     subscriptions.push(
       $$addStore.subscribe((storeName) => {
-        if (storeName === 'router' || (hasExclude && exclude.includes(storeName))) {
+        if (storeName === 'router') {
           return;
         }
 

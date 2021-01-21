@@ -1,17 +1,16 @@
-// false positive https://github.com/typescript-eslint/typescript-eslint/issues/1856
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Inject, Injectable, Optional } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormArray, FormControl, FormGroup, ValidatorFn } from '@angular/forms';
 import { coerceArray, filterNil, HashMap, logAction } from '@datorama/akita';
 import { merge, Observable, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
-// false positive https://github.com/typescript-eslint/typescript-eslint/issues/1856
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { defaultOptions, FormsManagerOptions, FORMS_MANAGER_OPTIONS } from './forms-manager-options';
 import { FormsQuery } from './forms-manager.query';
 import { FormsStore } from './forms-manager.store';
 
-export type AkitaAbstractControl = Pick<AbstractControl, 'value' | 'valid' | 'invalid' | 'disabled' | 'errors' | 'touched' | 'pristine' | 'pending' | 'dirty'> & { rawValue: any };
+export type AkitaAbstractControl = Pick<
+  AbstractControl,
+  'value' | 'valid' | 'invalid' | 'disabled' | 'errors' | 'touched' | 'pristine' | 'pending' | 'dirty'
+> & { rawValue: any };
 
 export interface AkitaAbstractGroup<C = any> extends AkitaAbstractControl {
   controls: { readonly [P in keyof C]: AkitaAbstractControl };
@@ -201,6 +200,7 @@ export class AkitaNgFormsManager<FormsState = any> {
       return acc;
     }, {});
 
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     logAction(`Remove ${formName}`);
     this.store._setState(() => newState as any);
   }
@@ -233,12 +233,17 @@ export class AkitaNgFormsManager<FormsState = any> {
     return value;
   }
 
-  private handleFormArray(formValue: HashMap<any> | any[], control: AbstractControl, arrControlFactory: ArrayControlFactory | HashMap<ArrayControlFactory>): void {
+  private handleFormArray(
+    formValue: HashMap<any> | any[],
+    control: AbstractControl,
+    arrControlFactory: ArrayControlFactory | HashMap<ArrayControlFactory>
+  ): void {
     if (control instanceof FormArray) {
       this.cleanArray(control);
       if (!arrControlFactory) {
         throw new Error('Please provide arrControlFactory');
       }
+      // eslint-disable-next-line @typescript-eslint/ban-types
       formValue.forEach((v, i) => control.insert(i, (arrControlFactory as Function)(v)));
     } else {
       Object.keys(formValue).forEach((controlName) => {
@@ -263,12 +268,15 @@ export class AkitaNgFormsManager<FormsState = any> {
     }
   }
 
-  private buildFormStoreState(formName: keyof FormsState, form: AbstractControl): AkitaAbstractControl | (AkitaAbstractControl & { controls: {} }) {
+  private buildFormStoreState(
+    formName: keyof FormsState,
+    form: AbstractControl
+  ): AkitaAbstractControl | (AkitaAbstractControl & { controls: Record<string, unknown> }) {
     if (form instanceof FormControl) {
       return this.resolveFormToStore(form);
     }
 
-    let value: AkitaAbstractControl & { controls: {} };
+    let value: AkitaAbstractControl & { controls: Record<string, unknown> };
 
     if (form instanceof FormGroup || form instanceof FormArray) {
       // The root form group
@@ -293,7 +301,8 @@ export class AkitaNgFormsManager<FormsState = any> {
 
   private updateStore(formName: keyof FormsState, form: AbstractControl, initial = false): void {
     const value = this.buildFormStoreState(formName, form);
-    const capitalized = formName[0].toUpperCase() + (formName as any).slice(1);
+    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+    const capitalized: string = formName[0].toUpperCase() + (formName as any).slice(1);
     const action = `${initial ? 'Create' : 'Update'} ${capitalized} Form`;
     logAction(action);
     this.store.update({
@@ -327,7 +336,8 @@ export class AkitaNgFormsManager<FormsState = any> {
     return value;
   }
 
-  // eslint-disable-next-line class-methods-use-this
+  // TODO isObject() determines that it's an object or a function? That's a bit odd...
+  // eslint-disable-next-line @typescript-eslint/ban-types
   private isObject(value: any): value is object | Function {
     if (value == null) {
       return false;

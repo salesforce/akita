@@ -14,6 +14,8 @@ import { AuthGuard } from './auth/auth.guard';
 import { HttpMethod, NG_ENTITY_SERVICE_CONFIG, NgEntityServiceGlobalConfig } from '@datorama/akita-ng-entity-service';
 import { AkitaNgRouterStoreModule } from '@datorama/akita-ng-router-store';
 import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
+import { CartEffects } from './cart/state/cart.effects';
+import { AkitaNgEffectsModule } from '@datorama/akita-ng-effects';
 
 @NgModule({
   declarations: [AppComponent, NavComponent, ProductPageComponent],
@@ -27,23 +29,24 @@ import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
     CartModule,
     AuthModule,
     AkitaNgRouterStoreModule,
-    AkitaNgDevtools.forRoot()
+    AkitaNgDevtools.forRoot(),
+    AkitaNgEffectsModule.forRoot([CartEffects]),
   ],
   providers: [
     AuthGuard,
     {
       provide: NG_ENTITY_SERVICE_CONFIG,
-      useFactory: function() {
+      useFactory: function () {
         return {
           baseUrl: 'https://jsonplaceholder.typicode.com',
           httpMethods: {
-            PUT: HttpMethod.PATCH
-          }
+            PUT: HttpMethod.PATCH,
+          },
         } as NgEntityServiceGlobalConfig;
       },
-      deps: []
-    }
+      deps: [],
+    },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

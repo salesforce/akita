@@ -1,6 +1,6 @@
 module.exports = {
   title: 'Akita',
-  tagline: '🔮 A Reactive State Management Tailored-Made for JS Applications',
+  tagline: '🔮 A Reactive State Management Tailor-Made for JS Applications',
   baseUrl: '/akita/',
   url: 'https://github.com/datorama',
   favicon: 'img/favicon.ico',
@@ -13,17 +13,18 @@ module.exports = {
       indexName: 'akita',
     },
     navbar: {
-      title: 'Home',
+      title: 'Akita',
       logo: {
         alt: 'Transloco',
         src: 'img/akita.svg',
       },
-      links: [
+      items: [
         {
           to: 'docs/store',
           activeBasePath: 'docs',
           label: 'Docs',
           position: 'left',
+          className: 'first-nav-element'
         },
         {
           to: 'sample-app',
@@ -34,13 +35,21 @@ module.exports = {
         {
           href: 'https://stackblitz.com/edit/akita-todos-app',
           label: 'Playground',
+          position: 'left',
+          className: 'header-playground-link'
+        },
+        {
+          href: 'https://gitter.im/akita-state-management/Lobby',
+          label: ' ',
           position: 'right',
+          className: 'header-icon-link header-gitter-link'
         },
         {
           href: 'https://github.com/datorama/akita/',
-          label: 'GitHub',
+          label: ' ',
           position: 'right',
-        },
+          className: 'header-icon-link header-github-link'
+        }
       ],
     },
     footer: {
@@ -94,6 +103,7 @@ module.exports = {
     },
     prism: {
       theme: require('prism-react-renderer/themes/nightOwlLight'),
+      darkTheme: require('prism-react-renderer/themes/nightOwl')
     },
     sidebarCollapsible: true,
   },

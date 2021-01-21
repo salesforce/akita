@@ -1,6 +1,6 @@
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
-import { resetCustomAction, setAction } from './actions';
+import { currentAction, resetCustomAction, setAction, StoreSnapshotAction } from './actions';
 import { getAkitaConfig, getGlobalProducerFn } from './config';
 import { deepFreeze } from './deepFreeze';
 import { dispatchAdded, dispatchDeleted, dispatchUpdate } from './dispatchers';
@@ -19,6 +19,11 @@ export const __stores__: { [storeName: string]: Store<any> } = {};
 
 if (isBrowser && isDev()) {
   (window as any).$$stores = __stores__;
+}
+
+interface StoreSnapshot<S> {
+  state: S;
+  action?: StoreSnapshotAction;
 }
 
 /**
@@ -47,12 +52,9 @@ if (isBrowser && isDev()) {
  * }
  */
 export class Store<S = any> {
-  private store: BehaviorSubject<Readonly<S>>;
-
+  private store: BehaviorSubject<Readonly<StoreSnapshot<S>>>;
   private storeValue: S;
-
   private inTransaction = false;
-
   private _initialState: S;
 
   protected cache: StoreCache = {
@@ -101,6 +103,7 @@ export class Store<S = any> {
         if (this.cache.ttl !== null) {
           clearTimeout(this.cache.ttl);
         }
+        // TODO setTimeout() returns a timeoutID not a TTL
         this.cache.ttl = setTimeout(() => this.setHasCache(false), ttlConfig) as any;
       }
     }
@@ -134,7 +137,10 @@ export class Store<S = any> {
 
   /** @internal */
   _select<R>(project: (store: S) => R): Observable<R> {
-    return this.store.asObservable().pipe(map(project), distinctUntilChanged());
+    return this.store.asObservable().pipe(
+      map((snapshot) => project(snapshot.state)),
+      distinctUntilChanged()
+    );
   }
 
   /** @internal */
@@ -186,7 +192,16 @@ export class Store<S = any> {
     }
 
     if (!this.store) {
-      this.store = new BehaviorSubject(this.storeValue);
+      this.store = new BehaviorSubject({ state: this.storeValue });
+
+      if (isDev()) {
+        this.store.subscribe(({ action }) => {
+          if (action) {
+            dispatchUpdate(this.storeName, action);
+          }
+        });
+      }
+
       return;
     }
 
@@ -253,8 +268,7 @@ export class Store<S = any> {
 
   /** @internal */
   // eslint-disable-next-line class-methods-use-this
-  akitaPreUpdate(_: Readonly<S>, nextState: Readonly<S>): S {
-    // TODO why is this here?
+  akitaPreUpdate(_: Readonly<S>, nextState: Readonly<S>) {
     return nextState;
   }
 
@@ -279,6 +293,7 @@ export class Store<S = any> {
       dispatchDeleted(this.storeName);
       this.setHasCache(false);
       this.cache.active.complete();
+      this.store.complete();
     }
   }
 
@@ -293,11 +308,14 @@ export class Store<S = any> {
   }
 
   private dispatch(state: S, _dispatchAction = true): void {
-    this.store.next(state);
+    let action: StoreSnapshotAction | undefined;
+
     if (_dispatchAction) {
-      dispatchUpdate(this.storeName);
+      action = currentAction;
       resetCustomAction();
     }
+
+    this.store.next({ state, action });
   }
 
   private watchTransaction(): void {

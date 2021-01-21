@@ -234,7 +234,8 @@ export function insertImport(source: ts.SourceFile, fileToEdit: string, symbolNa
 
     // insert import if it's not there
     if (importTextNodes.length === 0) {
-      const fallbackPos = findNodes(relevantImports[0], ts.SyntaxKind.CloseBraceToken)[0].getStart() || findNodes(relevantImports[0], ts.SyntaxKind.FromKeyword)[0].getStart();
+      const fallbackPos =
+        findNodes(relevantImports[0], ts.SyntaxKind.CloseBraceToken)[0].getStart() || findNodes(relevantImports[0], ts.SyntaxKind.FromKeyword)[0].getStart();
 
       return insertAfterLastOccurrence(imports, `, ${symbolName}`, fileToEdit, fallbackPos);
     }
@@ -420,7 +421,14 @@ export function getFirstNgModuleName(source: ts.SourceFile): string | undefined 
 }
 
 // eslint-disable-next-line complexity
-export function addSymbolToNgModuleMetadata(source: ts.SourceFile, ngModulePath: string, metadataField: string, symbolName: string, importPath: string | null = null, skipImport = true): Change[] {
+export function addSymbolToNgModuleMetadata(
+  source: ts.SourceFile,
+  ngModulePath: string,
+  metadataField: string,
+  symbolName: string,
+  importPath: string | null = null,
+  skipImport = true
+): Change[] {
   const nodes = getDecoratorMetadata(source, 'NgModule', '@angular/core');
   let node: any = nodes[0];
 
@@ -465,6 +473,7 @@ export function addSymbolToNgModuleMetadata(source: ts.SourceFile, ngModulePath:
       const text = node.getFullText(source);
       const matches = text.match(/^\r?\n\s*/);
       if (matches && matches.length > 0) {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         toInsert = `,${matches[0]}${metadataField}: [${symbolName}]`;
       } else {
         toInsert = `, ${metadataField}: [${symbolName}]`;
@@ -522,6 +531,7 @@ export function addSymbolToNgModuleMetadata(source: ts.SourceFile, ngModulePath:
       // Get the indentation of the last element, if any.
       const text = node.getFullText(source);
       if (text.match(/^\r?\r?\n/)) {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         toInsert = `,${text.match(/^\r?\n\s*/)[0]}${symbolName}`;
       } else {
         toInsert = `, ${symbolName}`;
@@ -535,13 +545,17 @@ export function addSymbolToNgModuleMetadata(source: ts.SourceFile, ngModulePath:
     // Get the indentation of the last element, if any.
     const text = node.getFullText(source);
     if (text.match(/^\r?\n/)) {
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
       toInsert = `,${text.match(/^\r?\n(\r?)\s*/)[0]}${symbolName}`;
     } else {
       toInsert = `, ${symbolName}`;
     }
   }
   if (importPath !== null) {
-    return [new InsertChange(ngModulePath, position, toInsert), skipImport ? new NoopChange() : insertImport(source, ngModulePath, symbolName.replace(/\..*$/, ''), importPath)];
+    return [
+      new InsertChange(ngModulePath, position, toInsert),
+      skipImport ? new NoopChange() : insertImport(source, ngModulePath, symbolName.replace(/\..*$/, ''), importPath),
+    ];
   }
 
   return [new InsertChange(ngModulePath, position, toInsert)];
@@ -615,11 +629,13 @@ export function isImported(source: ts.SourceFile, classifiedName: string, import
 
 export function getModuleFile(host: Tree, modulePath): ts.SourceFile {
   if (!host.exists(modulePath)) {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     throw new SchematicsException(`File ${modulePath} does not exist.`);
   }
 
   const text = host.read(modulePath);
   if (text === null) {
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     throw new SchematicsException(`File ${modulePath} does not exist.`);
   }
   const sourceText = text.toString('utf-8');

@@ -4,6 +4,7 @@ import { isObject } from '../lib/isObject';
 import { QueryConfig, SortBy } from '../lib/queryConfig';
 import { QueryEntity } from '../lib/queryEntity';
 import { Order } from '../lib/sort';
+import { trackIdChanges } from '../lib/trackIdChanges';
 import { cot, createTodos, ct, Todo, TodosStore } from './setup';
 
 function ga(spy, num = 0) {
@@ -142,8 +143,9 @@ describe('Entities Query', () => {
       const factory = ct();
       store.add(factory());
       store.add(factory());
+      const spy = jest.fn();
       query.selectEntity((e) => e.id === 1).subscribe(spy);
-      expect(spy).toHaveBeenCalledWith({ completed: false, id: 1, title: 'Todo 1' });
+      expect(spy).toHaveBeenCalledWith({ complete: false, id: 1, title: 'Todo 1' });
       store.remove(1);
       expect(spy).toHaveBeenCalledWith(undefined);
     });
@@ -159,7 +161,7 @@ describe('Entities Query', () => {
 
   describe('selectActive', () => {
     it('should return undefined when active not exist', () => {
-      let res: Todo;
+      let res;
       query.selectActive().subscribe((active) => {
         res = active;
       });
@@ -791,9 +793,7 @@ describe('Sort by', () => {
       .selectAll({
         sortBy: 'id',
       })
-      .subscribe((_res) => {
-        res = _res;
-      });
+      .subscribe((_res) => (res = _res));
 
     expect(res[0].id).toEqual(0);
     expect(res[1].id).toEqual(1);
@@ -816,9 +816,7 @@ describe('Sort by', () => {
       .selectAll({
         sortBy: 'price',
       })
-      .subscribe((_res) => {
-        res = _res;
-      });
+      .subscribe((_res) => (res = _res));
 
     expect(res[0].price).toEqual(3);
     expect(res[1].price).toEqual(10);
@@ -842,9 +840,7 @@ describe('Sort by', () => {
         sortBy: 'price',
         sortByOrder: Order.DESC,
       })
-      .subscribe((_res) => {
-        res = _res;
-      });
+      .subscribe((_res) => (res = _res));
 
     expect(res[0].price).toEqual(40);
     expect(res[1].price).toEqual(10);
@@ -870,9 +866,7 @@ describe('Sort by', () => {
         sortBy: 'completed',
         sortByOrder: Order.DESC,
       })
-      .subscribe((_res) => {
-        res = _res;
-      });
+      .subscribe((_res) => (res = _res));
 
     expect(res[0].completed).toEqual(true);
     expect(res[1].completed).toEqual(false);
@@ -899,9 +893,7 @@ describe('Sort by', () => {
       .selectAll({
         sortBy: customSortBy,
       })
-      .subscribe((_res) => {
-        res = _res;
-      });
+      .subscribe((_res) => (res = _res));
 
     expect(res[0].price).toEqual(3);
     expect(res[1].price).toEqual(10);
@@ -932,9 +924,7 @@ describe('Sort by', () => {
 
     const sortBy: SortBy<any, any> = (a, b, state) => (state.sortyByPrice ? sortByPrice(a, b) : sortById(a, b));
 
-    sub = queryTodos.selectAll({ sortBy }).subscribe((_res) => {
-      res = _res;
-    });
+    sub = queryTodos.selectAll({ sortBy }).subscribe((_res) => (res = _res));
 
     expect(res[0].price).toEqual(3);
     expect(res[1].price).toEqual(10);
@@ -966,9 +956,7 @@ describe('Sort by - Query Level', () => {
       { id: 2, title: 'Todo 2', complete: true, price: 3 },
     ] as any);
 
-    sub = queryTodos.selectAll().subscribe((_res) => {
-      res = _res;
-    });
+    sub = queryTodos.selectAll().subscribe((_res) => (res = _res));
 
     expect(res[0].price).toEqual(3);
     expect(res[1].price).toEqual(10);
@@ -992,9 +980,7 @@ describe('Sort by - Query Level', () => {
         sortBy: 'price',
         sortByOrder: Order.DESC,
       })
-      .subscribe((_res) => {
-        res = _res;
-      });
+      .subscribe((_res) => (res = _res));
 
     expect(res[0].price).toEqual(40);
     expect(res[1].price).toEqual(10);
@@ -1017,9 +1003,7 @@ describe('Sort by - Query Level', () => {
       .selectAll({
         sortBy: 'id',
       })
-      .subscribe((_res) => {
-        res = _res;
-      });
+      .subscribe((_res) => (res = _res));
 
     expect(res[0].id).toEqual(0);
     expect(res[1].id).toEqual(1);
@@ -1125,5 +1109,50 @@ describe('selectAll - limit to and filterBy and sorting', () => {
         res = _res;
       });
     expect(res.length).toBe(7);
+  });
+});
+
+describe('track entity ids', () => {
+  const store = new TodosStore();
+  const query = new QueryEntity(store);
+
+  it('should track new entity id', () => {
+    let res;
+
+    store.add({ id: 10, title: 'title 10' });
+    store.add({ id: 20, title: 'title 20' });
+
+    query
+      .selectEntity(10)
+      .pipe(trackIdChanges(query))
+      .subscribe((_res) => (res = _res));
+
+    expect(res.id).toBe(10);
+    expect(res.title).toBe('title 10');
+    expect(Object.keys(store._value().entities).length).toBe(2);
+    expect(Object.keys(store._value().ids).length).toBe(2);
+
+    store.update(10, { id: 11, title: 'title 11' });
+    store.update(20, { id: 21, title: 'title 21 - a' });
+
+    expect(res.id).toBe(11);
+    expect(res.title).toBe('title 11');
+    expect(Object.keys(store._value().entities).length).toBe(2);
+    expect(Object.keys(store._value().ids).length).toBe(2);
+
+    store.update(11, { id: 12 });
+    store.update(21, { title: 'title 21 - b' });
+
+    expect(res.id).toBe(12);
+    expect(res.title).toBe('title 11');
+    expect(Object.keys(store._value().entities).length).toBe(2);
+    expect(Object.keys(store._value().ids).length).toBe(2);
+
+    store.update(12, { title: 'title 12' });
+
+    expect(res.id).toBe(12);
+    expect(res.title).toBe('title 12');
+    expect(Object.keys(store._value().entities).length).toBe(2);
+    expect(Object.keys(store._value().ids).length).toBe(2);
   });
 });

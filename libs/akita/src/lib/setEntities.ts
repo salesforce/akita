@@ -19,9 +19,8 @@ export function isEntityState<Entity>(state): state is Entities<Entity> {
 }
 
 /** @internal */
-function applyMiddleware<E>(entities: HashMap<E>, preAddEntity: PreAddEntity<E>): object {
+function applyMiddleware<E>(entities: HashMap<E>, preAddEntity: PreAddEntity<E>): Record<string, unknown> {
   const mapped = {};
-  // eslint-disable-next-line no-restricted-syntax
   for (const id of Object.keys(entities)) {
     mapped[id] = preAddEntity(entities[id]);
   }
@@ -31,7 +30,7 @@ function applyMiddleware<E>(entities: HashMap<E>, preAddEntity: PreAddEntity<E>)
 
 /** @internal */
 export function setEntities<S extends EntityState<E>, E>({ state, entities, idKey, preAddEntity, isNativePreAdd }: SetEntitiesParams<S, E>): S {
-  let newEntities: HashMap<E> | object;
+  let newEntities: HashMap<E> | Record<string, unknown>;
   let newIds: ID[];
 
   if (isArray(entities)) {

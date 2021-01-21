@@ -130,6 +130,23 @@ describe('Paginator', () => {
     expect(paginator.currentPage).toEqual(3);
   });
 
+  it('should update entity on the store when page is fetched', () => {
+    expect(query.getEntity(45)).toBeUndefined();
+    store.add({ id: 45, email: 'outdated' });
+
+    const outdateEntiry = query.getEntity(45);
+    expect(outdateEntiry.email).toBe('outdated');
+
+    expect(paginator.hasPage(5)).toBeFalsy();
+    paginator.setPage(5);
+    expect(requestFunc).toHaveBeenCalledTimes(4);
+    expect(paginator.currentPage).toEqual(5);
+
+    const updatedEntiry = query.getEntity(45);
+    expect(updatedEntiry).toBeTruthy();
+    expect(updatedEntiry.email).toBe('email 45');
+  });
+
   describe('isFirst', () => {
     it('should return false', () => {
       expect(paginator.isFirst).toBeFalsy();
@@ -208,17 +225,17 @@ describe('Paginator', () => {
   });
 
   describe('from and to', () => {
-    it('it should not set page controls by default', () => {
+    it('should not set page controls by default', () => {
       expect(res.from).toBeUndefined();
       expect(res.to).toBeUndefined();
     });
-    it('it should set from and to', () => {
+    it('should set from and to', () => {
       paginator.withRange();
       paginator.setFirstPage();
       expect(res.from).toEqual(1);
       expect(res.to).toEqual(10);
     });
-    it('it should set from and to - 2', () => {
+    it('should set from and to - 2', () => {
       paginator.withRange();
       paginator.nextPage();
       expect(res.from).toEqual(11);
@@ -227,11 +244,11 @@ describe('Paginator', () => {
   });
 
   describe('page controls', () => {
-    it('it should not set page controls by default', () => {
+    it('should not set page controls by default', () => {
       paginator.setFirstPage();
       expect(res.pageControls).toBeUndefined();
     });
-    it('it should set from and to - 2', () => {
+    it('should set from and to - 2', () => {
       paginator.withControls();
       paginator.setLastPage();
       expect(res.pageControls.length).toEqual(10);
@@ -239,7 +256,7 @@ describe('Paginator', () => {
   });
 
   describe('clear cache as default behaviour', () => {
-    it('it should clear the provided page', () => {
+    it('should clear the provided page', () => {
       requestFunc.mockClear();
       paginator.setPage(4);
       expect(requestFunc).toHaveBeenCalledTimes(1);
@@ -247,7 +264,7 @@ describe('Paginator', () => {
       paginator.clearPage(4);
       expect(paginator.hasPage(4)).toBeFalsy();
     });
-    it('it should clear all', () => {
+    it('should clear all', () => {
       paginator.initial = false;
       paginator.clearCache();
       requestFunc.mockClear();
@@ -261,7 +278,7 @@ describe('Paginator', () => {
       paginator.setPage(2);
       expect(requestFunc).toHaveBeenCalledTimes(2);
     });
-    it('it should not clear the store when explicit stated', () => {
+    it('should not clear the store when explicit stated', () => {
       store.set(data);
       expect(query.getAll().length).toBeGreaterThan(0);
       const initialLength = query.getAll().length;
@@ -342,7 +359,7 @@ describe('cacheTimeout and clearStoreWithCache false', () => {
     )
     .subscribe();
 
-  it('it should not clear store when cacheTimeout emits', () => {
+  it('should not clear store when cacheTimeout emits', () => {
     jest.spyOn(paginator3, 'clearCache');
     expect(query3.getAll().length).toEqual(10);
     expect(requestFunc).toHaveBeenCalledTimes(1);

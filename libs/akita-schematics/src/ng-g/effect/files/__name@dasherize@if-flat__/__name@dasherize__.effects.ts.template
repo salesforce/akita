@@ -1,0 +1,10 @@
+import { Injectable } from '@angular/core';
+import { Actions, <%= effectMethod %> } from '@datorama/akita-ng-effects';
+
+
+@Injectable()
+export class <%= classify(name) %>Effects {
+
+  constructor(private actions$: Actions) {}
+
+}

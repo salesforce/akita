@@ -77,7 +77,7 @@
     "no-unbound-method": false,
     "prefer-for-of": true,
     "prefer-template": true,
-    "no-submodule-imports": [true, "rxjs", "@angular/platform-browser", "@angular/core/testing"],
+    "no-submodule-imports": [true, "rxjs", "@angular/platform-browser", "@angular/core/testing", "zone.js"],
     "no-unnecessary-callback-wrapper": true,
     "ban-types": [
       true,
@@ -87,6 +87,7 @@
       ["String", "Avoid using the `String` type. Did you mean `string`?"],
       ["Symbol", "Avoid using the `Symbol` type. Did you mean `symbol`?"]
     ],
-    "max-classes-per-file": false
+    "max-classes-per-file": false,
+    "no-implicit-dependencies": [true, "dev"]
   }
 }

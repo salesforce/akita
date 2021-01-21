@@ -20,4 +20,3 @@ export class <%= classify(name) %>Store extends Store<<%= classify(name) %>State
   }
 
 }
-

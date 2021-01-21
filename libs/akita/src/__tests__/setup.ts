@@ -57,20 +57,20 @@ export const initialStateTwo: StateTwo = {
 })
 export class TodosStoreCustomID extends EntityStore<StateTwo, TodoCustomID> {
   constructor() {
-    super(initialStateTwo, { idKey: 'todoId' });
+    super({}, { idKey: 'todoId' });
   }
 }
 
 export function ct() {
   let count = 0;
-  return function (): Todo {
+  return function () {
     const id = count++;
 
     return {
       id,
       title: `Todo ${id}`,
-      completed: false,
-    };
+      complete: false,
+    } as Todo;
   };
 }
 
@@ -87,8 +87,8 @@ export function cot(): Todo {
   return {
     id: 1,
     title: `Todo ${1}`,
-    completed: false,
-  };
+    complete: false,
+  } as Todo;
 }
 
 export type Widget = {
@@ -109,9 +109,10 @@ export class WidgetsQuery extends QueryEntity<any, Widget> {
 export function createWidget(id): Widget {
   return {
     id,
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     title: `Widget ${id}`,
     complete: false,
-  };
+  } as Widget;
 }
 
 export const tick = () => new Promise(process.nextTick);

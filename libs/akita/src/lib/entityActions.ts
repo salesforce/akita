@@ -1,8 +1,8 @@
 export enum EntityActions {
-  Set,
-  Add,
-  Update,
-  Remove,
+  Set = 'Set',
+  Add = 'Add',
+  Update = 'Update',
+  Remove = 'Remove',
 }
 
 export interface EntityAction<IDType> {

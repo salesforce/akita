@@ -1,7 +1,7 @@
 import { PreAddEntity } from './types';
 
 /** @internal */
-export function toEntitiesObject<E>(entities: E[], idKey: string, preAddEntity: PreAddEntity<E>): { entities: {}; ids: any[] } {
+export function toEntitiesObject<E>(entities: E[], idKey: string, preAddEntity: PreAddEntity<E>): { entities: Record<any, E>; ids: any[] } {
   const acc = {
     entities: {},
     ids: [],

@@ -4,6 +4,7 @@ import { DEVTOOLS_OPTIONS } from './devtools-options';
 import { AkitaDevtools } from './ng-devtools.service';
 
 // auto initialize the devtools
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 export function d(): void {}
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

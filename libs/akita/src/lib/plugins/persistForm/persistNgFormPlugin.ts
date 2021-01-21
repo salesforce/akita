@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { Observable, Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { logAction } from '../../actions';
@@ -79,6 +80,7 @@ export class PersistNgFormPlugin<T = any> extends AkitaPlugin {
     }
     this.form.patchValue(value, { emitEvent: this.params.emitEvent });
 
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     const storeValue = this.isKeyBased ? setValue(this.getQuery().getValue(), `${this.getStore().storeName}.${this.factoryFnOrPath}`, value) : { [this.params.formKey]: value };
     this.updateStore(storeValue);
   }
@@ -116,6 +118,7 @@ export class PersistNgFormPlugin<T = any> extends AkitaPlugin {
         this.initialValue = this.resolveInitialValue(this.form.value, this.getQuery().getValue());
         this.form.patchValue(this.initialValue, { emitEvent: this.params.emitEvent });
       } else {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         path = `${this.getStore().storeName}.${this.factoryFnOrPath}`;
         const root = getValue(this.getQuery().getValue(), path);
         this.initialValue = this.resolveInitialValue(root, root);

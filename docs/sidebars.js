@@ -2,6 +2,10 @@ module.exports = {
   docs: [
     {
       type: 'doc',
+      id: 'installation',
+    },
+    {
+      type: 'doc',
       id: 'store',
     },
     {
@@ -65,6 +69,7 @@ module.exports = {
         'angular/architecture',
         'angular/local-state',
         'angular/entity-service',
+        'angular/effects',
         {
           type: 'link',
           label: 'NgEntityService - OData Pattern',
@@ -72,18 +77,19 @@ module.exports = {
         },
         {
           type: 'link',
-          label: 'Akita Firbase',
+          label: 'Akita Firebase',
           href: 'https://github.com/dappsnation/akita-ng-fire',
         },
         'angular/router',
         'angular/forms-manager',
-        // "angular/persist-form",
+        'angular/persist-form',
         'angular/schematics',
         {
           type: 'link',
           label: 'Filters Manager',
           href: 'https://manudss.github.io/akita-filters-plugin/',
         },
+        'angular/tests',
         'angular/hmr',
       ],
     },

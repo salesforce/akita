@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { untilDestroyed } from 'ngx-take-until-destroy';
 import { AkitaNgFormsManager, setValidators } from '@datorama/akita-ng-forms-manager';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'app-forms-manager',
   templateUrl: './forms-manager.component.html',
-  styleUrls: ['./forms-manager.component.css']
+  styleUrls: ['./forms-manager.component.css'],
 })
 export class FormsManagerComponent implements OnInit {
   email: FormControl;
@@ -20,14 +21,14 @@ export class FormsManagerComponent implements OnInit {
   ngOnInit() {
     this.email = new FormControl(null, Validators.email);
 
-    const createControl = value => new FormControl(value);
+    const createControl = (value) => new FormControl(value);
 
     this.arr = new FormArray([createControl('One')]);
 
     this.config = this.builder.group({
       skills: this.builder.array([]),
       someBoolean: this.builder.control(false),
-      minAge: this.builder.control(null)
+      minAge: this.builder.control(null),
     });
 
     this.group = new FormGroup({
@@ -40,22 +41,22 @@ export class FormsManagerComponent implements OnInit {
         prefix: new FormControl(),
         a: new FormGroup({
           b: new FormControl(),
-          c: new FormControl()
-        })
-      })
+          c: new FormControl(),
+        }),
+      }),
     });
 
     this.formsManager
       .selectValue<number>('settings', 'minPrice')
       .pipe(untilDestroyed(this))
-      .subscribe(minPrice => {
+      .subscribe((minPrice) => {
         setValidators(this.group.get('price'), Validators.min(minPrice));
       });
 
-    const createSkillControl = val => new FormControl(null, Validators.required);
+    const createSkillControl = (val) => new FormControl(null, Validators.required);
 
     this.settings = new FormGroup({
-      minPrice: new FormControl(10)
+      minPrice: new FormControl(10),
     });
 
     this.formsManager.upsert('settings', this.settings);
@@ -63,7 +64,7 @@ export class FormsManagerComponent implements OnInit {
     this.formsManager
       .upsert('single', this.email)
       .upsert('config', this.config, {
-        arrControlFactory: { skills: createSkillControl }
+        arrControlFactory: { skills: createSkillControl },
       })
       .upsert('group', this.group)
       .upsert('array', this.arr, { arrControlFactory: createControl });

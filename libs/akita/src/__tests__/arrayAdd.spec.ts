@@ -25,6 +25,8 @@ class ArticlesStore extends EntityStore<ArticlesState, Article> {
   }
 }
 
+const store = new ArticlesStore();
+
 describe('arrayAdd', () => {
   it('should add one', () => {
     const store = new ArticlesStore();
@@ -36,7 +38,11 @@ describe('arrayAdd', () => {
 
     store.add(article);
     const comment = { id: 1, text: 'comment' };
-    store.update(1, (entity) => ({ comments: arrayAdd(entity.comments, comment) }));
+    store.update(1, (state) => {
+      return {
+        comments: arrayAdd(state.comments, comment),
+      };
+    });
     expect(store._value().entities[1].comments.length).toBe(1);
     expect(store._value().entities[1].comments[0]).toBe(comment);
   });
@@ -46,12 +52,16 @@ describe('arrayAdd', () => {
     const article: Article = {
       id: 1,
       title: '',
-      comments: [],
+      comments: null,
     };
 
     store.add(article);
     const comment = { id: 1, text: 'comment' };
-    store.update(1, (entity) => ({ comments: arrayAdd(entity.comments, comment) }));
+    store.update(1, (state) => {
+      return {
+        comments: arrayAdd(state.comments, comment),
+      };
+    });
     expect(store._value().entities[1].comments.length).toBe(1);
     expect(store._value().entities[1].comments[0]).toBe(comment);
   });
@@ -69,17 +79,22 @@ describe('arrayAdd', () => {
       { id: 1, text: 'comment' },
       { id: 2, text: 'comment2' },
     ];
-    const updateComments = arrayAdd<Article>('comments', comments);
-    store.update(1, updateComments);
+    store.update(1, (state) => {
+      return {
+        comments: arrayAdd(state.comments, comments),
+      };
+    });
     expect(store._value().entities[1].comments.length).toBe(2);
     expect(store._value().entities[1].comments[0]).toBe(comments[0]);
     expect(store._value().entities[1].comments[1]).toBe(comments[1]);
   });
 
   it('should work with non-objects', () => {
-    const store = new ArticlesStore();
-    const updateNames = arrayAdd<ArticlesState, string>('names', 'Netanel');
-    store.update(updateNames);
+    store.update((state) => {
+      return {
+        names: arrayAdd(state.names, 'Netanel'),
+      };
+    });
     expect(store._value().names).toEqual(['Netanel']);
     store.update((state) => ({
       names: arrayAdd(state.names, 'newName'),

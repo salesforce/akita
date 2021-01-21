@@ -36,6 +36,7 @@ const formFactory = (): FormGroupLike => {
     get valueChanges() {
       return _changes.asObservable();
     },
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
     get: () => {},
     controls: '',
   };

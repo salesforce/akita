@@ -157,9 +157,9 @@ export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<Stat
    *
    * Set the ids and add the page to store
    */
-  addPage(data: getEntityType<State>[]): void {
+  addPage(data: getEntityType<State>[]) {
     this.pages.set(this.currentPage, { ids: data.map((entity) => entity[this.getStore().idKey]) });
-    this.getStore().add(data);
+    this.getStore().upsertMany(data);
   }
 
   /**

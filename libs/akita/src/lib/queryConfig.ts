@@ -13,6 +13,7 @@ export interface QueryConfigOptions<E = any> extends SortByOptions<E> {}
 export const queryConfigKey = 'akitaQueryConfig';
 
 export function QueryConfig<E>(metadata: QueryConfigOptions<E>) {
+  // eslint-disable-next-line @typescript-eslint/ban-types
   return (constructor: Function): void => {
     // eslint-disable-next-line no-param-reassign
     constructor[queryConfigKey] = { ...metadata };

@@ -70,6 +70,12 @@
       "description": "A component",
       "factory": "./ng-g/component/index",
       "schema": "./ng-g/component/schema.json"
+    },
+    "effect": {
+      "aliases": ["aef"],
+      "description": "A effect",
+      "factory": "./ng-g/effect/index",
+      "schema": "./ng-g/effect/schema.json"
     }
   }
 }

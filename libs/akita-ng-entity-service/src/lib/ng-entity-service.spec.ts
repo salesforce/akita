@@ -1,3 +1,4 @@
+/* eslint-disable jest/valid-title */
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { fakeAsync, inject, TestBed, tick } from '@angular/core/testing';
 import { NgEntityServiceNotifier } from './ng-entity-service-notifier';
@@ -299,7 +300,7 @@ describe('NgEntityService', () => {
         method: HttpMethod.GET,
         loading: true,
         entityId: undefined,
-        storeName,
+        storeName: storeName,
       });
     }));
 
@@ -313,7 +314,7 @@ describe('NgEntityService', () => {
           method: HttpMethod.GET,
           loading: true,
           entityId,
-          storeName,
+          storeName: storeName,
         });
       }
     ));
@@ -547,6 +548,31 @@ describe('NgEntityService', () => {
       }
     ));
 
+    it('should add URL postfix to request URL when called with urlPostfix config', inject(
+      [TestServiceWithInlineConfig, HttpTestingController],
+      (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
+        const urlPostfix = 'foo/3/bar/3';
+        const expectedUrl = `${service.api}/${urlPostfix}`;
+        service.get({ urlPostfix }).subscribe();
+        const req = httpMock.expectOne((x) => x.url === expectedUrl);
+        expect(req.request.url).toBe(expectedUrl);
+        req.flush([]);
+      }
+    ));
+
+    it('should add URL postfix to request URL when called with id and urlPostfix config', inject(
+      [TestServiceWithInlineConfig, HttpTestingController],
+      (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
+        const entityId = 1;
+        const urlPostfix = 'foo/3/bar/3';
+        const expectedUrl = `${service.api}/${entityId}/${urlPostfix}`;
+        service.get(entityId, { urlPostfix }).subscribe();
+        const req = httpMock.expectOne((x) => x.url === expectedUrl);
+        expect(req.request.url).toBe(expectedUrl);
+        req.flush([]);
+      }
+    ));
+
     it('should dispatch success notice when request is successfully recieved', inject(
       [TestServiceWithInlineConfig, HttpTestingController, NgEntityServiceNotifier],
       (service: TestServiceWithInlineConfig, httpMock: HttpTestingController, notifier: NgEntityServiceNotifier) => {
@@ -706,7 +732,7 @@ describe('NgEntityService', () => {
       expect(loader.dispatch).toHaveBeenCalledWith({
         method: HttpMethod.POST,
         loading: true,
-        storeName,
+        storeName: storeName,
       });
     }));
 
@@ -807,6 +833,19 @@ describe('NgEntityService', () => {
         const req = httpMock.expectOne((x) => x.url === service.api);
         expect(req.request.params.get('foo')).toEqual('foo');
         expect(req.request.params.get('bar')).toEqual('bar');
+        req.flush([]);
+      }
+    ));
+
+    it('should add URL postfix to request URL when called with urlPostfix config', inject(
+      [TestServiceWithInlineConfig, HttpTestingController],
+      (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
+        const dummyEntity: TestEntity = { id: 1, foo: 'foo', bar: 123 };
+        const urlPostfix = 'foo/3/bar/3';
+        const expectedUrl = `${service.api}/${urlPostfix}`;
+        service.add(dummyEntity, { urlPostfix }).subscribe();
+        const req = httpMock.expectOne((x) => x.url === expectedUrl);
+        expect(req.request.url).toBe(expectedUrl);
         req.flush([]);
       }
     ));
@@ -949,7 +988,7 @@ describe('NgEntityService', () => {
         method: HttpMethod.PUT,
         loading: true,
         entityId,
-        storeName,
+        storeName: storeName,
       });
     }));
 
@@ -1051,6 +1090,20 @@ describe('NgEntityService', () => {
         const req = httpMock.expectOne((x) => x.url === `${service.api}/${entityId}`);
         expect(req.request.params.get('foo')).toEqual('foo');
         expect(req.request.params.get('bar')).toEqual('bar');
+        req.flush([]);
+      }
+    ));
+
+    it('should add URL postfix to request URL when called with urlPostfix config', inject(
+      [TestServiceWithInlineConfig, HttpTestingController],
+      (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
+        const entityId = 1;
+        const dummyEntity: Partial<TestEntity> = { foo: 'foo', bar: 123 };
+        const urlPostfix = 'foo/3/bar/3';
+        const expectedUrl = `${service.api}/${entityId}/${urlPostfix}`;
+        service.update(entityId, dummyEntity, { urlPostfix }).subscribe();
+        const req = httpMock.expectOne((x) => x.url === expectedUrl);
+        expect(req.request.url).toBe(expectedUrl);
         req.flush([]);
       }
     ));
@@ -1159,7 +1212,7 @@ describe('NgEntityService', () => {
           {
             storeName,
             loading: false,
-            entityId, // !WARN this is inconsistent with the stop loading event in both get & add, as they don't include entityId
+            entityId, // !WARN this is inconsistant with the stop loading event in both get & add, as they don't include entityId
             method: HttpMethod.PUT,
           },
         ]);
@@ -1197,7 +1250,7 @@ describe('NgEntityService', () => {
         method: HttpMethod.DELETE,
         loading: true,
         entityId,
-        storeName,
+        storeName: storeName,
       });
     }));
 
@@ -1292,6 +1345,19 @@ describe('NgEntityService', () => {
         const req = httpMock.expectOne((x) => x.url === `${service.api}/${entityId}`);
         expect(req.request.params.get('foo')).toEqual('foo');
         expect(req.request.params.get('bar')).toEqual('bar');
+        req.flush([]);
+      }
+    ));
+
+    it('should add URL postfix to request URL when called with urlPostfix config', inject(
+      [TestServiceWithInlineConfig, HttpTestingController],
+      (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
+        const entityId = 1;
+        const urlPostfix = 'foo/3/bar/3';
+        const expectedUrl = `${service.api}/${entityId}/${urlPostfix}`;
+        service.delete(entityId, { urlPostfix }).subscribe();
+        const req = httpMock.expectOne((x) => x.url === expectedUrl);
+        expect(req.request.url).toBe(expectedUrl);
         req.flush([]);
       }
     ));
@@ -1397,7 +1463,7 @@ describe('NgEntityService', () => {
           {
             storeName,
             loading: false,
-            entityId, // !WARN this is inconsistent with the stop loading event in both get & add, as they don't include entityId
+            entityId, // !WARN this is inconsistant with the stop loading event in both get & add, as they don't include entityId
             method: HttpMethod.DELETE,
           },
         ]);

@@ -1,22 +1,20 @@
 import { apply, branchAndMerge, chain, mergeWith, move, Rule, SchematicContext, template, Tree, url } from '@angular-devkit/schematics';
 import { getProjectPath, parseName, stringUtils } from '../utils';
 
-export default function (options: any): Rule {
-  const optionsCopy = { ...options };
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export default function (options: Record<string, unknown>): Rule {
   return (host: Tree, context: SchematicContext) => {
-    optionsCopy.path = getProjectPath(host, optionsCopy);
+    options.path = getProjectPath(host, options);
 
-    const parsedPath = parseName(optionsCopy);
+    const parsedPath = parseName(options);
     (parsedPath as any).path = parsedPath.path.replace('state', '');
-    optionsCopy.name = parsedPath.name;
-    optionsCopy.path = parsedPath.path;
+    options.name = parsedPath.name;
+    options.path = parsedPath.path;
 
     const templateSource = apply(url('./files'), [
       template({
         ...stringUtils,
-        ...(optionsCopy as object),
-      } as any),
+        ...options,
+      }),
       move(parsedPath.path),
     ]);
 

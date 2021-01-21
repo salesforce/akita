@@ -1,3 +1,4 @@
+import { arrayAdd } from '@datorama/akita';
 import { Observable } from 'rxjs';
 import { StateHistoryPlugin } from '../lib/plugins/stateHistory/stateHistoryPlugin';
 import { Query } from '../lib/query';
@@ -271,7 +272,7 @@ describe('StateHistory - Limit', () => {
 describe('StateHistory - watchProperty', () => {
   type MyState = {
     yeap: { a?: number; b?: number };
-    nope: object;
+    nope: Record<string, unknown>;
   };
 
   it('should watch only this property', () => {
@@ -348,7 +349,7 @@ describe('StateHistory - Observability', () => {
 
   describe('hasPast$', () => {
     it('should initially be false', () => {
-      return new Promise((done) => {
+      return new Promise<void>((done) => {
         const { history } = getStateHistory();
 
         history.hasPast$.subscribe((val) => {
@@ -361,7 +362,7 @@ describe('StateHistory - Observability', () => {
     it('should update observable on update', () => {
       expect.assertions(1);
 
-      return new Promise((done) => {
+      return new Promise<void>((done) => {
         const { history, makeChange } = getStateHistory();
 
         const expectedValues: boolean[] = [
@@ -382,7 +383,7 @@ describe('StateHistory - Observability', () => {
     it('should only update on change', () => {
       expect.assertions(1);
 
-      return new Promise((done) => {
+      return new Promise<void>((done) => {
         const { history, makeChange } = getStateHistory();
 
         const expectedValues: boolean[] = [
@@ -404,7 +405,7 @@ describe('StateHistory - Observability', () => {
     it('should work with ignoreNext', () => {
       expect.assertions(1);
 
-      return new Promise((done) => {
+      return new Promise<void>((done) => {
         const { history, makeChange } = getStateHistory();
 
         const expectedValues: boolean[] = [
@@ -425,7 +426,7 @@ describe('StateHistory - Observability', () => {
     it('should work with clear', () => {
       expect.assertions(1);
 
-      return new Promise((done) => {
+      return new Promise<void>((done) => {
         const { history, makeChange } = getStateHistory();
 
         const expectedValues: boolean[] = [
@@ -444,7 +445,7 @@ describe('StateHistory - Observability', () => {
 
   describe('hasFuture$', () => {
     it('should initially be false', () => {
-      return new Promise((done) => {
+      return new Promise<void>((done) => {
         const { history } = getStateHistory();
 
         history.hasFuture$.subscribe((val) => {
@@ -457,7 +458,7 @@ describe('StateHistory - Observability', () => {
     it('should update observable on update', () => {
       expect.assertions(1);
 
-      return new Promise((done) => {
+      return new Promise<void>((done) => {
         const { history, makeChange } = getStateHistory();
 
         const expectedValues: boolean[] = [
@@ -477,14 +478,13 @@ describe('StateHistory - Observability', () => {
     it('should only update on change', () => {
       expect.assertions(1);
 
-      return new Promise((done) => {
+      return new Promise<void>((done) => {
         const { history, makeChange } = getStateHistory();
 
         const expectedValues: boolean[] = [
           false, // initial
           true, // after undo
         ];
-
         expectHistoryStatusEqual(history.hasFuture$, expectedValues, done);
 
         makeChange();
@@ -498,7 +498,7 @@ describe('StateHistory - Observability', () => {
     it('should work with ignoreNext', () => {
       expect.assertions(1);
 
-      return new Promise((done) => {
+      return new Promise<void>((done) => {
         const { history, makeChange } = getStateHistory();
 
         const expectedValues: boolean[] = [
@@ -518,7 +518,7 @@ describe('StateHistory - Observability', () => {
     it('should work with clear', () => {
       expect.assertions(1);
 
-      return new Promise((done) => {
+      return new Promise<void>((done) => {
         const { history, makeChange } = getStateHistory();
 
         const expectedValues: boolean[] = [
@@ -534,5 +534,69 @@ describe('StateHistory - Observability', () => {
         history.clear();
       });
     });
+  });
+});
+
+type CollectionState = {
+  collection: number[];
+};
+
+describe('StateHistory - array-like property', () => {
+  const collectionStore = new Store<CollectionState>({ collection: [] });
+  const collectionQuery = new Query<CollectionState>(collectionStore);
+  const collectionHistory = new StateHistoryPlugin(collectionQuery, { watchProperty: 'collection' });
+
+  it('should get the initial state', () => {
+    expect(collectionHistory.history).toEqual({
+      past: [],
+      present: [],
+      future: [],
+    });
+
+    expect(collectionHistory.hasPast).toBeFalsy();
+    expect(collectionHistory.hasFuture).toBeFalsy();
+  });
+
+  it('should work properly with array-like property', () => {
+    let expectedCollection = [1];
+
+    collectionStore.update((state) => ({ collection: arrayAdd(state.collection, 1) }));
+
+    expect(collectionHistory.history).toEqual({
+      past: [[]],
+      present: expectedCollection,
+      future: [],
+    });
+    expect(collectionStore.getValue()).toEqual({ collection: expectedCollection });
+
+    expectedCollection = [1, 2];
+    collectionStore.update((state) => ({ collection: arrayAdd(state.collection, 2) }));
+
+    expect(collectionHistory.history).toEqual({
+      past: [[], [1]],
+      present: expectedCollection,
+      future: [],
+    });
+    expect(collectionStore.getValue()).toEqual({ collection: expectedCollection });
+
+    expectedCollection = [1];
+    collectionHistory.undo();
+
+    expect(collectionHistory.history).toEqual({
+      past: [[]],
+      present: expectedCollection,
+      future: [[1, 2]],
+    });
+    expect(collectionQuery.getValue()).toEqual({ collection: expectedCollection });
+
+    expectedCollection = [1, 2];
+    collectionHistory.redo();
+
+    expect(collectionHistory.history).toEqual({
+      past: [[], [1]],
+      present: expectedCollection,
+      future: [],
+    });
+    expect(collectionQuery.getValue()).toEqual({ collection: expectedCollection });
   });
 });

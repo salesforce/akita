@@ -1,4 +1,5 @@
 import { chain, Rule, schematic, SchematicContext, Tree } from '@angular-devkit/schematics';
+import { ActiveStateType } from '../entity-store/models/active-state.enum';
 
 const enum EntityServiceType {
   http = 'Http',
@@ -7,7 +8,8 @@ const enum EntityServiceType {
 }
 
 export default function (options: any): Rule {
-  const { plain, withModule } = options;
+  const plain = options.plain;
+  const withModule = options.withModule;
   const entityService = plain ? 'default' : options.entityService;
 
   let serviceSchematic: 'http-entity-service' | 'firebase-entity-service' | 'akita-service';
@@ -28,7 +30,7 @@ export default function (options: any): Rule {
       dirName: options.dirName,
       feature: true,
       spec: options.spec,
-      withActive: entityService === EntityServiceType.firebase ? true : options.withActive,
+      withActive: entityService === EntityServiceType.firebase ? ActiveStateType.Single : options.withActive,
       idType: entityService === EntityServiceType.firebase ? 'string' : options.idType,
     }),
     schematic(plain ? 'query' : 'entity-query', {
