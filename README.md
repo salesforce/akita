@@ -24,9 +24,8 @@ Akita encourages simplicity. It saves you the hassle of creating boilerplate cod
 
 - 🤓 Learn about it on the [docs site](https://datorama.github.io/akita/)
 - 🚀 See it in action on [StackBlitz](https://stackblitz.com/edit/akita-todos-app)
-- 😎 Use the [CLI](https://github.com/datorama/akita/tree/master/cli)
+- 😎 Use the [CLI](https://github.com/datorama/akita/tree/master/tools/akita-cli)
 - 👉 Checkout the [sample application](http://akita.surge.sh/)
-- 📖 Read the blog [posts](https://netbasal.gitbook.io/akita/general/blog-posts)
 - 🍄 Join Akita's [Gitter](https://gitter.im/akita-state-management/Lobby#) room
 
 ## Contributors
@@ -44,7 +43,7 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds
     <td align="center"><a href="https://github.com/Anergelem"><img src="https://avatars0.githubusercontent.com/u/25507557?v=4" width="100px;" alt=""/><br /><sub><b>Anergelem</b></sub></a><br /><a href="#design-Anergelem" title="Design">🎨</a></td>
     <td align="center"><a href="https://github.com/hoisel"><img src="https://avatars2.githubusercontent.com/u/400244?v=4" width="100px;" alt=""/><br /><sub><b>Hoisel</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=hoisel" title="Code">💻</a></td>
     <td align="center"><a href="https://www.linkedin.com/in/ange-picard-54648b136/"><img src="https://avatars0.githubusercontent.com/u/13108166?v=4" width="100px;" alt=""/><br /><sub><b>Ange Picard</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=MonsieurMan" title="Documentation">📖</a></td>
-    <td align="center"><a href="https://github.com/shaharkazaz"><img src="https://avatars2.githubusercontent.com/u/17194830?v=4" width="100px;" alt=""/><br /><sub><b>Shahar Kazaz</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=shaharkazaz" title="Code">💻</a> <a href="https://github.com/NetanelBasal/akita/commits?author=shaharkazaz" title="Documentation">📖</a> <a href="#blog-shaharkazaz" title="Blogposts">📝</a></td>
+    <td align="center"><a href="https://github.com/shaharkazaz"><img src="https://avatars2.githubusercontent.com/u/17194830?v=4" width="100px;" alt=""/><br /><sub><b>Shahar Kazaz</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=shaharkazaz" title="Code">💻</a> <a href="https://github.com/NetanelBasal/akita/commits?author=shaharkazaz" title="Documentation">📖</a> <a href="#design-shaharkazaz" title="Design">🎨</a> <a href="#blog-shaharkazaz" title="Blogposts">📝</a></td>
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/ritox842"><img src="https://avatars0.githubusercontent.com/u/7280441?v=4" width="100px;" alt=""/><br /><sub><b>gili</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=ritox842" title="Code">💻</a></td>
@@ -98,6 +97,20 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds
     <td align="center"><a href="https://github.com/snebjorn"><img src="https://avatars0.githubusercontent.com/u/1266245?v=4" width="100px;" alt=""/><br /><sub><b>snebjorn</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=snebjorn" title="Code">💻</a> <a href="#ideas-snebjorn" title="Ideas, Planning, & Feedback">🤔</a> <a href="#infra-snebjorn" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
     <td align="center"><a href="https://github.com/theorlovsky"><img src="https://avatars1.githubusercontent.com/u/21097952?v=4" width="100px;" alt=""/><br /><sub><b>Alex Orlovsky</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=theorlovsky" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/NickLargen"><img src="https://avatars1.githubusercontent.com/u/1881732?v=4" width="100px;" alt=""/><br /><sub><b>NickLargen</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=NickLargen" title="Code">💻</a> <a href="https://github.com/NetanelBasal/akita/commits?author=NickLargen" title="Tests">⚠️</a></td>
+    <td align="center"><a href="https://github.com/mateuszroszczyk"><img src="https://avatars0.githubusercontent.com/u/26057696?v=4" width="100px;" alt=""/><br /><sub><b>mateuszroszczyk</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=mateuszroszczyk" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/aleinin"><img src="https://avatars1.githubusercontent.com/u/25621595?v=4" width="100px;" alt=""/><br /><sub><b>aleinin</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=aleinin" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/xbaun"><img src="https://avatars0.githubusercontent.com/u/107658?v=4" width="100px;" alt=""/><br /><sub><b>xbaun</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=xbaun" title="Code">💻</a> <a href="#ideas-xbaun" title="Ideas, Planning, & Feedback">🤔</a></td>
+    <td align="center"><a href="https://stackoverflow.com/users/3915438/sebaferreras?tab=profile"><img src="https://avatars1.githubusercontent.com/u/17194770?v=4" width="100px;" alt=""/><br /><sub><b>Sebastián Ferreras</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=sebaferreras" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/fritzschoff"><img src="https://avatars1.githubusercontent.com/u/39312833?v=4" width="100px;" alt=""/><br /><sub><b>Max Fritz</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=fritzschoff" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/Eilonudi"><img src="https://avatars1.githubusercontent.com/u/8526882?v=4" width="100px;" alt=""/><br /><sub><b>Eilon Udi</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=Eilonudi" title="Code">💻</a></td>
+    <td align="center"><a href="https://getsetbro.github.com/"><img src="https://avatars2.githubusercontent.com/u/442793?v=4" width="100px;" alt=""/><br /><sub><b>getsetbro</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=getsetbro" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/sslaih"><img src="https://avatars3.githubusercontent.com/u/63254899?v=4" width="100px;" alt=""/><br /><sub><b>Samy Slaih</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=sslaih" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/talohana"><img src="https://avatars2.githubusercontent.com/u/24203431?v=4" width="100px;" alt=""/><br /><sub><b>Tal Ohana</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=talohana" title="Code">💻</a></td>
+    <td align="center"><a href="https://medium.com/@marcinmilewicz"><img src="https://avatars3.githubusercontent.com/u/40635984?v=4" width="100px;" alt=""/><br /><sub><b>Marcin Milewicz</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=marcinmilewicz" title="Code">💻</a></td>
   </tr>
 </table>
 

@@ -59,7 +59,68 @@ class ArticlesStore extends EntityStore<ArticlesState> {
 }
 ```
 
-In most cases, there is no need to create a separate entity store for the `comments`. Instead use Akita's [Array Utils](additional/array). This will keep your store easier to maintain and use. If you still require a separate store, check out this article for tips on how to combine their data:
+In most cases, there is no need to create a separate entity store for the `comments`. Instead use Akita's [Array Utils](additional/array.mdx). This will keep your store easier to maintain and use. If you still require a separate store, check out this article for tips on how to combine their data:
 
 - [Working with Normalized Data in Akita and Angular](https://netbasal.com/working-with-normalized-data-in-akita-e626d4c67ca4)
 - [Introducing One To Many Relationship in Angular & Akita](https://dev.to/arielgueta/introducing-one-to-many-relationship-in-angular-akita-37me)
+
+
+### Subscription Management
+A question that often comes up is whether to subscribe at the component or the service. Let's examine the two options:
+
+```ts title="todos.service.ts"
+class TodoService {
+  get() {
+    return this.http.get<Todo[]>('/api/todos').pipe(
+      tap(entities => {
+        this.todoStore.set(entities);
+      })
+    );
+  }
+}
+```
+
+```ts title="todos.components.ts"
+class TodosComponent {
+  ngOnInit() {
+   this.todoService.get().subscribe();
+  }
+}
+```
+
+Prefer this option when you need to show the user a success or error message locally in the component:
+
+```ts title="todos.components.ts"
+class TodosComponent {
+  ngOnInit() {
+   this.todoService.get().subscribe({
+     next: () => {
+       this.success = true;
+     }
+     error: (err) => {
+      this.error = err;
+     }
+   });
+  }
+}
+```
+
+Otherwise, you can subscribe at the service:
+
+```ts title="todos.service.ts"
+class TodoService {
+  get() {
+    return this.http.get<Todo[]>('/api/todos').subscribe(entities => {
+      this.todoStore.set(entities);
+    });
+  }
+}
+```
+
+```ts title="todos.components.ts"
+class TodosComponent {
+  ngOnInit() {
+    this.todoService.get();
+  }
+}
+```

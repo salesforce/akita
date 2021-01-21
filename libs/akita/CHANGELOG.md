@@ -2,6 +2,105 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [5.3.0](https://github.com/datorama/akita/compare/akita-v5.2.6...akita-v5.3.0) (2020-11-28)
+
+### Features
+
+- 🎸 provide initial state to preStoreUpdate hook ([#567](https://github.com/datorama/akita/issues/567)) ([64278ef](https://github.com/datorama/akita/commit/64278ef51905fd9dbd8458dfd10b3c5781ade87f)), closes [#566](https://github.com/datorama/akita/issues/566)
+
+### [5.2.6](https://github.com/datorama/akita/compare/akita-v5.2.5...akita-v5.2.6) (2020-11-23)
+
+### Bug Fixes
+
+- **lib:** restored array state is not changed to an object literal ([#561](https://github.com/datorama/akita/issues/561)) ([b559a13](https://github.com/datorama/akita/commit/b559a133fa6d9d1bbaa6b6c88ed67fe274cd0d3e))
+
+### [5.2.5](https://github.com/datorama/akita/compare/akita-v5.2.4...akita-v5.2.5) (2020-10-07)
+
+### [5.2.4](https://github.com/datorama/akita/compare/akita-v5.2.3...akita-v5.2.4) (2020-09-20)
+
+### Bug Fixes
+
+- **paginator:** update entities on store ([#530](https://github.com/datorama/akita/issues/530)) ([4c16def](https://github.com/datorama/akita/commit/4c16deffc87d66fb320b69903a187df62a409dff))
+
+### [5.2.3](https://github.com/datorama/akita/compare/akita-v5.2.2...akita-v5.2.3) (2020-08-28)
+
+### Bug Fixes
+
+- **utils:** pass index to array update util ([2f2d345](https://github.com/datorama/akita/commit/2f2d34513942a56529cc35a5d5add0fcfe1e4afd))
+
+### [5.2.2](https://github.com/datorama/akita/compare/akita-v5.2.1...akita-v5.2.2) (2020-08-07)
+
+### [5.2.1](https://github.com/datorama/akita/compare/akita-v5.2.0...akita-v5.2.1) (2020-07-15)
+
+### Bug Fixes
+
+- **persist-state:** localStorage security errors ([#489](https://github.com/datorama/akita/issues/489)) ([50ff4e8](https://github.com/datorama/akita/commit/50ff4e853bb3e91df32faafaeee20ba615327119))
+
+## [5.2.0](https://github.com/datorama/akita/compare/akita-v5.1.1...akita-v5.2.0) (2020-07-05)
+
+### Features
+
+- **entity-store:** track entity id updates ([#476](https://github.com/datorama/akita/issues/476)) ([bb59c14](https://github.com/datorama/akita/commit/bb59c1455d005b878340195f604ed03384ae1268))
+
+### Bug Fixes
+
+- **akita:** added getStoreByName to index.ts ([#475](https://github.com/datorama/akita/issues/475)) ([a0afa3a](https://github.com/datorama/akita/commit/a0afa3a6f1592d588dda1d912a203de7259dff71))
+
+### [5.1.1](https://github.com/datorama/akita/compare/akita-v5.1.0...akita-v5.1.1) (2020-06-29)
+
+### Bug Fixes
+
+- **run-store-action:** add package exports for store actions ([#473](https://github.com/datorama/akita/issues/473)) ([ca3d3c0](https://github.com/datorama/akita/commit/ca3d3c09d188fa1f66374b43ae57183d0cc210a5)), closes [#472](https://github.com/datorama/akita/issues/472)
+
+## [5.1.0](https://github.com/datorama/akita/compare/akita-v5.0.5...akita-v5.1.0) (2020-06-25)
+
+### Features
+
+- **helper:** add a utility function to toggle array values ([#467](https://github.com/datorama/akita/issues/467)) ([ecf5ca3](https://github.com/datorama/akita/commit/ecf5ca3d764517a62588ca6cd72af3ab6324d7cf))
+
+### [5.0.5](https://github.com/datorama/akita/compare/akita-v5.0.4...akita-v5.0.5) (2020-06-19)
+
+### [5.0.4](https://github.com/datorama/akita/compare/akita-v5.0.3...akita-v5.0.4) (2020-06-19)
+
+### [5.0.3](https://github.com/datorama/akita/compare/akita-v5.0.2...akita-v5.0.3) (2020-06-19)
+
+### [5.0.2](https://github.com/datorama/akita/compare/akita-v5.0.1...akita-v5.0.2) (2020-06-18)
+
+### Bug Fixes
+
+- **run-store-action:** add untyped store support ([#451](https://github.com/datorama/akita/issues/451)) ([f95ec5f](https://github.com/datorama/akita/commit/f95ec5f58a6cef3249341a3c5275519189194c9b))
+
+### [5.0.1](https://github.com/datorama/akita/compare/akita-v5.0.0...akita-v5.0.1) (2020-06-16)
+
+### Bug Fixes
+
+- **entity-store:** change set cache location ([d318901](https://github.com/datorama/akita/commit/d318901bdc89c19eaba8ec1db3de438e4e6b4ec4))
+
+## [5.0.0](https://github.com/datorama/akita/compare/akita-v4.23.2...akita-v5.0.0) (2020-06-15)
+
+### ⚠ BREAKING CHANGES
+
+- **action:** Remove deprecated exclude option from persist state
+- **action:** Remove deprecated array utils functions
+
+### Features
+
+- **action:** remove deprecated array utils functions ([44d99c9](https://github.com/datorama/akita/commit/44d99c9c8a1833cf46fa1fc79725d8cf37dba985))
+- **action:** remove deprecated exclude option from persist state ([5ca933a](https://github.com/datorama/akita/commit/5ca933ae8db2b1b6f57dcba37609fc9fb365809f))
+- **persist-state:** add ability to select store data to persist ([#437](https://github.com/datorama/akita/issues/437)) ([3f4e5ae](https://github.com/datorama/akita/commit/3f4e5ae87c9a9bca46b5b41f8db6cd57390e77bb))
+
+### Bug Fixes
+
+- **devtools:** fix multiple logging of same actions ([#441](https://github.com/datorama/akita/issues/441)) ([7992435](https://github.com/datorama/akita/commit/7992435f294d27ec7ba3963485d6e3d15d1e6067))
+- **entity-store:** improve type safety of entity store upsert operations ([#439](https://github.com/datorama/akita/issues/439)) ([08c4656](https://github.com/datorama/akita/commit/08c4656a8a3d9186156692e071790bbbf7f5a0ff))
+- **query-entity:** selection of a single entity can be undefined ([#445](https://github.com/datorama/akita/issues/445)) ([888a825](https://github.com/datorama/akita/commit/888a8253ed03d8af77306d06e0ecbef3b1b78cec))
+
+### [4.23.2](https://github.com/datorama/akita/compare/akita-v4.23.1...akita-v4.23.2) (2020-05-15)
+
+### Bug Fixes
+
+- **env:** don't access window outside of browser ([#428](https://github.com/datorama/akita/issues/428)) ([6fdc251](https://github.com/datorama/akita/commit/6fdc25191f7037c67166a44384bcf740ff9be504))
+
 ### [4.23.1](https://github.com/datorama/akita/compare/akita-v4.23.0...akita-v4.23.1) (2020-05-02)
 
 ### Bug Fixes

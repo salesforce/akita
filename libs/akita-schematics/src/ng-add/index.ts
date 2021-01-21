@@ -10,15 +10,15 @@ function addPackageJsonDependencies(options: Schema): Rule {
     const dependencies: NodeDependency[] = [
       {
         type: NodeDependencyType.Default,
-        version: '^4.22.3',
+        version: '^6.0.0',
         name: '@datorama/akita',
       },
     ];
 
     if (options.withRouter || options.router) {
       dependencies.push({
-        type: NodeDependencyType.Dev,
-        version: '^5.0.0',
+        type: NodeDependencyType.Default,
+        version: '^6.0.0',
         name: '@datorama/akita-ng-router-store',
       });
     }
@@ -26,7 +26,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     if (options.devtools) {
       dependencies.push({
         type: NodeDependencyType.Dev,
-        version: '^4.0.0',
+        version: '^6.0.0',
         name: '@datorama/akita-ngdevtools',
       });
     }
@@ -34,7 +34,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     if (options.httpEntityService) {
       dependencies.push({
         type: NodeDependencyType.Default,
-        version: '^2.0.0',
+        version: '^6.0.0',
         name: '@datorama/akita-ng-entity-service',
       });
     }
@@ -42,7 +42,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     if (options.firebaseEntityService) {
       dependencies.push({
         type: NodeDependencyType.Default,
-        version: '^1.5.13',
+        version: '^3.1.6',
         name: 'akita-ng-fire',
       });
     }
@@ -163,7 +163,7 @@ function addModuleToImports(options: Schema): Rule {
     }
 
     if (options.devtools) {
-      importDevtools = `environment.production ? [] : AkitaNgDevtools`;
+      importDevtools = `environment.production ? [] : AkitaNgDevtools.forRoot()`;
     }
 
     if (options.httpEntityService) {
@@ -171,11 +171,11 @@ function addModuleToImports(options: Schema): Rule {
     }
 
     if (importDevtools) {
-      addModuleImportToRootModule(host, importDevtools, null as any, project);
+      addModuleImportToRootModule(host, importDevtools, null as any, project as any);
     }
 
     if (importRouter) {
-      addModuleImportToRootModule(host, importRouter, null as any, project);
+      addModuleImportToRootModule(host, importRouter, null as any, project as any);
     }
 
     if (provideEntityServiceConfig) {

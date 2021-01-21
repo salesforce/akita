@@ -1,6 +1,3 @@
-import { SchematicsException, Tree } from '@angular-devkit/schematics';
-import { experimental } from '@angular-devkit/core';
-
 // The interfaces below are generated from the Angular CLI configuration schema
 // https://github.com/angular/angular-cli/blob/master/packages/@angular/cli/lib/config/schema.json
 export interface AppConfig {
@@ -38,7 +35,8 @@ export interface AppConfig {
          * The output path (relative to the outDir).
          */
         output?: string;
-      })[];
+      }
+  )[];
   /**
    * URL where files will be deployed.
    */
@@ -91,7 +89,8 @@ export interface AppConfig {
     | {
         input?: string;
         [name: string]: any; // tslint:disable-line:no-any
-      })[];
+      }
+  )[];
   /**
    * Options to pass to style preprocessors
    */
@@ -109,7 +108,8 @@ export interface AppConfig {
     | {
         input: string;
         [name: string]: any; // tslint:disable-line:no-any
-      })[];
+      }
+  )[];
   /**
    * Source file for environment config.
    */
@@ -124,24 +124,4 @@ export interface AppConfig {
     app: string;
     route: string;
   };
-}
-
-export type WorkspaceSchema = experimental.workspace.WorkspaceSchema;
-
-export function getWorkspacePath(host: Tree): string {
-  const possibleFiles = ['/angular.json', '/.angular.json'];
-  const path = possibleFiles.filter(path => host.exists(path))[0];
-
-  return path;
-}
-
-export function getWorkspace(host: Tree): WorkspaceSchema {
-  const path = getWorkspacePath(host);
-  const configBuffer = host.read(path);
-  if (configBuffer === null) {
-    throw new SchematicsException(`Could not find (${path})`);
-  }
-  const config = configBuffer.toString();
-
-  return JSON.parse(config);
 }

@@ -1,0 +1,37 @@
+---
+title: Optimistic Updates
+---
+
+When performing optimistic updates, the UI adds a new entity to the store before the server request responded with the actual data.
+One approach to this is to create a temporary entity id on the client-side and later update it with the real id when the server request is finished.
+To track id changes of entities in a store Akita provides the RxJS operator `trackIdChanges(query: QueryEntity)`:
+
+```ts
+import { trackIdChanges } from '@datorama/akita';
+
+query.selectEntity(1).pipe(trackIdChanges(query)).subscribe(entity => {
+  /* ... */
+});
+
+```
+
+:::info
+Operators preceding `trackIdChanges` in the same RxJS pipeline will only run once and are then discarded.
+:::
+
+By applying the `trackIdChanges` operator on a query, the query gets rebuild each time the id changes.
+This also means that all successive operators in the same pipeline get re-evaluated, but preceding operators will be discarded.
+The project function argument of `selectEntity(id, project)` is also discarded on id changes.
+
+In the following example, the `filter()` operator, and the project function of `selectEntity()` will only run once and be discarded:
+```ts
+
+query.selectEntity(1).pipe(filter(entity => entity.done), trackIdChanges(query)).subscribe(entity => {
+  /* ... */
+});
+
+query.selectEntity(1, entity => entity.done).pipe(trackIdChanges(query)).subscribe(entity => {
+  /* ... */
+});
+
+```

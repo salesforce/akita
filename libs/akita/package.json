@@ -1,6 +1,6 @@
 {
   "name": "@datorama/akita",
-  "version": "4.23.1",
+  "version": "6.0.0",
   "description": "A Reactive State Management Tailored-Made for JS Applications",
   "keywords": [
     "angular",
@@ -31,8 +31,7 @@
     "schematics-utilities": "^1.1.1"
   },
   "peerDependencies": {
-    "rxjs": ">= 6.1.0 < 7",
-    "tslib": ">= 1.7.0 < 2"
+    "rxjs": ">= 6.1.0 < 7"
   },
   "schematics": "./schematics/collection.json"
 }

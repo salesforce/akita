@@ -17,6 +17,8 @@ export class CartQuery extends QueryEntity<CartState> {
   );
 
   selectTotal$ = this.selectItems$.pipe(map(items => items.reduce((acc, item) => acc + item.total, 0)));
+
+  selectNotification$ = this.select((state) => state.notify);
 }
 
 function joinItems([cartItems, products]) {

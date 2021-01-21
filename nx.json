@@ -32,40 +32,8 @@
     "angular-store-app": {
       "tags": ["playground"]
     },
-    "angular-store-app-e2e": {
-      "tags": [],
-      "implicitDependencies": ["angular-store-app"]
-    },
-    "angular-akita-server-side-pagination": {
-      "tags": ["playground"]
-    },
-    "angular-akita-server-side-pagination-e2e": {
-      "tags": [],
-      "implicitDependencies": ["angular-akita-server-side-pagination"]
-    },
-    "angular-twitter-like": {
-      "tags": ["playground"]
-    },
-    "angular-twitter-like-e2e": {
-      "tags": [],
-      "implicitDependencies": ["angular-twitter-like"]
-    },
-    "angular-ecommerce": {
-      "tags": ["playground"]
-    },
-    "angular-ecommerce-e2e": {
-      "tags": [],
-      "implicitDependencies": ["angular-ecommerce"]
-    },
-    "angular-ecommerce-server": {
-      "tags": []
-    },
-    "react-akita-app": {
-      "tags": ["playground"]
-    },
-    "react-akita-app-e2e": {
-      "tags": [],
-      "implicitDependencies": ["react-akita-app"]
+    "akita-ng-effects": {
+      "tags": ["plugin"]
     }
   },
   "tasksRunnerOptions": {

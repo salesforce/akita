@@ -2,7 +2,7 @@ import { currentAction, setSkipAction } from './actions';
 import { isDefined } from './isDefined';
 import { $$addStore, $$deleteStore, $$updateStore } from './dispatchers';
 import { __stores__ } from './stores';
-import { capitalize } from './captialize';
+import { capitalize } from './capitalize';
 import { isNotBrowser } from './root';
 
 export type DevtoolsOptions = {
@@ -34,7 +34,7 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
   }
 
   subs.length &&
-    subs.forEach(s => {
+    subs.forEach((s) => {
       if (s.unsubscribe) {
         s.unsubscribe();
       } else {
@@ -46,7 +46,7 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
 
   if (!isAngular) {
     ngZoneOrOptions = ngZoneOrOptions || {};
-    (ngZoneOrOptions as any).run = cb => cb();
+    (ngZoneOrOptions as any).run = (cb) => cb();
     options = ngZoneOrOptions as Partial<DevtoolsOptions>;
   }
 
@@ -56,7 +56,7 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
   const devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__.connect(merged);
   let appState = {};
 
-  const isAllowed = storeName => {
+  const isAllowed = (storeName) => {
     if (!storesWhitelist.length) {
       return true;
     }
@@ -65,18 +65,18 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
   };
 
   subs.push(
-    $$addStore.subscribe(storeName => {
+    $$addStore.subscribe((storeName) => {
       if (isAllowed(storeName) === false) return;
       appState = {
         ...appState,
-        [storeName]: __stores__[storeName]._value()
+        [storeName]: __stores__[storeName]._value(),
       };
       devTools.send({ type: `[${capitalize(storeName)}] - @@INIT` }, appState);
     })
   );
 
   subs.push(
-    $$deleteStore.subscribe(storeName => {
+    $$deleteStore.subscribe((storeName) => {
       if (isAllowed(storeName) === false) return;
       delete appState[storeName];
       devTools.send({ type: `[${storeName}] - Delete Store` }, appState);
@@ -84,10 +84,11 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
   );
 
   subs.push(
-    $$updateStore.subscribe(storeName => {
+    $$updateStore.subscribe(({ storeName, action }) => {
       if (isAllowed(storeName) === false) return;
-      const { type, entityIds, skip } = currentAction;
+      const { type, entityIds, skip, ...rest } = action;
 
+      const payload = rest.payload;
       if (skip) {
         setSkipAction(false);
         return;
@@ -105,7 +106,7 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
 
       appState = {
         ...appState,
-        [storeName]: store._value()
+        [storeName]: store._value(),
       };
 
       const normalize = capitalize(storeName);
@@ -125,16 +126,16 @@ export function akitaDevtools(ngZoneOrOptions?: NgZoneLike | Partial<DevtoolsOpt
             return acc;
           }, {});
 
-        devTools.send({ type: msg }, sortedAppState);
+        devTools.send({ type: msg, ...payload }, sortedAppState)
         return;
       }
 
-      devTools.send({ type: msg }, appState);
+      devTools.send({ type: msg, ...payload }, appState)
     })
   );
 
   subs.push(
-    devTools.subscribe(message => {
+    devTools.subscribe((message) => {
       if (message.type === 'DISPATCH') {
         const payloadType = message.payload.type;
 

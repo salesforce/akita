@@ -55,7 +55,7 @@ export class TodosService {
     snapshotManager.setStoresSnapshot(snapshotFromServer);
 
     // Support lazy stores
-    setStoresSnapshot(snapshotFromServer, { lazy: true } );
+    snapshotManager.setStoresSnapshot(snapshotFromServer, { lazy: true } );
   }
 }
 ```

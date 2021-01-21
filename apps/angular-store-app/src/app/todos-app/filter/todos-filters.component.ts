@@ -1,18 +1,19 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { TodoFilter, VISIBILITY_FILTER } from './filter.model';
 import { FormControl } from '@angular/forms';
-import { untilDestroyed } from 'ngx-take-until-destroy';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { TodoFilter, VISIBILITY_FILTER } from './filter.model';
 
+@UntilDestroy()
 @Component({
   selector: 'app-todos-filters',
   template: `
     <div class="input-field col s12">
       <select [formControl]="control" class="browser-default">
-        <option *ngFor="let filter of filters" [ngValue]="filter.value">{{ filter.label }} </option>
+        <option *ngFor="let filter of filters" [ngValue]="filter.value">{{ filter.label }}</option>
       </select>
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TodosFiltersComponent implements OnInit, OnDestroy {
   _active;
@@ -33,7 +34,7 @@ export class TodosFiltersComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.control = new FormControl(this._active);
 
-    this.control.valueChanges.pipe(untilDestroyed(this)).subscribe(c => {
+    this.control.valueChanges.pipe(untilDestroyed(this)).subscribe((c) => {
       this.update.emit(c);
     });
   }

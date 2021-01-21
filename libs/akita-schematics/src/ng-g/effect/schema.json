@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "SchematicsAkitaEffect",
+  "title": "Akita Effect Options Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "The name of the effect.",
+      "type": "string",
+      "alias": "s",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      }
+    },
+    "path": {
+      "type": "string",
+      "format": "path",
+      "description": "The path to create the effect.",
+      "visible": false
+    },
+    "skipTests": {
+      "type": "boolean",
+      "description": "Specifies if a spec file is generated.",
+      "default": true
+    },
+    "flat": {
+      "type": "boolean",
+      "default": true,
+      "description": "Flag to indicate if a dir is created."
+    },
+    "dirName": {
+      "type": "string",
+      "default": "state",
+      "description": "Specifies the name of the generated folder"
+    },
+    "feature": {
+      "type": "boolean",
+      "default": false
+    },
+    "module": {
+      "type": "string",
+      "default": "",
+      "description": "Allows specification of the declaring module.",
+      "alias": "m",
+      "subtype": "filepath",
+      "x-prompt": "To which module (path) should the effect be registered in?"
+    },
+    "root": {
+      "type": "boolean",
+      "default": false,
+      "description": "Flag to indicate whether the effects are registered as root."
+    },
+    "creators": {
+      "type": "boolean",
+      "default": false,
+      "description": "Specifies whether to use creator functions for handling actions, reducers, and effects.",
+      "aliases": ["c"],
+      "x-prompt": "Do you want to use the create function?"
+    },
+    "group": {
+      "type": "boolean",
+      "default": false,
+      "description": "Group effects file within 'effects' folder",
+      "aliases": ["g"]
+    },
+    "minimal": {
+      "type": "boolean",
+      "default": false,
+      "description": "Setup root effects module without registering initial effects."
+    }
+  },
+  "required": []
+}

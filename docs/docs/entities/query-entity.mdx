@@ -173,6 +173,9 @@ query.selectEntityAction(EntityActions.Add).subscribe(addedIds => {});
 query.selectEntityAction(EntityActions.Update).subscribe(updatedIds => {});
 query.selectEntityAction(EntityActions.Remove).subscribe(removedIds => {});
 
+// listen for a subset of actions
+query.selectEntityAction([EntityActions.Add, EntityActions.Remove]).subscribe(action => {});
+
 // listen for all actions
 query.selectEntityAction().subscribe(action => {});
 ```

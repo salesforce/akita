@@ -99,7 +99,7 @@ export class RouterService {
         queryParams,
         fragment,
         data,
-        navigationExtras: this.router.getCurrentNavigation().extras.state,
+        navigationExtras: this.router.getCurrentNavigation().extras ? this.router.getCurrentNavigation().extras.state : {},
       },
     };
   }

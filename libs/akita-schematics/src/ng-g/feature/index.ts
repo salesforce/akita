@@ -1,12 +1,13 @@
-import { Rule, SchematicContext, Tree, chain, schematic } from '@angular-devkit/schematics';
+import { chain, Rule, schematic, SchematicContext, Tree } from '@angular-devkit/schematics';
+import { ActiveStateType } from '../entity-store/models/active-state.enum';
 
 const enum EntityServiceType {
   http = 'Http',
   firebase = 'Firebase',
-  default = 'Default'
+  default = 'Default',
 }
 
-export default function(options: any): Rule {
+export default function (options: any): Rule {
   const plain = options.plain;
   const withModule = options.withModule;
   const entityService = plain ? 'default' : options.entityService;
@@ -22,8 +23,8 @@ export default function(options: any): Rule {
       dirName: options.dirName,
       feature: true,
       spec: options.spec,
-      withActive: entityService === EntityServiceType.firebase ? true : options.withActive,
-      idType: entityService === EntityServiceType.firebase ? 'string' : options.idType
+      withActive: entityService === EntityServiceType.firebase ? ActiveStateType.Single : options.withActive,
+      idType: entityService === EntityServiceType.firebase ? 'string' : options.idType,
     }),
     schematic(plain ? 'query' : 'entity-query', {
       flat: options.flat,
@@ -32,7 +33,7 @@ export default function(options: any): Rule {
       project: options.project,
       spec: options.spec,
       dirName: options.dirName,
-      feature: true
+      feature: true,
     }),
     schematic(serviceSchematic, {
       flat: options.flat,
@@ -43,8 +44,8 @@ export default function(options: any): Rule {
       spec: options.spec,
       plain,
       dirName: options.dirName,
-      feature: true
-    })
+      feature: true,
+    }),
   ];
 
   if (!plain) {
@@ -57,8 +58,8 @@ export default function(options: any): Rule {
         project: options.project,
         spec: options.spec,
         dirName: options.dirName,
-        feature: true
-      })
+        feature: true,
+      }),
     ]);
   }
 
@@ -72,7 +73,7 @@ export default function(options: any): Rule {
         project: options.project,
         spec: options.spec,
         dirName: options.dirName,
-        feature: true
+        feature: true,
       }),
 
       schematic('withComponent', {
@@ -85,8 +86,8 @@ export default function(options: any): Rule {
         dirName: options.dirName,
         styleext: options.styleext,
         entity: !options.plain,
-        feature: true
-      })
+        feature: true,
+      }),
     ]);
   }
   return (host: Tree, context: SchematicContext) => {
