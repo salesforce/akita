@@ -69,11 +69,11 @@ export class NavigationEffects {
            map((mainNav) => loadMainNavigationSuccess({ mainNav }))
         )
       )
-    )
+    ), { dispatch: true }
   );
 
   // Or use the decorator
-  @Effect({ dispatch: false })
+  @Effect()
   loadMainNavigationSuccess$ = this.actions$.pipe(
     ofType(loadMainNavigationSuccess),
     map(({ mainNav }) => this.navigationService.updateNavigationTree(mainNav)),
