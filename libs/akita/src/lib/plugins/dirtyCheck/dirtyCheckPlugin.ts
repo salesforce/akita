@@ -18,7 +18,7 @@ export type DirtyCheckParams<StoreState = any> = {
 };
 
 export const dirtyCheckDefaultParams = {
-  comparator: (head, current) => JSON.stringify(head) !== JSON.stringify(current)
+  comparator: (head, current) => JSON.stringify(head) !== JSON.stringify(current),
 };
 
 export function getNestedPath(nestedObj, path: string) {
@@ -44,7 +44,7 @@ export class DirtyCheckPlugin<State = any> extends AkitaPlugin<State> {
     super(query);
     this.params = { ...dirtyCheckDefaultParams, ...params };
     if (this.params.watchProperty) {
-      let watchProp = coerceArray(this.params.watchProperty) as any[];
+      const watchProp = coerceArray(this.params.watchProperty) as any[];
       if (query instanceof QueryEntity && watchProp.includes('entities') && !watchProp.includes('ids')) {
         watchProp.push('ids');
       }
@@ -52,7 +52,7 @@ export class DirtyCheckPlugin<State = any> extends AkitaPlugin<State> {
     }
   }
 
-  reset(params: DirtyCheckResetParams = {}) {
+  reset(params: DirtyCheckResetParams = {}): void {
     let currentValue = this.head;
     if (isFunction(params.updateFn)) {
       if (this.isEntityBased(this._entityId)) {
@@ -66,7 +66,7 @@ export class DirtyCheckPlugin<State = any> extends AkitaPlugin<State> {
     this._reset.next();
   }
 
-  setHead() {
+  setHead(): DirtyCheckPlugin<State> {
     if (!this.active) {
       this.activate();
       this.active = true;
@@ -81,17 +81,17 @@ export class DirtyCheckPlugin<State = any> extends AkitaPlugin<State> {
     return !!this.dirty.value;
   }
 
-  hasHead() {
+  hasHead(): boolean {
     return !!this.getHead();
   }
 
-  destroy() {
+  destroy(): void {
     this.head = null;
     this.subscription && this.subscription.unsubscribe();
     this._reset && this._reset.complete();
   }
 
-  isPathDirty(path: string) {
+  isPathDirty(path: string): boolean {
     const head = this.getHead();
     const current = (this.getQuery() as Query<State>).getValue();
     const currentPathValue = getNestedPath(current, path);
@@ -100,7 +100,7 @@ export class DirtyCheckPlugin<State = any> extends AkitaPlugin<State> {
     return this.params.comparator(currentPathValue, headPathValue);
   }
 
-  protected getHead() {
+  getHead(): Partial<State> | State | undefined | null {
     return this.head;
   }
 
@@ -108,13 +108,13 @@ export class DirtyCheckPlugin<State = any> extends AkitaPlugin<State> {
     this.head = this._getHead();
     /** if we are tracking specific properties select only the relevant ones */
     const source = this.params.watchProperty
-      ? (this.params.watchProperty as (keyof State)[]).map(prop =>
+      ? (this.params.watchProperty as (keyof State)[]).map((prop) =>
           this.query
-            .select(state => state[prop])
+            .select((state) => state[prop])
             .pipe(
-              map(val => ({
+              map((val) => ({
                 val,
-                __akitaKey: prop
+                __akitaKey: prop,
               }))
             )
         )
@@ -124,7 +124,7 @@ export class DirtyCheckPlugin<State = any> extends AkitaPlugin<State> {
       .subscribe((currentState: any[]) => {
         if (isUndefined(this.head)) return;
         /** __akitaKey is used to determine if we are tracking a specific property or a store change */
-        const isChange = currentState.some(state => {
+        const isChange = currentState.some((state) => {
           const head = state.__akitaKey ? this.head[state.__akitaKey as any] : this.head;
           const compareTo = state.__akitaKey ? state.val : state;
 
@@ -148,12 +148,9 @@ export class DirtyCheckPlugin<State = any> extends AkitaPlugin<State> {
   }
 
   private getWatchedValues(source: State): Partial<State> {
-    return (this.params.watchProperty as (keyof State)[]).reduce(
-      (watched, prop) => {
-        watched[prop] = source[prop];
-        return watched;
-      },
-      {} as Partial<State>
-    );
+    return (this.params.watchProperty as (keyof State)[]).reduce((watched, prop) => {
+      watched[prop] = source[prop];
+      return watched;
+    }, {} as Partial<State>);
   }
 }
