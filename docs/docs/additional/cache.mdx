@@ -22,7 +22,7 @@ export class ProductsService {
 
   getProducts() {
     const request$ = this.http.get().pipe(
-      tap(products) => productsStore.set(products)
+      tap(products => productsStore.set(products)
     );
 
     return cacheable(this.productsStore, request$);
