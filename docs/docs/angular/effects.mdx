@@ -82,6 +82,9 @@ export class NavigationEffects {
 }
 ```
 
+#### The parameter `dispatch`
+This parameter dictates if the effect can dispatch an action. Set `true` if you want the effect to dispatch an action. Set to `false` or omit if the effect should not dispatch any action.
+
 ### Possible use case
 
 This is one possible use case for an action inside a guard to initialize fetching of a navigation.
