@@ -12,8 +12,8 @@ describe('<%= classify(name) %>Service', () => {
       imports: [ ]
     });
 
-    <%= camelize(name) %>Service = TestBed.get(<%= classify(name) %>Service);
-    <%= camelize(name) %>Store = TestBed.get(<%= classify(name) %>Store);
+    <%= camelize(name) %>Service = TestBed.inject(<%= classify(name) %>Service);
+    <%= camelize(name) %>Store = TestBed.inject(<%= classify(name) %>Store);
   });
 
   it('should be created', () => {
