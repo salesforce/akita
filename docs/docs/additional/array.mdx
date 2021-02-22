@@ -59,7 +59,7 @@ articlesStore.update(1, ({ comments }) => ({
 import { arrayUpdate } from '@datorama/akita';
 
 articlesStore.update(1, ({ comments }) => ({
-  comments: arrayUpdate(comments, id/s, { text: 'New text' })
+  comments: arrayUpdate(comments, id, { text: 'New text' })
 }));
 
 // Update by predicate
