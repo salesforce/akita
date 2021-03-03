@@ -23,7 +23,7 @@ export class StateHistoryPlugin<State = any> extends AkitaPlugin<State> {
   private history = {
     past: [],
     present: null,
-    future: []
+    future: [],
   };
 
   /** Skip the update when redo/undo */
@@ -38,7 +38,7 @@ export class StateHistoryPlugin<State = any> extends AkitaPlugin<State> {
 
   constructor(protected query: Queries<State>, private params: StateHistoryParams = {}, private _entityId?: any) {
     super(query, {
-      resetFn: () => this.clear()
+      resetFn: () => this.clear(),
     });
     params.maxAge = !!params.maxAge ? params.maxAge : 10;
     params.comparator = params.comparator || (() => true);
@@ -216,7 +216,7 @@ export class StateHistoryPlugin<State = any> extends AkitaPlugin<State> {
       : {
           past: [],
           present: null,
-          future: []
+          future: [],
         };
     this.updateHasHistory();
   }
@@ -235,7 +235,7 @@ export class StateHistoryPlugin<State = any> extends AkitaPlugin<State> {
   private update(action = 'Undo') {
     this.skipUpdate = true;
     logAction(`@StateHistory - ${action}`);
-    this.updateStore(this.history.present, this._entityId, this.property);
+    this.updateStore(this.history.present, this._entityId, this.property, true);
     this.updateHasHistory();
     this.skipUpdate = false;
   }

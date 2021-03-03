@@ -1,3 +1,4 @@
+import { EntityStore } from '../entityStore';
 import { QueryEntity } from '../queryEntity';
 import { Query } from '../query';
 import { filterNil } from '../filterNil';
@@ -42,7 +43,7 @@ export abstract class AkitaPlugin<State = any> {
     }
 
     if (property) {
-      return this.getQuery().select(state => getValue(state, this.withStoreName(property)));
+      return this.getQuery().select((state) => getValue(state, this.withStoreName(property)));
     }
 
     return this.getQuery().select();
@@ -71,17 +72,23 @@ export abstract class AkitaPlugin<State = any> {
   }
 
   /** This method is responsible for updating the store or one entity; it can be the whole store or one entity. */
-  protected updateStore(newState, entityId?, property?: string) {
+  protected updateStore(newState, entityId?, property?: string, replace = false) {
     if (this.isEntityBased(entityId)) {
-      this.getStore().update(entityId, newState);
+      const store = this.getStore() as EntityStore;
+
+      replace ? store.replace(entityId, newState) : store.update(entityId, newState);
     } else {
       if (property) {
-        this.getStore()._setState(state => {
-          return setValue(state, this.withStoreName(property), newState);
+        this.getStore()._setState((state) => {
+          return setValue(state, this.withStoreName(property), newState, true);
         });
+
         return;
       }
-      this.getStore()._setState(state => ({ ...state, ...newState }));
+
+      const nextState = replace ? newState : (state) => ({ ...state, ...newState });
+
+      this.getStore()._setState(nextState);
     }
   }
 
