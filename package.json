@@ -7,6 +7,9 @@
     "npm": "please-use-yarn",
     "yarn": ">= 1.22.0"
   },
+  "workspaces": [
+    "libs/*"
+  ],
   "scripts": {
     "affected": "nx affected",
     "affected:apps": "nx affected:apps",
@@ -83,9 +86,6 @@
     "helpful-decorators": "^2.1.0",
     "lodash": "^4.17.21",
     "rxjs": "6.6.3",
-    "schematics-utilities": "2.0.2",
-    "ts-action": "^11.0.0",
-    "ts-action-operators": "^9.1.1",
     "tslib": "^2.0.0",
     "zone.js": "~0.11.4"
   },
