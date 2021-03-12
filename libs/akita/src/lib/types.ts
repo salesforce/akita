@@ -59,4 +59,3 @@ export type getQueryEntityState<T extends QueryEntity<any>> = T extends QueryEnt
 
 export type ArrayFuncs = ((...a: any[]) => any)[];
 export type ReturnTypes<T extends ArrayFuncs> = { [P in keyof T]: T[P] extends (...a: any[]) => infer R ? R : never };
-export type Diff<T, U> = T extends U ? never : T;

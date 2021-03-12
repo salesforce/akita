@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { filterNil, Query } from '@datorama/akita';
+import { filterNilValue, Query } from '@datorama/akita';
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map, pluck } from 'rxjs/operators';
 import { RouterState, RouterStore } from './router.store';
@@ -7,7 +7,7 @@ import { RouterState, RouterStore } from './router.store';
 function slice(section: string) {
   return (source: Observable<RouterState>) => {
     return source.pipe(map((data) => data.state)).pipe(
-      filterNil,
+      filterNilValue(),
       map((state) => state[section])
     );
   };
