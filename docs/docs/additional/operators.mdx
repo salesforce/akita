@@ -2,13 +2,13 @@
 title: Custom Operators
 ---
 
-### `filterNil`
+### `filterNilValue`
 Filters `undefined` or `null` values:
 
 ```ts
-import { filterNil } from '@datorama/akita';
+import { filterNilValue } from '@datorama/akita';
 
-query.selectEntity(1).pipe(filterNil).subscribe();
+query.selectEntity(1).pipe(filterNilValue()).subscribe();
 ```
 
 ### `setLoading`

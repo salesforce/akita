@@ -1,7 +1,7 @@
 import { EntityStore } from '../entityStore';
 import { QueryEntity } from '../queryEntity';
 import { Query } from '../query';
-import { filterNil } from '../filterNil';
+import { filterNilValue } from '../filterNil';
 import { toBoolean } from '../toBoolean';
 import { getAkitaConfig } from '../config';
 import { getValue } from '../getValueByString';
@@ -39,7 +39,7 @@ export abstract class AkitaPlugin<State = any> {
   /** This method is responsible for selecting the source; it can be the whole store or one entity. */
   protected selectSource(entityId: any, property?: string) {
     if (this.isEntityBased(entityId)) {
-      return (this.getQuery() as QueryEntity<State>).selectEntity(entityId).pipe(filterNil);
+      return (this.getQuery() as QueryEntity<State>).selectEntity(entityId).pipe(filterNilValue());
     }
 
     if (property) {

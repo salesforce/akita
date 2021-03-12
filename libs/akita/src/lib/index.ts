@@ -4,7 +4,7 @@ export { QueryEntity, EntityUIQuery } from './queryEntity';
 export { Query } from './query';
 export { Store } from './store';
 export { applyTransaction, transaction, commit, endBatch, isTransactionInProcess, startBatch, TransactionManager, transactionManager, withTransaction } from './transaction';
-export { filterNil } from './filterNil';
+export { filterNil, filterNilValue } from './filterNil';
 export { DEFAULT_ID_KEY } from './defaultIDKey';
 export { action, setAction, setSkipAction, logAction, currentAction, resetCustomAction } from './actions';
 export { SnapshotManager, snapshotManager } from './snapshotManager';
