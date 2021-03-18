@@ -91,6 +91,73 @@ You can also track a specific store's key. For example:
 persistState({ include: ['auth.token'] });
 ```
 
+## Separate branch in storage
+By default when you provide `persistStorage`, it means that all stores would be persisted under one key in `localStorage` or other storage.
+```ts
+@Injectable({providedIn: 'root'})
+@StoreConfig({name: 'settings'})
+export class SettingsStore extends Store<SettingsState> {
+    constructor() {
+        super();
+    }
+}
+
+@Injectable({providedIn: 'root'})
+@StoreConfig({name: 'users'})
+export class UsersStore extends Store<UsersState> {
+    constructor() {
+        super(createInitialState());
+    }
+}
+
+export const persistStorage = persistState({
+    include: [
+        'settings',
+        'users',
+    ],
+    key: 'myStore'
+});
+
+const providers = [{ provide: 'persistStorage', useValue: storage }];
+```
+In the example, all stores data would be saved in one `localStorage` item with key `myStore`;
+
+But, you also can provide a storage which would be saved in the separate `localStorage` item:
+```ts
+@Injectable({providedIn: 'root'})
+@StoreConfig({name: 'settings'})
+export class SettingsStore extends Store<SettingsState> {
+    constructor() {
+        super();
+    }
+}
+
+export const settingsPersistStorage = persistState({
+    include: ['settings'],
+    key: 'settingsStore'
+});
+
+
+@Injectable({providedIn: 'root'})
+@StoreConfig({name: 'users'})
+export class UsersStore extends Store<UsersState> {
+    constructor() {
+        super(createInitialState());
+    }
+}
+
+export const usersPersistStorage = persistState({
+    include: ['users'],
+    key: 'usersStore'
+});
+
+const providers = [
+    { provide: 'persistStorage', useValue: settingsPersistStorage, multi: true },
+    { provide: 'persistStorage', useValue: usersPersistStorage, multi: true }
+];
+```
+Now, `SettingsStore` would be saved in `localStorage` under key `settingsStore` and `UsersStore` under `usersStore`.
+
 ## Custom Hooks
 You can use the `preStorageUpdate`, and `preStoreUpdate` hooks to get more control on the state.
 For example, here is how we can save only specific keys from the `auth` state:
