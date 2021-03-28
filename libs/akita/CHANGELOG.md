@@ -2,11 +2,7 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-## [7.0.0](https://github.com/datorama/akita/compare/akita-v5.3.0...akita-v7.0.0) (2021-03-28)
-
-### ⚠ BREAKING CHANGES
-
-- 🧨 all libs depends on tslib v2
+## [6.1.3](https://github.com/datorama/akita/compare/akita-v5.3.0...akita-v7.0.0) (2021-03-28)
 
 ### Features
 

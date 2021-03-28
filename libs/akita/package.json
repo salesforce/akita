@@ -1,6 +1,6 @@
 {
   "name": "@datorama/akita",
-  "version": "7.0.0",
+  "version": "6.1.3",
   "description": "A Reactive State Management Tailored-Made for JS Applications",
   "keywords": [
     "angular",
