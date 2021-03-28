@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [7.0.0](https://github.com/datorama/akita/compare/akita-v5.3.0...akita-v7.0.0) (2021-03-28)
+
+### ⚠ BREAKING CHANGES
+
+- 🧨 all libs depends on tslib v2
+
+### Features
+
+- 🎸 add setLoadingAndError operator ([77ad1bd](https://github.com/datorama/akita/commit/77ad1bd94b999e2e1167fe6b97907915a31521e8))
+- 🎸 upgrade typescript ([07a87b2](https://github.com/datorama/akita/commit/07a87b2511a7f4d0e70f92f79ea9571744992494))
+- make DirtyCheck's getHead() public ([#610](https://github.com/datorama/akita/issues/610)) ([e6f0b5d](https://github.com/datorama/akita/commit/e6f0b5d83684e9ad84ddbf065c6c571912b2c50c)), closes [#593](https://github.com/datorama/akita/issues/593)
+
+### Bug Fixes
+
+- 🐛 add return types ([73fb584](https://github.com/datorama/akita/commit/73fb5840130cad6cbf07ad7eddc57e9c44f9134d))
+- 🐛 change the update method in the StateHistoryPlugin ([#635](https://github.com/datorama/akita/issues/635)) ([ce117e1](https://github.com/datorama/akita/commit/ce117e19c8e0b8ffc8baab6537d621d2909ce5b6))
+- 🐛 export the operator ([2c3cff9](https://github.com/datorama/akita/commit/2c3cff9198ebae7a7951d20a023f81dc17c54837))
+- 🐛 log store name ([268f2a5](https://github.com/datorama/akita/commit/268f2a5e9b2950ae4db86b80b11f42e4c40e0cf4))
+- 🐛 make config immutable in paginator ([66da4b4](https://github.com/datorama/akita/commit/66da4b4e87811ea2e3cc500d998087e6cea357a8)), closes [#648](https://github.com/datorama/akita/issues/648)
+- filterNil removes undefined from resulting types in strict mode ([#638](https://github.com/datorama/akita/issues/638)) ([237e037](https://github.com/datorama/akita/commit/237e037a344a02b27a6a1b8296a4c2bb6a0bb003)), closes [#606](https://github.com/datorama/akita/issues/606)
+
 ## [5.3.0](https://github.com/datorama/akita/compare/akita-v5.2.6...akita-v5.3.0) (2020-11-28)
 
 ### Features
