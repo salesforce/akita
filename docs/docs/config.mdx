@@ -1,0 +1,71 @@
+---
+title: Store Config
+---
+
+## Production Mode
+In dev mode, Akita will deep freeze the store's value to avoid store mutations. Moreover, it will expose a reference to the stores through `window.$$stores` property, and to the queries through `window.$$queries`.
+
+In production, you should **disable** this feature by calling the `enableAkitaProdMode()` function in order to get the store to operate optimally:
+
+```ts
+import { enableAkitaProdMode } from '@datorama/akita';
+
+if (environment.production) {
+  enableAkitaProdMode();
+}
+```
+
+## StoreConfig Decorator
+
+### `name`
+
+The name of the store. The name is a required parameter and must be unique for the entire application:
+
+```ts title="session.store.ts"
+@StoreConfig({ name: 'session' })
+export class SessionStore extends Store<Session> {
+  constructor() {
+    super(initialState);
+  }
+}
+```
+
+### `resettable`
+Whether to allow a `reset()` functionality. This means that you'll be able to call `store.reset()` any time to go back to the store's initial state value. (`false` by default)
+```ts title="session.store.ts"
+@StoreConfig({ name: 'session', resettable: true })
+export class SessionStore extends Store<Session> {
+  constructor() {
+    super(initialState);
+  }
+}
+```
+
+
+### `deepFreezeFn`
+function customDeepFreeze(state) {
+  return freezedState;
+}
+
+```ts title="session.store.ts"
+@StoreConfig({ name: 'session', deepFreezeFn: customDeepFreeze })
+export class SessionStore extends Store<Session> {
+  constructor() {
+    super(initialState);
+  }
+}
+```
+
+### `cache`
+See [caching support](additional/cache.mdx) section.
+
+### `idKey`
+A custom `idKey` for `EntityStore` - see [EntityId](entities/entity-store.mdx#entity-id) section.
+
+:::info
+You can also provide the `options` in the constructor:
+
+```ts
+new Store(initialState, options)
+```
+:::

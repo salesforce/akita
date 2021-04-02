@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "outDir": "../../dist/out-tsc/akita-schematics",
+    "declaration": true,
+    "rootDir": "./src"
+  },
+  "exclude": ["**/*.spec.ts", "**/*/files/**/*"]
+}

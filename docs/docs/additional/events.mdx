@@ -1,0 +1,42 @@
+---
+title: Event-based APIs
+---
+
+One of the recurring requests we got, was to simplify and improve the experience of working with event-based APIs such as web-sockets.
+
+To make it easier for you, we’ve added a new API method — `runStoreAction` and `runEntityStoreAction`:
+
+```ts
+import { runStoreAction, StoreActions, runEntityStoreAction, EntityStoreActions  } from '@datorama/akita';
+
+runStoreAction(BooksStore, StoreAction.Update, update => update({ filter: 'COMPLETE' }));
+
+// Or use a string
+runStoreAction('books', StoreAction.Update, update => update({ filter: 'COMPLETE' }));
+
+runEntityStoreAction(BooksStore, EntityStoreAction.SetEntities, set => set([
+  { id: 1 },
+  { id: 2 }
+]));
+
+runEntityStoreAction(BooksStore, EntityStoreAction.AddEntities, add => add({ id: 1 }));
+
+runEntityStoreAction(BooksStore, EntityStoreAction.UpdateEntities, update => update(2, { title: 'New title' }));
+
+runEntityStoreAction(BooksStore, EntityStoreAction.RemoveEntities, remove => remove(2));
+
+runEntityStoreAction(BooksStore, EntityStoreAction.UpsertEntities, upsert => upsert([2, 3],
+  { title: 'New Title' }, (id, newState) => ({ id, ...newState, price: 0 })));
+
+runEntityStoreAction(BooksStore, EntityStoreAction.UpsertManyEntities, upsertMany => upsertMany([
+  { id: 2, title: 'New title', price: 0 },
+  { id: 4, title: 'Another title', price: 0 },
+));
+```
+
+The `runStoreAction()` and `runEntityStoreAction()` takes the store’s class or name, the store action to perform and an operation
+callback. The first argument of the operation callback is the store operator specified by the action. You can determine
+these parameters from your socket connection and update any store you want.
+
+By using the store name and not the store class as the first argument, type checking of the respective action arguments is disabled.
+This can be useful when validation of untyped data is unnecessary and can be passed directly to the activity.

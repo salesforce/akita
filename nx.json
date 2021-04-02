@@ -1,0 +1,47 @@
+{
+  "npmScope": "datorama",
+  "implicitDependencies": {
+    "workspace.json": "*",
+    "package.json": {
+      "dependencies": "*",
+      "devDependencies": "*"
+    },
+    "tsconfig.json": "*",
+    "tslint.json": "*",
+    "nx.json": "*"
+  },
+  "projects": {
+    "akita": {
+      "tags": ["core"]
+    },
+    "akita-ng-entity-service": {
+      "tags": ["plugin"]
+    },
+    "akita-ng-router-store": {
+      "tags": ["plugin"]
+    },
+    "akita-ng-devtools": {
+      "tags": ["plugin"]
+    },
+    "akita-ng-forms-manager": {
+      "tags": ["plugin"]
+    },
+    "akita-schematics": {
+      "tags": ["schematics"]
+    },
+    "angular-store-app": {
+      "tags": ["playground"]
+    },
+    "akita-ng-effects": {
+      "tags": ["plugin"]
+    }
+  },
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nrwl/workspace/tasks-runners/default",
+      "options": {
+        "cacheableOperations": ["build", "lint", "test", "e2e"]
+      }
+    }
+  }
+}

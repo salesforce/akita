@@ -1,6 +1,0 @@
-{
-  "dest": "../../dist/ng-forms-manager",
-  "lib": {
-    "entryFile": "src/public-api.ts"
-  }
-}

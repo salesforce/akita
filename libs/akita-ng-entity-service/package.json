@@ -1,0 +1,26 @@
+{
+  "name": "@datorama/akita-ng-entity-service",
+  "version": "6.0.0",
+  "description": "Akita entity service",
+  "keywords": [
+    "angular",
+    "akita"
+  ],
+  "homepage": "https://github.com/datorama/akita/tree/master/libs/akita-ng-entity-service#readme",
+  "bugs": {
+    "url": "https://github.com/datorama/akita/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/datorama/akita",
+    "directory": "libs/akita-ng-entity-service"
+  },
+  "license": "Apache-2.0",
+  "author": "Netanel Basal",
+  "peerDependencies": {
+    "@datorama/akita": ">= 6.0.0",
+    "rxjs": ">= 6.1.0 < 7",
+    "@angular/core": ">= 8.0.0",
+    "@angular/common": ">= 8.0.0"
+  }
+}

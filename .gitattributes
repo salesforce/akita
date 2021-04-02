@@ -1,0 +1,8 @@
+# prettier v2 dictates LF
+# https://prettier.io/docs/en/options.html#end-of-line
+* text=auto eol=lf
+
+.vscode/*.json linguist-language=jsonc
+tslint.json linguist-language=jsonc
+tsconfig.json linguist-language=jsonc
+tsconfig.*.json linguist-language=jsonc

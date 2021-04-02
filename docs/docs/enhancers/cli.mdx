@@ -1,0 +1,53 @@
+---
+title: Akita CLI
+---
+
+Akita offers a CLI tool, enabling you to generate stores based on the specifications quickly.
+
+Install it via npm:
+
+```bash
+npm install @datorama/akita-cli -g
+```
+
+Now you can run the `akita` command.
+
+## Options
+
+## `basePath`
+
+By default, the prompt is set to the current directory. To change it, set the `basePath`:
+
+```json title="package.json"
+"akitaCli": {
+  "basePath": "./playground/src/app/"
+}
+```
+The path should be relative to the `package.json`.
+
+## `template`
+The default template is for plain JS applications. To change it set the `template` property:
+```json title="package.json"
+"akitaCli": {
+  "template": "js|angular|ts"
+}
+```
+
+## `idKey`
+The idKey for `EntityStore`:
+
+```json title="package.json"
+"akitaCli": {
+  "idKey": "_id"
+}
+```
+
+## `customFolderName`
+Whether to provide custom folder name. Default is `state`:
+```json title="package.json"
+"akitaCli": {
+  "customFolderName": "true"
+}
+```
+
+<img src="https://media.giphy.com/media/dCDq5fL8AoldTz28L7/giphy.gif" class="gif" />

@@ -1,0 +1,81 @@
+---
+title: Devtools
+---
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+Akita provides integration with the Redux dev-tools chrome extension. 
+
+<img src={useBaseUrl('static/img/devtools.gif')} class="gif" />
+
+## Usage
+Install the Redux extension from the supported App stores ( [Chrome](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=en), [Firefox](https://addons.mozilla.org/en-US/firefox/addon/reduxdevtools/) ).
+
+Install the devtools package:
+
+```bash
+npm i @datorama/akita-ngdevtools
+```
+
+And add the `AkitaNgDevtools` module:
+
+```ts
+import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
+
+@NgModule({
+  imports: [environment.production ? [] : AkitaNgDevtools.forRoot(options?)]
+  bootstrap: [AppComponent]
+})
+export class AppModule {}
+```
+
+If you're not using Angular, you can call the `akitaDevtools` function directly:
+
+```ts
+import { akitaDevtools } from '@datorama/akita';
+
+akitaDevtools(options?);
+```
+
+## Options
+The plugin supports the following options passed as the second function parameter:
+
+`maxAge`: Maximum amount of actions to be stored in the history tree.
+
+`actionsBlacklist`: Disallow the passed actions.
+
+`actionsWhitelist`: Allow only the passed actions.
+
+`storesWhitelist`: Display only the passed stores.
+
+`logTrace`: Whether to output a console.trace() for each action in the console.
+
+`shallow` - Whether to perform a deep compare before showing an action.
+sortAlphabetically
+
+## Custom Actions
+By default, Akita will do its best to describe the actions that occurred, but you can always define your own actions for debugging purposes. For example:
+
+```ts
+import { action } from '@datorama/akita';
+
+@action('Update filter')
+updateFilter(filter: VISIBILITY_FILTER) {
+  todosStore.update({ filter });
+}
+```
+
+Or as a function:
+```ts
+import { logAction } from '@datorama/akita';
+
+updateFilter(filter: VISIBILITY_FILTER) {
+  logAction('Update filter');
+  todosStore.update({ filter });
+}
+```
+
+:::warning
+Custom actions will only be dispatched upon a store update.
+:::
+

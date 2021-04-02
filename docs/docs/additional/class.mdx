@@ -1,0 +1,43 @@
+---
+title: Class Support
+---
+
+Akita also supports using a `class` as the underlying value instead of a plain object. In most cases, we don't recommend doing so for the following reasons:
+
+1. We can’t store classes in the database. A typical example of this is when you need to save the store snapshot.
+2. Classes are harder to use with web workers, due to serialization concerns.
+3. There are various third-party tools (for example `immer`) that only work with plain objects.
+
+However, sometimes they can be useful. Here's an example that uses a class:
+
+```ts title="user.model.ts"
+export class User {
+  constructor({ firstName, lastName, token }: Partial<User>) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.token = token;
+  }
+
+  get name() {
+    return `${this.firstName} ${this.lastName}`;
+  }
+}
+```
+
+```ts title="user.store.ts"
+export interface UserState extends EntityState<User> {}
+
+@StoreConfig({ name: 'user' })
+export class UserStore extends EntityStore<UserState> {
+  constructor() {
+    super();
+  }
+}
+```
+
+:::warning
+The class constructor should accept **only** one parameter which is a plain object
+:::
+
+In this case, when you call `update()`, `add()` or `set()`, Akita will take care to instantiate a new `User` by merging the entity's current state with the new parameters.
+

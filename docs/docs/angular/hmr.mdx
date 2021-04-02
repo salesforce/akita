@@ -1,0 +1,28 @@
+---
+title: HMR
+---
+
+Follow the official [docs](https://github.com/angular/angular-cli/wiki/stories-configure-hmr) instructions to add hmr support for your project.
+
+Add the `hmrEnabled` property in the following places:
+
+```ts {8,15} title="hmr.ts"
+export const hmrBootstrap = (
+  module: any,
+  bootstrap: () => Promise<NgModuleRef<any>>
+) => {
+  let ngModule: NgModuleRef<any>;
+  module.hot.accept();
+  bootstrap().then(mod => (ngModule = mod));
+  (window as any).hmrEnabled = true;
+  module.hot.dispose(() => {
+    const appRef: ApplicationRef = ngModule.injector.get(ApplicationRef);
+    const elements = appRef.components.map(c => c.location.nativeElement);
+    const makeVisible = createNewHosts(elements);
+    ngModule.destroy();
+    makeVisible();
+    (window as any).hmrEnabled = false;
+  });
+};
+```
+
