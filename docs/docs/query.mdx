@@ -9,7 +9,7 @@ Queries can talk to other queries, join entities from different stores, etc. To 
 
 ```ts title="session.query.ts"
 import { Query } from '@datorama/akita';
-import { SessionState } from './session.store';
+import { SessionState, SessionStore } from './session.store';
 
 export class SessionQuery extends Query<SessionState> {  
   constructor(protected store: SessionStore) {
