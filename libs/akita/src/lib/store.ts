@@ -226,7 +226,8 @@ export class Store<S = any> {
 
   /**
    *
-   * Update the store's value
+   * Update the store's value, only replacing the specified properties
+   *
    *
    * @example
    *
@@ -244,18 +245,49 @@ export class Store<S = any> {
   update(state: Partial<S>);
   update(stateOrCallback: Partial<S> | UpdateStateCallback<S>) {
     isDev() && setAction('Update');
+    const withHookFn = (curr: S, newS: S) => this.akitaPreUpdate(curr,  { ...curr, ...newS } as S);
+    this._setState(this.prepareNewState(stateOrCallback, this._value(), withHookFn));
+  }
 
-    let newState;
-    const currentState = this._value();
-    if (isFunction(stateOrCallback)) {
-      newState = isFunction(this._producerFn) ? this._producerFn(currentState, stateOrCallback) : stateOrCallback(currentState);
-    } else {
-      newState = stateOrCallback;
+  /**
+   *
+   * Set the store's value, replacing the previous value.
+   *
+   * @example
+   *
+   * this.store.update(state => {
+   *   return {...}
+   * })
+   */
+  set(stateCallback: UpdateStateCallback<S>);
+  /**
+   *
+   * @example
+   *
+   *  this.store.update({ token: token })
+   */
+  set(state: S);
+  set(stateOrCallback: S | UpdateStateCallback<S>): void {
+    isDev() && setAction('Set');
+    const withHookFn = (curr: S, newS: S) => this.akitaPreSet(curr,  newS as S);
+    this._setState(this.prepareNewState(stateOrCallback, this._value(), withHookFn));
+  }
+
+  private prepareNewState<S>(stateOrCallback: Partial<S> | UpdateStateCallback<S>, currentState: S, withHookFn: (c: S, n: S) => S): S {
+    const constructNewState = (x: Partial<S> | UpdateStateCallback<S>, cs: S) => {
+      if (isFunction(x)) {
+        return isFunction(this._producerFn) ? this._producerFn(currentState, x) : x(cs);
+      } else {
+        return x;
+      }
+    }
+    const resolveFinalState = (currentState: S, withHook: S): S => {
+      return isPlainObject(currentState) ? withHook : new (currentState as any).constructor(withHook);
     }
 
-    const withHook = this.akitaPreUpdate(currentState, { ...currentState, ...newState } as S);
-    const resolved = isPlainObject(currentState) ? withHook : new (currentState as any).constructor(withHook);
-    this._setState(resolved);
+    const newState = constructNewState(stateOrCallback, currentState);
+    const withHook = withHookFn(currentState, newState);
+    return resolveFinalState(currentState, withHook);
   }
 
   updateStoreConfig(newOptions: UpdatableStoreConfigOptions) {
@@ -264,6 +296,11 @@ export class Store<S = any> {
 
   // @internal
   akitaPreUpdate(_: Readonly<S>, nextState: Readonly<S>): S {
+    return nextState;
+  }
+
+  // @internal
+  akitaPreSet(_: Readonly<S>, nextState: Readonly<S>): S {
     return nextState;
   }
 
