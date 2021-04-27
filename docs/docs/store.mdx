@@ -63,9 +63,9 @@ export class SessionService {
 }
 ```
 
-### `set()`
+### `overwrite()`
 
-When you don't just want to update the current store state but replace the state completely, you can call the `set()` method passing the new `state`:
+When you don't just want to update the current store state but replace the state completely, you can call the `overwrite()` method passing the new `state`:
 
 ```ts title="session.service.ts"
 import { SessionStore } from './session.store';
@@ -74,12 +74,12 @@ export class SessionService {
   constructor(private sessionStore: SessionStore) {}
 
   updateUserName(newName: string) {
-    this.sessionStore.set({ name: newName });
+    this.sessionStore.overwrite({ name: newName });
   }
 }
 ```
 
-As with `update()` the `set()` method also has a second option which gives you more control. It receives a `callback` function, which gets the current state, and returns a new **immutable** state, which will be the new value of the store. For example:
+As with `update()` the `overwrite()` method also has a second option which gives you more control. It receives a `callback` function, which gets the current state, and returns a new **immutable** state, which will be the new value of the store. For example:
 
 ```ts title="session.service.ts"
 import { SessionStore } from './session.store';
@@ -88,14 +88,14 @@ export class SessionService {
   constructor(private sessionStore: SessionStore) {}
 
   updateUserName(newName: string) {
-    this.sessionStore.set(state => ({
+    this.sessionStore.overwrite(state => ({
       name: newName
     }));
   }
 }
 ```
 
-You should use `set()` over `update()` when you want to completely replace the current state at the top level.
+You should use `overwrite()` over `update()` when you want to completely replace the current state at the top level.
 
 ```ts title="session.store.ts"
 type SessionState = SessionStateAuthenticated | SessionStateUnauthenticated;
@@ -138,7 +138,7 @@ Using the above state model and value of current state, if we call `this.store.u
 }
 ```
 
-Our value for tag has been updated but the user value from our previous state has stayed, this could lead to unintended side effects so in this case `this.store.set({ _tag: 'session-state-unauthenticated' })` may be a better option. When we use the `set()` method the following is the result:
+Our value for tag has been updated, but the user value from our previous state has stayed, this could lead to unintended side effects so in this case `this.store.overwrite({ _tag: 'session-state-unauthenticated' })` may be a better option. When we use the `overwrite()` method the following is the result:
 
 ```json "using the update() method"
 {

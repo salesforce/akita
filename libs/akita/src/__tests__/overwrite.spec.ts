@@ -29,19 +29,19 @@ class ExampleStore extends Store<ExampleState> {
 
 const exampleStore = new ExampleStore();
 
-describe('Store Set', () => {
+describe('Store Overwrite', () => {
   beforeEach(() => {
     exampleStore.reset();
   });
 
-  it('should set the store value replacing the previous state using a state object', () => {
-    exampleStore.set({ _tag: 'b', uniqueToB: 'This value is unique to b' });
+  it('should overwrite the store value replacing the previous state using a state object', () => {
+    exampleStore.overwrite({ _tag: 'b', uniqueToB: 'This value is unique to b' });
     expect(exampleStore._value()).toBeTruthy();
     expect(exampleStore._value()).toEqual({_tag: 'b', uniqueToB: 'This value is unique to b'});
   });
 
-  it('should set the store value replacing the previous state using a callback function', () => {
-    exampleStore.set((_) => ({ _tag: 'b', uniqueToB: 'This value is unique to b' }));
+  it('should overwrite the store value replacing the previous state using a callback function', () => {
+    exampleStore.overwrite((_) => ({ _tag: 'b', uniqueToB: 'This value is unique to b' }));
     expect(exampleStore._value()).toBeTruthy();
     expect(exampleStore._value()).toEqual({_tag: 'b', uniqueToB: 'This value is unique to b'});
   });

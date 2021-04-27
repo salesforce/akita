@@ -251,25 +251,25 @@ export class Store<S = any> {
 
   /**
    *
-   * Set the store's value, replacing the previous value.
+   * Overwrite the store's value, replacing the previous value.
    *
    * @example
    *
-   * this.store.update(state => {
+   * this.store.overwrite(state => {
    *   return {...}
    * })
    */
-  set(stateCallback: UpdateStateCallback<S>);
+  overwrite(stateCallback: UpdateStateCallback<S>);
   /**
    *
    * @example
    *
-   *  this.store.update({ token: token })
+   *  this.store.overwrite({ token: token })
    */
-  set(state: S);
-  set(stateOrCallback: S | UpdateStateCallback<S>): void {
-    isDev() && setAction('Set');
-    const withHookFn = (curr: S, newS: S) => this.akitaPreSet(curr,  newS as S);
+  overwrite(state: S);
+  overwrite(stateOrCallback: S | UpdateStateCallback<S>): void {
+    isDev() && setAction('Overwrite');
+    const withHookFn = (curr: S, newS: S) => this.akitaPreOverwrite(curr,  newS as S);
     this._setState(this.prepareNewState(stateOrCallback, this._value(), withHookFn));
   }
 
@@ -300,7 +300,7 @@ export class Store<S = any> {
   }
 
   // @internal
-  akitaPreSet(_: Readonly<S>, nextState: Readonly<S>): S {
+  akitaPreOverwrite(_: Readonly<S>, nextState: Readonly<S>): S {
     return nextState;
   }
 
