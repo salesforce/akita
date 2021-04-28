@@ -245,8 +245,8 @@ export class Store<S = any> {
   update(state: Partial<S>);
   update(stateOrCallback: Partial<S> | UpdateStateCallback<S>) {
     isDev() && setAction('Update');
-    const withHookFn = (curr: S, newS: S) => this.akitaPreUpdate(curr,  { ...curr, ...newS } as S);
-    this._setState(this.prepareNewState(stateOrCallback, this._value(), withHookFn));
+    const hookFn = (curr: Readonly<S>, newS: Readonly<S>) => this.akitaPreUpdate(curr, { ...curr, ...newS } as S);
+    this._setState(this.prepareNewState(stateOrCallback, this._value(), hookFn));
   }
 
   /**
@@ -269,25 +269,19 @@ export class Store<S = any> {
   overwrite(state: S);
   overwrite(stateOrCallback: S | UpdateStateCallback<S>): void {
     isDev() && setAction('Overwrite');
-    const withHookFn = (curr: S, newS: S) => this.akitaPreOverwrite(curr,  newS as S);
-    this._setState(this.prepareNewState(stateOrCallback, this._value(), withHookFn));
+    const hookFn = (curr: Readonly<S>, newS: Readonly<S>) => this.akitaPreOverwrite(curr, newS as S);
+    this._setState(this.prepareNewState(stateOrCallback, this._value(), hookFn));
   }
 
-  private prepareNewState<S>(stateOrCallback: Partial<S> | UpdateStateCallback<S>, currentState: S, withHookFn: (c: S, n: S) => S): S {
-    const constructNewState = (x: Partial<S> | UpdateStateCallback<S>, cs: S) => {
-      if (isFunction(x)) {
-        return isFunction(this._producerFn) ? this._producerFn(currentState, x) : x(cs);
-      } else {
-        return x;
-      }
+  private prepareNewState<S>(stateOrCallback: Partial<S> | UpdateStateCallback<S>, currentState: S, hookFn: (curr: Readonly<S>, newS: Readonly<S>) => S): S {
+    let newState;
+    if (isFunction(stateOrCallback)) {
+      newState = isFunction(this._producerFn) ? this._producerFn(currentState, stateOrCallback) : stateOrCallback(currentState);
+    } else {
+      newState = stateOrCallback;
     }
-    const resolveFinalState = (currentState: S, withHook: S): S => {
-      return isPlainObject(currentState) ? withHook : new (currentState as any).constructor(withHook);
-    }
-
-    const newState = constructNewState(stateOrCallback, currentState);
-    const withHook = withHookFn(currentState, newState);
-    return resolveFinalState(currentState, withHook);
+    const withHook = hookFn(currentState, newState);
+    return isPlainObject(currentState) ? withHook : new (currentState as any).constructor(withHook);
   }
 
   updateStoreConfig(newOptions: UpdatableStoreConfigOptions) {

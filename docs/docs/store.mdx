@@ -73,8 +73,8 @@ import { SessionStore } from './session.store';
 export class SessionService {
   constructor(private sessionStore: SessionStore) {}
 
-  updateUserName(newName: string) {
-    this.sessionStore.overwrite({ name: newName });
+  replaceState(newName: string, newToken: string) {
+    this.sessionStore.overwrite({ name: newName, token: newToken });
   }
 }
 ```
@@ -87,67 +87,16 @@ import { SessionStore } from './session.store';
 export class SessionService {
   constructor(private sessionStore: SessionStore) {}
 
-  updateUserName(newName: string) {
+  replaceState(newName: string, newToken: string) {
     this.sessionStore.overwrite(state => ({
-      name: newName
+      name: newName,
+      token: newToken
     }));
   }
 }
 ```
 
 You should use `overwrite()` over `update()` when you want to completely replace the current state at the top level.
-
-```ts title="session.store.ts"
-type SessionState = SessionStateAuthenticated | SessionStateUnauthenticated;
-
-interface SessionStateAuthenticated {
-  _tag: 'session-state-authenticated';
-  user: User;
-}
-
-interface SessionStateUnauthenticated {
-  _tag: 'session-state-unauthenticated'
-}
-
-interface User {
-  uid: string;
-  displayName: string;
-}
-
-```
-
-```json "current state"
-{
-  "_tag": "session-state-authenticated",
-  "user": {
-    "uid": "123",
-    "displayName": "John Doe"
-  }
-}
-```
-
-Using the above state model and value of current state, if we call `this.store.update({ _tag: 'session-state-unauthenticated' })` our state will be updated to the following:
-
-```json "using the update() method"
-{
-  "_tag": "session-state-unauthenticated",
-  "user": {
-    "uid": "123",
-    "displayName": "John Doe"
-  }
-}
-```
-
-Our value for tag has been updated, but the user value from our previous state has stayed, this could lead to unintended side effects so in this case `this.store.overwrite({ _tag: 'session-state-unauthenticated' })` may be a better option. When we use the `overwrite()` method the following is the result:
-
-```json "using the update() method"
-{
-  "_tag": "session-state-unauthenticated",
-}
-```
-
-We have replaced the previous state completely, leaving behind no unexpected state values.
-
 
 ### `setLoading()`
 
