@@ -1,11 +1,11 @@
-import { ID, IDS, ItemPredicate } from './types';
+import { MonoTypeOperatorFunction, Observable } from 'rxjs';
+import { distinctUntilChanged, map } from 'rxjs/operators';
 import { coerceArray } from './coerceArray';
 import { DEFAULT_ID_KEY } from './defaultIDKey';
-import { distinctUntilChanged, map } from 'rxjs/operators';
-import { MonoTypeOperatorFunction, Observable } from 'rxjs';
 import { isArray } from './isArray';
-import { isFunction } from './isFunction';
 import { isEmpty } from './isEmpty';
+import { isFunction } from './isFunction';
+import { ID, IDS, ItemPredicate } from './types';
 
 // @internal
 export function find<T>(collection: T[], idsOrPredicate: IDS | ItemPredicate, idKey: string) {
@@ -32,11 +32,11 @@ export function find<T>(collection: T[], idsOrPredicate: IDS | ItemPredicate, id
 // @internal
 export function distinctUntilArrayItemChanged<T>(): MonoTypeOperatorFunction<T[]> {
   return distinctUntilChanged((prevCollection: T[], currentCollection: T[]) => {
-    if (prevCollection === currentCollection) {
+    if (prevCollection == currentCollection) {
       return true;
     }
 
-    if (isArray(prevCollection) === false || isArray(currentCollection) === false) {
+    if (!isArray(prevCollection) || !isArray(currentCollection)) {
       return false;
     }
 
@@ -44,28 +44,17 @@ export function distinctUntilArrayItemChanged<T>(): MonoTypeOperatorFunction<T[]
       return true;
     }
 
-    // if item is new in the current collection but not exist in the prev collection
-    const hasNewItem = hasChange(currentCollection, prevCollection);
-
-    if (hasNewItem) {
+    if (prevCollection.length !== currentCollection.length) {
       return false;
     }
 
-    const isOneOfItemReferenceChanged = hasChange(prevCollection, currentCollection);
+    const isOneOfItemReferenceChanged = currentCollection.some((item, i) => {
+      return prevCollection[i] !== item;
+    });
 
     // return false means there is a change and we want to call next()
     return isOneOfItemReferenceChanged === false;
   });
-}
-
-// @internal
-function hasChange<T>(first: T[], second: T[]) {
-  const hasChange = second.some(currentItem => {
-    const oldItem = first.find(prevItem => prevItem === currentItem);
-    return oldItem === undefined;
-  });
-
-  return hasChange;
 }
 
 /**
@@ -95,7 +84,7 @@ export function arrayFind<T>(ids: ID, idKey?: string): (source: Observable<T[]>)
  */
 export function arrayFind<T>(ids: ID[], idKey?: string): (source: Observable<T[]>) => Observable<T[]>;
 export function arrayFind<T>(idsOrPredicate: ID[] | ID | ItemPredicate<T>, idKey?: string): (source: Observable<T[]>) => Observable<T[] | T> {
-  return function(source: Observable<T[]>) {
+  return function (source: Observable<T[]>) {
     return source.pipe(
       map((collection: T[] | undefined | null) => {
         // which means the user deleted the root entity or set the collection to nil
@@ -105,7 +94,7 @@ export function arrayFind<T>(idsOrPredicate: ID[] | ID | ItemPredicate<T>, idKey
         return find(collection, idsOrPredicate, idKey || DEFAULT_ID_KEY);
       }),
       distinctUntilArrayItemChanged(),
-      map(value => {
+      map((value) => {
         if (isArray(value) === false) {
           return value;
         }
