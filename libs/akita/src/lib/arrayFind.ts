@@ -32,7 +32,7 @@ export function find<T>(collection: T[], idsOrPredicate: IDS | ItemPredicate, id
 // @internal
 export function distinctUntilArrayItemChanged<T>(): MonoTypeOperatorFunction<T[]> {
   return distinctUntilChanged((prevCollection: T[], currentCollection: T[]) => {
-    if (prevCollection == currentCollection) {
+    if (prevCollection === currentCollection) {
       return true;
     }
 
