@@ -12,6 +12,7 @@ export interface NgEntityServiceGlobalConfig {
     PUT: HttpMethod;
     DELETE: HttpMethod;
   }>;
+  replayLoader?: boolean;
 }
 
 export const NG_ENTITY_SERVICE_CONFIG = new InjectionToken<NgEntityServiceGlobalConfig>('NgEntityServiceGlobalConfig');
@@ -22,8 +23,8 @@ export const defaultConfig: NgEntityServiceGlobalConfig = {
     POST: HttpMethod.POST,
     PATCH: HttpMethod.PATCH,
     PUT: HttpMethod.PUT,
-    DELETE: HttpMethod.DELETE
-  }
+    DELETE: HttpMethod.DELETE,
+  },
 };
 
 export function mergeDeep(target, ...sources) {
@@ -45,7 +46,7 @@ export function mergeDeep(target, ...sources) {
 }
 
 export function NgEntityServiceConfig(config: NgEntityServiceParams = {}) {
-  return function(constructor) {
+  return function (constructor) {
     if (config.baseUrl) {
       constructor['baseUrl'] = config.baseUrl;
     }

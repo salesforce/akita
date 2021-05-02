@@ -277,7 +277,7 @@ describe('NgEntityService', () => {
           TestServiceWithInlineConfig,
           {
             provide: NG_ENTITY_SERVICE_CONFIG,
-            useValue: {} as NgEntityServiceGlobalConfig,
+            useValue: { replayLoader: true } as NgEntityServiceGlobalConfig,
           },
         ],
         imports: [HttpClientTestingModule],
@@ -688,6 +688,16 @@ describe('NgEntityService', () => {
         ]);
       })
     ));
+
+    it('should receive first truthy emission from late subscription given replay config', (done) => {
+      inject([TestServiceWithInlineConfig, HttpTestingController, NgEntityServiceLoader], (service: TestServiceWithInlineConfig, httpMock: HttpTestingController, loader: NgEntityServiceLoader) => {
+        service.get().subscribe();
+        loader.loadersFor(storeName).get$.subscribe((value) => {
+          expect(value).toEqual(true);
+          done();
+        });
+      })();
+    });
   });
 
   describe('add', () => {
