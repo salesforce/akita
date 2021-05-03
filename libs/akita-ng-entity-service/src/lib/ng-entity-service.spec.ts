@@ -13,6 +13,7 @@ import {
   TestServiceWithMixedConfig,
   TestStore,
 } from './setup';
+import { ReplaySubject } from 'rxjs';
 
 describe('NgEntityService', () => {
   describe('should merge config in order...', () => {
@@ -277,7 +278,7 @@ describe('NgEntityService', () => {
           TestServiceWithInlineConfig,
           {
             provide: NG_ENTITY_SERVICE_CONFIG,
-            useValue: { replayLoader: true } as NgEntityServiceGlobalConfig,
+            useValue: { connector: () => new ReplaySubject(1) } as NgEntityServiceGlobalConfig,
           },
         ],
         imports: [HttpClientTestingModule],
@@ -689,7 +690,7 @@ describe('NgEntityService', () => {
       })
     ));
 
-    it('should receive first truthy emission from late subscription given replay config', (done) => {
+    it('should receive first truthy emission from late subscription given ReplaySubject connector', (done) => {
       inject([TestServiceWithInlineConfig, HttpTestingController, NgEntityServiceLoader], (service: TestServiceWithInlineConfig, httpMock: HttpTestingController, loader: NgEntityServiceLoader) => {
         service.get().subscribe();
         loader.loadersFor(storeName).get$.subscribe((value) => {
