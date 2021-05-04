@@ -5,7 +5,7 @@ import { isFunction } from '@datorama/akita';
 import { HttpMethod } from './ng-entity-service-notifier';
 import { NG_ENTITY_SERVICE_CONFIG, NgEntityServiceGlobalConfig } from '@datorama/akita-ng-entity-service';
 
-type Event = { method: HttpMethod; loading: boolean; storeName: string; entityId?: any };
+export type Event = { method: HttpMethod; loading: boolean; storeName: string; entityId?: any };
 
 @Injectable({ providedIn: 'root' })
 export class NgEntityServiceLoader {
