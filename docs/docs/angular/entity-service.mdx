@@ -242,7 +242,8 @@ The global `config` provide takes the following object:
       baseUrl: 'https://jsonplaceholder.typicode.com',
       httpMethods: {
         PUT: HttpMethod.PATCH
-      }
+      },
+      connector: () => new ReplaySubject(1),
     } as NgEntityServiceGlobalConfig;
   }
 }
