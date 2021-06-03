@@ -37,13 +37,13 @@ When you want to update the store, you can call the `update()` method passing th
 
 ```ts title="session.service.ts"
 import { SessionStore } from './session.store';
- 
+
 export class SessionService {
   constructor(private sessionStore: SessionStore) {}
 
   updateUserName(newName: string) {
     this.sessionStore.update({ name: newName });
-  }  
+  }
 }
 ```
 
@@ -51,7 +51,7 @@ The second `update()` option gives you more control. It receives a `callback` fu
 
 ```ts title="session.service.ts"
 import { SessionStore } from './session.store';
- 
+
 export class SessionService {
   constructor(private sessionStore: SessionStore) {}
 
@@ -59,18 +59,53 @@ export class SessionService {
     this.sessionStore.update(state => ({
       name: newName
     }));
-  }  
+  }
 }
 ```
+
+### `overwrite()`
+
+When you don't just want to update the current store state but replace the state completely, you can call the `overwrite()` method passing the new `state`:
+
+```ts title="session.service.ts"
+import { SessionStore } from './session.store';
+
+export class SessionService {
+  constructor(private sessionStore: SessionStore) {}
+
+  replaceState(newName: string, newToken: string) {
+    this.sessionStore.overwrite({ name: newName, token: newToken });
+  }
+}
+```
+
+As with `update()` the `overwrite()` method also has a second option which gives you more control. It receives a `callback` function, which gets the current state, and returns a new **immutable** state, which will be the new value of the store. For example:
+
+```ts title="session.service.ts"
+import { SessionStore } from './session.store';
+
+export class SessionService {
+  constructor(private sessionStore: SessionStore) {}
+
+  replaceState(newName: string, newToken: string) {
+    this.sessionStore.overwrite(state => ({
+      name: newName,
+      token: newToken
+    }));
+  }
+}
+```
+
+You should use `overwrite()` over `update()` when you want to completely replace the current state at the top level.
 
 ### `setLoading()`
 
 Set the `loading` state:
 ```ts title="session.service.ts"
 import { SessionStore } from './session.store';
- 
+
 export class SessionService {
-  constructor(private sessionStore: SessionStore, 
+  constructor(private sessionStore: SessionStore,
               private http: HttpClient) {}
 
   async updateUserName(newName: string) {
@@ -78,7 +113,7 @@ export class SessionService {
     await this.http(...).toPromise();
     this.sessionStore.update({ name: newName});
     this.sessionStore.setLoading(false);
-  }  
+  }
 }
 ```
 
@@ -87,9 +122,9 @@ Set the `error` state:
 
 ```ts title="session.service.ts"
 import { SessionStore } from './session.store';
- 
+
 export class SessionService {
-  constructor(private sessionStore: SessionStore, 
+  constructor(private sessionStore: SessionStore,
               private http: HttpClient) {}
 
   async updateUserName(newName: string) {
@@ -98,7 +133,7 @@ export class SessionService {
     } catch(error) {
       this.sessionStore.setError(error);
     }
-  }  
+  }
 }
 ```
 

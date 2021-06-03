@@ -226,7 +226,8 @@ export class Store<S = any> {
 
   /**
    *
-   * Update the store's value
+   * Update the store's value, only replacing the specified properties
+   *
    *
    * @example
    *
@@ -244,18 +245,43 @@ export class Store<S = any> {
   update(state: Partial<S>);
   update(stateOrCallback: Partial<S> | UpdateStateCallback<S>) {
     isDev() && setAction('Update');
+    const hookFn = (curr: Readonly<S>, newS: Readonly<S>) => this.akitaPreUpdate(curr, { ...curr, ...newS } as S);
+    this._setState(this.prepareNewState(stateOrCallback, this._value(), hookFn));
+  }
 
+  /**
+   *
+   * Overwrite the store's value, replacing the previous value.
+   *
+   * @example
+   *
+   * this.store.overwrite(state => {
+   *   return {...}
+   * })
+   */
+  overwrite(stateCallback: UpdateStateCallback<S>);
+  /**
+   *
+   * @example
+   *
+   *  this.store.overwrite({ token: token })
+   */
+  overwrite(state: S);
+  overwrite(stateOrCallback: S | UpdateStateCallback<S>): void {
+    isDev() && setAction('Overwrite');
+    const hookFn = (curr: Readonly<S>, newS: Readonly<S>) => this.akitaPreOverwrite(curr, newS as S);
+    this._setState(this.prepareNewState(stateOrCallback, this._value(), hookFn));
+  }
+
+  private prepareNewState<S>(stateOrCallback: Partial<S> | UpdateStateCallback<S>, currentState: S, hookFn: (curr: Readonly<S>, newS: Readonly<S>) => S): S {
     let newState;
-    const currentState = this._value();
     if (isFunction(stateOrCallback)) {
       newState = isFunction(this._producerFn) ? this._producerFn(currentState, stateOrCallback) : stateOrCallback(currentState);
     } else {
       newState = stateOrCallback;
     }
-
-    const withHook = this.akitaPreUpdate(currentState, { ...currentState, ...newState } as S);
-    const resolved = isPlainObject(currentState) ? withHook : new (currentState as any).constructor(withHook);
-    this._setState(resolved);
+    const withHook = hookFn(currentState, newState);
+    return isPlainObject(currentState) ? withHook : new (currentState as any).constructor(withHook);
   }
 
   updateStoreConfig(newOptions: UpdatableStoreConfigOptions) {
@@ -264,6 +290,11 @@ export class Store<S = any> {
 
   // @internal
   akitaPreUpdate(_: Readonly<S>, nextState: Readonly<S>): S {
+    return nextState;
+  }
+
+  // @internal
+  akitaPreOverwrite(_: Readonly<S>, nextState: Readonly<S>): S {
     return nextState;
   }
 
