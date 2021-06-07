@@ -1,9 +1,9 @@
-import { Subject } from 'rxjs';
 import { inject, Injectable } from '@angular/core';
-import { filter, map } from 'rxjs/operators';
 import { isFunction } from '@datorama/akita';
+import { Subject } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { HttpMethod } from './ng-entity-service-notifier';
-import { NG_ENTITY_SERVICE_CONFIG, NgEntityServiceGlobalConfig } from '@datorama/akita-ng-entity-service';
+import { NgEntityServiceGlobalConfig, NG_ENTITY_SERVICE_CONFIG } from './ng-entity-service.config';
 
 export type Event = { method: HttpMethod; loading: boolean; storeName: string; entityId?: any };
 
