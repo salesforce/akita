@@ -10,3 +10,4 @@
 
 - improve `distinctUntilArrayItemChanged` performance
 - update dependency `schematics-utilities`
+- deprecate `ngOnDestroy`

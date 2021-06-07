@@ -240,43 +240,6 @@
       },
       "schematics": {}
     },
-    "akita-ng-forms-manager": {
-      "projectType": "library",
-      "root": "libs/akita-ng-forms-manager",
-      "sourceRoot": "libs/akita-ng-forms-manager/src",
-      "prefix": "datorama",
-      "architect": {
-        "build": {
-          "builder": "@nrwl/angular:package",
-          "options": {
-            "tsConfig": "libs/akita-ng-forms-manager/tsconfig.lib.json",
-            "project": "libs/akita-ng-forms-manager/ng-package.json"
-          },
-          "configurations": {
-            "production": {
-              "tsConfig": "libs/akita-ng-forms-manager/tsconfig.lib.prod.json"
-            }
-          }
-        },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": ["libs/akita-ng-forms-manager/tsconfig.lib.json", "libs/akita-ng-forms-manager/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**", "!libs/akita-ng-forms-manager/**/*"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "libs/akita-ng-forms-manager/jest.config.js",
-            "tsConfig": "libs/akita-ng-forms-manager/tsconfig.spec.json",
-            "passWithNoTests": true,
-            "setupFile": "libs/akita-ng-forms-manager/src/test-setup.ts"
-          }
-        }
-      },
-      "schematics": {}
-    },
     "akita-schematics": {
       "root": "libs/akita-schematics",
       "sourceRoot": "libs/akita-schematics/src",
