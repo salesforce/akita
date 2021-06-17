@@ -15,11 +15,13 @@ const providers = [{ provide: 'persistStorage', useValue: storage }];
 
 platformBrowserDynamic(providers)
   .bootstrapModule(AppModule)
-  .catch(err => console.log(err));
+  .catch((err) => console.log(err));
 ```
 
 ## API
+
 ### `clearStore`
+
 Clear the provided store from storage:
 
 ```ts
@@ -33,14 +35,14 @@ export class TodosService {
 ```
 
 ### `destroy`
+
 Stop sync the state:
 
 ```ts
 import { PersistState } from '@datorama/akita';
 
 export class TodosService {
-  constructor(@Inject('persistStorage') private persistStorage: PersistState) {
-  }
+  constructor(@Inject('persistStorage') private persistStorage: PersistState) {}
 
   stopSync() {
     this.persistStorage.destroy();
@@ -49,16 +51,25 @@ export class TodosService {
 ```
 
 ## Options
+
 ### `storage`
+
 storage strategy to use. This defaults to localStorage but you can pass sessionStorage or anything that implements the StorageEngine API.
 
 ### `key`
+
 The key by which the state is saved.
 
 ### `include`
+
 By default the whole state is saved to storage, use this param to include only the stores you need. It can be a store name or a predicate callback.
 
+:::info
+To store an [entityUIStore](ui.mdx#entity-ui-state) you need to add `UI/{storeName}`.
+:::
+
 ### `select`
+
 By default the whole state is saved to storage, use this param to include only the data you need.
 
 ```ts
@@ -71,94 +82,101 @@ persistState({ select: [selectToken] });
 ```
 
 ### `deserialize`
+
 Custom deserializer. Defaults to JSON.parse
 
 ### `serialize`
+
 Custom serializer, defaults to JSON.stringify
 
 ### `preStorageUpdateOperator`
+
 Custom operators that will run before storage update
 
 ### `enableInNonBrowser`
+
 Whether to enable persistState in a non-browser environment
 
 ### `persistOnDestroy`
+
 Whether to persist the `cache` value of dynamic store upon destroy
 
-
 You can also track a specific store's key. For example:
+
 ```ts
 persistState({ include: ['auth.token'] });
 ```
 
 ## Separate branch in storage
+
 By default when you provide `persistStorage`, it means that all stores would be persisted under one key in `localStorage` or other storage.
+
 ```ts
-@Injectable({providedIn: 'root'})
-@StoreConfig({name: 'settings'})
+@Injectable({ providedIn: 'root' })
+@StoreConfig({ name: 'settings' })
 export class SettingsStore extends Store<SettingsState> {
-    constructor() {
-        super();
-    }
+  constructor() {
+    super();
+  }
 }
 
-@Injectable({providedIn: 'root'})
-@StoreConfig({name: 'users'})
+@Injectable({ providedIn: 'root' })
+@StoreConfig({ name: 'users' })
 export class UsersStore extends Store<UsersState> {
-    constructor() {
-        super(createInitialState());
-    }
+  constructor() {
+    super(createInitialState());
+  }
 }
 
 export const persistStorage = persistState({
-    include: [
-        'settings',
-        'users',
-    ],
-    key: 'myStore'
+  include: ['settings', 'users'],
+  key: 'myStore',
 });
 
 const providers = [{ provide: 'persistStorage', useValue: storage }];
 ```
+
 In the example, all stores data would be saved in one `localStorage` item with key `myStore`;
 
 But, you also can provide a storage which would be saved in the separate `localStorage` item:
+
 ```ts
-@Injectable({providedIn: 'root'})
-@StoreConfig({name: 'settings'})
+@Injectable({ providedIn: 'root' })
+@StoreConfig({ name: 'settings' })
 export class SettingsStore extends Store<SettingsState> {
-    constructor() {
-        super();
-    }
+  constructor() {
+    super();
+  }
 }
 
 export const settingsPersistStorage = persistState({
-    include: ['settings'],
-    key: 'settingsStore'
+  include: ['settings'],
+  key: 'settingsStore',
 });
 
-
-@Injectable({providedIn: 'root'})
-@StoreConfig({name: 'users'})
+@Injectable({ providedIn: 'root' })
+@StoreConfig({ name: 'users' })
 export class UsersStore extends Store<UsersState> {
-    constructor() {
-        super(createInitialState());
-    }
+  constructor() {
+    super(createInitialState());
+  }
 }
 
 export const usersPersistStorage = persistState({
-    include: ['users'],
-    key: 'usersStore'
+  include: ['users'],
+  key: 'usersStore',
 });
 
 const providers = [
-    { provide: 'persistStorage', useValue: settingsPersistStorage, multi: true },
-    { provide: 'persistStorage', useValue: usersPersistStorage, multi: true }
+  { provide: 'persistStorage', useValue: settingsPersistStorage, multi: true },
+  { provide: 'persistStorage', useValue: usersPersistStorage, multi: true },
 ];
 ```
+
 Now, `SettingsStore` would be saved in `localStorage` under key `settingsStore` and `UsersStore` under `usersStore`.
 
 ## Custom Hooks
+
 You can use the `preStorageUpdate`, and `preStoreUpdate` hooks to get more control on the state.
 For example, here is how we can save only specific keys from the `auth` state:
 
@@ -169,7 +187,7 @@ persistState({
     if (storeName === 'auth') {
       return {
         token: state.token,
-        expired: state.expired
+        expired: state.expired,
       };
     }
 
@@ -177,7 +195,7 @@ persistState({
   },
   preStoreUpdate(storeName, state) {
     return state;
-  }
+  },
 });
 ```
 
@@ -189,7 +207,7 @@ persistState({
   preStorageUpdate(storeName, state) {
     if (storeName === 'products') {
       return {
-        sort: state.ui.filters.sort
+        sort: state.ui.filters.sort,
       };
     }
 
@@ -201,19 +219,21 @@ persistState({
         ui: {
           filters: {
             ...initialState.ui.filters,
-            sort: state.sort
-          }
-        }
+            sort: state.sort,
+          },
+        },
       };
     }
 
     return state;
-  }
+  },
 });
 ```
 
 ## Async Support
+
 This gives you the option to save a store’s value to a persistent storage, such as indexDB, websql, or any other asynchronous API. Here’s an example that leverages [localForage](https://github.com/localForage/localForage):
+
 ```ts
 import * as localForage from 'localforage';
 
@@ -221,13 +241,14 @@ localForage.config({
   driver: localForage.INDEXEDDB,
   name: 'Akita',
   version: 1.0,
-  storeName: 'akita-storage'
+  storeName: 'akita-storage',
 });
 
 persistState({ include: ['auth.token', 'todos'], storage: localForage });
 ```
 
 ## selectPersistStateInit
+
 Akita also exposes the `selectPersistStateInit` observable. This observable emits after Akita initialized the stores based on the storage's value. For example:
 
 ```ts
@@ -237,12 +258,9 @@ export class AuthGuard {
   constructor(private router: Router, private authQuery: AuthQuery) {}
 
   canActivate() {
-    return combineLatest([
-      this.authQuery.isLoggedIn$,
-      selectPersistStateInit(),
-    ]).pipe(
+    return combineLatest([this.authQuery.isLoggedIn$, selectPersistStateInit()]).pipe(
       map(([isAuth]) => {
-        if(isAuth) return true;
+        if (isAuth) return true;
         this.router.navigateByUrl('login');
         return false;
       }),
@@ -253,6 +271,7 @@ export class AuthGuard {
 ```
 
 ## Performance Optimization
+
 By default, the plugin will update the storage upon each store's change. Some applications perform multiple updates in a second, and update the storage on each change can be costly.
 
 For such cases, it's recommended to use the `preStorageUpdateOperator` option and add a `debounce`. For example:
@@ -262,6 +281,6 @@ import { debounceTime } from 'rxjs/operators';
 
 persistState({
   include: ['auth.token', 'todos'],
-  preStorageUpdateOperator: () => debounceTime(2000)
+  preStorageUpdateOperator: () => debounceTime(2000),
 });
 ```
