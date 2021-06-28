@@ -35,6 +35,7 @@ export class AkitaNgEffectsModule {
         {
           provide: _FEATURE_EFFECTS,
           useValue: featureEffects,
+          multi: true,
         },
         {
           provide: FEATURE_EFFECT_INSTANCES,
@@ -48,8 +49,8 @@ export class AkitaNgEffectsModule {
 
 export function createEffectInstances(injector: Injector, effects: Type<any>[]): any[] {
   const effectInstances = effects.map((effect) => {
-    return injector.get(effect)
+    return injector.get(effect);
   });
 
-  return effectInstances
+  return effectInstances;
 }
