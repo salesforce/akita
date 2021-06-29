@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Actions } from '@datorama/akita-ng-effects';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class ContactEffects {
-  constructor(private actions$: Actions) {
-  }
+  constructor(private actions$: Actions) {}
 }

@@ -13,16 +13,15 @@ export class ModuleManager implements OnDestroy {
 
   constructor(private actions$: Actions) {}
 
-  addEffectInstance(effectInstance: Type<any>) {
+  addEffectInstance(effectInstance: Type<any>): void {
     this.effectInstanceSources.push(effectInstance);
     this.subscribeToEffects(effectInstance);
   }
 
-  subscribeToEffects(effectInstance: Type<any>) {
+  subscribeToEffects(effectInstance: Type<any>): void {
     for (let key in effectInstance) {
       const property: Effect = effectInstance[key];
-      // console.log("property", property)
-      if (property.hasOwnProperty('isEffect') && property.isEffect) {
+      if (property.isEffect) {
         property.pipe(takeUntil(this.destroyEffects$)).subscribe((actionOrSkip) => {
           this.dispatchAction(property, actionOrSkip);
         });
@@ -31,21 +30,19 @@ export class ModuleManager implements OnDestroy {
   }
 
   private dispatchAction(property: Effect, actionOrSkip: Action | Record<any, any>) {
-    if (property.dispatchAction) {
-      if (this.checkAction(actionOrSkip)) {
-        this.actions$.dispatch(actionOrSkip);
-      }
+    if (property.dispatchAction && this.checkAction(actionOrSkip)) {
+      this.actions$.dispatch(actionOrSkip);
     }
   }
 
   private checkAction(action: Action | any): action is Action & Record<'type', any> {
-    if (action.hasOwnProperty('type')) {
+    if (action.type) {
       return true;
     }
     throw new TypeError('Make sure to provide a valid action type or set the option {dispatch: false}');
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     // modules aren't supposed to be destroyed; might not be needed
     this.destroyEffects$.next();
     this.effectInstanceSources = [];
