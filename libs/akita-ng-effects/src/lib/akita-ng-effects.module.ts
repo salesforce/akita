@@ -61,9 +61,7 @@ export function createEffectInstances(injector: Injector, effectGroups: Type<any
   // todo we shouldn't use a map to avoid registering the effects twice;
   // fix the underlying issue for feature is called twice
   const effectInstances = mergedEffects.reduce((acc, effect) => {
-    if (registeredEffects.has(effect)) {
-      return acc;
-    } else {
+    if (!registeredEffects.has(effect)) {
       registeredEffects.add(effect);
       acc.push(injector.get(effect));
     }
