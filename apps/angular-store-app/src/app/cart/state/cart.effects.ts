@@ -5,28 +5,28 @@ import { map, switchMap, tap } from 'rxjs/operators';
 import { CartStore } from './cart.store';
 import { timer } from 'rxjs';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class CartEffects {
-  constructor(
-    private actions$: Actions,
-    private cartStore: CartStore
-  ) {
-  }
+  constructor(private actions$: Actions, private cartStore: CartStore) {}
 
-  removeItem$ = createEffect(() =>
-    this.actions$.pipe(
-      ofType(CartActions.removeItem),
-      tap(({ productId }) => this.cartStore.remove(productId)),
-      map(_ => CartActions.removeItemSuccess())
-    )
+  removeItem$ = createEffect(
+    () =>
+      this.actions$.pipe(
+        ofType(CartActions.removeItem),
+        tap(({ productId }) => this.cartStore.remove(productId)),
+        map((_) => {
+          return CartActions.removeItemSuccess();
+        })
+      ),
+    { dispatch: true }
   );
 
-  @Effect({ dispatch: false })
+  @Effect()
   removeItemSuccess = this.actions$.pipe(
     ofType(CartActions.removeItemSuccess),
-    tap(_ => this.cartStore.notify(true)),
-    switchMap(state => timer(3000).pipe(
-      tap(_ => this.cartStore.notify(false))
-    ))
+    tap((_) => this.cartStore.notify(true)),
+    switchMap((state) => timer(3000).pipe(tap((_) => this.cartStore.notify(false))))
   );
 }

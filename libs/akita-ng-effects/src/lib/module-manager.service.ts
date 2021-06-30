@@ -5,44 +5,44 @@ import { Actions } from './actions';
 import { Action, Effect } from './types';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ModuleManager implements OnDestroy {
   effectInstanceSources: Type<any>[] = [];
-  destroyEffects$                    = new Subject();
+  destroyEffects$ = new Subject();
 
-  constructor(private actions$: Actions) {
-  }
+  constructor(private actions$: Actions) {}
 
-  addEffectInstance(effectInstance: Type<any>) {
+  addEffectInstance(effectInstance: Type<any>): void {
     this.effectInstanceSources.push(effectInstance);
     this.subscribeToEffects(effectInstance);
   }
 
-  subscribeToEffects(effectInstance: Type<any>) {
+  subscribeToEffects(effectInstance: Type<any>): void {
     for (let key in effectInstance) {
       const property: Effect = effectInstance[key];
-      if (property.hasOwnProperty('isEffect') && property.isEffect) {
-        property.pipe(
-          takeUntil(this.destroyEffects$)
-        )
-          .subscribe(actionOrSkip => this.dispatchAction(property, actionOrSkip));
+      if (property.isEffect) {
+        property.pipe(takeUntil(this.destroyEffects$)).subscribe((actionOrSkip) => {
+          this.dispatchAction(property, actionOrSkip);
+        });
       }
     }
   }
 
   private dispatchAction(property: Effect, actionOrSkip: Action | Record<any, any>) {
-    if (property.dispatchAction) {
-      if (this.checkAction(actionOrSkip)) this.actions$.dispatch(actionOrSkip);
+    if (property.dispatchAction && this.checkAction(actionOrSkip)) {
+      this.actions$.dispatch(actionOrSkip);
     }
   }
 
   private checkAction(action: Action | any): action is Action & Record<'type', any> {
-    if (action.hasOwnProperty('type')) return true;
+    if (action.type) {
+      return true;
+    }
     throw new TypeError('Make sure to provide a valid action type or set the option {dispatch: false}');
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     // modules aren't supposed to be destroyed; might not be needed
     this.destroyEffects$.next();
     this.effectInstanceSources = [];
