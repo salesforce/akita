@@ -1,11 +1,11 @@
-import { Injector, ModuleWithProviders, NgModule, Type }                                    from '@angular/core';
+import { Injector, ModuleWithProviders, NgModule, Type } from '@angular/core';
 import { _FEATURE_EFFECTS, _ROOT_EFFECTS, FEATURE_EFFECT_INSTANCES, ROOT_EFFECT_INSTANCES } from './tokens';
-import { EffectsRootModule }                                                                from './effect-root.module';
-import { Actions }                                                                          from './actions';
-import { EffectsFeatureModule }                                                             from './effect-feature.module';
-import { ModuleManager }                                                                    from './module-manager.service';
+import { EffectsRootModule } from './effect-root.module';
+import { Actions } from './actions';
+import { EffectsFeatureModule } from './effect-feature.module';
+import { ModuleManager } from './module-manager.service';
 
-const registeredEffects = new Map<string, boolean>();
+const registeredEffects = new WeakSet();
 
 @NgModule({})
 export class AkitaNgEffectsModule {
@@ -30,6 +30,7 @@ export class AkitaNgEffectsModule {
   }
 
   static forFeature(featureEffects: Type<any>[] = []): ModuleWithProviders<EffectsFeatureModule> {
+    console.log(featureEffects);
     return {
       ngModule: EffectsFeatureModule,
       providers: [
@@ -57,15 +58,17 @@ export function createEffectInstances(injector: Injector, effectGroups: Type<any
     mergedEffects.push(...effectGroup);
   }
 
-  const effectInstances = mergedEffects.map((effect) => {
-    if (registeredEffects.has(effect.name)) {
-      return;
+  // todo we shouldn't use a map to avoid registering the effects twice;
+  // fix the underlying issue for feature is called twice
+  const effectInstances = mergedEffects.reduce((acc, effect) => {
+    if (registeredEffects.has(effect)) {
+      return acc;
+    } else {
+      registeredEffects.add(effect);
+      acc.push(injector.get(effect));
     }
-    else {
-      registeredEffects.set(effect.name, true);
-    }
-    return injector.get(effect);
-  });
+    return acc;
+  }, []);
 
   return effectInstances;
 }
