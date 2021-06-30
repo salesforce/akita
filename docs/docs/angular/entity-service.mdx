@@ -7,6 +7,7 @@ There’s even more boilerplate we can save you, by creating an Akita entity ser
 Specifically, this service can be extremely useful in systems that use strict url patterns, such as CMS, admin dashboards, etc.
 
 ## Getting Started
+
 After installing Akita, we simply run:
 
 ```bash
@@ -45,6 +46,7 @@ export class AppModule {}
 ```
 
 Note that if you have server calls that use a different base url than the one you defined in the above setting, you can modify the url per service, or use a factory if you dynamically generate the url based on other providers’ data. Our service looks like this:
+
 ```ts title="posts.service.ts"
 import { Injectable } from '@angular/core';
 import { NgEntityService } from '@datorama/akita-ng-entity-service';
@@ -65,10 +67,7 @@ This ensures that the service will automatically perform its CRUD operations on 
 export class PostsPageComponent {
   posts$ = this.postsQuery.selectAll();
 
-  constructor(
-    private postsQuery: PostsQuery,
-    private postsService: PostsService
-  ) {}
+  constructor(private postsQuery: PostsQuery, private postsService: PostsService) {}
 
   ngOnInit() {
     this.postsService.get().subscribe();
@@ -86,7 +85,7 @@ export class PostsPageComponent {
     this.postsService.update(id, { title: 'New title' }).subscribe({
       error: (error) => {
         this.error = error;
-      }
+      },
     });
   }
 
@@ -113,7 +112,7 @@ The `resourceName` used in the urls is by default identical to the store name, b
 ```ts title="posts.service.ts"
 @NgEntityServiceConfig({
   resourceName: 'articles',
-  baseUrl: 'customBaseUrl'
+  baseUrl: 'customBaseUrl',
 })
 @Injectable({ providedIn: 'root' })
 export class PostsService extends NgEntityService<PostsState> {
@@ -126,26 +125,20 @@ export class PostsService extends NgEntityService<PostsState> {
 Alternatively, we can pass the config as the second parameter in the `super()` call in the service’s constructor.
 
 ## Entity Service Loader
+
 Loading indication is a very common scenario — we often need to display to the user an indication that the server call has been made, and our app is currently in the process of loading the resulting data.
 
 Akita’s Entity Service comes with a built-in solution for these cases; The `NgEntityServiceLoader` can listen to any entity service’s built-in method and give us an indication of its loading status:
 
-
 ```ts title="posts.component.ts"
-import {
-  NgEntityServiceLoader
-} from '@datorama/akita-ng-entity-service';
+import { NgEntityServiceLoader } from '@datorama/akita-ng-entity-service';
 
 @Component()
 export class PostsPageComponent {
   posts$ = this.postsQuery.selectAll();
   loaders = this.loader.loadersFor('posts');
 
-  constructor(
-    private postsQuery: PostsQuery,
-    private postsService: PostsService,
-    private loader: NgEntityServiceLoader
-  ) {}
+  constructor(private postsQuery: PostsQuery, private postsService: PostsService, private loader: NgEntityServiceLoader) {}
 
   ngOnInit() {
     this.postsService.get().subscribe();
@@ -180,23 +173,19 @@ The `loaders` object now contains loading indicators for each of the `PostsServi
 We can also get indicators for a specific entity being updated or deleted by calling `loaders.updateEntity(id)` and `loaders.deleteEntity(id)`, respectively.
 
 ## Entity Service Notifier
+
 In addition to that there are cases when we need to know whether certain operation has succeded or failed. For example, a global component that displays toast notifications to the user.
 
 For this purpose the Entity Service package provides the `NgEntityServiceNotifier` service, which we can subscribe to and get the status of any HTTP call that was made:
 
 ```ts title="notification.service.ts"
-import {
-  NgEntityServiceNotifier
-} from '@datorama/akita-ng-entity-service';
+import { NgEntityServiceNotifier } from '@datorama/akita-ng-entity-service';
 
 class NotificationService {
-
-  constructor(
-    private notifier: NgEntityServiceNotifier
-  ) {}
+  constructor(private notifier: NgEntityServiceNotifier) {}
 
   listen() {
-    this.notifier.action$.subscribe(action => {
+    this.notifier.action$.subscribe((action) => {
       // show toast
     });
   }
@@ -204,6 +193,7 @@ class NotificationService {
 ```
 
 The resulting data looks like this:
+
 ```ts
 {
   storeName: string;
@@ -218,22 +208,15 @@ The resulting data looks like this:
 The package also exposes built-in operators, which allow us to filter the `type`, `store`, and `HTTP` method. For example:
 
 ```ts
-import {
- NgEntityServiceNotifier,
- filterMethod,
- ofType,
- filterStore
-} from '@datorama/akita-ng-entity-service';
+import { NgEntityServiceNotifier, filterMethod, ofType, filterStore } from '@datorama/akita-ng-entity-service';
 
-this.notifier.action$.pipe(
-  filterStore('posts'),
-  ofType('success'),
-  filterMethod('DELETE'),
-)
+this.notifier.action$.pipe(filterStore('posts'), ofType('success'), filterMethod('DELETE'));
 ```
 
 ## Options
+
 The global `config` provide takes the following object:
+
 ```ts
 {
   provide: NG_ENTITY_SERVICE_CONFIG,
@@ -243,7 +226,6 @@ The global `config` provide takes the following object:
       httpMethods: {
         PUT: HttpMethod.PATCH
       },
-      connector: () => new ReplaySubject(1),
     } as NgEntityServiceGlobalConfig;
   }
 }

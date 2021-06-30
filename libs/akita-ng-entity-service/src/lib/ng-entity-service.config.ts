@@ -1,9 +1,7 @@
 import { InjectionToken } from '@angular/core';
-import { NgEntityServiceParams } from './types';
-import { HttpMethod } from './ng-entity-service-notifier';
-import { Event } from './ng-entity-service.loader';
 import { isObject } from '@datorama/akita';
-import { Subject } from 'rxjs';
+import { HttpMethod } from './ng-entity-service-notifier';
+import { NgEntityServiceParams } from './types';
 
 export interface NgEntityServiceGlobalConfig {
   baseUrl?: string;
@@ -14,7 +12,6 @@ export interface NgEntityServiceGlobalConfig {
     PUT: HttpMethod;
     DELETE: HttpMethod;
   }>;
-  connector?: () => Subject<Event>;
 }
 
 export const NG_ENTITY_SERVICE_CONFIG = new InjectionToken<NgEntityServiceGlobalConfig>('NgEntityServiceGlobalConfig');

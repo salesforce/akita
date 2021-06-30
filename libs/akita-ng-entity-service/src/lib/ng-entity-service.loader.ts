@@ -1,15 +1,14 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { isFunction } from '@datorama/akita';
-import { Subject } from 'rxjs';
+import { ReplaySubject } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { HttpMethod } from './ng-entity-service-notifier';
-import { NgEntityServiceGlobalConfig, NG_ENTITY_SERVICE_CONFIG } from './ng-entity-service.config';
 
 export type Event = { method: HttpMethod; loading: boolean; storeName: string; entityId?: any };
 
 @Injectable({ providedIn: 'root' })
 export class NgEntityServiceLoader {
-  private dispatcher = this.config.connector ? this.config.connector() : new Subject<Event>();
+  private dispatcher = new ReplaySubject<Event>(1);
   loading$ = this.dispatcher.asObservable();
 
   dispatch(event: Event) {
@@ -47,9 +46,5 @@ export class NgEntityServiceLoader {
       updateEntity: (id: any) => idBased(id, (method) => method === HttpMethod.PUT || method === HttpMethod.PATCH),
       deleteEntity: (id: any) => idBased(id, HttpMethod.DELETE),
     };
-  }
-
-  get config(): NgEntityServiceGlobalConfig {
-    return inject(NG_ENTITY_SERVICE_CONFIG);
   }
 }

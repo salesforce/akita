@@ -45,6 +45,7 @@
     "test:lib:akita-ng-devtools": "nx test akita-ng-devtools",
     "test:lib:akita-ng-entity-service": "nx test akita-ng-entity-service",
     "test:lib:akita-ng-router-store": "nx test akita-ng-router-store",
+    "test:lib:akita-ng-effects": "nx test akita-ng-effects",
     "update": "nx migrate latest",
     "workspace-schematic": "nx workspace-schematic"
   },
