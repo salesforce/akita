@@ -30,7 +30,6 @@ export class AkitaNgEffectsModule {
   }
 
   static forFeature(featureEffects: Type<any>[] = []): ModuleWithProviders<EffectsFeatureModule> {
-    console.log(featureEffects);
     return {
       ngModule: EffectsFeatureModule,
       providers: [
