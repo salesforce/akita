@@ -1,12 +1,12 @@
-import { QueryEntity } from '../../queryEntity';
-import { delay, map, switchMap, take } from 'rxjs/operators';
 import { BehaviorSubject, from, isObservable, Observable, Subscription } from 'rxjs';
-import { EntityState, ID, getEntityType } from '../../types';
-import { AkitaPlugin } from '../plugin';
-import { applyTransaction } from '../../transaction';
-import { isUndefined } from '../../isUndefined';
+import { delay, map, switchMap, take } from 'rxjs/operators';
 import { action, logAction } from '../../actions';
 import { isNil } from '../../isNil';
+import { isUndefined } from '../../isUndefined';
+import { QueryEntity } from '../../queryEntity';
+import { applyTransaction } from '../../transaction';
+import { EntityState, getEntityType, ID } from '../../types';
+import { AkitaPlugin } from '../plugin';
 
 export interface PaginationResponse<E> {
   currentPage: number;
@@ -32,7 +32,7 @@ const paginatorDefaults: PaginatorConfig = {
   range: false,
   startWith: 1,
   cacheTimeout: undefined,
-  clearStoreWithCache: true
+  clearStoreWithCache: true,
 };
 
 export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<State> {
@@ -48,7 +48,7 @@ export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<Stat
     perPage: 0,
     total: 0,
     lastPage: 0,
-    data: []
+    data: [],
   };
 
   /**
@@ -62,9 +62,9 @@ export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<Stat
       resetFn: () => {
         this.initial = false;
         this.destroy({ clearCache: true, currentPage: 1 });
-      }
+      },
     });
-    this.config = Object.assign(paginatorDefaults, config);
+    this.config = { ...paginatorDefaults, ...config };
     const { startWith, cacheTimeout } = this.config;
     this.page = new BehaviorSubject(startWith);
     if (isObservable(cacheTimeout)) {
@@ -144,7 +144,7 @@ export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<Stat
    * Set the ids and add the page to store
    */
   addPage(data: getEntityType<State>[]) {
-    this.pages.set(this.currentPage, { ids: data.map(entity => entity[this.getStore().idKey]) });
+    this.pages.set(this.currentPage, { ids: data.map((entity) => entity[this.getStore().idKey]) });
     this.getStore().upsertMany(data);
   }
 
@@ -293,10 +293,10 @@ export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<Stat
   private selectPage(page: number): Observable<PaginationResponse<getEntityType<State>>> {
     return this.query.selectAll({ asObject: true }).pipe(
       take(1),
-      map(entities => {
-        let response: PaginationResponse<getEntityType<State>> = {
+      map((entities) => {
+        const response: PaginationResponse<getEntityType<State>> = {
           ...this.pagination,
-          data: this.pages.get(page).ids.map(id => entities[id])
+          data: this.pages.get(page).ids.map((id) => entities[id]),
         };
 
         const { range, pagesControls } = this.config;
@@ -331,7 +331,7 @@ export class PaginatorPlugin<State extends EntityState> extends AkitaPlugin<Stat
  */
 function generatePages(total: number, perPage: number) {
   const len = Math.ceil(total / perPage);
-  let arr = [];
+  const arr = [];
   for (let i = 0; i < len; i++) {
     arr.push(i + 1);
   }

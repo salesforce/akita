@@ -1,5 +1,0 @@
-{
-  "path": ".",
-  "tag-prefix": "akita-ng-forms-manager-v",
-  "releaseCommitMessageFormat": "chore(release): akita-ng-forms-manager@{{currentTag}}"
-}

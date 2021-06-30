@@ -111,6 +111,7 @@ Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds
   <tr>
     <td align="center"><a href="https://github.com/talohana"><img src="https://avatars2.githubusercontent.com/u/24203431?v=4" width="100px;" alt=""/><br /><sub><b>Tal Ohana</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=talohana" title="Code">💻</a></td>
     <td align="center"><a href="https://medium.com/@marcinmilewicz"><img src="https://avatars3.githubusercontent.com/u/40635984?v=4" width="100px;" alt=""/><br /><sub><b>Marcin Milewicz</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=marcinmilewicz" title="Code">💻</a></td>
+    <td align="center"><a href="https://medium.com/@erxk"><img src="https://avatars.githubusercontent.com/u/14320878?v=4" width="100px;" alt=""/><br /><sub><b>Erik</b></sub></a><br /><a href="https://github.com/NetanelBasal/akita/commits?author=Everduin94" title="Code">💻</a></td>
   </tr>
 </table>
 
