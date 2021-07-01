@@ -2,6 +2,10 @@
 
 ## July 30, 2021
 
+### `@datorama/akita-ng-effects (v1.0.3)`:
+
+- `hotfix`: Effects should be subscribed only once
+
 ### `@datorama/akita-ng-effects (v1.0.2)`:
 
 - Effects should work with multiple eager modules
