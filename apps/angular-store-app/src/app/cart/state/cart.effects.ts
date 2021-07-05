@@ -15,7 +15,7 @@ export class CartEffects {
     () =>
       this.actions$.pipe(
         ofType(CartActions.removeItem),
-        tap((data) => this.cartStore.remove(data.productId)),
+        tap(({ productId }) => this.cartStore.remove(productId)),
         map((_) => {
           return CartActions.removeItemSuccess();
         })
