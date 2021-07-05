@@ -1,8 +1,3 @@
-/**
- * @license Use of this source code is governed by an MIT-style license that
- * can be found in the LICENSE file at https://github.com/cartant/ts-action
- */
-
 import { Observable, pipe } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { Action, ActionCreator, ActionType } from 'ts-action';
