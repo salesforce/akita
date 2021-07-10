@@ -5,8 +5,6 @@ import { Actions } from './actions';
 import { EffectsFeatureModule } from './effect-feature.module';
 import { ModuleManager } from './module-manager.service';
 
-const registeredEffects = new WeakSet();
-
 @NgModule({})
 export class AkitaNgEffectsModule {
   static forRoot(rootEffects: Type<any>[] = []): ModuleWithProviders<EffectsRootModule> {
@@ -23,7 +21,7 @@ export class AkitaNgEffectsModule {
         {
           provide: ROOT_EFFECT_INSTANCES,
           useFactory: createEffectInstances,
-          deps: [Injector, _ROOT_EFFECTS],
+          deps: [Injector, _ROOT_EFFECTS, ModuleManager],
         },
       ],
     };
@@ -43,25 +41,24 @@ export class AkitaNgEffectsModule {
           provide: FEATURE_EFFECT_INSTANCES,
           multi: true,
           useFactory: createEffectInstances,
-          deps: [Injector, _FEATURE_EFFECTS],
+          deps: [Injector, _FEATURE_EFFECTS, ModuleManager],
         },
       ],
     };
   }
 }
 
-export function createEffectInstances(injector: Injector, effectGroups: Type<any>[][]): any[] {
+export function createEffectInstances(injector: Injector, effectGroups: Type<any>[][], moduleManager: ModuleManager): any[] {
   const mergedEffects: Type<any>[] = [];
 
   for (const effectGroup of effectGroups) {
     mergedEffects.push(...effectGroup);
   }
-
   // todo we shouldn't use a map to avoid registering the effects twice;
   // fix the underlying issue for feature is called twice
   const effectInstances = mergedEffects.reduce((acc, effect) => {
-    if (!registeredEffects.has(effect)) {
-      registeredEffects.add(effect);
+    if (!moduleManager.has(effect)) {
+      moduleManager.add(effect);
       acc.push(injector.get(effect));
     }
     return acc;

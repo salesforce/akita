@@ -8,15 +8,10 @@ import { Action, Effect } from './types';
   providedIn: 'root',
 })
 export class ModuleManager implements OnDestroy {
-  effectInstanceSources: Type<any>[] = [];
+  effectInstanceSources = new WeakSet();
   destroyEffects$ = new Subject();
 
   constructor(private actions$: Actions) {}
-
-  addEffectInstance(effectInstance: Type<any>): void {
-    this.effectInstanceSources.push(effectInstance);
-    this.subscribeToEffects(effectInstance);
-  }
 
   subscribeToEffects(effectInstance: Type<any>): void {
     for (let key in effectInstance) {
@@ -27,6 +22,14 @@ export class ModuleManager implements OnDestroy {
         });
       }
     }
+  }
+
+  has(effect: Type<any>): boolean {
+    return this.effectInstanceSources.has(effect);
+  }
+
+  add(effect: Type<any>): void {
+    this.effectInstanceSources.add(effect);
   }
 
   private dispatchAction(property: Effect, actionOrSkip: Action | Record<any, any>) {
@@ -45,6 +48,6 @@ export class ModuleManager implements OnDestroy {
   ngOnDestroy(): void {
     // modules aren't supposed to be destroyed; might not be needed
     this.destroyEffects$.next();
-    this.effectInstanceSources = [];
+    this.effectInstanceSources = new WeakSet();
   }
 }
