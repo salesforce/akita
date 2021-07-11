@@ -7,7 +7,7 @@ export class EffectsFeatureModule {
   constructor(private moduleManager: ModuleManager, @Inject(FEATURE_EFFECT_INSTANCES) featureEffects: any[]) {
     featureEffects.forEach((group) =>
       group.forEach((effect) => {
-        this.moduleManager.addEffectInstance(effect);
+        this.moduleManager.subscribeToEffects(effect);
       })
     );
   }

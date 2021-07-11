@@ -36,10 +36,11 @@ describe('Module Manager Service', () => {
   });
 
   it('should add effects to the instance sources', () => {
-    moduleManager.addEffectInstance(effectInstance);
-    moduleManager.addEffectInstance(effectInstance);
+    const spy = jest.spyOn(moduleManager.effectInstanceSources, 'add');
+    moduleManager.add(effectInstance);
+    moduleManager.add(effectInstance);
 
-    expect(moduleManager.effectInstanceSources.length).toBe(2);
+    expect(spy).toHaveBeenCalledTimes(2);
   });
 
   it('should subscribe only to effects', () => {
