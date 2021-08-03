@@ -1,3 +1,4 @@
+import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, map } from 'rxjs/operators';
 import { currentAction, resetCustomAction, setAction, StoreSnapshotAction } from './actions';
@@ -45,6 +46,7 @@ interface StoreSnapshot<S> {
  *   }
  * }
  */
+@Injectable()
 export class Store<S = any> {
   private store: BehaviorSubject<Readonly<StoreSnapshot<S>>>;
   private storeValue: S;
