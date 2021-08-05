@@ -1,6 +1,10 @@
 # Changelog
 
-## June 30, 2021
+## 5/8/21
+
+- Change peer deps of RxJS in all libs
+
+## 30/6/21
 
 ### `@datorama/akita-ng-effects (v1.0.3)`:
 
@@ -10,7 +14,7 @@
 
 - Effects should work with multiple eager modules
 
-## June 7, 2021
+## 7/6/21
 
 ### `@datorama/ng-entity-service (v6.1.0)`:
 

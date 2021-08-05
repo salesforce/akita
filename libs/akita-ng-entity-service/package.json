@@ -1,6 +1,6 @@
 {
   "name": "@datorama/akita-ng-entity-service",
-  "version": "6.1.0",
+  "version": "6.1.2",
   "description": "Akita entity service",
   "keywords": [
     "angular",
@@ -18,6 +18,7 @@
   "license": "Apache-2.0",
   "author": "Netanel Basal",
   "peerDependencies": {
-    "@datorama/akita": ">= 6.0.0"
+    "@datorama/akita": ">= 6.0.0",
+    "rxjs": "*"
   }
 }
