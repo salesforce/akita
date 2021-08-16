@@ -22,7 +22,7 @@ export class WidgetsComponent {
   reset() {
     this.dirtyCheck.reset();
   }
-  
+
   ngOnDestroy() {
     this.dirtyCheck.destroy();
   }
@@ -32,11 +32,7 @@ export class WidgetsComponent {
 From the moment you call `setHead()`, Akita's `DirtyCheckPlugin` takes the current store snapshot and saves it as the head (the value that we compare against). With every change to the store the plugin will compare it to the head value and notify you whether the state is dirty.
 
 ```html title="widgets.component.html"
-<button
-    [disabled]="!(dirtyCheck.isDirty$| async)" 
-    (click)="save()">
-  Save Changes
-</button>
+<button [disabled]="!(dirtyCheck.isDirty$| async)" (click)="save()">Save Changes</button>
 ```
 
 By calling `reset()` you are telling the plugin to update the store with the `head` value. The plugin also provides a special method called isPathDirty() that checks whether a given `path` is `dirty`. For example:
@@ -46,9 +42,12 @@ const dirtyCheck = new DirtyCheckPlugin(widgetsQuery).setHead();
 dirtyCheck.isPathDirty('check.this.path');
 ```
 
+If you have set the head, you can get the current head value with `getHead()`.
+
 ## Options
 
 ### `comparator`
+
 The default `comparator` compares the object by using the native `JSON.stringify()` method, but you can pass a custom `comparator`, for example:
 
 ```ts
@@ -59,13 +58,15 @@ const dirtyCheck = new DirtyCheckPlugin(widgetsQuery, options);
 ```
 
 ### `watchProperty`
+
 The dirty check plugin can watch specific properties in your store's state and not just the entire store, this can be achieved by passing the properties keys to `DirtyCheckPlugin`, for example:
+
 ```ts
 // Tracks the entire store
 new DirtyCheckPlugin(widgetsQuery);
 
 // Tracks the store's state name property
-new DirtyCheckPlugin(widgetsQuery, { watchProperty: 'name' }); 
+new DirtyCheckPlugin(widgetsQuery, { watchProperty: 'name' });
 
 // Tracks a set of properties
 new DirtyCheckPlugin(widgetsQuery, { watchProperty: ['name', 'color'] });
@@ -78,7 +79,7 @@ After the first time you call `setHead()`, each subsequent call to this method w
 
 ## EntityDirtyCheckPlugin
 
-In addition to the general dirty check functionality,  Akita also provides a powerful API to help keep track of one or many entities, instead of the entire store. 
+In addition to the general dirty check functionality, Akita also provides a powerful API to help keep track of one or many entities, instead of the entire store.
 
 A good example is when you have a table or a list of entities that the users can modify, and you want to give them a way to revert it per entity. Here is how you can do it:
 
@@ -103,32 +104,26 @@ export class WidgetsComponent {
   reset(ids) {
     this.collection.reset(ids);
   }
-  
+
   ngOnDestroy() {
     this.collection.destroy();
   }
 }
 ```
 
-With this setup you can track the dirtiness per entity and revert it. 
-
+With this setup you can track the dirtiness per entity and revert it.
 
 ```html title="widgets.component.html"
 <tbody>
   <tr *ngFor="let widget of widgets$ | async">
     <td>
-      <input [value]="widget.name" #name>
+      <input [value]="widget.name" #name />
     </td>
     <td>
-      <button (click)="updateWidget(widget.id, name.value)">
-        Save
-      </button>
+      <button (click)="updateWidget(widget.id, name.value)">Save</button>
     </td>
     <td>
-      <button (click)="revert(widget.id)"
-              [disabled]="!(collection.isDirty(widget.id) | async)">
-        Revert
-      </button>
+      <button (click)="revert(widget.id)" [disabled]="!(collection.isDirty(widget.id) | async)">Revert</button>
     </td>
   </tr>
 </tbody>
@@ -144,7 +139,7 @@ Sometimes it's useful to partially reset the entity value when clicking on rever
 const updateFn = (head, current) => {
   return {
     ...head,
-    title: current.title
+    title: current.title,
   };
 };
 
@@ -154,6 +149,7 @@ collection.reset(entityId, { updateFn });
 In the above example we are reverting the whole entity except for the `title` (note that this will still mark the entity as dirty).
 
 Sometimes it's also useful to check whether at least one of the entities is dirty. For this you can use the `someDirty()` method:
+
 ```ts
 collection.someDirty().subscribe(console.log);
 ```
@@ -161,11 +157,10 @@ collection.someDirty().subscribe(console.log);
 ### Options
 
 ### `entityIds`
+
 A single id or an array of entity ids (default: all).
 
 ```ts
 const options = { entityIds: [1, 2] };
 stateHistory = new EntityDirtyCheckPlugin(widgetsQuery, options);
 ```
-
-

@@ -267,6 +267,16 @@ export class Store<S = any> {
     return nextState;
   }
 
+  /**
+   *
+   * @deprecated
+   *
+   * This method will be removed in v7
+   *
+   * Akita isn't coupled to Angular and should not use Angular
+   * specific code
+   *
+   */
   ngOnDestroy() {
     this.destroy();
   }

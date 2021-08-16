@@ -69,11 +69,11 @@ export class NavigationEffects {
            map((mainNav) => loadMainNavigationSuccess({ mainNav }))
         )
       )
-    )
+    ), { dispatch: true }
   );
 
   // Or use the decorator
-  @Effect({ dispatch: false })
+  @Effect()
   loadMainNavigationSuccess$ = this.actions$.pipe(
     ofType(loadMainNavigationSuccess),
     map(({ mainNav }) => this.navigationService.updateNavigationTree(mainNav)),
@@ -81,6 +81,9 @@ export class NavigationEffects {
   );
 }
 ```
+
+#### The parameter `dispatch`
+This parameter dictates if the effect can dispatch an action. Set `true` if you want the effect to dispatch an action. Set to `false` or omit if the effect should not dispatch any action.
 
 ### Possible use case
 

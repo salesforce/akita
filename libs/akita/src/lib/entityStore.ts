@@ -362,10 +362,9 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
   replace(ids: IDS, newState: Partial<EntityType>) {
     const toArray = coerceArray(ids);
     if (isEmpty(toArray)) return;
-    let replaced = {};
+    const replaced = {};
     for (const id of toArray) {
-      newState[this.idKey] = id;
-      replaced[id] = newState;
+      replaced[id] = { ...newState, [this.idKey]: id };
     }
     isDev() && setAction('Replace Entity', ids);
     this._setState((state) => ({

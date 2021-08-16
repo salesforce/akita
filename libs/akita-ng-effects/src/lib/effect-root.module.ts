@@ -7,7 +7,7 @@ import { ModuleManager } from './module-manager.service';
 export class EffectsRootModule {
   constructor(private moduleManager: ModuleManager, private actions: Actions, @Inject(ROOT_EFFECT_INSTANCES) rootEffects: any[], @Optional() @SkipSelf() private parentModule?: EffectsRootModule) {
     this.rootGuard();
-    rootEffects.forEach((effect) => this.moduleManager.addEffectInstance(effect));
+    rootEffects.forEach((effect) => this.moduleManager.subscribeToEffects(effect));
   }
 
   rootGuard() {

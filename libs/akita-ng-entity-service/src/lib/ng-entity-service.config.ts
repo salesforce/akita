@@ -1,7 +1,7 @@
 import { InjectionToken } from '@angular/core';
-import { NgEntityServiceParams } from './types';
-import { HttpMethod } from './ng-entity-service-notifier';
 import { isObject } from '@datorama/akita';
+import { HttpMethod } from './ng-entity-service-notifier';
+import { NgEntityServiceParams } from './types';
 
 export interface NgEntityServiceGlobalConfig {
   baseUrl?: string;
@@ -22,8 +22,8 @@ export const defaultConfig: NgEntityServiceGlobalConfig = {
     POST: HttpMethod.POST,
     PATCH: HttpMethod.PATCH,
     PUT: HttpMethod.PUT,
-    DELETE: HttpMethod.DELETE
-  }
+    DELETE: HttpMethod.DELETE,
+  },
 };
 
 export function mergeDeep(target, ...sources) {
@@ -45,7 +45,7 @@ export function mergeDeep(target, ...sources) {
 }
 
 export function NgEntityServiceConfig(config: NgEntityServiceParams = {}) {
-  return function(constructor) {
+  return function (constructor) {
     if (config.baseUrl) {
       constructor['baseUrl'] = config.baseUrl;
     }

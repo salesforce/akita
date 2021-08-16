@@ -11,6 +11,7 @@ import { guid, Store, StoreConfig } from '@datorama/akita';
 
 type State = { counter: number };
 
+@Injectable()
 class CounterStore extends Store<State> {
   constructor() { 
     super({ counter: 0 }, { name: `Counter-${guid()}` }) 

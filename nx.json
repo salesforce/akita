@@ -23,9 +23,6 @@
     "akita-ng-devtools": {
       "tags": ["plugin"]
     },
-    "akita-ng-forms-manager": {
-      "tags": ["plugin"]
-    },
     "akita-schematics": {
       "tags": ["schematics"]
     },

@@ -18,7 +18,7 @@ To use `@datorama/akita` as the default collection in your Angular CLI project, 
 ng config cli.defaultCollection @datorama/akita
 ```
 
-The package extend the default `@schematics/angular` collection. If you want to set defaults for schematics such as generating components with `scss` file, you must change the schematics package name from `@schematics/angular` to `@datorama/akita` in `angular.json`:
+The package extends the default `@schematics/angular` collection. If you want to set defaults for schematics such as generating components with an `scss` file, you must change the schematics package name from `@schematics/angular` to `@datorama/akita` in `angular.json`:
 ```json title="angular.json"
 "schematics": {
   "@datorama/akita:component": {
@@ -32,13 +32,13 @@ The package extend the default `@schematics/angular` collection. If you want to 
 ng g @datorama/akita:feature todos/todos
 ```
 
-The defauls feature will output an entity feature, you can choose between different kind of `EntityService`:
+The default feature schematic will output an entity feature. You can choose between the following kinds of `EntityService`:
 
 - Default: A regular service with CRUD boilerplate.
-- Http: A `NgEntityService` powered by the HttpClient (requires [@datorama/akita-ng-entity-service](entity-service)).
+- Http: An `NgEntityService` powered by the HttpClient (requires [@datorama/akita-ng-entity-service](entity-service)).
 - Firebase: A `CollectionService` powered by AngularFirestore (requires [akita-ng-fire](https://github.com/dappsnation/akita-ng-fire)).
 
-You can also generate the normal feature with the `plain` option:
+You can also generate a normal feature with the `plain` option:
 
 ```bash
 ng g @datorama/akita:feature auth/auth --plain
@@ -103,13 +103,13 @@ ng g af products/products --spec
 
 ### Generate Module
 
-Add the `--withModule` to generate module and Akita component. (only for entity store)
+Add `--withModule` to generate a module and an Akita component (only for entity store).
 
 ### Generate several stores under the same state folder
 
-There might be a case when you need to have more than one store per feature. For example, you have a module "CRM", where
-you have a few entities, like addresses or contacts. So you want to have one single state folder under "CRM" and under
-that, for every store, a subfolder. Like this:
+There might be cases where you need to have more than one store per feature. For example, you have a "CRM" module where
+you have multiple entities such as addresses or contacts. You'd want to have a single state folder under "CRM", and under
+that a subfolder for every store:
 
 ```bash
 CRM
@@ -126,7 +126,7 @@ CRM
         └── contacts.store.ts
 ```
 
-To do so, add the `--flat false` to your commands:
+To do so, add `--flat false` to your commands:
 
 ```bash
 ng g af CRM/address --flat false

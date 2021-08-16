@@ -50,7 +50,7 @@ export function getStoreByName<TStore extends Store<S>, S = TStore extends Store
   const store = __stores__[storeName] as TStore;
 
   if (isNil(store)) {
-    throw new AkitaError(`${store} doesn't exist`);
+    throw new AkitaError(`${store.storeName} doesn't exist`);
   }
 
   return store;

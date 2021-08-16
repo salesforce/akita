@@ -215,6 +215,38 @@ describe('StateHistory', () => {
       future: [],
     });
   });
+
+  it('should replace store on undo/redo', () => {
+    const stateHistory1 = new StateHistoryPlugin(query);
+
+    expect(stateHistory1.history).toEqual({
+      past: [],
+      present: { counter: 5 },
+      future: [],
+    });
+    expect(store.getValue()).toEqual({ counter: 5 });
+
+    store._setState((state) => ({
+      ...state,
+      newProperty: true,
+    }));
+
+    expect(stateHistory1.history).toEqual({
+      past: [{ counter: 5 }],
+      present: { counter: 5, newProperty: true },
+      future: [],
+    });
+    expect(store.getValue()).toEqual({ counter: 5, newProperty: true });
+
+    stateHistory1.undo();
+
+    expect(stateHistory1.history).toEqual({
+      past: [],
+      present: { counter: 5 },
+      future: [{ counter: 5, newProperty: true }],
+    });
+    expect(store.getValue()).toEqual({ counter: 5 });
+  });
 });
 
 const store2 = new CounterStore();
