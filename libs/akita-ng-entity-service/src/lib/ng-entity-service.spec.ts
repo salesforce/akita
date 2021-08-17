@@ -1,5 +1,6 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { fakeAsync, inject, TestBed, tick } from '@angular/core/testing';
+import { of, ReplaySubject } from 'rxjs';
 import { HttpMethod, NgEntityServiceNotifier } from './ng-entity-service-notifier';
 import { defaultConfig, NgEntityServiceGlobalConfig, NG_ENTITY_SERVICE_CONFIG } from './ng-entity-service.config';
 import { NgEntityServiceLoader } from './ng-entity-service.loader';
@@ -13,7 +14,6 @@ import {
   TestServiceWithMixedConfig,
   TestStore,
 } from './setup';
-import { ReplaySubject } from 'rxjs';
 
 describe('NgEntityService', () => {
   describe('should merge config in order...', () => {
@@ -466,6 +466,25 @@ describe('NgEntityService', () => {
       }
     ));
 
+    it('should transform returned result from request when called with Observable mapResponseFn config', inject(
+      [TestServiceWithInlineConfig, HttpTestingController],
+      (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
+        const dummyData = [
+          { id: 1, foo: 'bar' },
+          { id: 2, foo: 'baz' },
+        ];
+        service.get({ mapResponseFn: (res) => of(res.map((x) => ({ entityId: x.id, test: x.foo }))) }).subscribe((result) => {
+          expect(result).toEqual([
+            { entityId: 1, test: 'bar' },
+            { entityId: 2, test: 'baz' },
+          ]);
+        });
+
+        const req = httpMock.expectOne(service.api);
+        req.flush(dummyData);
+      }
+    ));
+
     it('should override request URL when called with url config', inject(
       [TestServiceWithInlineConfig, HttpTestingController],
       (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
@@ -793,6 +812,19 @@ describe('NgEntityService', () => {
       }
     ));
 
+    it('should transform returned result from request when called with Observable mapResponseFn config', inject(
+      [TestServiceWithInlineConfig, HttpTestingController],
+      (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
+        const dummyEntity: TestEntity = { id: 1, foo: 'foo', bar: 123 };
+        service.add(dummyEntity, { mapResponseFn: (x) => of({ entityId: x.id, test: x.foo }) }).subscribe((result) => {
+          expect(result).toEqual({ entityId: 1, test: 'foo' });
+        });
+
+        const req = httpMock.expectOne(service.api);
+        req.flush(dummyEntity);
+      }
+    ));
+
     it('should override request URL when called with url config', inject(
       [TestServiceWithInlineConfig, HttpTestingController],
       (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
@@ -1034,6 +1066,20 @@ describe('NgEntityService', () => {
         const entityId = 1;
         const dummyEntity: Partial<TestEntity> = { foo: 'foo', bar: 123 };
         service.update(entityId, dummyEntity, { mapResponseFn: (x) => ({ test: x.foo, test2: x.bar }) }).subscribe((result) => {
+          expect(result).toEqual({ test: 'foo', test2: 123 });
+        });
+
+        const req = httpMock.expectOne(`${service.api}/${entityId}`);
+        req.flush(dummyEntity);
+      }
+    ));
+
+    it('should transform returned result from request when called with Observable mapResponseFn config', inject(
+      [TestServiceWithInlineConfig, HttpTestingController],
+      (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
+        const entityId = 1;
+        const dummyEntity: Partial<TestEntity> = { foo: 'foo', bar: 123 };
+        service.update(entityId, dummyEntity, { mapResponseFn: (x) => of({ test: x.foo, test2: x.bar }) }).subscribe((result) => {
           expect(result).toEqual({ test: 'foo', test2: 123 });
         });
 
@@ -1287,6 +1333,20 @@ describe('NgEntityService', () => {
         const entityId = 1;
         const deleteResponse = { id: entityId, message: 'deleted' };
         service.delete(entityId, { mapResponseFn: (x) => ({ test: x.id, test2: x.message }) }).subscribe((result) => {
+          expect(result).toEqual({ test: entityId, test2: 'deleted' });
+        });
+
+        const req = httpMock.expectOne(`${service.api}/${entityId}`);
+        req.flush(deleteResponse);
+      }
+    ));
+
+    it('should transform returned result from request when called with Observable mapResponseFn config', inject(
+      [TestServiceWithInlineConfig, HttpTestingController],
+      (service: TestServiceWithInlineConfig, httpMock: HttpTestingController) => {
+        const entityId = 1;
+        const deleteResponse = { id: entityId, message: 'deleted' };
+        service.delete(entityId, { mapResponseFn: (x) => of({ test: x.id, test2: x.message }) }).subscribe((result) => {
           expect(result).toEqual({ test: entityId, test2: 'deleted' });
         });
 

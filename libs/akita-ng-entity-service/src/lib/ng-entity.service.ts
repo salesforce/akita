@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { EntityService, EntityState, EntityStore, getEntityType, getIDType, isDefined } from '@datorama/akita';
-import { Observable, throwError } from 'rxjs';
-import { catchError, finalize, map, tap } from 'rxjs/operators';
+import { isObservable, Observable, of, throwError } from 'rxjs';
+import { catchError, finalize, switchMap, tap } from 'rxjs/operators';
 import { errorAction, successAction } from './action-factory';
 import { isID } from './helpers';
 import { EntityServiceAction, HttpMethod, NgEntityServiceNotifier } from './ng-entity-service-notifier';
@@ -10,7 +10,12 @@ import { defaultConfig, mergeDeep, NgEntityServiceGlobalConfig, NG_ENTITY_SERVIC
 import { NgEntityServiceLoader } from './ng-entity-service.loader';
 import { HttpAddConfig, HttpConfig, HttpDeleteConfig, HttpGetConfig, HttpUpdateConfig, NgEntityServiceParams } from './types';
 
-export const mapResponse = <T>(config?: HttpConfig<T>) => map((res) => (config && !!config.mapResponseFn ? config.mapResponseFn(res) : res));
+export const mapResponse = <T>(config?: HttpConfig<T>) =>
+  switchMap((res) => {
+    const mappedResponse = !!config?.mapResponseFn ? config.mapResponseFn(res) : res;
+
+    return isObservable(mappedResponse) ? mappedResponse : of(mappedResponse);
+  });
 
 export class NgEntityService<S extends EntityState = any> extends EntityService<S> {
   baseUrl: string | undefined;

@@ -1,5 +1,6 @@
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { AddEntitiesOptions } from '@datorama/akita';
+import { Observable } from 'rxjs';
 import { HttpMethod } from './ng-entity-service-notifier';
 
 export interface NgEntityServiceParams {
@@ -29,7 +30,7 @@ export type HttpConfig<Entity = any> = {
   headers?: _HttpHeaders;
   url?: string;
   urlPostfix?: string;
-  mapResponseFn?: (res: any) => Entity | Entity[];
+  mapResponseFn?: (res: any) => Entity | Entity[] | Observable<Entity | Entity[]>;
 };
 
 interface StoreWrite {
