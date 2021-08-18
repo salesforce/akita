@@ -1,9 +1,17 @@
 import { combineLatest, Observable, ObservableInput, ObservedValueOf } from 'rxjs';
 import { auditTime } from 'rxjs/operators';
 
-type ReturnTypes<T extends Observable<any>[]> = { [P in keyof T]: T[P] extends Observable<infer R> ? R : never };
-type Observables = [Observable<any>] | Observable<any>[];
+export function combineQueries<O1 extends ObservableInput<any>>(sources: [O1]): Observable<[ObservedValueOf<O1>]>;
+export function combineQueries<O1 extends ObservableInput<any>, O2 extends ObservableInput<any>>(sources: [O1, O2]): Observable<[ObservedValueOf<O1>, ObservedValueOf<O2>]>;
+export function combineQueries<O1 extends ObservableInput<any>, O2 extends ObservableInput<any>, O3 extends ObservableInput<any>>(sources: [O1, O2, O3]): Observable<[ObservedValueOf<O1>, ObservedValueOf<O2>, ObservedValueOf<O3>]>;
+export function combineQueries<O1 extends ObservableInput<any>, O2 extends ObservableInput<any>, O3 extends ObservableInput<any>, O4 extends ObservableInput<any>>(sources: [O1, O2, O3, O4]): Observable<[ObservedValueOf<O1>, ObservedValueOf<O2>, ObservedValueOf<O3>, ObservedValueOf<O4>]>;
+export function combineQueries<O1 extends ObservableInput<any>, O2 extends ObservableInput<any>, O3 extends ObservableInput<any>, O4 extends ObservableInput<any>, O5 extends ObservableInput<any>>(sources: [O1, O2, O3, O4, O5]): Observable<[ObservedValueOf<O1>, ObservedValueOf<O2>, ObservedValueOf<O3>, ObservedValueOf<O4>, ObservedValueOf<O5>]>;
+export function combineQueries<O1 extends ObservableInput<any>, O2 extends ObservableInput<any>, O3 extends ObservableInput<any>, O4 extends ObservableInput<any>, O5 extends ObservableInput<any>, O6 extends ObservableInput<any>>(sources: [O1, O2, O3, O4, O5, O6]): Observable<[ObservedValueOf<O1>, ObservedValueOf<O2>, ObservedValueOf<O3>, ObservedValueOf<O4>, ObservedValueOf<O5>, ObservedValueOf<O6>]>;
+export function combineQueries<O1 extends ObservableInput<any>, O2 extends ObservableInput<any>, O3 extends ObservableInput<any>, O4 extends ObservableInput<any>, O5 extends ObservableInput<any>, O6 extends ObservableInput<any>, O7 extends ObservableInput<any>>(sources: [O1, O2, O3, O4, O5, O6, O7]): Observable<[ObservedValueOf<O1>, ObservedValueOf<O2>, ObservedValueOf<O3>, ObservedValueOf<O4>, ObservedValueOf<O5>, ObservedValueOf<O6>, ObservedValueOf<O7>]>;
+export function combineQueries<O1 extends ObservableInput<any>, O2 extends ObservableInput<any>, O3 extends ObservableInput<any>, O4 extends ObservableInput<any>, O5 extends ObservableInput<any>, O6 extends ObservableInput<any>, O7 extends ObservableInput<any>, O8 extends ObservableInput<any>>(sources: [O1, O2, O3, O4, O5, O6, O7, O8]): Observable<[ObservedValueOf<O1>, ObservedValueOf<O2>, ObservedValueOf<O3>, ObservedValueOf<O4>, ObservedValueOf<O5>, ObservedValueOf<O6>, ObservedValueOf<O7>, ObservedValueOf<O8>]>;
+export function combineQueries<O1 extends ObservableInput<any>, O2 extends ObservableInput<any>, O3 extends ObservableInput<any>, O4 extends ObservableInput<any>, O5 extends ObservableInput<any>, O6 extends ObservableInput<any>, O7 extends ObservableInput<any>, O8 extends ObservableInput<any>, O9 extends ObservableInput<any>>(sources: [O1, O2, O3, O4, O5, O6, O7, O8, O9]): Observable<[ObservedValueOf<O1>, ObservedValueOf<O2>, ObservedValueOf<O3>, ObservedValueOf<O4>, ObservedValueOf<O5>, ObservedValueOf<O6>, ObservedValueOf<O7>, ObservedValueOf<O8>, ObservedValueOf<O9>]>;
+export function combineQueries<O extends ObservableInput<any>>(sources: O[]): Observable<ObservedValueOf<O>[]>;
 
-export function combineQueries<R extends Observables>(observables: R): Observable<ReturnTypes<R>> {
-  return combineLatest(observables).pipe(auditTime(0)) as any;
+export function combineQueries<O extends ObservableInput<any>>(sources: O[]): Observable<ObservedValueOf<O>[]> {
+  return combineLatest([...sources]).pipe(auditTime(0));
 }
