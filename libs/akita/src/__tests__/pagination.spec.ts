@@ -390,9 +390,9 @@ describe('Server-side pagination with filter', () => {
   let filterEnabled$ = new BehaviorSubject(false);
 
   it('should reset page to 1 when filters applied', () => {
-    combineLatest(paginator.pageChanges, filterEnabled$)
+    combineLatest([paginator.pageChanges, filterEnabled$])
       .pipe(
-        tap(_ => {
+        tap(() => {
           paginator.clearCache();
         }),
         switchMap(([page, filterEnabled]) => {
@@ -400,7 +400,7 @@ describe('Server-side pagination with filter', () => {
             getContacts({
               page,
               perPage: 10,
-              filterEnabled: filterEnabled
+              filterEnabled: filterEnabled,
             })
           );
 

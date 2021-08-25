@@ -10,7 +10,7 @@ import { map } from 'rxjs/operators';
 export class TodosQuery extends QueryEntity<TodosState> {
   selectVisibilityFilter$ = this.select(state => state.ui.filter);
 
-  selectVisibleTodos$ = combineLatest(this.selectVisibilityFilter$, this.selectAll()).pipe(
+  selectVisibleTodos$ = combineLatest([this.selectVisibilityFilter$, this.selectAll()]).pipe(
     map(([filter, todos]) => {
       return this.getVisibleTodos(filter, todos);
     })

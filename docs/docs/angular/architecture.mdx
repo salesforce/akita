@@ -384,10 +384,9 @@ export class CartQuery extends QueryEntity<CartState> {
   }
 
   selectItems$ = combineLatest([
-     this.selectAll(), 
-     this.productsQuery.selectAll({ asObject: true })
-   ]
-  ).pipe(map(joinItems));
+    this.selectAll(), 
+    this.productsQuery.selectAll({ asObject: true }),
+  ]).pipe(map(joinItems));
 }
 
 function joinItems([cartItems, products]: [CartItem[], Product[]]) {

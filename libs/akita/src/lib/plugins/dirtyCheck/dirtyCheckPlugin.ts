@@ -107,7 +107,7 @@ export class DirtyCheckPlugin<State = any> extends AkitaPlugin<State> {
   private activate() {
     this.head = this._getHead();
     /** if we are tracking specific properties select only the relevant ones */
-    const source = this.params.watchProperty
+    const sources = this.params.watchProperty
       ? (this.params.watchProperty as (keyof State)[]).map((prop) =>
           this.query
             .select((state) => state[prop])
@@ -119,7 +119,7 @@ export class DirtyCheckPlugin<State = any> extends AkitaPlugin<State> {
             )
         )
       : [this.selectSource(this._entityId)];
-    this.subscription = combineLatest(...source)
+    this.subscription = combineLatest(sources)
       .pipe(skip(1))
       .subscribe((currentState: any[]) => {
         if (isUndefined(this.head)) return;
