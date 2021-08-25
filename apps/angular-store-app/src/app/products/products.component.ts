@@ -22,8 +22,7 @@ export class ProductsComponent implements OnInit {
   ngOnInit() {
     this.productsService.get().subscribe();
     this.loading$ = this.productsQuery.selectLoading();
-
-    this.products$ = combineLatest(this.search.valueChanges.pipe(startWith('')), this.sortControl.valueChanges.pipe(startWith('title'))).pipe(
+    this.products$ = combineLatest([this.search.valueChanges.pipe(startWith('')), this.sortControl.valueChanges.pipe(startWith('title'))]).pipe(
       switchMap(([term, sortBy]) => this.productsQuery.getProducts(term, sortBy as keyof Product))
     );
   }

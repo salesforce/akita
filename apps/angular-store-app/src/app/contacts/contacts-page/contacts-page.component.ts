@@ -64,13 +64,13 @@ export class ContactsPageComponent implements OnInit {
     const sort = this.sortByControl.valueChanges.pipe(startWith(sortByInit));
     const perPage = this.perPageControl.valueChanges.pipe(startWith(+perPageInit));
 
-    this.pagination$ = combineLatest(this.paginatorRef.pageChanges, combineLatest(sort, perPage).pipe(tap(_ => this.paginatorRef.clearCache()))).pipe(
+    this.pagination$ = combineLatest([this.paginatorRef.pageChanges, combineLatest([sort, perPage]).pipe(tap(() => this.paginatorRef.clearCache()))]).pipe(
       switchMap(([page, [sortBy, perPage]]) => {
         const req = () =>
           this.contactsService.getPage({
             page,
             sortBy,
-            perPage
+            perPage,
           });
         this.paginatorRef.metadata.set('sortBy', sortBy);
         this.paginatorRef.metadata.set('perPage', perPage);
