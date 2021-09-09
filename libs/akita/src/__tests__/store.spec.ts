@@ -1,4 +1,4 @@
-import { EntityStore, Query, Store, StoreConfig } from '..';
+import { EntityStore, Query, Store, StoreConfig, EntityState } from '..';
 import { TodosStore } from './setup';
 
 interface State {
@@ -9,12 +9,12 @@ interface State {
 
 const state = {
   theme: {
-    color: 'red'
-  }
+    color: 'red',
+  },
 };
 
 @StoreConfig({
-  name: 'themes'
+  name: 'themes',
 })
 class ThemeStore extends Store<State> {
   constructor() {
@@ -31,7 +31,7 @@ describe('Store', () => {
 
   it('should select slice from the store', () => {
     const spy = jest.fn();
-    store._select(state => state.theme).subscribe(spy);
+    store._select((state) => state.theme).subscribe(spy);
     expect(spy).toHaveBeenCalledWith({ color: 'red' });
     expect(spy).toHaveBeenCalledTimes(1);
   });
@@ -46,13 +46,13 @@ describe('Store', () => {
 
   it('should set a new state', () => {
     const spy = jest.fn();
-    store._select(state => state.theme).subscribe(spy);
-    store._setState(state => {
+    store._select((state) => state.theme).subscribe(spy);
+    store._setState((state) => {
       return {
         ...state,
         theme: {
-          color: 'blue'
-        }
+          color: 'blue',
+        },
       };
     });
 
@@ -61,8 +61,8 @@ describe('Store', () => {
     expect(spy).toHaveBeenCalledTimes(2);
     expect(store._value()).toEqual({
       theme: {
-        color: 'blue'
-      }
+        color: 'blue',
+      },
     });
   });
 
@@ -103,7 +103,7 @@ class User {
 }
 
 @StoreConfig({
-  name: 'user'
+  name: 'user',
 })
 class UserStore extends Store<User> {
   constructor() {
@@ -127,7 +127,7 @@ describe('With Class', () => {
 });
 
 @StoreConfig({
-  name: 'user'
+  name: 'user',
 })
 class TestStore extends Store<User> {
   constructor() {
@@ -141,7 +141,7 @@ const testQuery = new Query(testStore);
 describe('Loading Basic Store', () => {
   it('should support loading', () => {
     let value;
-    testQuery.selectLoading().subscribe(v => {
+    testQuery.selectLoading().subscribe((v) => {
       value = v;
     });
     expect(value).toBeTruthy();
@@ -172,5 +172,24 @@ describe('StoreConfig', () => {
   it('should take from the constructor', () => {
     expect(productsStore2.storeName).toBe('pr');
     expect(productsStore2.idKey).toBe('id');
+  });
+});
+
+describe('Store with extented EntityState', () => {
+  type Todo = any;
+  interface TodosState extends EntityState<Todo, number> {
+    filter: string;
+  }
+
+  @StoreConfig({ name: 'todos' })
+  class TodosStore extends EntityStore<TodosState> {
+    constructor() {
+      super({ filter: 'ALL' });
+    }
+  }
+
+  it('should have the initial state', () => {
+    const store = new TodosStore();
+    expect(store.getValue().filter).toBe('ALL');
   });
 });
