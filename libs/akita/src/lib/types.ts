@@ -11,7 +11,6 @@ export interface EntityState<E = any, IDType = any> {
   ids?: IDType[];
   loading?: boolean;
   error?: any;
-  [key: string]: any;
 }
 
 export interface Entities<E> {
