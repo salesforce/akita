@@ -39,5 +39,19 @@ export class UserStore extends EntityStore<UserState> {
 The class constructor should accept **only** one parameter which is a plain object
 :::
 
-In this case, when you call `update()`, `add()` or `set()`, Akita will take care to instantiate a new `User` by merging the entity's current state with the new parameters.
+In this case, when you call `update()`, Akita will take care to instantiate a new `User` by merging the entity's current state with the new parameters.
 
+You can use the `akitaPreAddEntity` to create a new instance of the entity:
+
+```ts
+@StoreConfig({ name: 'posts' })
+export class PostsStore extends EntityStore<PostsState> {
+  constructor() {
+    super();
+  }
+
+  akitaPreAddEntity(nextState: Post): Post {
+    return new Post(nextState);
+  }
+}
+```
