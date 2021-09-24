@@ -1,6 +1,6 @@
 import { EntityState, OrArray, getIDType } from '../../types';
 import { QueryEntity } from '../../queryEntity';
-import { StateHistoryParams, StateHistoryPlugin } from './stateHistoryPlugin';
+import { History, StateHistoryParams, StateHistoryPlugin } from './stateHistoryPlugin';
 import { toBoolean } from '../../toBoolean';
 import { skip } from 'rxjs/operators';
 import { EntityCollectionPlugin } from '../entityCollectionPlugin';
@@ -16,15 +16,15 @@ export class EntityStateHistoryPlugin<State extends EntityState = any, P extends
     this.activate();
     this.selectIds()
       .pipe(skip(1))
-      .subscribe(ids => this.activate(ids));
+      .subscribe((ids) => this.activate(ids));
   }
 
   redo(ids?: OrArray<getIDType<State>>) {
-    this.forEachId(ids, e => e.redo());
+    this.forEachId(ids, (e) => e.redo());
   }
 
   undo(ids?: OrArray<getIDType<State>>) {
-    this.forEachId(ids, e => e.undo());
+    this.forEachId(ids, (e) => e.undo());
   }
 
   hasPast(id: getIDType<State>) {
@@ -40,23 +40,23 @@ export class EntityStateHistoryPlugin<State extends EntityState = any, P extends
   }
 
   jumpToFuture(ids: OrArray<getIDType<State>>, index: number) {
-    this.forEachId(ids, e => e.jumpToFuture(index));
+    this.forEachId(ids, (e) => e.jumpToFuture(index));
   }
 
   jumpToPast(ids: OrArray<getIDType<State>>, index: number) {
-    this.forEachId(ids, e => e.jumpToPast(index));
+    this.forEachId(ids, (e) => e.jumpToPast(index));
   }
 
-  clear(ids?: OrArray<getIDType<State>>) {
-    this.forEachId(ids, e => e.clear());
+  clear(ids?: OrArray<getIDType<State>>, customUpdateFn?: (history: History<State>) => History<State>) {
+    this.forEachId(ids, (e) => e.clear(customUpdateFn));
   }
 
   destroy(ids?: OrArray<getIDType<State>>, clearHistory = false) {
-    this.forEachId(ids, e => e.destroy(clearHistory));
+    this.forEachId(ids, (e) => e.destroy(clearHistory));
   }
 
   ignoreNext(ids?: OrArray<getIDType<State>>) {
-    this.forEachId(ids, e => e.ignoreNext());
+    this.forEachId(ids, (e) => e.ignoreNext());
   }
 
   protected instantiatePlugin(id: getIDType<State>) {
