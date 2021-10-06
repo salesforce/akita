@@ -2,9 +2,9 @@
 
 > A Reactive State Management Tailored-Made for JS Applications
 
-## Elf, a newer state management solution, has been published. We recommend checking it out 🚀
+## Elf, a newer state management solution, has been published. We recommend [checking it out](https://ngneat.github.io/elf/) 🚀
 
-https://ngneat.github.io/elf/
+
 
 Whether it be Angular, React, Vue, Web Components or plain old vanilla JS, Akita can do the heavy lifting and serve as a useful tool for maintaining clean, boilerplate-free, and scalable applications.
 
