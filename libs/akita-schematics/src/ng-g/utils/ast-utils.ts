@@ -513,7 +513,7 @@ export function replaceImport(sourceFile: ts.SourceFile, path: Path, importFrom:
       }
 
       const nextIdentifier = importSpecifiers[index + 1];
-      // identifer is not the last, also clean up the comma
+      // identifier is not the last, also clean up the comma
       if (nextIdentifier) {
         return createRemoveChange(sourceFile, specifier, specifier.getStart(sourceFile), nextIdentifier.getStart(sourceFile));
       }
