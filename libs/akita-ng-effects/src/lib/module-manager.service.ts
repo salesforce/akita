@@ -16,7 +16,7 @@ export class ModuleManager implements OnDestroy {
   subscribeToEffects(effectInstance: Type<any>): void {
     for (let key in effectInstance) {
       const property: Effect = effectInstance[key];
-      if (property.isEffect) {
+      if (property.isEffect === true) {
         property.pipe(takeUntil(this.destroyEffects$)).subscribe((actionOrSkip) => {
           this.dispatchAction(property, actionOrSkip);
         });
