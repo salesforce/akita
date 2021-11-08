@@ -9,6 +9,7 @@ describe('Module Manager Service', () => {
   let mixedInstance;
   let mockEffectOne;
   let mockEffectTwo;
+  let truthyNoEffect;
   let noEffect;
   let actions$;
   let observable$;
@@ -17,6 +18,7 @@ describe('Module Manager Service', () => {
     actions$ = new Actions();
     mockEffectOne = Object.create(actions$);
     mockEffectTwo = Object.create(actions$);
+    truthyNoEffect = { isEffect: { test: 'test' }};
     setMetadata(mockEffectOne, 'mockEffectOne', {});
     setMetadata(mockEffectTwo, 'mockEffectTwo', {});
 
@@ -32,6 +34,7 @@ describe('Module Manager Service', () => {
     mixedInstance = {
       mockEffectOne,
       noEffect,
+      truthyNoEffect,
     };
   });
 
