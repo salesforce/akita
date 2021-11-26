@@ -2,7 +2,7 @@
   "extends": "@nrwl/workspace/presets/npm.json",
   "npmScope": "@datorama",
   "affected": {
-    "defaultBase": "main"
+    "defaultBase": "master"
   },
   "cli": {
     "defaultCollection": "@nrwl/angular"
