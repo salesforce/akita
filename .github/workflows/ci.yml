@@ -1,4 +1,4 @@
-name: '@ngneat/elf'
+name: '@datorama/akita'
 
 on:
   pull_request:
@@ -29,9 +29,6 @@ jobs:
 
       - name: Install dependencies
         run: npm i
-
-      - name: Run ESLint
-        run: npm run lint:all
 
       - name: Run Build
         run: npm run build:all
