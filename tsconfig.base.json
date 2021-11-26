@@ -1,0 +1,29 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2020",
+    "module": "esnext",
+    "lib": ["ES2020", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "strictPropertyInitialization": false,
+    "strictNullChecks": false,
+    "strict": false,
+    "noImplicitAny": false,
+    "baseUrl": ".",
+    "paths": {
+      "@datorama/akita": ["packages/akita/src/index.ts"],
+      "@datorama/akita-ng-entity-service": ["packages/ng-entity-service/src/index.ts"],
+      "@datorama/akita-ng-router-store": ["packages/ng-router-store/src/index.ts"],
+      "@datorama/akita-ngdevtools": ["packages/ng-devtools/src/index.ts"]
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

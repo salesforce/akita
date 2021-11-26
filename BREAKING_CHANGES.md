@@ -1,5 +1,24 @@
 # Breaking Changes
 
+## 7.0.0
+- Akita now complied with `target: ES2020`.
+- Remove coupling to Angular by removing the `ngOnDestroy` method from the store. If you're using a store inside
+a component's provider, you need to call it manually:
+
+```ts
+@Injectable()
+class TodosStore {
+  constructor(private store: TodosStore) {}
+ 
+  ngOnDestroy() {
+    this.store.destroy();
+  }
+}
+```
+
+- All Angular packages peer dependency is Angular v13.
+- Remove the `effects` package in favor of [ngneat/effects](https://github.com/ngneat/effects#use-with-angular)
+
 ## 6.0.0
 
 - Upgrade to TS v4 and support tslib v2.0

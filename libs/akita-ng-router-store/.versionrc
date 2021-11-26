@@ -1,5 +1,0 @@
-{
-  "path": ".",
-  "tag-prefix": "akita-ng-router-store-v",
-  "releaseCommitMessageFormat": "chore(release): akita-ng-router-store@{{currentTag}}"
-}

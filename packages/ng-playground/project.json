@@ -1,0 +1,94 @@
+{
+  "projectType": "application",
+  "root": "packages/ng-playground",
+  "sourceRoot": "packages/ng-playground/src",
+  "prefix": "akita-nx",
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:browser",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/ng-playground",
+        "index": "packages/ng-playground/src/index.html",
+        "main": "packages/ng-playground/src/main.ts",
+        "polyfills": "packages/ng-playground/src/polyfills.ts",
+        "tsConfig": "packages/ng-playground/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          "packages/ng-playground/src/favicon.ico",
+          "packages/ng-playground/src/assets"
+        ],
+        "styles": ["packages/ng-playground/src/styles.scss"],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "fileReplacements": [
+            {
+              "replace": "packages/ng-playground/src/environments/environment.ts",
+              "with": "packages/ng-playground/src/environments/environment.prod.ts"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "browserTarget": "ng-playground:build:production"
+        },
+        "development": {
+          "browserTarget": "ng-playground:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "ng-playground:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "packages/ng-playground/src/**/*.ts",
+          "packages/ng-playground/src/**/*.html"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/ng-playground"],
+      "options": {
+        "jestConfig": "packages/ng-playground/jest.config.js",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}
