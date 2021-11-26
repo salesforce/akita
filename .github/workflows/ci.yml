@@ -1,4 +1,4 @@
-name: '@ngneat/elf'
+name: '@datorama/akita'
 
 on:
   pull_request:
