@@ -46,6 +46,7 @@
     "@angular/language-service": "^13.0.0",
     "@commitlint/cli": "^15.0.0",
     "@commitlint/config-angular": "^15.0.0",
+    "@commitlint/config-conventional": "^15.0.0",
     "@jscutlery/semver": "^2.13.3",
     "@nrwl/angular": "^13.2.2",
     "@nrwl/cli": "13.2.2",
@@ -72,5 +73,15 @@
     "prettier": "^2.3.1",
     "ts-jest": "27.0.5",
     "typescript": "~4.4.3"
+  },
+  "config": {
+    "commitizen": {
+      "path": "git-cz"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   }
 }
