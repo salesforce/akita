@@ -1,0 +1,42 @@
+{
+  "projectType": "library",
+  "root": "packages/ng-router-store",
+  "sourceRoot": "packages/ng-router-store/src",
+  "prefix": "akita-nx",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:package",
+      "outputs": ["dist/packages/ng-router-store"],
+      "options": {
+        "project": "packages/ng-router-store/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "packages/ng-router-store/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "packages/ng-router-store/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/ng-router-store"],
+      "options": {
+        "jestConfig": "packages/ng-router-store/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["packages/ng-router-store/src/**/*.ts", "packages/ng-router-store/src/**/*.html"]
+      }
+    },
+    "version": {
+      "executor": "@jscutlery/semver:version"
+    }
+  },
+  "tags": []
+}

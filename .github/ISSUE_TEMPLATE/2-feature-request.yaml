@@ -1,0 +1,34 @@
+name: 'Feature Request'
+description: Suggest a feature for Akita Library
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives-considered
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: true
+  
+  - type: dropdown
+    id: contribute
+    attributes:
+      label: Do you want to create a pull request?
+      options:
+        - 'Yes'
+        - 'No'
+    validations:
+      required: true

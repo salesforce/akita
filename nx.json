@@ -1,37 +1,11 @@
 {
-  "npmScope": "datorama",
-  "implicitDependencies": {
-    "workspace.json": "*",
-    "package.json": {
-      "dependencies": "*",
-      "devDependencies": "*"
-    },
-    "tsconfig.json": "*",
-    "tslint.json": "*",
-    "nx.json": "*"
+  "extends": "@nrwl/workspace/presets/npm.json",
+  "npmScope": "@datorama",
+  "affected": {
+    "defaultBase": "master"
   },
-  "projects": {
-    "akita": {
-      "tags": ["core"]
-    },
-    "akita-ng-entity-service": {
-      "tags": ["plugin"]
-    },
-    "akita-ng-router-store": {
-      "tags": ["plugin"]
-    },
-    "akita-ng-devtools": {
-      "tags": ["plugin"]
-    },
-    "akita-schematics": {
-      "tags": ["schematics"]
-    },
-    "angular-store-app": {
-      "tags": ["playground"]
-    },
-    "akita-ng-effects": {
-      "tags": ["plugin"]
-    }
+  "cli": {
+    "defaultCollection": "@nrwl/angular"
   },
   "tasksRunnerOptions": {
     "default": {
@@ -39,6 +13,23 @@
       "options": {
         "cacheableOperations": ["build", "lint", "test", "e2e"]
       }
+    }
+  },
+  "generators": {
+    "@nrwl/angular:application": {
+      "style": "scss",
+      "linter": "eslint",
+      "unitTestRunner": "jest",
+      "e2eTestRunner": "none",
+      "strict": false
+    },
+    "@nrwl/angular:library": {
+      "style": "scss",
+      "linter": "eslint",
+      "unitTestRunner": "jest"
+    },
+    "@nrwl/angular:component": {
+      "style": "scss"
     }
   }
 }

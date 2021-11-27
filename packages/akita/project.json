@@ -1,0 +1,36 @@
+{
+  "root": "packages/akita",
+  "sourceRoot": "packages/akita/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/workspace:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/akita",
+        "main": "packages/akita/src/index.ts",
+        "tsConfig": "packages/akita/tsconfig.lib.json",
+        "assets": ["packages/akita/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/akita/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/akita"],
+      "options": {
+        "jestConfig": "packages/akita/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "version": {
+      "executor": "@jscutlery/semver:version"
+    }
+  },
+  "tags": []
+}

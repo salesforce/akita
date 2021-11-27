@@ -1,0 +1,42 @@
+{
+  "projectType": "library",
+  "root": "packages/ng-devtools",
+  "sourceRoot": "packages/ng-devtools/src",
+  "prefix": "akita-nx",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:package",
+      "outputs": ["dist/packages/ng-devtools"],
+      "options": {
+        "project": "packages/ng-devtools/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "packages/ng-devtools/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "packages/ng-devtools/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/ng-devtools"],
+      "options": {
+        "jestConfig": "packages/ng-devtools/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["packages/ng-devtools/src/**/*.ts", "packages/ng-devtools/src/**/*.html"]
+      }
+    },
+    "version": {
+      "executor": "@jscutlery/semver:version"
+    }
+  },
+  "tags": []
+}
