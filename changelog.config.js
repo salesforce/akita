@@ -18,6 +18,7 @@ module.exports = {
     'akita',
     'ng-devtools',
     'ng-router-store',
+    'ng-entity-service',
     'general'
   ],
   types: {
