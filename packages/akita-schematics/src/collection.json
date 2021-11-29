@@ -56,14 +56,6 @@
       "factory": "./ng-g/http-entity-service/index",
       "schema": "./ng-g/http-entity-service/schema.json"
     },
-    "firebase-entity-service": {
-      "aliases": [
-        "afes"
-      ],
-      "description": "An Firebase entity service",
-      "factory": "./ng-g/firebase-entity-service/index",
-      "schema": "./ng-g/firebase-entity-service/schema.json"
-    },
     "model": {
       "aliases": [
         "am"
@@ -89,14 +81,6 @@
       "description": "A component",
       "factory": "./ng-g/component/index",
       "schema": "./ng-g/component/schema.json"
-    },
-    "effect": {
-      "aliases": [
-        "aef"
-      ],
-      "description": "A effect",
-      "factory": "./ng-g/effect/index",
-      "schema": "./ng-g/effect/schema.json"
     }
   }
 }

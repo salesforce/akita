@@ -10,7 +10,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     const dependencies: NodeDependency[] = [
       {
         type: NodeDependencyType.Default,
-        version: '^6.0.0',
+        version: '^7.0.0',
         name: '@datorama/akita',
       },
     ];
@@ -18,7 +18,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     if (options.withRouter || options.router) {
       dependencies.push({
         type: NodeDependencyType.Default,
-        version: '^6.0.0',
+        version: '^7.0.0',
         name: '@datorama/akita-ng-router-store',
       });
     }
@@ -26,7 +26,7 @@ function addPackageJsonDependencies(options: Schema): Rule {
     if (options.devtools) {
       dependencies.push({
         type: NodeDependencyType.Dev,
-        version: '^6.0.0',
+        version: '^7.0.0',
         name: '@datorama/akita-ngdevtools',
       });
     }
@@ -34,16 +34,8 @@ function addPackageJsonDependencies(options: Schema): Rule {
     if (options.httpEntityService) {
       dependencies.push({
         type: NodeDependencyType.Default,
-        version: '^6.0.0',
+        version: '^7.0.0',
         name: '@datorama/akita-ng-entity-service',
-      });
-    }
-
-    if (options.firebaseEntityService) {
-      dependencies.push({
-        type: NodeDependencyType.Default,
-        version: '^3.1.6',
-        name: 'akita-ng-fire',
       });
     }
 
@@ -77,8 +69,8 @@ function getTsSourceFile(host: Tree, path: string): ts.SourceFile {
 }
 
 function injectImports(options: Schema): Rule {
-  return (host: Tree, context: SchematicContext) => {
-    if (!options.router && !options.devtools && !options.httpEntityService && !options.firebaseEntityService) {
+  return (host: Tree) => {
+    if (!options.router && !options.devtools && !options.httpEntityService) {
       return;
     }
     const workspace = getWorkspace(host);
