@@ -99,7 +99,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
         state,
         entities,
         idKey: this.idKey,
-        preAddEntity: this.akitaPreAddEntity,
+        preAddEntity: this.akitaPreAddEntity.bind(this),
         isNativePreAdd,
       });
 
@@ -135,7 +135,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 
     const data = addEntities({
       state: this._value(),
-      preAddEntity: this.akitaPreAddEntity,
+      preAddEntity: this.akitaPreAddEntity.bind(this),
       entities: collection,
       idKey: this.idKey,
       options,
@@ -214,7 +214,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
       updateEntities({
         idKey: this.idKey,
         ids,
-        preUpdateEntity: this.akitaPreUpdateEntity,
+        preUpdateEntity: this.akitaPreUpdateEntity.bind(this),
         state,
         newStateOrFn,
         producerFn: this._producerFn,
