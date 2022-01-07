@@ -7,11 +7,9 @@ a component's provider, you need to call it manually:
 
 ```ts
 @Injectable()
-class TodosStore {
-  constructor(private store: TodosStore) {}
- 
+class TodosStore extends Store { 
   ngOnDestroy() {
-    this.store.destroy();
+    this.destroy();
   }
 }
 ```
