@@ -7,7 +7,7 @@ One of the recurring requests we got, was to simplify and improve the experience
 To make it easier for you, we’ve added a new API method — `runStoreAction` and `runEntityStoreAction`:
 
 ```ts
-import { runStoreAction, StoreActions, runEntityStoreAction, EntityStoreActions  } from '@datorama/akita';
+import { runStoreAction, StoreAction, runEntityStoreAction, EntityStoreAction  } from '@datorama/akita';
 
 runStoreAction(BooksStore, StoreAction.Update, update => update({ filter: 'COMPLETE' }));
 
