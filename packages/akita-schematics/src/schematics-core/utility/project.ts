@@ -19,8 +19,8 @@ export function getProject(host: Tree, options: { project?: string | undefined; 
 export function getProjectPath(host: Tree, options: { project?: string | undefined; path?: string | undefined }) {
   const project = getProject(host, options);
 
-  if (project.root.substr(-1) === '/') {
-    project.root = project.root.substr(0, project.root.length - 1);
+  if (project.root.slice(-1) === '/') {
+    project.root = project.root.slice(0, -1);
   }
 
   if (options.path === undefined) {
