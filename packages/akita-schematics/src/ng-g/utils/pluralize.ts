@@ -55,7 +55,7 @@ declare const define: any;
 
     // Title cased words. E.g. "Title".
     if (word[0] === word[0].toUpperCase()) {
-      return token.charAt(0).toUpperCase() + token.substr(1).toLowerCase();
+      return token.charAt(0).toUpperCase() + token.slice(1).toLowerCase();
     }
 
     // Lower cased words. E.g. "test".
