@@ -28,7 +28,7 @@
     "@angular/platform-browser": "^13.0.0",
     "@angular/platform-browser-dynamic": "^13.0.0",
     "@angular/router": "^13.0.0",
-    "@ngneat/until-destroy": "^9.0.0",
+    "@ngneat/until-destroy": "^9.0.2",
     "copyfiles": "^2.4.1",
     "faker": "^5.5.3",
     "helpful-decorators": "^2.1.0",
