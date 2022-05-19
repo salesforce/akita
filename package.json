@@ -32,7 +32,7 @@
     "copyfiles": "^2.4.1",
     "faker": "^5.5.3",
     "helpful-decorators": "^2.1.0",
-    "rxjs": "~7.4.0",
+    "rxjs": "~7.5.5",
     "schematics-utilities": "^2.0.3",
     "tslib": "^2.0.0",
     "zone.js": "~0.11.4"
