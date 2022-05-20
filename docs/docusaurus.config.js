@@ -2,9 +2,9 @@ module.exports = {
   title: 'Akita',
   tagline: '🔮 A Reactive State Management Tailor-Made for JS Applications',
   baseUrl: '/akita/',
-  url: 'https://github.com/datorama',
+  url: 'https://github.com/salesforce',
   favicon: 'img/favicon.ico',
-  organizationName: 'datorama',
+  organizationName: 'salesforce',
   projectName: 'akita',
   themeConfig: {
     algolia: {
@@ -45,7 +45,7 @@ module.exports = {
           className: 'header-icon-link header-gitter-link'
         },
         {
-          href: 'https://github.com/datorama/akita/',
+          href: 'https://github.com/salesforce/akita/',
           label: ' ',
           position: 'right',
           className: 'header-icon-link header-github-link'
@@ -90,7 +90,7 @@ module.exports = {
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/datorama/akita/',
+              href: 'https://github.com/salesforce/akita/',
             },
             {
               label: 'Twitter',
@@ -99,7 +99,7 @@ module.exports = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} Datorama, Inc.`,
+      copyright: `Copyright © ${new Date().getFullYear()} salesforce, Inc.`,
     },
     prism: {
       theme: require('prism-react-renderer/themes/nightOwlLight'),
@@ -113,7 +113,7 @@ module.exports = {
       {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/datorama/akita/edit/master/docs',
+          editUrl: 'https://github.com/salesforce/akita/edit/master/docs',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
