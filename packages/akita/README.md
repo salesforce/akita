@@ -25,7 +25,7 @@ Akita encourages simplicity. It saves you the hassle of creating boilerplate cod
 
 👉 [10 Reasons Why You Should Start Using Akita as Your State Management Solution](https://engineering.datorama.com/10-reasons-why-you-should-start-using-akita-as-your-state-management-solution-66b63d033fec)
 
-- 🤓 Learn about it on the [docs site](https://datorama.github.io/akita/)
+- 🤓 Learn about it on the [docs site](https://opensource.salesforce.com/akita/)
 - 🚀 See it in action on [StackBlitz](https://stackblitz.com/edit/akita-todos-app)
 - 😎 Use the [CLI](https://github.com/datorama/akita/tree/master/tools/akita-cli)
 - 👉 Checkout the [sample application](http://akita.surge.sh/)

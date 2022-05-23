@@ -56,7 +56,7 @@ runEntityStoreAction(BooksStore, EntityStoreAction.UpsertEntities, (upsert) => u
 
 It also takes the store name as string.
 
-- A new [select](https://datorama.github.io/akita/docs/enhancers/persist-state/#select) option for the `persistState` plugin.
+- A new [select](https://opensource.salesforce.com/akita/docs/enhancers/persist-state/#select) option for the `persistState` plugin.
 
 ## 4.0.0
 
