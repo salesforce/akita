@@ -14,7 +14,7 @@ import { HashMap, MaybeAsync } from './types';
 let skipStorageUpdate = false;
 
 const _persistStateInit = new ReplaySubject(1);
-const _persistStateInitedStores = new BehaviorSubject([]);
+const _persistStateInitedStores = new BehaviorSubject<string[]>([]);
 
 export function selectPersistStateInit() {
   return _persistStateInit.asObservable();
