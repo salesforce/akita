@@ -1,4 +1,4 @@
-import { from, isObservable, of, OperatorFunction, ReplaySubject, Subscription } from 'rxjs';
+import { from, isObservable, of, BehaviorSubject, OperatorFunction, ReplaySubject, Subscription } from 'rxjs';
 import { filter, map, skip } from 'rxjs/operators';
 import { setAction } from './actions';
 import { $$addStore, $$deleteStore } from './dispatchers';
@@ -14,9 +14,14 @@ import { HashMap, MaybeAsync } from './types';
 let skipStorageUpdate = false;
 
 const _persistStateInit = new ReplaySubject(1);
+const _persistStateInitedStores = new BehaviorSubject([]);
 
 export function selectPersistStateInit() {
   return _persistStateInit.asObservable();
+}
+
+export function selectPersistStateInitedStores() {
+  return _persistStateInitedStores.asObservable();
 }
 
 export function setSkipStorageUpdate(skip: boolean) {
@@ -239,6 +244,7 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
     );
 
     _persistStateInit.next(true);
+    _persistStateInitedStores.next(_persistStateInitedStores.getValue().concat([key]));
   });
 
   return {
