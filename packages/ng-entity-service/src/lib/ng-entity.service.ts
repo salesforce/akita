@@ -350,7 +350,7 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
     return final;
   }
 
-  protected handleError(method: HttpMethod, error: any, errorMsg?: string): any {
+  protected handleError(method: HttpMethod, error: any, errorMsg?: string): Observable<never> {
     this.dispatchError({
       method,
       errorMsg,
