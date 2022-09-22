@@ -76,7 +76,7 @@ export class SessionService {
   async updateUserName(newName: string) {
     this.sessionStore.setLoading(true);
     await this.http(...).toPromise();
-    this.sessionStore.update({ name: newName});
+    this.sessionStore.update({ name: newName });
     this.sessionStore.setLoading(false);
   }  
 }
