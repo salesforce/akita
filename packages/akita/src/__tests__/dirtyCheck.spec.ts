@@ -385,7 +385,7 @@ describe('DirtyCheckEntity', () => {
     });
 
     it('should return true if some of the entities are dirty', () => {
-      jest.useFakeTimers('legacy');
+      jest.useFakeTimers({ legacyFakeTimers: true });
       widgetsStore.remove();
       widgetsStore.add([createWidget(), createWidget(), createWidget()]);
       collection.setHead();
@@ -551,7 +551,7 @@ describe('DirtyCheckEntity', () => {
     });
 
     it('someDirty should return true if some of the entities are dirty', () => {
-      jest.useFakeTimers('legacy');
+      jest.useFakeTimers({ legacyFakeTimers: true });
       widgetsStore.remove();
       _id = 3;
       widgetsStore.add([createWidget(), createWidget(), createWidget()]);
@@ -605,7 +605,7 @@ describe('DirtyCheckEntity', () => {
     });
 
     it('someDirty should return false when calling set head', () => {
-      jest.useFakeTimers('legacy');
+      jest.useFakeTimers({ legacyFakeTimers: true });
       widgetsStore.remove();
       _id = 6;
       widgetsStore.add([createWidget(), createWidget(), createWidget()]);

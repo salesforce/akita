@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { PersistNgFormPlugin } from '@datorama/akita';
 import { StoriesQuery } from '../state/stories.query';
@@ -12,16 +12,16 @@ import { StoriesService } from '../state/stories.service';
   styleUrls: ['./stories.component.css']
 })
 export class StoriesComponent implements OnInit {
-  form: FormGroup;
-  formKeyBased: FormGroup;
-  formRootKey: FormGroup;
+  form: UntypedFormGroup;
+  formKeyBased: UntypedFormGroup;
+  formRootKey: UntypedFormGroup;
   storeValue;
   persistForm: PersistNgFormPlugin<Story>;
   persistFormKey: PersistNgFormPlugin;
   persistFormRootKey: PersistNgFormPlugin;
   loading$: Observable<boolean>;
 
-  constructor(private storiesQuery: StoriesQuery, private storiesService: StoriesService, private builder: FormBuilder) {}
+  constructor(private storiesQuery: StoriesQuery, private storiesService: StoriesService, private builder: UntypedFormBuilder) {}
 
   ngOnInit() {
     this.loading$ = this.storiesQuery.selectLoading();
@@ -61,6 +61,6 @@ export class StoriesComponent implements OnInit {
   }
 
   addSkill() {
-    (this.formRootKey.get('skills') as FormArray).push(this.builder.control('Akita'));
+    (this.formRootKey.get('skills') as UntypedFormArray).push(this.builder.control('Akita'));
   }
 }

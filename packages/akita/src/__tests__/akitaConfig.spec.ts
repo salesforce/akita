@@ -22,13 +22,13 @@ describe('Akita global config', () => {
   });
 
   it('should set cache timeout with 300ms', () => {
-    jest.useFakeTimers('legacy');
+    jest.useFakeTimers({ legacyFakeTimers: true });
     todosStore.setHasCache(true, { restartTTL: true });
     expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 300);
   });
 
   it('should not have cache after 300ms', () => {
-    jest.useFakeTimers('legacy');
+    jest.useFakeTimers({ legacyFakeTimers: true });
     todosStore.add({ id: 1 });
     todosStore.setHasCache(true, { restartTTL: true });
     jest.runAllTimers();

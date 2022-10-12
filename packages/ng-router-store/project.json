@@ -1,6 +1,5 @@
 {
   "projectType": "library",
-  "root": "packages/ng-router-store",
   "sourceRoot": "packages/ng-router-store/src",
   "prefix": "akita-nx",
   "targets": {
@@ -24,7 +23,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/packages/ng-router-store"],
       "options": {
-        "jestConfig": "packages/ng-router-store/jest.config.js",
+        "jestConfig": "packages/ng-router-store/jest.config.ts",
         "passWithNoTests": true
       }
     },

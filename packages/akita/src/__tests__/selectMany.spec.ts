@@ -13,7 +13,7 @@ class ArticlesQuery extends QueryEntity<ArticlesState, Article> { }
 
 const store = new ArticlesStore();
 const query = new ArticlesQuery(store);
-jest.useFakeTimers('legacy');
+jest.useFakeTimers({ legacyFakeTimers: true });
 
 describe('selectMany', () => {
   it('should filter nil', () => {
