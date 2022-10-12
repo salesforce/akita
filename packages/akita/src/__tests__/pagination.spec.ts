@@ -298,7 +298,7 @@ class Todos2Query extends QueryEntity<any, Todo> {
 }
 
 describe('cacheTimeout', () => {
-  jest.useFakeTimers('legacy');
+  jest.useFakeTimers({ legacyFakeTimers: true });
   const query2 = new Todos2Query();
   const paginator2 = new PaginatorPlugin(query2, { cacheTimeout: interval(15000) });
   const requestFunc = jest.fn();
@@ -340,7 +340,7 @@ class Todos3Query extends QueryEntity<any, Todo> {
 }
 
 describe('cacheTimeout and clearStoreWithCache false', () => {
-  jest.useFakeTimers('legacy');
+  jest.useFakeTimers({ legacyFakeTimers: true });
   const query3 = new Todos3Query();
   const paginator3 = new PaginatorPlugin(query3, { cacheTimeout: interval(15000), clearStoreWithCache: false });
   const requestFunc = jest.fn();

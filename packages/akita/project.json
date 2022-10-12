@@ -1,10 +1,9 @@
 {
-  "root": "packages/akita",
   "sourceRoot": "packages/akita/src",
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nrwl/workspace:tsc",
+      "executor": "@nrwl/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/akita",
@@ -24,7 +23,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/packages/akita"],
       "options": {
-        "jestConfig": "packages/akita/jest.config.js",
+        "jestConfig": "packages/akita/jest.config.ts",
         "passWithNoTests": true
       }
     },

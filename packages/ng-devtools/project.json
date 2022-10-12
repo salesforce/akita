@@ -1,6 +1,5 @@
 {
   "projectType": "library",
-  "root": "packages/ng-devtools",
   "sourceRoot": "packages/ng-devtools/src",
   "prefix": "akita-nx",
   "targets": {
@@ -24,7 +23,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/packages/ng-devtools"],
       "options": {
-        "jestConfig": "packages/ng-devtools/jest.config.js",
+        "jestConfig": "packages/ng-devtools/jest.config.ts",
         "passWithNoTests": true
       }
     },

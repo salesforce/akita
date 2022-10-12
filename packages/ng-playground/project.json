@@ -1,6 +1,5 @@
 {
   "projectType": "application",
-  "root": "packages/ng-playground",
   "sourceRoot": "packages/ng-playground/src",
   "prefix": "akita-nx",
   "targets": {
@@ -14,10 +13,7 @@
         "polyfills": "packages/ng-playground/src/polyfills.ts",
         "tsConfig": "packages/ng-playground/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
-        "assets": [
-          "packages/ng-playground/src/favicon.ico",
-          "packages/ng-playground/src/assets"
-        ],
+        "assets": ["packages/ng-playground/src/favicon.ico", "packages/ng-playground/src/assets"],
         "styles": ["packages/ng-playground/src/styles.scss"],
         "scripts": []
       },
@@ -75,17 +71,14 @@
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "options": {
-        "lintFilePatterns": [
-          "packages/ng-playground/src/**/*.ts",
-          "packages/ng-playground/src/**/*.html"
-        ]
+        "lintFilePatterns": ["packages/ng-playground/src/**/*.ts", "packages/ng-playground/src/**/*.html"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/packages/ng-playground"],
       "options": {
-        "jestConfig": "packages/ng-playground/jest.config.js",
+        "jestConfig": "packages/ng-playground/jest.config.ts",
         "passWithNoTests": true
       }
     }
