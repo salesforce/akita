@@ -11,7 +11,7 @@
     "clear": "docusaurus clear"
   },
   "dependencies": {
-    "@docusaurus/core": "^2.0.0-alpha.70",
+    "@docusaurus/core": "^2.1.0",
     "@docusaurus/preset-classic": "^2.0.0-alpha.70",
     "classnames": "^2.2.6",
     "react": "^17.0.1",
