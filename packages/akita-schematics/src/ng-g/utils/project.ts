@@ -1,5 +1,5 @@
 import { Tree } from '@angular-devkit/schematics';
-import { getWorkspace } from 'schematics-utilities';
+import { getWorkspace } from 'schematics-utilities-fix';
 
 export function getProjectPath(host: Tree, options: { project?: string | undefined; path?: string | undefined }) {
   const workspace = getWorkspace(host);

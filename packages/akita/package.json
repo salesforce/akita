@@ -28,7 +28,7 @@
   "license": "Apache-2.0",
   "author": "Netanel Basal",
   "dependencies": {
-    "schematics-utilities": "^2.0.3"
+    "schematics-utilities-fix": "^2.0.3"
   },
   "peerDependencies": {
     "rxjs": "*"
