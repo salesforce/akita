@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { TodoFilter, VISIBILITY_FILTER } from './filter.model';
 
@@ -29,10 +29,10 @@ export class TodosFiltersComponent implements OnInit, OnDestroy {
   @Output()
   update = new EventEmitter<VISIBILITY_FILTER>();
 
-  control: FormControl;
+  control: UntypedFormControl;
 
   ngOnInit() {
-    this.control = new FormControl(this._active);
+    this.control = new UntypedFormControl(this._active);
 
     this.control.valueChanges.pipe(untilDestroyed(this)).subscribe((c) => {
       this.update.emit(c);

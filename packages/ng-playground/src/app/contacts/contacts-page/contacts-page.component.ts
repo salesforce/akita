@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { ContactsService } from '../state/contacts.service';
 import { combineLatest } from 'rxjs';
 import { startWith, switchMap, tap } from 'rxjs/operators';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { CONTACTS_PAGINATOR } from '../state/contacts.pagination';
 import { PaginatorPlugin } from '@datorama/akita';
@@ -16,8 +16,8 @@ import { ContactState } from '../state/contacts.store';
 })
 export class ContactsPageComponent implements OnInit {
   pagination$;
-  sortByControl: FormControl;
-  perPageControl: FormControl;
+  sortByControl: UntypedFormControl;
+  perPageControl: UntypedFormControl;
 
   constructor(
     private contactsQuery: ContactsQuery,
@@ -29,8 +29,8 @@ export class ContactsPageComponent implements OnInit {
   ngOnInit() {
     const sortByInit = this.paginatorRef.metadata.get('sortBy') || 'name';
     const perPageInit = this.paginatorRef.metadata.get('perPage') || '10';
-    this.sortByControl = new FormControl(sortByInit);
-    this.perPageControl = new FormControl(perPageInit);
+    this.sortByControl = new UntypedFormControl(sortByInit);
+    this.perPageControl = new UntypedFormControl(perPageInit);
 
     /**
      *

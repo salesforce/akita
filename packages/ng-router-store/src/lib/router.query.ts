@@ -3,6 +3,7 @@ import { filterNilValue, Query } from '@datorama/akita';
 import { combineLatest, Observable, Subject } from 'rxjs';
 import { distinctUntilChanged, map, pluck } from 'rxjs/operators';
 import { RouterState, RouterStore } from './router.store';
+import {NavigationCancel, NavigationError} from '@angular/router';
 
 function slice(section: string) {
   return (source: Observable<RouterState>) => {
@@ -17,8 +18,8 @@ function slice(section: string) {
   providedIn: 'root',
 })
 export class RouterQuery extends Query<RouterState> {
-  __navigationCancel = new Subject();
-  __navigationError = new Subject();
+  __navigationCancel = new Subject<NavigationCancel>();
+  __navigationError = new Subject<NavigationError>();
 
   constructor(protected store: RouterStore) {
     super(store);

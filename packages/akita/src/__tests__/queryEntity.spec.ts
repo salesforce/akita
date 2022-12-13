@@ -299,7 +299,7 @@ describe('Entities Query', () => {
       });
       describe('selectHasCache', () => {
         it('should work in a full flow', () => {
-          jest.useFakeTimers('legacy');
+          jest.useFakeTimers({ legacyFakeTimers: true });
           sub = ttlQuery.selectHasCache().subscribe(spy);
           expect(spy).toHaveBeenCalledTimes(1);
           expect(spy).toHaveBeenCalledWith(false);
@@ -342,7 +342,7 @@ describe('Entities Query', () => {
 
       describe('getHasCache', () => {
         it('should work in a full flow', () => {
-          jest.useFakeTimers('legacy');
+          jest.useFakeTimers({ legacyFakeTimers: true });
           expect(ttlQuery.getHasCache()).toBe(false);
           const factory = ct();
           storeWithTtl.set(factory());
@@ -661,7 +661,7 @@ describe('selectAll', () => {
 });
 
 describe('Many', () => {
-  jest.useFakeTimers('legacy');
+  jest.useFakeTimers({ legacyFakeTimers: true });
   const todosStore = new TodosStore();
   const queryTodos = new QueryEntity(todosStore);
   let spy;

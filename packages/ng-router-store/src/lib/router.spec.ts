@@ -1,7 +1,7 @@
 import { APP_BASE_HREF } from '@angular/common';
 import { Component, Injectable, NgZone } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { ActivatedRouteSnapshot, CanActivate, NavigationExtras, Router, Routes } from '@angular/router';
+import {ActivatedRouteSnapshot, CanActivate, NavigationCancel, NavigationExtras, Router, Routes} from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AkitaNgRouterStoreModule } from '..';
 import { RouterQuery } from './router.query';
@@ -126,7 +126,15 @@ describe('RouterService', () => {
     expect.assertions(3);
 
     routerQuery.selectNavigationCancel().subscribe((event) => {
-      expect(event).toEqual({ id: 2, reason: 'NavigationCancelingError: Redirecting to "/home"', url: '/redirect-home' });
+      expect(event).toEqual(
+        <NavigationCancel>{
+          id: 2,
+          code: 0,
+          type: 2,
+          reason: 'NavigationCancelingError: Redirecting to "/home"',
+          url: '/redirect-home'
+        }
+      )
     });
 
     routerQuery.select().subscribe(({ navigationId, state }) => {
