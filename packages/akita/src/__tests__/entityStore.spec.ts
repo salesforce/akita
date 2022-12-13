@@ -391,7 +391,7 @@ describe('EntitiesStore', () => {
       });
 
       it('should work in full flow', () => {
-        jest.useFakeTimers('legacy');
+        jest.useFakeTimers({ legacyFakeTimers: true });
         expect(store.cache.active.value).toBe(false);
         expect(store.cache.ttl).toBe(null);
         const todo = new Todo({ id: 2 });
@@ -432,7 +432,7 @@ describe('EntitiesStore', () => {
       });
 
       it('should work in full flow', () => {
-        jest.useFakeTimers('legacy');
+        jest.useFakeTimers({ legacyFakeTimers: true });
         const todo = new Todo({ id: 2 });
         store.set(todo);
         expect(setTimeout).not.toHaveBeenCalled();

@@ -69,7 +69,7 @@ describe('Multi active', () => {
   });
 
   describe('Query', () => {
-    jest.useFakeTimers('legacy');
+    jest.useFakeTimers({ legacyFakeTimers: true });
 
     it('should get active ids', () => {
       const active = query.getActiveId();
