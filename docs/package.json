@@ -12,8 +12,8 @@
   },
   "dependencies": {
     "@docusaurus/core": "^2.0.0-alpha.70",
-    "@docusaurus/preset-classic": "^2.0.0-alpha.70",
     "classnames": "^2.3.1",
+    "@docusaurus/preset-classic": "^2.2.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1"
   },

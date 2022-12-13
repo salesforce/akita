@@ -7,7 +7,7 @@ import { cacheable } from '../lib/index';
 const store = new EntityStore({}, { name: 'test' });
 const query = new QueryEntity(store);
 
-jest.useFakeTimers('legacy');
+jest.useFakeTimers({ legacyFakeTimers: true });
 
 describe('setLoading', () => {
   it('should work', () => {

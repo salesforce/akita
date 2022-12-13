@@ -1,10 +1,11 @@
-module.exports = {
+/* eslint-disable */
+export default {
   displayName: 'akita',
   preset: '../../jest.preset.js',
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/tsconfig.spec.json',
-      isolatedModules: true
+      isolatedModules: true,
     },
   },
   testEnvironment: 'jsdom',

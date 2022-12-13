@@ -1,375 +1,273 @@
 {
   "migrations": [
     {
-      "version": "10.0.0-beta.0",
-      "description": "Add default branch to nx.json",
-      "factory": "./src/migrations/update-10-0-0/update-10-0-0",
+      "version": "13.3.0-beta.0",
+      "description": "@nrwl/workspace:tsc is now @nrwl/js:tsc",
+      "cli": "nx",
+      "implementation": "./src/migrations/update-13-3-0/update-tsc-executor-location",
       "package": "@nrwl/workspace",
-      "name": "add-default-branch-to-nx-json"
+      "name": "13-3-0-tsc-location"
     },
     {
-      "version": "10.0.0-beta.0",
-      "description": "Migrate tsconfigs to solution style tsconfigs",
-      "factory": "./src/migrations/update-10-0-0/solution-tsconfigs",
+      "version": "13.6.0-beta.0",
+      "description": "Remove old options that are no longer used",
+      "cli": "nx",
+      "implementation": "./src/migrations/update-13-6-0/remove-old-task-runner-options",
       "package": "@nrwl/workspace",
-      "name": "solution-tsconfigs"
+      "name": "13-6-0-remove-old-task-runner-options"
     },
     {
-      "version": "10.0.1-beta.0",
-      "description": "Migrate .eslintrc files to reference new tsconfig",
-      "factory": "./src/migrations/update-10-0-1/migrate-eslintrc",
+      "version": "13.9.0-beta.0",
+      "description": "Replace @nrwl/tao with nx",
+      "cli": "nx",
+      "implementation": "./src/migrations/update-13-9-0/replace-tao-with-nx",
       "package": "@nrwl/workspace",
-      "name": "migrate-eslintrc-tsconfig"
+      "name": "13-9-0-replace-tao-with-nx"
     },
     {
-      "version": "10.1.0-beta.0",
-      "description": "Migrate .eslintrc files to use tsconfig with a wildcard",
-      "factory": "./src/migrations/update-10-1-0/migrate-eslintrc-tsconfig-wildcard",
+      "version": "13.10.0-beta.0",
+      "description": "Update the decorate-angular-cli script to require nx instead of @nrwl/cli",
+      "cli": "nx",
+      "implementation": "./src/migrations/update-13-10-0/update-decorate-cli",
       "package": "@nrwl/workspace",
-      "name": "migrate-eslintrc-tsconfig-wildcard"
+      "name": "13-10-0-update-decorate-cli"
     },
     {
-      "version": "10.3.0-beta.0",
-      "description": "Add @nrwl/cli as dependency",
-      "factory": "./src/migrations/update-10-3-0/add-cli-dependency",
+      "version": "13.10.0-beta.0",
+      "description": "Update the tasks runner property to import it from the nx package instead of @nrwl/worksapce",
+      "cli": "nx",
+      "implementation": "./src/migrations/update-13-10-0/update-tasks-runner",
       "package": "@nrwl/workspace",
-      "name": "add-cli-dependency"
+      "name": "13-10-0-update-tasks-runner"
     },
     {
-      "version": "10.3.0-beta.0",
-      "description": "Update typescript to v4",
-      "factory": "./src/migrations/update-10-3-0/update-typescript",
+      "version": "14.0.0-beta.0",
+      "description": "Changes the presets in nx.json to come from the nx package",
+      "cli": "nx",
+      "implementation": "./src/migrations/update-14-0-0/change-nx-json-presets",
       "package": "@nrwl/workspace",
-      "name": "update-10-3-0"
+      "name": "14-0-0-change-nx-json-presets"
     },
     {
-      "version": "10.3.0-beta.1",
-      "description": "Adds .vscode/extensions.json to a workspace",
-      "factory": "./src/migrations/update-10-3-0/add-vscode-extensions",
+      "version": "14.0.0-beta.0",
+      "description": "Migrates from @nrwl/workspace:run-script to nx:run-script",
+      "cli": "nx",
+      "implementation": "./src/migrations/update-14-0-0/change-npm-script-executor",
       "package": "@nrwl/workspace",
-      "name": "add-vscode-extensions"
+      "name": "14-0-0-change-npm-script-executor"
     },
     {
-      "version": "10.3.0-beta.0",
-      "description": "Adds `buildableProjectDepsInPackageJsonType` for web and angular package builders",
-      "factory": "./src/migrations/update-10-3-0/add-buildable-project-deps-in-package-json-type",
+      "version": "14.2.0",
+      "description": "Explicitly enable sourceAnalysis for all workspaces extending from npm.json or core.json (this was default behavior prior to 14.2)",
+      "cli": "nx",
+      "implementation": "./src/migrations/update-14-2-0/enable-source-analysis",
       "package": "@nrwl/workspace",
-      "name": "add-buildable-project-deps-in-package-json-type"
+      "name": "14-2-0-enable-source-analysis"
     },
     {
-      "version": "10.4.0-beta.5",
-      "description": "Add an explicit dependency on @nrwl/tao",
-      "factory": "./src/migrations/update-10-4-0/add-explicit-dep-on-tao",
+      "version": "14.8.0-beta.0",
+      "description": "Migrates from @nrwl/workspace:run-commands to nx:run-commands",
+      "cli": "nx",
+      "implementation": "./src/migrations/update-14-8-0/change-run-commands-executor",
       "package": "@nrwl/workspace",
-      "name": "add-explicit-dep-on-tao"
+      "name": "14-8-0-change-run-commands-executor"
     },
     {
-      "version": "10.4.5",
-      "description": "Update the 'update' npm script to invoke nx migrate",
-      "factory": "./src/migrations/update-10-4-0/update-script-to-invoke-nx-migrate",
-      "package": "@nrwl/workspace",
-      "name": "update-script-to-invoke-nx-migrate"
-    },
-    {
-      "version": "11.0.0-beta.3",
-      "description": "Update the decoration script when using Angular CLI",
-      "factory": "./src/migrations/update-11-0-0/update-decorate-angular-cli",
-      "package": "@nrwl/workspace",
-      "name": "update-decorate-angular-cli"
-    },
-    {
-      "version": "11.0.0-beta.3",
-      "description": "Update the @types/node package",
-      "factory": "./src/migrations/update-11-0-0/update-node-types",
-      "package": "@nrwl/workspace",
-      "name": "update-node-types"
-    },
-    {
-      "version": "11.0.0-beta.3",
-      "description": "Rename tools/schematics into tools/generators",
-      "factory": "./src/migrations/update-11-0-0/rename-workspace-schematics",
-      "package": "@nrwl/workspace",
-      "name": "rename-workspace-schematics"
-    },
-    {
-      "version": "11.0.0-beta.15",
-      "description": "Adds `outputs` based on builders",
-      "factory": "./src/migrations/update-11-0-0/add-outputs-in-workspace",
-      "package": "@nrwl/workspace",
-      "name": "add-outputs-in-workspace"
-    },
-    {
-      "version": "11.0.0",
-      "description": "Check that the right update command is used",
-      "factory": "./src/migrations/update-11-0-0/update-command-check",
-      "package": "@nrwl/workspace",
-      "name": "update-command-check"
-    },
-    {
-      "version": "11.0.2",
-      "description": "Rename the workspace-schematic script into workspace-generator script",
-      "factory": "./src/migrations/update-11-0-0/rename-workspace-schematic-script",
-      "package": "@nrwl/workspace",
-      "name": "rename-workspace-schematic-script"
-    },
-    {
-      "version": "9.0.0-beta",
-      "description": "Renderer to Renderer2 migration. As of Angular 9, the Renderer class is no longer available. Renderer2 should be used instead. Read more about this here: https://v9.angular.io/guide/migration-renderer",
-      "factory": "./migrations/renderer-to-renderer2/index",
-      "package": "@angular/core",
-      "name": "migration-v9-renderer-to-renderer2"
-    },
-    {
-      "version": "9.0.0-beta",
-      "description": "Undecorated classes with DI migration. As of Angular 9, it is no longer supported to use Angular DI on a class that does not have an Angular decorator. Read more about this here: https://v9.angular.io/guide/migration-undecorated-classes",
-      "factory": "./migrations/undecorated-classes-with-di/index",
-      "package": "@angular/core",
-      "name": "migration-v9-undecorated-classes-with-di"
-    },
-    {
-      "version": "9-beta",
-      "description": "Static flag migration. Removes the `static` flag from dynamic queries. As of Angular 9, the \"static\" flag defaults to false and is no longer required for your view and content queries. Read more about this here: https://v9.angular.io/guide/migration-dynamic-flag",
-      "factory": "./migrations/dynamic-queries/index",
-      "package": "@angular/core",
-      "name": "migration-v9-dynamic-queries"
-    },
-    {
-      "version": "10.0.0-beta",
-      "description": "Missing @Injectable and incomplete provider definition migration. As of Angular 9, enforcement of @Injectable decorators for DI is a bit stricter and incomplete provider definitions behave differently. Read more about this here: https://v9.angular.io/guide/migration-injectable",
-      "factory": "./migrations/missing-injectable/index",
-      "package": "@angular/core",
-      "name": "migration-v10-missing-injectable"
-    },
-    {
-      "version": "10.0.0-beta",
-      "description": "ModuleWithProviders migration. As of Angular 10, the ModuleWithProviders type requires a generic. This migration adds the generic where it is missing. Read more about this here: https://v10.angular.io/guide/migration-module-with-providers",
-      "factory": "./migrations/module-with-providers/index",
-      "package": "@angular/core",
-      "name": "migration-v10-module-with-providers"
-    },
-    {
-      "version": "10.0.0-beta",
-      "description": "Undecorated classes with Angular features migration. In version 10, classes that use Angular features and do not have an Angular decorator are no longer supported. Read more about this here: https://v10.angular.io/guide/migration-undecorated-classes",
-      "factory": "./migrations/undecorated-classes-with-decorated-fields/index",
-      "package": "@angular/core",
-      "name": "migration-v10-undecorated-classes-with-decorated-fields"
-    },
-    {
-      "version": "11.0.0-beta",
-      "description": "NavigationExtras omissions migration. In version 11, some unsupported properties were omitted from the `extras` parameter of the `Router.navigateByUrl` and `Router.createUrlTree` methods.",
-      "factory": "./migrations/navigation-extras-omissions/index",
-      "package": "@angular/core",
-      "name": "migration-v11-navigation-extras-omissions"
-    },
-    {
-      "version": "11.0.0-beta",
-      "description": "The default value for `relativeLinkResolution` is changing from 'legacy' to 'corrected'.\nThis migration updates `RouterModule` configurations that use the default value to \nnow specifically use 'legacy' to prevent breakages when updating.",
-      "factory": "./migrations/relative-link-resolution/index",
-      "package": "@angular/core",
-      "name": "migration-v11-router-relative-link-resolution-default"
-    },
-    {
-      "version": "11.0.0-beta",
-      "description": "In Angular version 11, the type of `AbstractControl.parent` can be `null` to reflect the runtime value more accurately. This migration automatically adds non-null assertions to existing accesses of the `parent` property on types like `FormControl`, `FormArray` and `FormGroup`.",
-      "factory": "./migrations/abstract-control-parent/index",
-      "package": "@angular/core",
-      "name": "migration-v11-abstract-control-parent"
-    },
-    {
-      "version": "11.0.0-beta",
-      "description": "ViewEncapsulation.Native has been removed as of Angular version 11. This migration replaces any usages with ViewEncapsulation.ShadowDom.",
-      "factory": "./migrations/native-view-encapsulation/index",
-      "package": "@angular/core",
-      "name": "migration-v11-native-view-encapsulation"
-    },
-    {
-      "version": "11.0.0-beta",
-      "description": "`async` to `waitForAsync` migration. The `async` testing function has been renamed to `waitForAsync` to avoid confusion with the native `async` keyword.",
-      "factory": "./migrations/wait-for-async/index",
-      "package": "@angular/core",
-      "name": "migration-v11-wait-for-async"
-    },
-    {
-      "version": "11.0.0-beta",
-      "description": "NavigationExtras.preserveQueryParams has been removed as of Angular version 11.  This migration replaces any usages with the appropriate assignment of the queryParamsHandling key.",
-      "factory": "./migrations/router-preserve-query-params/index",
-      "package": "@angular/core",
-      "name": "migration-v11-router-preserve-query-params"
-    },
-    {
-      "version": "11.0.0-beta",
-      "description": "Updates the `initialNavigation` property for `RouterModule.forRoot`.",
-      "factory": "./migrations/initial-navigation/index",
-      "package": "@angular/core",
-      "name": "migration-v11-router-initial-navigation-options"
-    },
-    {
-      "version": "10.0.0-beta.1",
-      "description": "Upgrades Angular and Angular CLI to 10.0.0",
-      "factory": "./src/migrations/update-10-0-0/update-10-0-0",
+      "cli": "nx",
+      "version": "14.0.0-beta.1",
+      "description": "Rename mfe.config.js to module-federation.config.js for consistent terminology.",
+      "factory": "./src/migrations/update-14-0-0/rename-mf-config",
       "package": "@nrwl/angular",
-      "name": "update-10-0-0"
+      "name": "rename-module-federation-config"
     },
     {
-      "version": "10.2.0-beta.1",
-      "description": "Upgrade NgRx libraries to version 10.0.0",
-      "factory": "./src/migrations/update-10-2-0/update-10-2-0",
+      "cli": "nx",
+      "version": "14.2.0-beta.0",
+      "description": "Remove 'showCircularDependencies' option from browser and server executors.",
+      "factory": "./src/migrations/update-14-2-0/remove-show-circular-dependencies-option",
       "package": "@nrwl/angular",
-      "name": "update-10-2-0"
+      "name": "remove-show-circular-dependencies-option"
     },
     {
-      "version": "10.3.0-beta.1",
-      "description": "Add tsconfig.editor.json to angular apps and update jest-angular-preset",
-      "factory": "./src/migrations/update-10-3-0/update-10-3-0",
+      "cli": "nx",
+      "version": "14.2.0-beta.0",
+      "description": "Update the @angular/cli package version.",
+      "factory": "./src/migrations/update-14-2-0/update-angular-cli",
       "package": "@nrwl/angular",
-      "name": "update-10-3-0"
+      "name": "update-angular-cli-version"
     },
     {
-      "version": "10.4.0-beta.3",
-      "description": "Adjust karma and protractor setup",
-      "factory": "./src/migrations/update-10-4-0/update-10-4-0",
+      "cli": "nx",
+      "version": "14.2.0-beta.0",
+      "description": "Remove 'package.json' files from library projects secondary entrypoints.",
+      "factory": "./src/migrations/update-14-2-0/update-libraries-secondary-entrypoints",
       "package": "@nrwl/angular",
-      "name": "update-10-4-0"
+      "name": "update-libraries-secondary-entrypoints"
     },
     {
-      "version": "10.5.0-beta.0",
-      "description": "Update eslint config and builder to extend from new Nx Angular presets and lint templates",
-      "factory": "./src/migrations/update-10-5-0/add-template-support-and-presets-to-eslint",
+      "cli": "nx",
+      "version": "14.2.0-beta.0",
+      "description": "Update postinstall script running ngcc to use ES2020 target.",
+      "factory": "./src/migrations/update-14-2-0/update-ngcc-target",
       "package": "@nrwl/angular",
-      "name": "add-template-support-and-presets-to-eslint"
+      "name": "update-postinstall-script-ngcc-target"
     },
     {
-      "version": "11.0.0-beta.13",
-      "description": "Update builder configurations and dependencies",
-      "factory": "./src/migrations/update-11-0-0/update-builders-config",
+      "cli": "nx",
+      "version": "14.2.0-beta.0",
+      "description": "Update TypeScript compilation target to 'ES2020'.",
+      "factory": "./src/migrations/update-14-2-0/update-tsconfig-target",
       "package": "@nrwl/angular",
-      "name": "update-11-0-0"
+      "name": "update-tsconfig-target"
     },
     {
-      "version": "10.0.0-beta.2",
-      "description": "update jest configs to include setup env files",
-      "factory": "./src/migrations/update-10-0-0/update-jest-configs",
+      "cli": "nx",
+      "version": "14.2.0-beta.6",
+      "description": "Update `initialNavigation: 'enabled'` to `initialNavigation: 'enabledBlocking'`.",
+      "factory": "./src/migrations/update-14-2-0/update-router-initial-navigation",
+      "package": "@nrwl/angular",
+      "name": "update-router-initial-navigation"
+    },
+    {
+      "cli": "nx",
+      "version": "14.5.0-beta.0",
+      "description": "Update any references of MFE to MF.",
+      "factory": "./src/migrations/update-14-5-0/migrate-mfe-to-mf",
+      "package": "@nrwl/angular",
+      "name": "migrate-mfe-to-mf"
+    },
+    {
+      "cli": "nx",
+      "version": "14.5.2-beta.0",
+      "description": "Update the @angular/cli package version to ~14.1.0.",
+      "factory": "./src/migrations/update-14-5-2/update-angular-cli",
+      "package": "@nrwl/angular",
+      "name": "update-angular-cli-version-14-1-0"
+    },
+    {
+      "cli": "nx",
+      "version": "14.5.7-beta.0",
+      "description": "Update the rxjs package version to ~7.5.0 if RxJS 7 is used in workspace.",
+      "factory": "./src/migrations/update-14-5-7/update-rxjs",
+      "package": "@nrwl/angular",
+      "name": "update-rxjs-7-5-0"
+    },
+    {
+      "cli": "nx",
+      "version": "14.6.0-beta.0",
+      "description": "Update the @angular/cli package version to ~14.2.0.",
+      "factory": "./src/migrations/update-14-6-0/update-angular-cli",
+      "package": "@nrwl/angular",
+      "name": "update-angular-cli-version-14-2-0"
+    },
+    {
+      "version": "14.0.0-beta",
+      "description": "As of Angular version 13, `entryComponents` are no longer necessary.",
+      "factory": "./migrations/entry-components/index",
+      "package": "@angular/core",
+      "name": "migration-entry-components"
+    },
+    {
+      "version": "14.0.0-beta",
+      "description": "As of Angular version 14, Forms model classes accept a type parameter, and existing usages must be opted out to preserve backwards-compatibility.",
+      "factory": "./migrations/typed-forms/index",
+      "package": "@angular/core",
+      "name": "migration-v14-typed-forms"
+    },
+    {
+      "version": "14.0.0-beta",
+      "description": "In Angular version 14, the `pathMatch` property of `Routes` was updated to be a strict union of the two valid options: `'full'|'prefix'`. `Routes` and `Route` variables need an explicit type so TypeScript does not infer the property as the looser `string`.",
+      "factory": "./migrations/path-match-type/index",
+      "package": "@angular/core",
+      "name": "migration-v14-path-match-type"
+    },
+    {
+      "version": "13.4.4-beta.0",
+      "cli": "nx",
+      "description": "Create a root babel config file if it doesn't exist and using babel-jest in jest.config.js and add @nrwl/web as needed",
+      "factory": "./src/migrations/update-13-4-4/add-missing-root-babel-config",
       "package": "@nrwl/jest",
-      "name": "update-10.0.0"
+      "name": "add-missing-root-babel-config"
     },
     {
-      "version": "10.1.0-beta.4",
-      "description": "Update jest to v26",
-      "factory": "./src/migrations/update-10-1-0/update-10-1-0",
+      "version": "14.0.0-beta.2",
+      "cli": "nx",
+      "description": "Update move jest config files to .ts files.",
+      "factory": "./src/migrations/update-14-0-0/update-jest-config-ext",
       "package": "@nrwl/jest",
-      "name": "update-10.1.0"
+      "name": "update-jest-config-extensions"
     },
     {
-      "version": "10.2.0",
-      "description": "Remove deprecated jest builder options",
-      "factory": "./src/migrations/update-10-2-0/update-10-2-0",
+      "version": "14.1.5-beta.0",
+      "cli": "nx",
+      "description": "Update to export default in jest config and revert jest.preset.ts to jest.preset.js",
+      "factory": "./src/migrations/update-14-1-5/update-exports-jest-config",
       "package": "@nrwl/jest",
-      "name": "update-10.2.0"
+      "name": "update-to-export-default"
     },
     {
-      "version": "10.3.0-beta.1",
-      "description": "Adds all jest projects into the root jest config",
-      "factory": "./src/migrations/update-10-3-0/update-projects-property",
+      "version": "14.5.5-beta.0",
+      "cli": "nx",
+      "description": "Exclude jest.config.ts from tsconfig where missing.",
+      "factory": "./src/migrations/update-14-0-0/update-jest-config-ext",
       "package": "@nrwl/jest",
-      "name": "update-projects-property"
+      "name": "exclude-jest-config-from-ts-config"
     },
     {
-      "version": "10.3.1-beta.1",
-      "description": "Fix ts-jest migration",
-      "factory": "./src/migrations/update-10-3-0/update-ts-jest",
+      "version": "14.6.0-beta.0",
+      "cli": "nx",
+      "description": "Update jest configs to support jest 28 changes (https://jestjs.io/docs/upgrading-to-jest28#configuration-options)",
+      "factory": "./src/migrations/update-14-6-0/update-configs-jest-28",
       "package": "@nrwl/jest",
-      "name": "update-ts-jest"
+      "name": "update-configs-jest-28"
     },
     {
-      "version": "10.3.0-beta.1",
-      "description": "Adds a jest extension to the recommended extensions for vscode",
-      "factory": "./src/migrations/update-10-3-0/add-jest-extension",
+      "version": "14.6.0-beta.0",
+      "cli": "nx",
+      "description": "Update jest test files  to support jest 28 changes (https://jestjs.io/docs/upgrading-to-jest28)",
+      "factory": "./src/migrations/update-14-6-0/update-tests-jest-28",
       "package": "@nrwl/jest",
-      "name": "add-jest-extension"
+      "name": "update-tests-jest-28"
     },
     {
-      "version": "10.3.0-beta.1",
-      "description": "Update @typescript-eslint to v4.3",
-      "factory": "./src/migrations/update-10-3-0/update-10-3-0",
+      "cli": "nx",
+      "version": "13.3.0-beta.0",
+      "description": "Update eslint-rules jest.config.js in order to support ESLint v8 exports mapping, remove category field",
+      "factory": "./src/migrations/update-13-3-0/eslint-8-updates",
       "package": "@nrwl/linter",
-      "name": "update-10.3.0"
+      "name": "eslint-8-updates"
     },
     {
-      "version": "10.3.0-beta.0",
-      "description": "Migrate to the new ESLint builder and ESLint config style",
-      "factory": "./src/migrations/update-10-3-0/update-eslint-builder-and-config",
+      "cli": "nx",
+      "version": "14.1.9-beta.0",
+      "description": "Adds @swc/core and @swc-node as a dev dep if you are using them",
+      "factory": "./src/migrations/update-14-1-9/add-swc-deps-if-needed",
       "package": "@nrwl/linter",
-      "name": "update-eslint-builder-and-config"
+      "name": "add-swc-deps"
     },
     {
-      "version": "10.3.0-beta.2",
-      "description": "Add explicit .json file extension to .eslintrc files, not using an extension is deprecated",
-      "factory": "./src/migrations/update-10-3-0/add-json-ext-to-eslintrc",
+      "cli": "nx",
+      "version": "14.2.3-beta.0",
+      "description": "Adds @swc/core and @swc-node as a dev dep if you are using them (repeated due to prior mistake)",
+      "factory": "./src/migrations/update-14-1-9/add-swc-deps-if-needed",
       "package": "@nrwl/linter",
-      "name": "add-json-ext-to-eslintrc"
+      "name": "add-swc-deps-again"
     },
     {
-      "version": "10.3.0-beta.3",
-      "description": "Update implicitDependencies within nx.json to include root .eslintrc.json",
-      "factory": "./src/migrations/update-10-3-0/add-root-eslintrc-json-to-workspace-implicit-deps",
+      "cli": "nx",
+      "version": "14.4.4",
+      "description": "Adds @typescript-eslint/utils as a dev dep",
+      "factory": "./src/migrations/update-14-4-4/experimental-to-utils-deps",
       "package": "@nrwl/linter",
-      "name": "add-root-eslintrc-json-to-workspace-implicit-deps"
+      "name": "experimental-to-utils-deps"
     },
     {
-      "version": "10.3.1-beta.1",
-      "description": "Revert any node_modules lintFilesPatterns that were accidentally included by update-eslint-builder-and-config",
-      "factory": "./src/migrations/update-10-3-1/revert-node-modules-files-in-eslint-builder-options",
+      "cli": "nx",
+      "version": "14.4.4",
+      "description": "Switch from  @typescript-eslint/experimental-utils to @typescript-eslint/utils in all rules and rules.spec files",
+      "factory": "./src/migrations/update-14-4-4/experimental-to-utils-rules",
       "package": "@nrwl/linter",
-      "name": "revert-node-modules-files-in-eslint-builder-options"
-    },
-    {
-      "version": "10.4.0-beta.0",
-      "description": "Update ESLint config files to use preset configs which eslint-plugin-nx exports",
-      "factory": "./src/migrations/update-10-4-0/update-eslint-configs-to-use-nx-presets",
-      "package": "@nrwl/linter",
-      "name": "update-eslint-configs-to-use-nx-presets"
-    },
-    {
-      "version": "10.4.0-beta.1",
-      "description": "Update root ESLint config to use overrides",
-      "factory": "./src/migrations/update-10-4-0/update-root-eslint-config-to-use-overrides",
-      "package": "@nrwl/linter",
-      "name": "update-root-eslint-config-to-use-overrides"
-    },
-    {
-      "version": "10.1.0-beta.1",
-      "description": "Removes rootDir from node libs' tsconfig",
-      "factory": "./src/migrations/update-10-1-0/remove-root-dir",
-      "package": "@nrwl/node",
-      "name": "remove-root-dir"
-    },
-    {
-      "version": "9.5.0-beta.1",
-      "description": "Update libraries",
-      "factory": "./src/migrations/update-9-5-0/update-9-5-0",
-      "package": "@nrwl/react",
-      "name": "update-9.5.0"
-    },
-    {
-      "version": "10.4.0-beta.1",
-      "description": "Update libraries",
-      "factory": "./src/migrations/update-10-4-0/update-10-4-0",
-      "package": "@nrwl/react",
-      "name": "update-10.4.0"
-    },
-    {
-      "version": "11.0.0-beta.0",
-      "description": "Rename emotion packages to match new 11.0.0 package names",
-      "factory": "./src/migrations/update-11-0-0/rename-emotion-packages-11-0-0",
-      "package": "@nrwl/react",
-      "name": "rename-emotion-packages-11.0.0"
-    },
-    {
-      "version": "11.0.0-beta.0",
-      "description": "Update libraries",
-      "factory": "./src/migrations/update-11-0-0/update-11-0-0",
-      "package": "@nrwl/react",
-      "name": "update-11.0.0"
+      "name": "experimental-to-utils-rules"
     }
   ]
 }
