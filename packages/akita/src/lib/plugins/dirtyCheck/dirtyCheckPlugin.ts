@@ -1,12 +1,11 @@
-import { AkitaPlugin, Queries } from '../plugin';
-import { QueryEntity } from '../../queryEntity';
-import { BehaviorSubject, combineLatest, Observable, Subject, Subscription } from 'rxjs';
-import { distinctUntilChanged, map, skip } from 'rxjs/operators';
-import { isUndefined } from '../../isUndefined';
-import { Query } from '../../query';
+import { BehaviorSubject, combineLatest, distinctUntilChanged, map, Observable, skip, Subject, Subscription } from 'rxjs';
+import { logAction } from '../../actions';
 import { coerceArray } from '../../coerceArray';
 import { isFunction } from '../../isFunction';
-import { logAction } from '../../actions';
+import { isUndefined } from '../../isUndefined';
+import { Query } from '../../query';
+import { QueryEntity } from '../../queryEntity';
+import { AkitaPlugin, Queries } from '../plugin';
 
 type Head<State = any> = State | Partial<State>;
 
@@ -109,15 +108,15 @@ export class DirtyCheckPlugin<State = any> extends AkitaPlugin<State> {
     /** if we are tracking specific properties select only the relevant ones */
     const sources = this.params.watchProperty
       ? (this.params.watchProperty as (keyof State)[]).map((prop) =>
-        this.query
-          .select((state) => state[prop])
-          .pipe(
-            map((val) => ({
-              val,
-              __akitaKey: prop,
-            }))
-          )
-      )
+          this.query
+            .select((state) => state[prop])
+            .pipe(
+              map((val) => ({
+                val,
+                __akitaKey: prop,
+              }))
+            )
+        )
       : [this.selectSource(this._entityId)];
     this.subscription = combineLatest(sources)
       .pipe(skip(1))

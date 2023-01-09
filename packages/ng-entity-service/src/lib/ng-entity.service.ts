@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { EntityService, EntityState, EntityStore, getEntityType, getIDType, isDefined } from '@datorama/akita';
-import { isObservable, Observable, of, throwError } from 'rxjs';
-import { catchError, finalize, switchMap, tap } from 'rxjs/operators';
+import { catchError, finalize, isObservable, Observable, of, switchMap, tap, throwError } from 'rxjs';
 import { errorAction, successAction } from './action-factory';
 import { isID } from './helpers';
 import { EntityServiceAction, HttpMethod, NgEntityServiceNotifier } from './ng-entity-service-notifier';
@@ -12,7 +11,7 @@ import { HttpAddConfig, HttpConfig, HttpDeleteConfig, HttpGetConfig, HttpUpdateC
 
 export const mapResponse = <T>(config?: HttpConfig<T>) =>
   switchMap((res) => {
-    const mappedResponse = !!config?.mapResponseFn ? config.mapResponseFn(res) : res;
+    const mappedResponse = config?.mapResponseFn ? config.mapResponseFn(res) : res;
 
     return isObservable(mappedResponse) ? mappedResponse : of(mappedResponse);
   });
@@ -26,12 +25,12 @@ export class NgEntityService<S extends EntityState = any> extends EntityService<
   private readonly mergedConfig: NgEntityServiceParams & NgEntityServiceGlobalConfig;
   private readonly httpMethodMap:
     | Partial<{
-      GET: HttpMethod;
-      POST: HttpMethod;
-      PATCH: HttpMethod;
-      PUT: HttpMethod;
-      DELETE: HttpMethod;
-    }>
+        GET: HttpMethod;
+        POST: HttpMethod;
+        PATCH: HttpMethod;
+        PUT: HttpMethod;
+        DELETE: HttpMethod;
+      }>
     | undefined;
 
   private readonly dispatchSuccess: (action: Partial<EntityServiceAction>) => void;

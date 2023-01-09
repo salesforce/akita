@@ -2,7 +2,9 @@ module.exports = {
   title: 'Akita',
   tagline: '🔮 A Reactive State Management Tailor-Made for JS Applications',
   baseUrl: '/akita/',
-  url: 'https://github.com/salesforce',
+  url: 'https://opensource.salesforce.com',
+  onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
   organizationName: 'salesforce',
   projectName: 'akita',
@@ -15,7 +17,7 @@ module.exports = {
     navbar: {
       title: 'Akita',
       logo: {
-        alt: 'Transloco',
+        alt: 'Akita',
         src: 'img/akita.svg',
       },
       items: [
@@ -24,7 +26,7 @@ module.exports = {
           activeBasePath: 'docs',
           label: 'Docs',
           position: 'left',
-          className: 'first-nav-element'
+          className: 'first-nav-element',
         },
         {
           to: 'sample-app',
@@ -36,20 +38,20 @@ module.exports = {
           href: 'https://stackblitz.com/edit/akita-todos-app',
           label: 'Playground',
           position: 'left',
-          className: 'header-playground-link'
+          className: 'header-playground-link',
         },
         {
           href: 'https://gitter.im/akita-state-management/Lobby',
           label: ' ',
           position: 'right',
-          className: 'header-icon-link header-gitter-link'
+          className: 'header-icon-link header-gitter-link',
         },
         {
           href: 'https://github.com/salesforce/akita/',
           label: ' ',
           position: 'right',
-          className: 'header-icon-link header-github-link'
-        }
+          className: 'header-icon-link header-github-link',
+        },
       ],
     },
     footer: {
@@ -103,15 +105,15 @@ module.exports = {
     },
     prism: {
       theme: require('prism-react-renderer/themes/nightOwlLight'),
-      darkTheme: require('prism-react-renderer/themes/nightOwl')
+      darkTheme: require('prism-react-renderer/themes/nightOwl'),
     },
-    sidebarCollapsible: true,
   },
   presets: [
     [
       '@docusaurus/preset-classic',
       {
         docs: {
+          sidebarCollapsible: true,
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl: 'https://github.com/salesforce/akita/edit/master/docs',
         },

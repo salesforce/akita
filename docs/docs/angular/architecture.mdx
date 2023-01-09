@@ -2,7 +2,7 @@
 title: Architecture
 ---
 
-Let's say we are building from scratch an e-commerce  application. We start by creating a new project with Angular CLI:
+Let's say we are building from scratch an e-commerce application. We start by creating a new project with Angular CLI:
 
 ```bash
 npx @angular/cli new e-commerce
@@ -58,32 +58,30 @@ The above command creates a `SessionStore`, `SessionQuery`, and a `SessionServic
  ┗ 📜app.module.ts
 ```
 
-Let's see each one of the files inside the `state` folder: 
+Let's see each one of the files inside the `state` folder:
 
 ```ts title="session.store.ts"
 import { Injectable } from '@angular/core';
 import { Store, StoreConfig } from '@datorama/akita';
 
 export interface SessionState {
-   key: string;
+  key: string;
 }
 
 export function createInitialState(): SessionState {
   return {
-    key: ''
+    key: '',
   };
 }
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: 'session' })
 export class SessionStore extends Store<SessionState> {
-
   constructor() {
     super(createInitialState());
   }
 }
 ```
-
 
 ```ts title="session.query.ts"
 import { Injectable } from '@angular/core';
@@ -92,11 +90,9 @@ import { SessionStore, SessionState } from './session.store';
 
 @Injectable({ providedIn: 'root' })
 export class SessionQuery extends Query<SessionState> {
-
   constructor(protected store: SessionStore) {
     super(store);
   }
-
 }
 ```
 
@@ -107,10 +103,7 @@ import { SessionStore } from './session.store';
 
 @Injectable({ providedIn: 'root' })
 export class SessionService {
-
-  constructor(private sessionStore: SessionStore,
-              private http: HttpClient) {
-  }
+  constructor(private sessionStore: SessionStore, private http: HttpClient) {}
 }
 ```
 
@@ -123,21 +116,20 @@ import { Injectable } from '@angular/core';
 import { Store, StoreConfig } from '@datorama/akita';
 
 export interface SessionState {
-   name: string | null;
-   token: string | null;
+  name: string | null;
+  token: string | null;
 }
 
 export function createInitialState(): SessionState {
   return {
     name: null,
-    token: null
+    token: null,
   };
 }
 
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: 'session' })
 export class SessionStore extends Store<SessionState> {
-
   constructor() {
     super(createInitialState());
   }
@@ -155,7 +147,7 @@ import { SessionStore, SessionState } from './session.store';
 export class SessionQuery extends Query<SessionState> {
   selectIsLogin$ = this.select('token');
   selectName$ = this.select('name');
-  
+
   constructor(protected store: SessionStore) {
     super(store);
   }
@@ -168,25 +160,20 @@ In the `service`, we'll make our server calls, and update the store:
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { SessionStore } from './session.store';
-import { tap } from 'rxjs/operators';
+import { tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class SessionService {
+  constructor(private sessionStore: SessionStore, private http: HttpClient) {}
 
-  constructor(private sessionStore: SessionStore,
-              private http: HttpClient) {
-  }
-  
   login(creds) {
-    return this.http(endpoint).pipe(
-      tap(user => this.sessionStore.update(user))
-    )
+    return this.http(endpoint).pipe(tap((user) => this.sessionStore.update(user)));
   }
 }
 ```
 
-
 ## Products Feature
+
 First, we need to create the `ProductsModule` and a `ProductsPageComponent`:
 
 ```bash
@@ -195,6 +182,7 @@ ng g c products/products-page
 ```
 
 Next, we want to maintain a **collection** of products so we need to create an `EntityStore`:
+
 ```bash
 ng g af products/products
 ```
@@ -234,7 +222,7 @@ The above command creates a `ProductsStore`, `ProductsQuery`, `Product`, and a `
  ┗ 📜app.module.ts
 ```
 
-Let's see each one of the files inside the state folder: 
+Let's see each one of the files inside the state folder:
 
 ```ts title="products.store.ts"
 import { Injectable } from '@angular/core';
@@ -246,7 +234,6 @@ export interface ProductsState extends EntityState<Product, number> {}
 @Injectable({ providedIn: 'root' })
 @StoreConfig({ name: 'products' })
 export class ProductsStore extends EntityStore<ProductsState> {
-
   constructor() {
     super();
   }
@@ -270,7 +257,6 @@ import { ProductsStore, ProductsState } from './products.store';
 
 @Injectable({ providedIn: 'root' })
 export class ProductsQuery extends QueryEntity<ProductsState> {
-
   constructor(protected store: ProductsStore) {
     super(store);
   }
@@ -282,21 +268,16 @@ import { ID } from '@datorama/akita';
 import { Injectable } from '@angular/core';
 import { ID } from '@datorama/akita';
 import { HttpClient } from '@angular/common/http';
-import { tap } from 'rxjs/operators';
+import { tap } from 'rxjs';
 import { Product } from './product.model';
 import { ProductsStore } from './products.store';
 
 @Injectable({ providedIn: 'root' })
 export class ProductsService {
-
-  constructor(private productsStore: ProductsStore,
-              private http: HttpClient) {}
+  constructor(private productsStore: ProductsStore, private http: HttpClient) {}
 
   get() {
-    return this.http.get<Product[]>('https://api.com')
-     .pipe(
-       tap(entities => this.productsStore.set(entities))
-      );
+    return this.http.get<Product[]>('https://api.com').pipe(tap((entities) => this.productsStore.set(entities)));
   }
 
   add(product: Product) {
@@ -320,8 +301,8 @@ Angular providers don't have to be wide app singletons, for more information rea
 :::
 
 ## Join Queries
-Queries can talk to other queries, join entities from different stores, etc. Let's say we have a `products` store and a `cart` store:
 
+Queries can talk to other queries, join entities from different stores, etc. Let's say we have a `products` store and a `cart` store:
 
 ```ts title="products.store.ts"
 import { EntityState, EntityStore } from '@datorama/akita';
@@ -353,7 +334,7 @@ export interface CartState extends EntityState<CartItem, number> {}
 @Injectable({ providedIn: 'root' })
 @StoreConfig({
   name: 'cart',
-  idKey: 'productId'
+  idKey: 'productId',
 })
 export class CartStore extends EntityStore<CartState> {
   constructor() {
@@ -374,28 +355,24 @@ We need to show the list of cart items and the total amount, but we also need so
 
 ```ts title="cart.query.ts"
 import { combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class CartQuery extends QueryEntity<CartState> {
-  constructor(protected store: CartStore, 
-              private productsQuery: ProductsQuery) {
+  constructor(protected store: CartStore, private productsQuery: ProductsQuery) {
     super(store);
   }
 
-  selectItems$ = combineLatest([
-    this.selectAll(), 
-    this.productsQuery.selectAll({ asObject: true }),
-  ]).pipe(map(joinItems));
+  selectItems$ = combineLatest([this.selectAll(), this.productsQuery.selectAll({ asObject: true })]).pipe(map(joinItems));
 }
 
 function joinItems([cartItems, products]: [CartItem[], Product[]]) {
-  return cartItems.map(item => {
+  return cartItems.map((item) => {
     const product = products[item.productId];
     return {
       ...item,
       ...product,
-      total: item.quantity * product.price
+      total: item.quantity * product.price,
     };
   });
 }
@@ -404,4 +381,3 @@ function joinItems([cartItems, products]: [CartItem[], Product[]]) {
 We’re using the `combineLatest()` observable to get both the list of cart items and the products. Then we are mapping over them, merging a cart item with the corresponding product based on the `productId`.
 
 You can find the complete tutorial [here](https://engineering.datorama.com/building-a-shopping-cart-in-angular-using-akita-c41f6a6f7255).
-

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
+import { mapTo, tap, timer } from 'rxjs';
 import { AuthStore } from './auth.store';
-import { mapTo, tap } from 'rxjs/operators';
-import { timer } from 'rxjs';
 
 export type Creds = {
   email: string;
@@ -9,13 +8,13 @@ export type Creds = {
 };
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
   constructor(private authStore: AuthStore) {}
 
   login(creds: Creds) {
-    return simulateRequest(creds).pipe(tap(user => this.authStore.update(user)));
+    return simulateRequest(creds).pipe(tap((user) => this.authStore.update(user)));
   }
 
   logout() {
@@ -29,7 +28,7 @@ export function simulateRequest(creds: Creds) {
       id: 1,
       firstName: 'Netanel',
       lastName: 'Basal',
-      token: 'token'
+      token: 'token',
     })
   );
 }

@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core';
-import { ProductsStore } from './products.store';
-import { map, mapTo } from 'rxjs/operators';
-import { Observable, timer } from 'rxjs';
-import { ID, cacheable } from '@datorama/akita';
+import { cacheable, ID } from '@datorama/akita';
+import { map, mapTo, Observable, timer } from 'rxjs';
 import { products } from '../products.mocks';
+import { ProductsStore } from './products.store';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductsService {
   constructor(private productsStore: ProductsStore) {}
@@ -14,14 +13,14 @@ export class ProductsService {
   get(): Observable<void> {
     const request = timer(500).pipe(
       mapTo(products),
-      map(response => this.productsStore.set(response))
+      map((response) => this.productsStore.set(response))
     );
 
     return cacheable(this.productsStore, request);
   }
 
   getProduct(id: ID) {
-    const product = products.find(current => current.id === +id);
+    const product = products.find((current) => current.id === +id);
 
     return timer(500).pipe(
       mapTo(product),

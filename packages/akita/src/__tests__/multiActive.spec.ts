@@ -1,8 +1,8 @@
+import { take } from 'rxjs';
 import { EntityStore } from '../lib/entityStore';
-import { EntityState, ID, MultiActiveState } from '../lib/types';
 import { QueryEntity } from '../lib/queryEntity';
 import { StoreConfig } from '../lib/storeConfig';
-import { take } from 'rxjs/operators';
+import { EntityState, ID, MultiActiveState } from '../lib/types';
 
 type Todo = {
   id: ID;
@@ -10,14 +10,14 @@ type Todo = {
   completed?: boolean;
 };
 
-interface TodosState extends EntityState<Todo>, MultiActiveState { }
+interface TodosState extends EntityState<Todo>, MultiActiveState {}
 
 @StoreConfig({
-  name: 'todos'
+  name: 'todos',
 })
-class TodosStore extends EntityStore<TodosState, Todo> { }
+class TodosStore extends EntityStore<TodosState, Todo> {}
 
-class TodosQuery extends QueryEntity<TodosState, Todo> { }
+class TodosQuery extends QueryEntity<TodosState, Todo> {}
 
 const store = new TodosStore();
 const query = new TodosQuery(store);
@@ -27,7 +27,7 @@ describe('Multi active', () => {
     Array.from({ length: 10 }, (_, i) => {
       return {
         id: i,
-        title: `Todo ${i}`
+        title: `Todo ${i}`,
       };
     })
   );
@@ -81,10 +81,7 @@ describe('Multi active', () => {
 
     it('should select active ids', () => {
       const spy = jest.fn();
-      query
-        .selectActiveId()
-        .pipe(take(2))
-        .subscribe(spy);
+      query.selectActiveId().pipe(take(2)).subscribe(spy);
       expect(spy).toHaveBeenCalledWith([1, 2, 3, 6]);
       store.addActive([55]);
       expect(spy).toHaveBeenCalledWith([1, 2, 3, 6, 55]);
@@ -129,22 +126,19 @@ describe('Multi active', () => {
       const spy = jest.fn();
       store.setActive([1, 2]);
 
-      query
-        .selectActive()
-        .pipe(take(2))
-        .subscribe(spy);
+      query.selectActive().pipe(take(2)).subscribe(spy);
       jest.runAllTimers();
       expect(spy).toHaveBeenCalledWith([
         {
           id: 1,
           title: 'Todo 1',
-          completed: true
+          completed: true,
         },
         {
           id: 2,
           title: 'Todo 2',
-          completed: true
-        }
+          completed: true,
+        },
       ]);
 
       store.setActive([3, 4]);
@@ -153,20 +147,20 @@ describe('Multi active', () => {
         {
           id: 3,
           title: 'Todo 3',
-          completed: true
+          completed: true,
         },
         {
           id: 4,
-          title: 'Todo 4'
-        }
+          title: 'Todo 4',
+        },
       ]);
     });
 
     it('should update actives callback', () => {
       // [3. 4]
-      store.updateActive(todo => {
+      store.updateActive((todo) => {
         return {
-          completed: !todo.completed
+          completed: !todo.completed,
         };
       });
       expect(store._value().entities[3].completed).toBe(false);

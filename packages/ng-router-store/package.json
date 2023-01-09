@@ -23,8 +23,8 @@
     "Shahar Kazaz"
   ],
   "peerDependencies": {
-    "@datorama/akita": ">= 7.0.0",
-    "@angular/core": ">= 13.0.0",
+    "@datorama/akita": ">= 8.0.0",
+    "@angular/core": ">= 15.0.0",
     "rxjs": "*"
   }
 }

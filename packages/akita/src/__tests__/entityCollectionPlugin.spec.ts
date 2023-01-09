@@ -1,5 +1,5 @@
+import { skip } from 'rxjs';
 import { AkitaPlugin, EntityCollectionPlugin, ID, IDS } from '..';
-import { skip } from 'rxjs/operators';
 import { createWidget, WidgetsQuery, WidgetsStore } from './setup';
 
 class TestPlugin extends AkitaPlugin {
@@ -22,15 +22,15 @@ class TestPluginEntity<E, P extends TestPlugin = TestPlugin> extends EntityColle
     this.activate();
     this.selectIds()
       .pipe(skip(1))
-      .subscribe(ids => this.activate(ids));
+      .subscribe((ids) => this.activate(ids));
   }
 
   action(ids?: IDS) {
-    this.forEachId(ids, p => p.action());
+    this.forEachId(ids, (p) => p.action());
   }
 
   destroy(ids?: IDS) {
-    this.forEachId(ids, p => p.destroy());
+    this.forEachId(ids, (p) => p.destroy());
   }
 
   protected instantiatePlugin(id: ID): P {

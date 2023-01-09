@@ -1,6 +1,5 @@
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject, tap } from 'rxjs';
 import { logAction } from './actions';
-import { tap } from 'rxjs/operators';
 
 // @internal
 const transactionFinished = new Subject();
@@ -16,7 +15,7 @@ export type TransactionManager = {
 // @internal
 export const transactionManager: TransactionManager = {
   activeTransactions: 0,
-  batchTransaction: null
+  batchTransaction: null,
 };
 
 // @internal
@@ -86,10 +85,10 @@ export function applyTransaction<T>(action: () => T, thisArg = undefined): T {
  *
  */
 export function transaction() {
-  return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
 
-    descriptor.value = function(...args) {
+    descriptor.value = function (...args) {
       return applyTransaction(() => {
         return originalMethod.apply(this, args);
       }, this);
@@ -115,7 +114,7 @@ export function transaction() {
  *
  */
 export function withTransaction<T>(next: (value: T) => void) {
-  return function(source: Observable<T>): Observable<T> {
-    return source.pipe(tap(value => applyTransaction(() => next(value))));
+  return function (source: Observable<T>): Observable<T> {
+    return source.pipe(tap((value) => applyTransaction(() => next(value))));
   };
 }

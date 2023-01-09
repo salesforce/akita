@@ -1,5 +1,4 @@
-import { combineLatest, Observable, ObservableInput, ObservedValueOf } from 'rxjs';
-import { auditTime } from 'rxjs/operators';
+import { auditTime, combineLatest, Observable } from 'rxjs';
 
 type ReturnTypes<T extends Observable<any>[]> = { [P in keyof T]: T[P] extends Observable<infer R> ? R : never };
 type Observables = [Observable<any>] | Observable<any>[];

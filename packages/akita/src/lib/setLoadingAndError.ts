@@ -1,5 +1,4 @@
-import { defer, MonoTypeOperatorFunction, Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { defer, MonoTypeOperatorFunction, Observable, tap } from 'rxjs';
 import { Store } from './store';
 
 export function setLoadingAndError<T>(store: Store): MonoTypeOperatorFunction<T> {

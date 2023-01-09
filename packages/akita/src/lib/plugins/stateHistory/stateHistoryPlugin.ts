@@ -1,8 +1,7 @@
-import { pairwise, distinctUntilChanged } from 'rxjs/operators';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { AkitaPlugin, Queries } from '../plugin';
+import { BehaviorSubject, distinctUntilChanged, Observable, pairwise } from 'rxjs';
 import { logAction } from '../../actions';
 import { isFunction } from '../../isFunction';
+import { AkitaPlugin, Queries } from '../plugin';
 
 export interface StateHistoryParams {
   maxAge?: number;
@@ -40,7 +39,7 @@ export class StateHistoryPlugin<State = any> extends AkitaPlugin<State> {
     super(query, {
       resetFn: () => this.clear(),
     });
-    params.maxAge = !!params.maxAge ? params.maxAge : 10;
+    params.maxAge = params.maxAge ? params.maxAge : 10;
     params.comparator = params.comparator || (() => true);
 
     this.activate();

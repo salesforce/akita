@@ -1,11 +1,12 @@
 {
+  "name": "ng-router-store",
   "projectType": "library",
   "sourceRoot": "packages/ng-router-store/src",
   "prefix": "akita-nx",
   "targets": {
     "build": {
       "executor": "@nrwl/angular:package",
-      "outputs": ["dist/packages/ng-router-store"],
+      "outputs": ["{workspaceRoot}/dist/packages/ng-router-store"],
       "options": {
         "project": "packages/ng-router-store/ng-package.json"
       },
@@ -21,7 +22,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/ng-router-store"],
+      "outputs": ["{workspaceRoot}/coverage/packages/ng-router-store"],
       "options": {
         "jestConfig": "packages/ng-router-store/jest.config.ts",
         "passWithNoTests": true

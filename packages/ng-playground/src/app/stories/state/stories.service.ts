@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
+import { mapTo, tap, timer } from 'rxjs';
 import { StoriesStore } from './stories.store';
-import { mapTo, tap } from 'rxjs/operators';
-import { timer } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class StoriesService {
@@ -12,7 +11,7 @@ export class StoriesService {
     return timer(1000)
       .pipe(mapTo(story))
       .pipe(
-        tap(story => {
+        tap((story) => {
           this.storiesStore.setLoading(false);
           this.storiesStore.add(story);
         })

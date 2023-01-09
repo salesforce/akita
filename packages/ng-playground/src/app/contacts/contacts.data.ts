@@ -1,17 +1,16 @@
-import * as faker from 'faker';
-import { timer } from 'rxjs';
-import { mapTo } from 'rxjs/operators';
+import { randEmail, randFirstName, randNumber, randStreetAddress } from '@ngneat/falso';
 import { sortBy } from 'lodash';
+import { map, timer } from 'rxjs';
 
 const count = 96;
 const data = [];
 
 for (let i = 0; i < count; i++) {
   data.push({
-    id: faker.random.number(),
-    email: faker.internet.email(),
-    name: faker.name.findName(),
-    address: faker.address.streetAddress()
+    id: randNumber(),
+    email: randEmail(),
+    name: randFirstName(),
+    address: randStreetAddress(),
   });
 }
 
@@ -26,11 +25,11 @@ export function getData(params = { sortBy: 'email', perPage: 10, page: 1 }) {
     perPage: +params.perPage,
     total: contacts.length,
     lastPage: Math.ceil(contacts.length / +params.perPage),
-    data: paginatedItems
+    data: paginatedItems,
   };
 }
 
-export const getContacts = function(params) {
-  return timer(300).pipe(mapTo(getData(params)));
+export const getContacts = function (params) {
+  return timer(300).pipe(map(() => getData(params)));
 };
 export const contacts = data;

@@ -1,10 +1,9 @@
-import { DirtyCheckComparator, dirtyCheckDefaultParams, DirtyCheckPlugin, DirtyCheckResetParams, getNestedPath } from './dirtyCheckPlugin';
-import { EntityCollectionPlugin } from '../entityCollectionPlugin';
-import { auditTime, map, skip } from 'rxjs/operators';
-import { merge, Observable, Subject } from 'rxjs';
-import { EntityState, OrArray, getIDType, getEntityType } from '../../types';
-import { QueryEntity } from '../../queryEntity';
+import { auditTime, map, merge, Observable, skip, Subject } from 'rxjs';
 import { coerceArray } from '../../coerceArray';
+import { QueryEntity } from '../../queryEntity';
+import { EntityState, getEntityType, getIDType, OrArray } from '../../types';
+import { EntityCollectionPlugin } from '../entityCollectionPlugin';
+import { DirtyCheckComparator, dirtyCheckDefaultParams, DirtyCheckPlugin, DirtyCheckResetParams, getNestedPath } from './dirtyCheckPlugin';
 
 export type DirtyCheckCollectionParams<State extends EntityState> = {
   comparator?: DirtyCheckComparator<getEntityType<State>>;
@@ -13,7 +12,10 @@ export type DirtyCheckCollectionParams<State extends EntityState> = {
 
 export class EntityDirtyCheckPlugin<State extends EntityState = any, P extends DirtyCheckPlugin<State> = DirtyCheckPlugin<State>> extends EntityCollectionPlugin<State, P> {
   private _someDirty = new Subject();
-  someDirty$: Observable<boolean> = merge(this.query.select(state => state.entities), this._someDirty.asObservable()).pipe(
+  someDirty$: Observable<boolean> = merge(
+    this.query.select((state) => state.entities),
+    this._someDirty.asObservable()
+  ).pipe(
     auditTime(0),
     map(() => this.checkSomeDirty())
   );
@@ -25,20 +27,20 @@ export class EntityDirtyCheckPlugin<State extends EntityState = any, P extends D
     this.activate();
     this.selectIds()
       .pipe(skip(1))
-      .subscribe(ids => {
-        super.rebase(ids, { afterAdd: plugin => plugin.setHead() });
+      .subscribe((ids) => {
+        super.rebase(ids, { afterAdd: (plugin) => plugin.setHead() });
       });
   }
 
   setHead(ids?: OrArray<getIDType<State>>) {
     if (this.params.entityIds && ids) {
       const toArray = coerceArray(ids) as getIDType<State>[];
-      const someAreWatched = coerceArray(this.params.entityIds).some(id => toArray.indexOf(id) > -1);
+      const someAreWatched = coerceArray(this.params.entityIds).some((id) => toArray.indexOf(id) > -1);
       if (someAreWatched === false) {
         return this;
       }
     }
-    this.forEachId(ids, e => e.setHead());
+    this.forEachId(ids, (e) => e.setHead());
     this._someDirty.next(true);
     return this;
   }
@@ -53,7 +55,7 @@ export class EntityDirtyCheckPlugin<State extends EntityState = any, P extends D
   }
 
   reset(ids?: OrArray<getIDType<State>>, params: DirtyCheckResetParams = {}) {
-    this.forEachId(ids, e => e.reset(params));
+    this.forEachId(ids, (e) => e.reset(params));
   }
 
   isDirty(id: getIDType<State>): Observable<boolean>;
@@ -86,7 +88,7 @@ export class EntityDirtyCheckPlugin<State extends EntityState = any, P extends D
   }
 
   destroy(ids?: OrArray<getIDType<State>>) {
-    this.forEachId(ids, e => e.destroy());
+    this.forEachId(ids, (e) => e.destroy());
     /** complete only when the plugin destroys */
     if (!ids) {
       this._someDirty.complete();

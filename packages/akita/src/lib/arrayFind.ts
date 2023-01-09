@@ -1,5 +1,4 @@
-import { MonoTypeOperatorFunction, Observable } from 'rxjs';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { distinctUntilChanged, map, MonoTypeOperatorFunction, Observable } from 'rxjs';
 import { coerceArray } from './coerceArray';
 import { DEFAULT_ID_KEY } from './defaultIDKey';
 import { isArray } from './isArray';

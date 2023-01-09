@@ -1,36 +1,40 @@
-import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpMethod, NgEntityServiceGlobalConfig, NG_ENTITY_SERVICE_CONFIG } from '@datorama/akita-ng-entity-service';
+import { AkitaNgRouterStoreModule } from '@datorama/akita-ng-router-store';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ProductsModule } from './products/products.module';
-import { CartModule } from './cart/cart.module';
-import { ProductPageComponent } from './product-page/product-page.component';
-import { NavComponent } from './nav/nav.component';
-import { AuthModule } from './auth/auth.module';
 import { AuthGuard } from './auth/auth.guard';
-import { HttpMethod, NG_ENTITY_SERVICE_CONFIG, NgEntityServiceGlobalConfig } from '@datorama/akita-ng-entity-service';
-import { AkitaNgRouterStoreModule } from '@datorama/akita-ng-router-store';
-import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
+import { AuthModule } from './auth/auth.module';
+import { CartModule } from './cart/cart.module';
+import { NavComponent } from './nav/nav.component';
+import { ProductPageComponent } from './product-page/product-page.component';
+import { ProductsModule } from './products/products.module';
+
+import { ENVIRONMENT_INITIALIZER, inject, NgZone } from '@angular/core';
+import { akitaDevtools, DevtoolsOptions } from '@datorama/akita';
+
+export function provideAkitaDevtools(options: Partial<DevtoolsOptions> = {}) {
+  return {
+    provide: ENVIRONMENT_INITIALIZER,
+    multi: true,
+    useFactory() {
+      return () => {
+        akitaDevtools(inject(NgZone), options);
+      };
+    },
+  };
+}
 
 @NgModule({
   declarations: [AppComponent, NavComponent, ProductPageComponent],
-  imports: [
-    BrowserModule,
-    ReactiveFormsModule,
-    AppRoutingModule,
-    HttpClientModule,
-    BrowserAnimationsModule,
-    ProductsModule,
-    CartModule,
-    AuthModule,
-    AkitaNgRouterStoreModule,
-    AkitaNgDevtools.forRoot()
-  ],
+  imports: [BrowserModule, ReactiveFormsModule, AppRoutingModule, HttpClientModule, BrowserAnimationsModule, ProductsModule, CartModule, AuthModule, AkitaNgRouterStoreModule],
   providers: [
     AuthGuard,
+    provideAkitaDevtools(),
     {
       provide: NG_ENTITY_SERVICE_CONFIG,
       useFactory: function () {
@@ -46,4 +50,4 @@ import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

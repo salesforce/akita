@@ -1,18 +1,17 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { ContactsService } from '../state/contacts.service';
-import { combineLatest } from 'rxjs';
-import { startWith, switchMap, tap } from 'rxjs/operators';
 import { UntypedFormControl } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { CONTACTS_PAGINATOR } from '../state/contacts.pagination';
 import { PaginatorPlugin } from '@datorama/akita';
+import { combineLatest, startWith, switchMap, tap } from 'rxjs';
+import { CONTACTS_PAGINATOR } from '../state/contacts.pagination';
 import { ContactsQuery } from '../state/contacts.query';
+import { ContactsService } from '../state/contacts.service';
 import { ContactState } from '../state/contacts.store';
 
 @Component({
   selector: 'app-contacts-page',
   templateUrl: './contacts-page.component.html',
-  styleUrls: ['./contacts-page.component.css']
+  styleUrls: ['./contacts-page.component.css'],
 })
 export class ContactsPageComponent implements OnInit {
   pagination$;

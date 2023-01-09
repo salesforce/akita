@@ -11,11 +11,12 @@
     "clear": "docusaurus clear"
   },
   "dependencies": {
-    "@docusaurus/core": "^2.0.0-alpha.70",
-    "classnames": "^2.3.1",
+    "@docusaurus/core": "2.2.0",
     "@docusaurus/preset-classic": "^2.2.0",
+    "classnames": "^2.3.1",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-helmet": "^6.1.0"
   },
   "browserslist": {
     "production": [

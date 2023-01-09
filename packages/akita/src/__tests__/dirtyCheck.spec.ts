@@ -1,7 +1,6 @@
+import { Observable, skip } from 'rxjs';
 import { DirtyCheckPlugin, EntityDirtyCheckPlugin } from '../lib/index';
 import { Widget, WidgetsQuery, WidgetsStore } from './setup';
-import { Observable } from 'rxjs';
-import { skip } from 'rxjs/operators';
 
 describe('DirtyCheck', () => {
   function createWidget() {
@@ -345,9 +344,9 @@ describe('DirtyCheckEntity', () => {
   }
 
   let _id = 0;
-  let widgetsStore = new WidgetsStore();
-  let widgetsQuery = new WidgetsQuery(widgetsStore);
-  let collection = new EntityDirtyCheckPlugin(widgetsQuery);
+  const widgetsStore = new WidgetsStore();
+  const widgetsQuery = new WidgetsQuery(widgetsStore);
+  const collection = new EntityDirtyCheckPlugin(widgetsQuery);
   widgetsStore.add([createWidget(), createWidget(), createWidget()]);
   collection.setHead();
 
@@ -476,7 +475,7 @@ describe('DirtyCheckEntity', () => {
 
       it('should return dirty for isPathDirty', function () {
         let isPathDirty: boolean;
-        let widget = createWidget();
+        const widget = createWidget();
         widgetsStore.add(widget);
         collection.setHead();
 
@@ -511,8 +510,8 @@ describe('DirtyCheckEntity', () => {
   });
 
   describe('Passing ids', () => {
-    let widgetsStore = new WidgetsStore();
-    let widgetsQuery = new WidgetsQuery(widgetsStore);
+    const widgetsStore = new WidgetsStore();
+    const widgetsQuery = new WidgetsQuery(widgetsStore);
     _id = 0;
     let collection = new EntityDirtyCheckPlugin(widgetsQuery, { entityIds: [1, 2] });
     widgetsStore.add([createWidget(), createWidget(), createWidget()]);
@@ -654,8 +653,8 @@ describe('DirtyCheckEntity', () => {
 function deepEqual(x, y) {
   return x && y && typeof x === 'object' && typeof y === 'object'
     ? Object.keys(x).length === Object.keys(y).length &&
-    Object.keys(x).reduce(function (isEqual, key) {
-      return isEqual && deepEqual(x[key], y[key]);
-    }, true)
+        Object.keys(x).reduce(function (isEqual, key) {
+          return isEqual && deepEqual(x[key], y[key]);
+        }, true)
     : x === y;
 }

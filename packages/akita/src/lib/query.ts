@@ -1,12 +1,11 @@
-import { Store } from './store';
-import { Observable } from 'rxjs';
-import { queryConfigKey, QueryConfigOptions } from './queryConfig';
-import { isString } from './isString';
-import { isFunction } from './isFunction';
-import { isDev } from './env';
-import { __queries__ } from './stores';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { distinctUntilChanged, map, Observable } from 'rxjs';
 import { compareKeys } from './compareKeys';
+import { isDev } from './env';
+import { isFunction } from './isFunction';
+import { isString } from './isString';
+import { queryConfigKey, QueryConfigOptions } from './queryConfig';
+import { Store } from './store';
+import { __queries__ } from './stores';
 import { ReturnTypes } from './types';
 
 export class Query<S> {
@@ -43,15 +42,15 @@ export class Query<S> {
     if (isFunction(project)) {
       mapFn = project;
     } else if (isString(project)) {
-      mapFn = state => state[project];
+      mapFn = (state) => state[project];
     } else if (Array.isArray(project)) {
       return this.store
-        ._select(state => state)
+        ._select((state) => state)
         .pipe(
           distinctUntilChanged(compareKeys(project)),
-          map(state => {
+          map((state) => {
             if (isFunction(project[0])) {
-              return (project as ((state: S) => any)[]).map(func => func(state));
+              return (project as ((state: S) => any)[]).map((func) => func(state));
             }
 
             return (project as (keyof S)[]).reduce((acc, k) => {
@@ -61,7 +60,7 @@ export class Query<S> {
           })
         ) as any;
     } else {
-      mapFn = state => state;
+      mapFn = (state) => state;
     }
 
     return this.store._select(mapFn);
@@ -75,7 +74,7 @@ export class Query<S> {
    * this.query.selectLoading().subscribe(isLoading => {})
    */
   selectLoading() {
-    return this.select(state => (state as S & { loading: boolean }).loading);
+    return this.select((state) => (state as S & { loading: boolean }).loading);
   }
 
   /**
@@ -86,7 +85,7 @@ export class Query<S> {
    * this.query.selectError().subscribe(error => {})
    */
   selectError<ErrorType = any>(): Observable<ErrorType> {
-    return this.select(state => (state as S & { error: ErrorType }).error);
+    return this.select((state) => (state as S & { error: ErrorType }).error);
   }
 
   /**

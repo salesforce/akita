@@ -1,6 +1,5 @@
-import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { filter } from 'rxjs/operators';
+import { filter, Subject } from 'rxjs';
 import { Msg } from './types';
 
 export enum HttpMethod {
@@ -8,7 +7,7 @@ export enum HttpMethod {
   POST = 'POST',
   PUT = 'PUT',
   PATCH = 'PATCH',
-  DELETE = 'DELETE'
+  DELETE = 'DELETE',
 }
 
 export type ActionType = 'success' | 'error';
@@ -22,8 +21,7 @@ export type EntityServiceAction = {
 
 export const ofType = (type: ActionType) => filter((action: EntityServiceAction) => action.type === type);
 
-export const filterMethod = (method: HttpMethod | keyof (typeof HttpMethod)) =>
-  filter((action: EntityServiceAction) => action.method === method);
+export const filterMethod = (method: HttpMethod | keyof typeof HttpMethod) => filter((action: EntityServiceAction) => action.method === method);
 
 export const filterStore = (name: string) => filter((action: EntityServiceAction) => action.storeName === name);
 

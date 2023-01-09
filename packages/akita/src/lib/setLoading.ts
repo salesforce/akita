@@ -1,5 +1,4 @@
-import { defer, MonoTypeOperatorFunction, Observable } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { defer, finalize, MonoTypeOperatorFunction, Observable } from 'rxjs';
 import { Store } from './store';
 
 export function setLoading<T>(store: Store): MonoTypeOperatorFunction<T> {

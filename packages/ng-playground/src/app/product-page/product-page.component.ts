@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { filter, map, switchMap } from 'rxjs/operators';
+import { filter, map, switchMap } from 'rxjs';
 import { ProductsQuery } from '../products/state/products.query';
 import { ProductsService } from '../products/state/products.service';
 

@@ -2,7 +2,6 @@
   "version": 2,
   "projects": {
     "akita": "packages/akita",
-    "ng-devtools": "packages/ng-devtools",
     "ng-playground": "packages/ng-playground",
     "ng-router-store": "packages/ng-router-store"
   }

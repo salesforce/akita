@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { isFunction } from '@datorama/akita';
-import { ReplaySubject } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, ReplaySubject } from 'rxjs';
 import { HttpMethod } from './ng-entity-service-notifier';
 
 export type Event = { method: HttpMethod; loading: boolean; storeName: string; entityId?: any };

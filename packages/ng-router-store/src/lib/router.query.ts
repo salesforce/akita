@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
+import { NavigationCancel, NavigationError } from '@angular/router';
 import { filterNilValue, Query } from '@datorama/akita';
-import { combineLatest, Observable, Subject } from 'rxjs';
-import { distinctUntilChanged, map, pluck } from 'rxjs/operators';
+import { combineLatest, distinctUntilChanged, map, Observable, pluck, Subject } from 'rxjs';
 import { RouterState, RouterStore } from './router.store';
-import {NavigationCancel, NavigationError} from '@angular/router';
 
 function slice(section: string) {
   return (source: Observable<RouterState>) => {

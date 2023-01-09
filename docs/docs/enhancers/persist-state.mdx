@@ -277,7 +277,7 @@ By default, the plugin will update the storage upon each store's change. Some ap
 For such cases, it's recommended to use the `preStorageUpdateOperator` option and add a `debounce`. For example:
 
 ```ts
-import { debounceTime } from 'rxjs/operators';
+import { debounceTime } from 'rxjs';
 
 persistState({
   include: ['auth.token', 'todos'],

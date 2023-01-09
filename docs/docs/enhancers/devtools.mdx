@@ -4,29 +4,29 @@ title: Devtools
 
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-Akita provides integration with the Redux dev-tools chrome extension. 
+Akita provides integration with the Redux dev-tools chrome extension.
 
 <img src={useBaseUrl('static/img/devtools.gif')} class="gif" />
 
 ## Usage
+
 Install the Redux extension from the supported App stores ( [Chrome](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd?hl=en), [Firefox](https://addons.mozilla.org/en-US/firefox/addon/reduxdevtools/) ).
 
-Install the devtools package:
-
-```bash
-npm i @datorama/akita-ngdevtools
-```
-
-And add the `AkitaNgDevtools` module:
-
 ```ts
-import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
+import { ENVIRONMENT_INITIALIZER, inject, NgZone } from '@angular/core';
+import { akitaDevtools, DevtoolsOptions } from '@datorama/akita';
 
-@NgModule({
-  imports: [environment.production ? [] : AkitaNgDevtools.forRoot(options?)]
-  bootstrap: [AppComponent]
-})
-export class AppModule {}
+export function provideAkitaDevtools(options: Partial<DevtoolsOptions> = {}) {
+  return {
+    provide: ENVIRONMENT_INITIALIZER,
+    multi: true,
+    useFactory() {
+      return () => {
+        akitaDevtools(inject(NgZone), options);
+      };
+    },
+  };
+}
 ```
 
 If you're not using Angular, you can call the `akitaDevtools` function directly:
@@ -38,6 +38,7 @@ akitaDevtools(options?);
 ```
 
 ## Options
+
 The plugin supports the following options passed as the second function parameter:
 
 `maxAge`: Maximum amount of actions to be stored in the history tree.
@@ -54,6 +55,7 @@ The plugin supports the following options passed as the second function paramete
 sortAlphabetically
 
 ## Custom Actions
+
 By default, Akita will do its best to describe the actions that occurred, but you can always define your own actions for debugging purposes. For example:
 
 ```ts
@@ -66,6 +68,7 @@ updateFilter(filter: VISIBILITY_FILTER) {
 ```
 
 Or as a function:
+
 ```ts
 import { logAction } from '@datorama/akita';
 
@@ -78,4 +81,3 @@ updateFilter(filter: VISIBILITY_FILTER) {
 :::warning
 Custom actions will only be dispatched upon a store update.
 :::
-

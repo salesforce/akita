@@ -1,7 +1,6 @@
-import { timer } from 'rxjs';
-import { mapTo, tap } from 'rxjs/operators';
-import { persistState, PersistStateStorage } from '../lib/persistState';
+import { mapTo, tap, timer } from 'rxjs';
 import { Store, StoreConfig } from '..';
+import { persistState, PersistStateStorage } from '../lib/persistState';
 import { tick } from './setup';
 
 function random(min: number, max: number) {
@@ -21,13 +20,13 @@ const asyncStorage: PersistStateStorage = {
   },
   clear() {
     cache = {};
-  }
+  },
 };
 
 persistState({ storage: asyncStorage });
 
 @StoreConfig({
-  name: 'auth'
+  name: 'auth',
 })
 class AuthStore extends Store<any> {
   constructor() {

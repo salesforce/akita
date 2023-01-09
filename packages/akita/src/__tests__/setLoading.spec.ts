@@ -1,8 +1,7 @@
+import { tap, timer } from 'rxjs';
 import { EntityStore, QueryEntity } from '..';
-import { setLoading } from '../lib/setLoading';
-import { timer } from 'rxjs';
-import { tap } from 'rxjs/operators';
 import { cacheable } from '../lib/index';
+import { setLoading } from '../lib/setLoading';
 
 const store = new EntityStore({}, { name: 'test' });
 const query = new QueryEntity(store);

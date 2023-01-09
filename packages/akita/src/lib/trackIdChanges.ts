@@ -1,5 +1,4 @@
-import { merge, MonoTypeOperatorFunction, Observable, of, Operator, Subscriber, TeardownLogic } from 'rxjs';
-import { filter, first, switchMap, tap } from 'rxjs/operators';
+import { filter, first, merge, MonoTypeOperatorFunction, Observable, of, Operator, Subscriber, switchMap, tap, TeardownLogic } from 'rxjs';
 import { QueryEntity } from './queryEntity';
 import { EntityState, getEntityType, getQueryEntityState } from './types';
 
@@ -18,7 +17,7 @@ export function trackIdChanges<K extends QueryEntity<S, T>, S extends EntityStat
 }
 
 class TrackIdChanges<K extends QueryEntity<S, T>, S extends EntityState<T>, T = getEntityType<S>> implements Operator<T, T> {
-  constructor(readonly query: K) { }
+  constructor(readonly query: K) {}
 
   call(subscriber: Subscriber<T>, source: Observable<T>): TeardownLogic {
     return source

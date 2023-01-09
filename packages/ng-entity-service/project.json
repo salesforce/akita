@@ -38,5 +38,6 @@
       "executor": "@jscutlery/semver:version"
     }
   },
-  "tags": []
+  "tags": [],
+  "name": "packages-ng-entity-service"
 }

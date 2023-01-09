@@ -1,5 +1,4 @@
-import { Observable, of } from 'rxjs';
-import { distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, Observable, of, switchMap } from 'rxjs';
 import { distinctUntilArrayItemChanged } from './arrayFind';
 import { coerceArray } from './coerceArray';
 import { entitiesToArray } from './entitiesToArray';

@@ -1,11 +1,10 @@
-import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
-import { map, take } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
+import { map, Observable, take } from 'rxjs';
 import { AuthQuery } from './state/auth.query';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthGuard {
   constructor(private router: Router, private authQuery: AuthQuery) {}
@@ -13,7 +12,7 @@ export class AuthGuard {
   canActivate(): Observable<boolean> {
     // For sync storage
     return this.authQuery.isLoggedIn$.pipe(
-      map(isAuth => {
+      map((isAuth) => {
         if (isAuth) {
           return true;
         }

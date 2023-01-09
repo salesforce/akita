@@ -1,5 +1,4 @@
-import { Observable, of, OperatorFunction } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, Observable, OperatorFunction } from 'rxjs';
 
 /**
  * @example

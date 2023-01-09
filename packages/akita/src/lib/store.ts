@@ -1,5 +1,4 @@
-import { BehaviorSubject, Observable } from 'rxjs';
-import { distinctUntilChanged, map } from 'rxjs/operators';
+import { BehaviorSubject, distinctUntilChanged, map, Observable } from 'rxjs';
 import { currentAction, resetCustomAction, setAction, StoreSnapshotAction } from './actions';
 import { getAkitaConfig, getGlobalProducerFn } from './config';
 import { deepFreeze } from './deepFreeze';

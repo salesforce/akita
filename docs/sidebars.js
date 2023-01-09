@@ -81,7 +81,6 @@ module.exports = {
           href: 'https://github.com/dappsnation/akita-ng-fire',
         },
         'angular/router',
-        'angular/schematics',
         {
           type: 'link',
           label: 'Filters Manager',

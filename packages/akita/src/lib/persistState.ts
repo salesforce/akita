@@ -1,5 +1,4 @@
-import { from, isObservable, of, OperatorFunction, ReplaySubject, Subscription } from 'rxjs';
-import { filter, map, skip } from 'rxjs/operators';
+import { filter, from, isObservable, map, of, OperatorFunction, ReplaySubject, skip, Subscription } from 'rxjs';
 import { setAction } from './actions';
 import { $$addStore, $$deleteStore } from './dispatchers';
 import { getValue } from './getValueByString';
@@ -114,7 +113,7 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
 
   const hasInclude = include.length > 0;
   const hasSelect = select.length > 0;
-  let includeStores: { fns: Function[];[key: string]: Function[] | string };
+  let includeStores: { fns: Function[]; [key: string]: Function[] | string };
   let selectStores: { [key: string]: PersistStateSelectFn };
 
   if (hasInclude) {
@@ -141,8 +140,8 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
   }
 
   let stores: HashMap<Subscription> = {};
-  let acc = {};
-  let subscriptions: Subscription[] = [];
+  const acc = {};
+  const subscriptions: Subscription[] = [];
 
   const buffer = [];
 

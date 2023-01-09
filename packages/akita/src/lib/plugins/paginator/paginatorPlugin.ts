@@ -1,5 +1,4 @@
-import { BehaviorSubject, from, isObservable, Observable, Subscription } from 'rxjs';
-import { delay, map, switchMap, take } from 'rxjs/operators';
+import { BehaviorSubject, delay, from, isObservable, map, Observable, Subscription, switchMap, take } from 'rxjs';
 import { action, logAction } from '../../actions';
 import { isNil } from '../../isNil';
 import { isUndefined } from '../../isUndefined';

@@ -1,15 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { combineLatest, Observable } from 'rxjs';
 import { UntypedFormControl } from '@angular/forms';
-import { startWith, switchMap } from 'rxjs/operators';
-import { Product } from './state/products.model';
-import { ProductsService } from './state/products.service';
-import { ProductsQuery } from './state/products.query';
+import { combineLatest, Observable, startWith, switchMap } from 'rxjs';
 import { CartService } from '../cart/state/cart.service';
+import { Product } from './state/products.model';
+import { ProductsQuery } from './state/products.query';
+import { ProductsService } from './state/products.service';
 
 @Component({
   selector: 'app-products',
-  templateUrl: `./products.component.html`
+  templateUrl: `./products.component.html`,
 })
 export class ProductsComponent implements OnInit {
   products$: Observable<Product[]>;

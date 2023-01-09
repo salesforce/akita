@@ -1,9 +1,9 @@
-import { EntityState, OrArray, getIDType } from '../../types';
+import { skip } from 'rxjs';
 import { QueryEntity } from '../../queryEntity';
-import { History, StateHistoryParams, StateHistoryPlugin } from './stateHistoryPlugin';
 import { toBoolean } from '../../toBoolean';
-import { skip } from 'rxjs/operators';
+import { EntityState, getIDType, OrArray } from '../../types';
 import { EntityCollectionPlugin } from '../entityCollectionPlugin';
+import { History, StateHistoryParams, StateHistoryPlugin } from './stateHistoryPlugin';
 
 export interface StateHistoryEntityParams<IDType> extends StateHistoryParams {
   entityIds?: OrArray<IDType>;
