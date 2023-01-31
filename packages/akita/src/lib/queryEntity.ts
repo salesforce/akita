@@ -397,7 +397,7 @@ export class QueryEntity<S extends EntityState, EntityType = getEntityType<S>, I
 }
 
 // @internal
-export class EntityUIQuery<UIState, DEPRECATED = any> extends QueryEntity<UIState> {
+export class EntityUIQuery<UIState extends EntityState, DEPRECATED = any> extends QueryEntity<UIState> {
   constructor(store) {
     super(store);
   }

@@ -2,6 +2,7 @@ import { BehaviorSubject, distinctUntilChanged, Observable, pairwise } from 'rxj
 import { logAction } from '../../actions';
 import { isFunction } from '../../isFunction';
 import { AkitaPlugin, Queries } from '../plugin';
+import { EntityState } from '../../types';
 
 export interface StateHistoryParams {
   maxAge?: number;
@@ -15,7 +16,7 @@ export type History<State> = {
   future: State[];
 };
 
-export class StateHistoryPlugin<State = any> extends AkitaPlugin<State> {
+export class StateHistoryPlugin<State extends EntityState = any> extends AkitaPlugin<State> {
   /** Allow skipping an update from outside */
   private skip = false;
 
