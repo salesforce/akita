@@ -29,7 +29,7 @@ import { CartQuery } from '../cart/state/cart.query';
   `
 })
 export class NavComponent {
-  navItems = ['Todos', 'Contacts', 'Stories', 'Movies', 'Widgets', 'Posts', 'FormsManager'];
+  navItems = ['Todos', 'Contacts', 'Stories', 'Movies', 'Widgets', 'Posts'];
   count$: Observable<number>;
   isLoggedIn$: Observable<boolean>;
 
