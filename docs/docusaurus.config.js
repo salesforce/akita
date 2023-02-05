@@ -35,12 +35,6 @@ module.exports = {
           position: 'left',
         },
         {
-          href: 'https://stackblitz.com/edit/akita-todos-app',
-          label: 'Playground',
-          position: 'left',
-          className: 'header-playground-link',
-        },
-        {
           href: 'https://gitter.im/akita-state-management/Lobby',
           label: ' ',
           position: 'right',
