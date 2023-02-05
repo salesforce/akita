@@ -13,8 +13,6 @@ export class CartQuery extends QueryEntity<CartState> {
   selectItems$ = combineLatest([this.selectAll(), this.productsQuery.selectAll({ asObject: true })]).pipe(map(joinItems), shareReplay({ bufferSize: 1, refCount: true }));
 
   selectTotal$ = this.selectItems$.pipe(map((items) => items.reduce((acc, item) => acc + item.total, 0)));
-
-  selectNotification$ = this.select((state) => state.notify);
 }
 
 function joinItems([cartItems, products]) {

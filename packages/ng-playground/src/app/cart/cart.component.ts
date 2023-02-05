@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { Product } from '../products/state/products.model';
 import { CartQuery } from './state/cart.query';
 import { CartItem } from './state/cart.model';
+import { CartService } from './state/cart.service';
 
 @Component({
   selector: 'app-cart',
@@ -12,17 +13,16 @@ import { CartItem } from './state/cart.model';
 export class CartComponent implements OnInit {
   items$: Observable<(CartItem & Product)[]>;
   total$: Observable<number>;
-  notify$: Observable<boolean>;
 
-  constructor(private cartQuery: CartQuery) {
+  constructor(private cartQuery: CartQuery, private cartService: CartService) {
   }
 
   ngOnInit() {
     this.items$ = this.cartQuery.selectItems$;
     this.total$ = this.cartQuery.selectTotal$;
-    this.notify$ = this.cartQuery.selectNotification$;
   }
 
   remove({ productId }: CartItem) {
+    this.cartService.remove(productId);
   }
 }
