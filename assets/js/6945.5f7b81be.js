@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkakita_docs=self.webpackChunkakita_docs||[]).push([[6945],{6945:function(s,a,c){c.r(a)}}]);
