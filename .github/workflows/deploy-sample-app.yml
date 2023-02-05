@@ -1,0 +1,30 @@
+name: 'deploy-sample-app'
+
+on:
+  push:
+    branches:
+      - master
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'npm'
+
+      - run: npm i
+      - run: npx nx build ng-playground
+
+      - name: Deploy to akita.surge.sh
+        uses: dswistowski/surge-sh-action@v1
+        with:
+          domain: 'akita.surge.sh'
+          project: 'dist/packages/ng-playground'
+          login: ${{ secrets.surge_login }}
+          token: ${{ secrets.surge_token }}
