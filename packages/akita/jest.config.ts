@@ -10,9 +10,9 @@ export default {
   },
   testEnvironment: 'jsdom',
   transform: {
-    '^.+\\.[tj]sx?$': 'ts-jest',
+    '^.+\\.[tj]s?$': 'ts-jest',
   },
 
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  moduleFileExtensions: ['ts', 'js'],
   coverageDirectory: '../../coverage/packages/akita',
 };
