@@ -1,4 +1,5 @@
 {
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "tasksRunnerOptions": {
     "default": {
       "runner": "nx/tasks-runners/default",
@@ -7,7 +8,6 @@
       }
     }
   },
-  "extends": "nx/presets/npm.json",
   "npmScope": "@datorama",
   "affected": {
     "defaultBase": "master"
@@ -33,6 +33,9 @@
     }
   },
   "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build"]
+    },
     "test": {
       "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"]
     },
