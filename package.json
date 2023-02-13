@@ -7,7 +7,7 @@
     "start": "nx serve --project ng-playground",
     "start:docs": "npm start --prefix=docs",
     "test": "npm run affected:test",
-    "build": "nx build akita && npm run build --prefix packages/akita-schematics",
+    "build": "nx build akita",
     "test:all": "nx test akita",
     "build:all": "nx run-many --target=build --all --exclude=ng-playground",
     "affected": "nx affected",

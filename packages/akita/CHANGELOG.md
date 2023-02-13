@@ -2,6 +2,15 @@
 
 This file was generated using [@jscutlery/semver](https://github.com/jscutlery/semver).
 
+## [8.0.1](https://github-personal/salesforce/akita/compare/akita-8.0.0...akita-8.0.1) (2023-02-13)
+
+
+### Bug Fixes
+
+* **akita:** support TS strict mode ([#1050](https://github-personal/salesforce/akita/issues/1050)) ([1d9eaac](https://github-personal/salesforce/akita/commit/1d9eaacc19d43882e5e926cabe8b823047968695)), closes [salesforce/akita#870](https://github-personal/salesforce/akita/issues/870)
+
+
+
 # [8.0.0](https://github.com/salesforce/akita/compare/akita-7.1.1...akita-8.0.0) (2023-01-09)
 
 
