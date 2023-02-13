@@ -6,10 +6,11 @@ import { toBoolean } from '../toBoolean';
 import { getAkitaConfig } from '../config';
 import { getValue } from '../getValueByString';
 import { setValue } from '../setValueByString';
+import { EntityState } from '../types';
 
-export type Queries<State> = Query<State> | QueryEntity<State>;
+export type Queries<State extends EntityState> = Query<State> | QueryEntity<State>;
 
-export abstract class AkitaPlugin<State = any> {
+export abstract class AkitaPlugin<State extends EntityState = any> {
   protected constructor(protected query: Queries<State>, config?: { resetFn?: Function }) {
     if (config && config.resetFn) {
       if (getAkitaConfig().resettable) {

@@ -663,7 +663,7 @@ export class EntityStore<S extends EntityState = any, EntityType = getEntityType
 }
 
 // @internal
-export class EntityUIStore<UIState, DEPRECATED = any> extends EntityStore<UIState> {
+export class EntityUIStore<UIState extends EntityState, DEPRECATED = any> extends EntityStore<UIState> {
   _akitaCreateEntityFn: EntityUICreateFn;
 
   constructor(initialState = {}, storeConfig: Partial<StoreConfigOptions> = {}) {

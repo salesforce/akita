@@ -6,6 +6,7 @@ import { isUndefined } from '../../isUndefined';
 import { Query } from '../../query';
 import { QueryEntity } from '../../queryEntity';
 import { AkitaPlugin, Queries } from '../plugin';
+import { EntityState } from '../../types';
 
 type Head<State = any> = State | Partial<State>;
 
@@ -29,7 +30,7 @@ export type DirtyCheckResetParams<StoreState = any> = {
   updateFn?: StoreState | ((head: StoreState, current: StoreState) => any);
 };
 
-export class DirtyCheckPlugin<State = any> extends AkitaPlugin<State> {
+export class DirtyCheckPlugin<State extends EntityState = any> extends AkitaPlugin<State> {
   private head: Head<State>;
   private dirty = new BehaviorSubject(false);
   private subscription: Subscription;
