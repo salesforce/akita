@@ -1,4 +1,4 @@
-import { enableAkitaProdMode } from '@datorama/akita';
+import { enableAkitaProdMode } from '../lib/env';
 
 // isBrowser expression has to be mocked because
 // in context of enableAkitaProdMode func it evaluates
