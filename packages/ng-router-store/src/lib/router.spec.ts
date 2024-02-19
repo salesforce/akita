@@ -1,7 +1,7 @@
 import { APP_BASE_HREF } from '@angular/common';
 import { Component, Injectable, NgZone } from '@angular/core';
 import { fakeAsync, TestBed, tick } from '@angular/core/testing';
-import {ActivatedRouteSnapshot, CanActivate, NavigationCancel, NavigationExtras, Router, Routes} from '@angular/router';
+import { ActivatedRouteSnapshot, NavigationCancel, NavigationExtras, Router, Routes } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AkitaNgRouterStoreModule } from '..';
 import { RouterQuery } from './router.query';
@@ -15,7 +15,7 @@ class EmptyComponent {}
 const intentionalTestError = new Error('Intentional test error.');
 
 @Injectable()
-class AuthGuard implements CanActivate {
+class AuthGuard  {
   constructor(private router: Router) {}
 
   canActivate(route: ActivatedRouteSnapshot) {

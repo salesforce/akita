@@ -1,5 +1,6 @@
 {
   "name": "ng-playground",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "sourceRoot": "packages/ng-playground/src",
   "prefix": "akita-nx",
@@ -70,13 +71,13 @@
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "options": {
         "lintFilePatterns": ["packages/ng-playground/src/**/*.ts", "packages/ng-playground/src/**/*.html"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/packages/ng-playground"],
       "options": {
         "jestConfig": "packages/ng-playground/jest.config.ts",
