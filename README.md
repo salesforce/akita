@@ -1,8 +1,12 @@
+# THE LIBRARY IS NOT MAINTAINED ANYMORE - DON'T USE IT
+
+## Elf, a newer state management solution, has been published. We recommend [checking it out](https://ngneat.github.io/elf/) 🚀
+
 ![Akita](https://s8.postimg.cc/d4m3fc9tx/image.png)
 
 > A Reactive State Management Tailored-Made for JS Applications
 
-## Elf, a newer state management solution, has been published. We recommend [checking it out](https://ngneat.github.io/elf/) 🚀
+
 
 
 
