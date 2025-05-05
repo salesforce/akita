@@ -4,6 +4,7 @@
   "description": "A Reactive State Management Tailored-Made for JS Applications",
   "keywords": [
     "angular",
+    "crypto-js",
     "state management",
     "react",
     "vue",

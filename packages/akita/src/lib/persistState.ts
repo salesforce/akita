@@ -1,6 +1,8 @@
+import { AES } from 'crypto-js';
 import { filter, from, isObservable, map, of, OperatorFunction, ReplaySubject, skip, Subscription } from 'rxjs';
 import { setAction } from './actions';
 import { $$addStore, $$deleteStore } from './dispatchers';
+import { EncryptedPersistStateStorageAdapter } from './encryptedPersistStateStorageAdapter';
 import { getValue } from './getValueByString';
 import { isFunction } from './isFunction';
 import { isNil } from './isNil';
@@ -55,6 +57,13 @@ export interface PersistStateParams {
   enableInNonBrowser: boolean;
   /** Storage strategy to use. This defaults to LocalStorage but you can pass SessionStorage or anything that implements the StorageEngine API. */
   storage: PersistStateStorage;
+  /**  Flag to determine if data should be encrypted before storage. */
+  encryptData: boolean;
+  /** 
+  * The key to be used for encryption/decryption in CryptoJS. 
+  * If no custom key is provided, a default key will be used.
+  */
+  encryptKey: string;
   /** Custom deserializer. Defaults to JSON.parse */
   deserialize: Function;
   /** Custom serializer, defaults to JSON.stringify */
@@ -88,6 +97,8 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
     key: 'AkitaStores',
     enableInNonBrowser: false,
     storage: !hasLocalStorage() ? params.storage : localStorage,
+    encryptData: false,
+    encryptKey: '86772f22fdd598e780800413f905b3699661ab939e93159575bfce42d131709c',
     deserialize: JSON.parse,
     serialize: JSON.stringify,
     include: [],
@@ -103,13 +114,23 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
     preStorageUpdateOperator: () => (source) => source,
   };
 
-  const { storage, enableInNonBrowser, deserialize, serialize, include, select, key, preStorageUpdate, persistOnDestroy, preStorageUpdateOperator, preStoreUpdate, skipStorageUpdate } = Object.assign(
+  const { storage: initialStorageMechanism, enableInNonBrowser, deserialize, serialize, include, select, key, preStorageUpdate, persistOnDestroy, preStorageUpdateOperator, preStoreUpdate, skipStorageUpdate, encryptData, encryptKey } = Object.assign(
     {},
     defaults,
     params
   );
 
-  if ((isNotBrowser && !enableInNonBrowser) || !storage) return;
+  if ((isNotBrowser && !enableInNonBrowser) || !initialStorageMechanism) return;
+
+  function getStorage() {
+    if(encryptData) {
+      return new EncryptedPersistStateStorageAdapter(encryptKey, initialStorageMechanism);
+    }
+
+    return initialStorageMechanism;
+  }
+
+  const storage = getStorage();
 
   const hasInclude = include.length > 0;
   const hasSelect = select.length > 0;
@@ -156,6 +177,9 @@ export function persistState(params?: Partial<PersistStateParams>): PersistState
   const isLocalStorage = (hasLocalStorage() && storage === localStorage) || (hasSessionStorage() && storage === sessionStorage);
 
   observify(storage.getItem(key)).subscribe((value: any) => {
+    if (encryptData && value) {
+      value = AES.decrypt(value, encryptKey);
+    }
     let storageState = isObject(value) ? value : deserialize(value || '{}');
 
     function save(storeCache) {
