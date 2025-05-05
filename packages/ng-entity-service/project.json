@@ -1,14 +1,16 @@
 {
+  "name": "ng-entity-service",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
-  "root": "packages/ng-entity-service",
   "sourceRoot": "packages/ng-entity-service/src",
   "prefix": "akita-nx",
   "targets": {
     "build": {
-      "executor": "@nrwl/angular:package",
-      "outputs": ["dist/packages/ng-entity-service"],
+      "executor": "@nx/angular:package",
+      "outputs": ["{workspaceRoot}/dist/packages/ng-entity-service"],
       "options": {
-        "project": "packages/ng-entity-service/ng-package.json"
+        "project": "packages/ng-entity-service/ng-package.json",
+        "updateBuildableProjectDepsInPackageJson": true
       },
       "configurations": {
         "production": {
@@ -21,15 +23,15 @@
       "defaultConfiguration": "production"
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/ng-entity-service"],
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/packages/ng-entity-service"],
       "options": {
         "jestConfig": "packages/ng-entity-service/jest.config.js",
         "passWithNoTests": true
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "options": {
         "lintFilePatterns": ["packages/ng-entity-service/src/**/*.ts", "packages/ng-entity-service/src/**/*.html"]
       }
@@ -38,6 +40,5 @@
       "executor": "@jscutlery/semver:version"
     }
   },
-  "tags": [],
-  "name": "packages-ng-entity-service"
+  "tags": []
 }

@@ -2,15 +2,16 @@
 export default {
   displayName: 'akita',
   preset: '../../jest.preset.js',
-  globals: {
-    'ts-jest': {
-      tsconfig: '<rootDir>/tsconfig.spec.json',
-      isolatedModules: true,
-    },
-  },
+  globals: {},
   testEnvironment: 'jsdom',
   transform: {
-    '^.+\\.[tj]s?$': 'ts-jest',
+    '^.+\\.[tj]s?$': [
+      'ts-jest',
+      {
+        tsconfig: '<rootDir>/tsconfig.spec.json',
+        isolatedModules: true,
+      },
+    ],
   },
 
   moduleFileExtensions: ['ts', 'js'],
